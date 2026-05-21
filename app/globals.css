@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-montserrat), sans-serif;
+  --font-body: var(--font-open-sans), sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .wda-input {
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 1.5px solid rgba(30, 53, 96, 0.15);
+    background-color: #f4f7f9;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #2b303a;
+    outline: none;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+    font-family: var(--font-body);
+    appearance: none;
+  }
+
+  .wda-input::placeholder {
+    color: rgba(43, 48, 58, 0.38);
+  }
+
+  .wda-input:focus {
+    border-color: #4a9fd4;
+    background-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(74, 159, 212, 0.14);
+  }
+
+  .wda-input:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .wda-input.invalid {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer base {
+  :root {
+    --color-navy: #1E3560;
+    --color-blue: #4A9FD4;
+    --color-white: #FFFFFF;
+    --color-surface: #F4F7F9;
+    --color-text: #2B303A;
+    --color-cta: #E67E22;
+  }
+
+  html {
+    color: var(--color-text);
+    background-color: var(--color-white);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
+
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--color-navy);
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-navy);
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-blue);
+    line-height: 1.4;
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    color: var(--color-text);
+  }
 }

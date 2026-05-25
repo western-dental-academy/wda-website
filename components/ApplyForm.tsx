@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -100,18 +100,19 @@ function FieldLabel({
           (optional)
         </span>
       ) : (
-        <span className="ml-0.5" style={{ color: "#4A9FD4" }}>
-          *
-        </span>
+        <>
+          <span className="ml-0.5" style={{ color: "#4A9FD4" }} aria-hidden>*</span>
+          <span className="sr-only"> (required)</span>
+        </>
       )}
     </label>
   );
 }
 
-function FieldError({ msg }: { msg?: string }) {
+function FieldError({ id, msg }: { id: string; msg?: string }) {
   if (!msg) return null;
   return (
-    <p className="mt-1.5 text-xs font-medium" style={{ color: "#dc2626" }} role="alert">
+    <p id={id} className="mt-1.5 text-xs font-medium" style={{ color: "#dc2626" }} role="alert">
       {msg}
     </p>
   );
@@ -157,9 +158,11 @@ function ReviewSection({
           {title}
         </p>
         <button
+          type="button"
           onClick={() => onEdit(toStep)}
           className="text-xs font-semibold transition-colors duration-200 hover:text-[#4A9FD4]"
           style={{ color: "rgba(30,53,96,0.45)" }}
+          aria-label={`Edit ${title}`}
         >
           Edit
         </button>
@@ -204,6 +207,14 @@ export default function ApplyForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Focus the step heading whenever the active step changes
+  const stepHeadingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    if (!submitted) {
+      stepHeadingRef.current?.focus();
+    }
+  }, [step, submitted]);
 
   function set<K extends keyof FormData>(key: K, value: string) {
     setData((d) => ({ ...d, [key]: value }));
@@ -252,9 +263,14 @@ export default function ApplyForm() {
     setErrors({});
   }
 
-  async function submit() {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (step < 4) {
+      next();
+      return;
+    }
+    // Step 4 — final submission
     setSubmitting(true);
-    // Simulated submission — wire to a real endpoint when ready
     await new Promise((r) => setTimeout(r, 900));
     setSubmitted(true);
   }
@@ -263,6 +279,8 @@ export default function ApplyForm() {
   if (submitted) {
     return (
       <div
+        role="status"
+        aria-live="polite"
         className="rounded-2xl p-10 sm:p-14 text-center"
         style={{
           backgroundColor: "#ffffff",
@@ -324,7 +342,9 @@ export default function ApplyForm() {
   const fillWidth = `calc(${(step - 1) / 3} * (100% - 36px))`;
 
   return (
-    <div
+    <form
+      onSubmit={handleSubmit}
+      noValidate
       className="rounded-2xl p-7 sm:p-10"
       style={{
         backgroundColor: "#ffffff",
@@ -332,8 +352,13 @@ export default function ApplyForm() {
         boxShadow: "0 4px 24px rgba(30,53,96,0.06), 0 1px 4px rgba(30,53,96,0.04)",
       }}
     >
+      {/* Visually hidden live region — announces step changes to screen readers */}
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        Step {step} of 4: {STEPS[step - 1].label}
+      </div>
+
       {/* ── Progress bar ── */}
-      <div className="relative mb-10" aria-label="Application progress">
+      <div className="relative mb-10">
         {/* Gray track */}
         <div
           className="absolute left-[18px] right-[18px] top-[18px] h-0.5"
@@ -347,7 +372,10 @@ export default function ApplyForm() {
           aria-hidden
         />
         {/* Step circles */}
-        <ol className="relative flex items-start justify-between">
+        <ol
+          className="relative flex items-start justify-between"
+          aria-label="Application steps"
+        >
           {STEPS.map((s) => {
             const done = step > s.n;
             const active = step === s.n;
@@ -361,6 +389,7 @@ export default function ApplyForm() {
                     border: active || done ? "none" : "1.5px solid rgba(30,53,96,0.15)",
                   }}
                   aria-current={active ? "step" : undefined}
+                  aria-label={`Step ${s.n}: ${s.label}${done ? " – completed" : active ? " – current" : ""}`}
                 >
                   {done ? (
                     <svg
@@ -388,6 +417,7 @@ export default function ApplyForm() {
                     fontFamily: "var(--font-montserrat), sans-serif",
                     transition: "color 0.3s ease",
                   }}
+                  aria-hidden
                 >
                   {s.label}
                 </span>
@@ -401,6 +431,7 @@ export default function ApplyForm() {
       <p
         className="sm:hidden text-[10px] font-bold uppercase tracking-[0.18em] mb-6"
         style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
+        aria-hidden
       >
         Step {step} of 4 &mdash; {STEPS[step - 1].label}
       </p>
@@ -409,86 +440,106 @@ export default function ApplyForm() {
       {step === 1 && (
         <div>
           <h2
-            className="text-xl font-bold text-[#1E3560] mb-1"
+            ref={stepHeadingRef}
+            tabIndex={-1}
+            className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             Personal Information
           </h2>
           <p className="text-sm mb-8" style={{ color: "rgba(43,48,58,0.55)" }}>
-            Tell us a bit about yourself. All fields marked{" "}
-            <span style={{ color: "#4A9FD4" }}>*</span> are required.
+            Tell us a bit about yourself. Fields marked{" "}
+            <span style={{ color: "#4A9FD4" }} aria-hidden>*</span>
+            <span className="sr-only">with an asterisk</span> are required.
           </p>
 
           <div className="flex flex-col gap-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <FieldLabel htmlFor="firstName">First Name</FieldLabel>
+                <FieldLabel htmlFor="apply-firstName">First Name</FieldLabel>
                 <input
-                  id="firstName"
+                  id="apply-firstName"
                   type="text"
                   autoComplete="given-name"
                   placeholder="Jane"
                   value={data.firstName}
                   onChange={(e) => set("firstName", e.target.value)}
+                  aria-required="true"
+                  aria-invalid={!!errors.firstName || undefined}
+                  aria-describedby={errors.firstName ? "err-firstName" : undefined}
                   className={`wda-input${errors.firstName ? " invalid" : ""}`}
                 />
-                <FieldError msg={errors.firstName} />
+                <FieldError id="err-firstName" msg={errors.firstName} />
               </div>
               <div>
-                <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
+                <FieldLabel htmlFor="apply-lastName">Last Name</FieldLabel>
                 <input
-                  id="lastName"
+                  id="apply-lastName"
                   type="text"
                   autoComplete="family-name"
                   placeholder="Smith"
                   value={data.lastName}
                   onChange={(e) => set("lastName", e.target.value)}
+                  aria-required="true"
+                  aria-invalid={!!errors.lastName || undefined}
+                  aria-describedby={errors.lastName ? "err-lastName" : undefined}
                   className={`wda-input${errors.lastName ? " invalid" : ""}`}
                 />
-                <FieldError msg={errors.lastName} />
+                <FieldError id="err-lastName" msg={errors.lastName} />
               </div>
             </div>
 
             <div>
-              <FieldLabel htmlFor="email">Email Address</FieldLabel>
+              <FieldLabel htmlFor="apply-email">Email Address</FieldLabel>
               <input
-                id="email"
+                id="apply-email"
                 type="email"
                 autoComplete="email"
                 placeholder="jane@example.com"
                 value={data.email}
                 onChange={(e) => set("email", e.target.value)}
+                aria-required="true"
+                aria-invalid={!!errors.email || undefined}
+                aria-describedby={errors.email ? "err-email" : undefined}
                 className={`wda-input${errors.email ? " invalid" : ""}`}
               />
-              <FieldError msg={errors.email} />
+              <FieldError id="err-email" msg={errors.email} />
             </div>
 
             <div>
-              <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+              <FieldLabel htmlFor="apply-phone">Phone Number</FieldLabel>
               <input
-                id="phone"
+                id="apply-phone"
                 type="tel"
                 autoComplete="tel"
                 placeholder="(780) 000-0000"
                 value={data.phone}
                 onChange={(e) => set("phone", e.target.value)}
+                aria-required="true"
+                aria-invalid={!!errors.phone || undefined}
+                aria-describedby={errors.phone ? "err-phone" : undefined}
                 className={`wda-input${errors.phone ? " invalid" : ""}`}
               />
-              <FieldError msg={errors.phone} />
+              <FieldError id="err-phone" msg={errors.phone} />
             </div>
 
             <div>
-              <FieldLabel htmlFor="dob">Date of Birth</FieldLabel>
+              <FieldLabel htmlFor="apply-dob">Date of Birth</FieldLabel>
               <input
-                id="dob"
+                id="apply-dob"
                 type="date"
                 max={MAX_DOB}
                 value={data.dob}
                 onChange={(e) => set("dob", e.target.value)}
+                aria-required="true"
+                aria-invalid={!!errors.dob || undefined}
+                aria-describedby={
+                  errors.dob ? "err-dob" : "hint-dob"
+                }
                 className={`wda-input${errors.dob ? " invalid" : ""}`}
               />
-              <FieldError msg={errors.dob} />
-              <p className="mt-1.5 text-[11px]" style={{ color: "rgba(43,48,58,0.4)" }}>
+              <FieldError id="err-dob" msg={errors.dob} />
+              <p id="hint-dob" className="mt-1.5 text-[11px]" style={{ color: "rgba(43,48,58,0.4)" }}>
                 Applicants must be at least 18 years of age.
               </p>
             </div>
@@ -500,7 +551,9 @@ export default function ApplyForm() {
       {step === 2 && (
         <div>
           <h2
-            className="text-xl font-bold text-[#1E3560] mb-1"
+            ref={stepHeadingRef}
+            tabIndex={-1}
+            className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             Education &amp; Background
@@ -511,12 +564,15 @@ export default function ApplyForm() {
 
           <div className="flex flex-col gap-5">
             <div>
-              <FieldLabel htmlFor="education">Highest Level of Education Completed</FieldLabel>
+              <FieldLabel htmlFor="apply-education">Highest Level of Education Completed</FieldLabel>
               <div className="relative">
                 <select
-                  id="education"
+                  id="apply-education"
                   value={data.education}
                   onChange={(e) => set("education", e.target.value)}
+                  aria-required="true"
+                  aria-invalid={!!errors.education || undefined}
+                  aria-describedby={errors.education ? "err-education" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.education ? " invalid" : ""}`}
                 >
                   <option value="">Select education level</option>
@@ -528,30 +584,33 @@ export default function ApplyForm() {
                 </select>
                 <Chevron />
               </div>
-              <FieldError msg={errors.education} />
+              <FieldError id="err-education" msg={errors.education} />
             </div>
 
             <div className="sm:max-w-[calc(50%-0.625rem)]">
-              <FieldLabel htmlFor="educationYear">Year Completed</FieldLabel>
+              <FieldLabel htmlFor="apply-educationYear">Year Completed</FieldLabel>
               <input
-                id="educationYear"
+                id="apply-educationYear"
                 type="number"
                 min="1950"
                 max={new Date().getFullYear()}
                 placeholder={`e.g. ${new Date().getFullYear() - 4}`}
                 value={data.educationYear}
                 onChange={(e) => set("educationYear", e.target.value)}
+                aria-required="true"
+                aria-invalid={!!errors.educationYear || undefined}
+                aria-describedby={errors.educationYear ? "err-educationYear" : undefined}
                 className={`wda-input${errors.educationYear ? " invalid" : ""}`}
               />
-              <FieldError msg={errors.educationYear} />
+              <FieldError id="err-educationYear" msg={errors.educationYear} />
             </div>
 
             <div>
-              <FieldLabel htmlFor="experience" optional>
+              <FieldLabel htmlFor="apply-experience" optional>
                 Relevant Healthcare or Dental Experience
               </FieldLabel>
               <textarea
-                id="experience"
+                id="apply-experience"
                 rows={4}
                 placeholder="Describe any dental assisting, healthcare, or customer service experience you have — or leave blank if none."
                 value={data.experience}
@@ -567,7 +626,9 @@ export default function ApplyForm() {
       {step === 3 && (
         <div>
           <h2
-            className="text-xl font-bold text-[#1E3560] mb-1"
+            ref={stepHeadingRef}
+            tabIndex={-1}
+            className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             Program Selection
@@ -578,12 +639,15 @@ export default function ApplyForm() {
 
           <div className="flex flex-col gap-5">
             <div>
-              <FieldLabel htmlFor="program">Program of Interest</FieldLabel>
+              <FieldLabel htmlFor="apply-program">Program of Interest</FieldLabel>
               <div className="relative">
                 <select
-                  id="program"
+                  id="apply-program"
                   value={data.program}
                   onChange={(e) => set("program", e.target.value)}
+                  aria-required="true"
+                  aria-invalid={!!errors.program || undefined}
+                  aria-describedby={errors.program ? "err-program" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.program ? " invalid" : ""}`}
                 >
                   <option value="">Select a program</option>
@@ -595,29 +659,35 @@ export default function ApplyForm() {
                 </select>
                 <Chevron />
               </div>
-              <FieldError msg={errors.program} />
+              <FieldError id="err-program" msg={errors.program} />
             </div>
 
             <div className="sm:max-w-[calc(50%-0.625rem)]">
-              <FieldLabel htmlFor="startDate">Preferred Start Date</FieldLabel>
+              <FieldLabel htmlFor="apply-startDate">Preferred Start Date</FieldLabel>
               <input
-                id="startDate"
+                id="apply-startDate"
                 type="date"
                 min={TODAY}
                 value={data.startDate}
                 onChange={(e) => set("startDate", e.target.value)}
+                aria-required="true"
+                aria-invalid={!!errors.startDate || undefined}
+                aria-describedby={errors.startDate ? "err-startDate" : undefined}
                 className={`wda-input${errors.startDate ? " invalid" : ""}`}
               />
-              <FieldError msg={errors.startDate} />
+              <FieldError id="err-startDate" msg={errors.startDate} />
             </div>
 
             <div>
-              <FieldLabel htmlFor="referral">How Did You Hear About Us?</FieldLabel>
+              <FieldLabel htmlFor="apply-referral">How Did You Hear About Us?</FieldLabel>
               <div className="relative">
                 <select
-                  id="referral"
+                  id="apply-referral"
                   value={data.referral}
                   onChange={(e) => set("referral", e.target.value)}
+                  aria-required="true"
+                  aria-invalid={!!errors.referral || undefined}
+                  aria-describedby={errors.referral ? "err-referral" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.referral ? " invalid" : ""}`}
                 >
                   <option value="">Select an option</option>
@@ -629,7 +699,7 @@ export default function ApplyForm() {
                 </select>
                 <Chevron />
               </div>
-              <FieldError msg={errors.referral} />
+              <FieldError id="err-referral" msg={errors.referral} />
             </div>
           </div>
         </div>
@@ -639,7 +709,9 @@ export default function ApplyForm() {
       {step === 4 && (
         <div>
           <h2
-            className="text-xl font-bold text-[#1E3560] mb-1"
+            ref={stepHeadingRef}
+            tabIndex={-1}
+            className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             Review &amp; Submit
@@ -693,6 +765,7 @@ export default function ApplyForm() {
       >
         {step > 1 ? (
           <button
+            type="button"
             onClick={back}
             disabled={submitting}
             className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border transition-colors duration-200 hover:border-[#1E3560] hover:text-[#1E3560] disabled:opacity-40 disabled:cursor-not-allowed"
@@ -706,7 +779,7 @@ export default function ApplyForm() {
 
         {step < 4 ? (
           <button
-            onClick={next}
+            type="submit"
             className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4]"
             style={{ backgroundColor: "#1E3560" }}
           >
@@ -714,10 +787,11 @@ export default function ApplyForm() {
           </button>
         ) : (
           <button
-            onClick={submit}
+            type="submit"
             disabled={submitting}
             className="flex items-center gap-2 rounded-lg px-7 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] disabled:opacity-70 disabled:cursor-not-allowed"
             style={{ backgroundColor: "#E67E22" }}
+            aria-busy={submitting}
           >
             {submitting ? (
               <>
@@ -734,6 +808,6 @@ export default function ApplyForm() {
           </button>
         )}
       </div>
-    </div>
+    </form>
   );
 }

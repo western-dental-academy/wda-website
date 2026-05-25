@@ -10,24 +10,38 @@ const TIME_OPTIONS = [
   { value: "late_afternoon", label: "Late Afternoon (3:00 pm – 5:00 pm)" },
 ];
 
+// ─── Field wrapper ─────────────────────────────────────────────────────────────
+// htmlFor must match the id on the child input/select/textarea.
+
 function Field({
+  htmlFor,
   label,
   error,
   hint,
   required,
   children,
 }: {
+  htmlFor: string;
   label: string;
   error?: string;
   hint?: string;
   required?: boolean;
   children: React.ReactNode;
 }) {
+  const errorId = `${htmlFor}-err`;
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-xs font-semibold uppercase tracking-[0.12em] text-[#1E3560]">
+      <label
+        htmlFor={htmlFor}
+        className="text-xs font-semibold uppercase tracking-[0.12em] text-[#1E3560]"
+      >
         {label}
-        {required && <span className="text-[#E67E22] ml-0.5">*</span>}
+        {required && (
+          <>
+            <span className="text-[#E67E22] ml-0.5" aria-hidden>*</span>
+            <span className="sr-only"> (required)</span>
+          </>
+        )}
         {hint && (
           <span className="ml-1.5 font-normal normal-case tracking-normal text-[#2B303A]/45">
             {hint}
@@ -36,7 +50,7 @@ function Field({
       </label>
       {children}
       {error && (
-        <p className="text-xs text-red-400" role="alert">
+        <p id={errorId} className="text-xs text-red-400" role="alert">
           {error}
         </p>
       )}
@@ -100,7 +114,7 @@ export default function BookATourForm() {
 
   if (status === "success") {
     return (
-      <div className="py-14 text-center">
+      <div role="status" aria-live="polite" className="py-14 text-center">
         <div
           className="w-14 h-14 rounded-full mx-auto mb-6 flex items-center justify-center"
           style={{ backgroundColor: "rgba(74,159,212,0.1)" }}
@@ -128,6 +142,7 @@ export default function BookATourForm() {
           one business day.
         </p>
         <button
+          type="button"
           onClick={() => {
             setStatus("idle");
             setFields({
@@ -149,25 +164,39 @@ export default function BookATourForm() {
     );
   }
 
+  const loading = status === "loading";
+
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
       {/* Names */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <Field label="First Name" error={errors.firstName} required>
+        <Field htmlFor="tour-firstName" label="First Name" error={errors.firstName} required>
           <input
+            id="tour-firstName"
             type="text"
+            autoComplete="given-name"
             placeholder="Jane"
             value={fields.firstName}
             onChange={(e) => set("firstName", e.target.value)}
+            aria-required="true"
+            aria-invalid={!!errors.firstName || undefined}
+            aria-describedby={errors.firstName ? "tour-firstName-err" : undefined}
+            disabled={loading}
             className={`wda-input${errors.firstName ? " invalid" : ""}`}
           />
         </Field>
-        <Field label="Last Name" error={errors.lastName} required>
+        <Field htmlFor="tour-lastName" label="Last Name" error={errors.lastName} required>
           <input
+            id="tour-lastName"
             type="text"
+            autoComplete="family-name"
             placeholder="Smith"
             value={fields.lastName}
             onChange={(e) => set("lastName", e.target.value)}
+            aria-required="true"
+            aria-invalid={!!errors.lastName || undefined}
+            aria-describedby={errors.lastName ? "tour-lastName-err" : undefined}
+            disabled={loading}
             className={`wda-input${errors.lastName ? " invalid" : ""}`}
           />
         </Field>
@@ -175,23 +204,33 @@ export default function BookATourForm() {
 
       {/* Contact */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <Field label="Email Address" error={errors.email} required>
+        <Field htmlFor="tour-email" label="Email Address" error={errors.email} required>
           <input
+            id="tour-email"
             type="email"
             autoComplete="email"
             placeholder="jane@example.com"
             value={fields.email}
             onChange={(e) => set("email", e.target.value)}
+            aria-required="true"
+            aria-invalid={!!errors.email || undefined}
+            aria-describedby={errors.email ? "tour-email-err" : undefined}
+            disabled={loading}
             className={`wda-input${errors.email ? " invalid" : ""}`}
           />
         </Field>
-        <Field label="Phone Number" error={errors.phone} required>
+        <Field htmlFor="tour-phone" label="Phone Number" error={errors.phone} required>
           <input
+            id="tour-phone"
             type="tel"
             autoComplete="tel"
             placeholder="(780) 000-0000"
             value={fields.phone}
             onChange={(e) => set("phone", e.target.value)}
+            aria-required="true"
+            aria-invalid={!!errors.phone || undefined}
+            aria-describedby={errors.phone ? "tour-phone-err" : undefined}
+            disabled={loading}
             className={`wda-input${errors.phone ? " invalid" : ""}`}
           />
         </Field>
@@ -199,19 +238,29 @@ export default function BookATourForm() {
 
       {/* Date + Time */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <Field label="Preferred Tour Date" error={errors.date} required>
+        <Field htmlFor="tour-date" label="Preferred Tour Date" error={errors.date} required>
           <input
+            id="tour-date"
             type="date"
             min={minDate}
             value={fields.date}
             onChange={(e) => set("date", e.target.value)}
+            aria-required="true"
+            aria-invalid={!!errors.date || undefined}
+            aria-describedby={errors.date ? "tour-date-err" : undefined}
+            disabled={loading}
             className={`wda-input${errors.date ? " invalid" : ""}`}
           />
         </Field>
-        <Field label="Preferred Tour Time" error={errors.time} required>
+        <Field htmlFor="tour-time" label="Preferred Tour Time" error={errors.time} required>
           <select
+            id="tour-time"
             value={fields.time}
             onChange={(e) => set("time", e.target.value)}
+            aria-required="true"
+            aria-invalid={!!errors.time || undefined}
+            aria-describedby={errors.time ? "tour-time-err" : undefined}
+            disabled={loading}
             className={`wda-input${errors.time ? " invalid" : ""}`}
           >
             <option value="">Select a time slot…</option>
@@ -225,24 +274,31 @@ export default function BookATourForm() {
       </div>
 
       {/* Attendees */}
-      <Field label="Number of Attendees" error={errors.attendees} required>
+      <Field htmlFor="tour-attendees" label="Number of Attendees" error={errors.attendees} required>
         <input
+          id="tour-attendees"
           type="number"
           min={1}
           max={10}
           value={fields.attendees}
           onChange={(e) => set("attendees", e.target.value)}
+          aria-required="true"
+          aria-invalid={!!errors.attendees || undefined}
+          aria-describedby={errors.attendees ? "tour-attendees-err" : undefined}
+          disabled={loading}
           className={`wda-input${errors.attendees ? " invalid" : ""} sm:max-w-[200px]`}
         />
       </Field>
 
       {/* Questions */}
-      <Field label="Questions or Special Requests" hint="Optional">
+      <Field htmlFor="tour-questions" label="Questions or Special Requests" hint="Optional">
         <textarea
+          id="tour-questions"
           placeholder="Anything you'd like us to know before your visit…"
           rows={4}
           value={fields.questions}
           onChange={(e) => set("questions", e.target.value)}
+          disabled={loading}
           className="wda-input resize-none"
         />
       </Field>
@@ -251,10 +307,11 @@ export default function BookATourForm() {
       <div className="pt-2">
         <button
           type="submit"
-          disabled={status === "loading"}
+          disabled={loading}
+          aria-busy={loading}
           className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-colors duration-200 bg-[#E67E22] hover:bg-[#CF6D17] disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2.5"
         >
-          {status === "loading" ? (
+          {loading ? (
             <>
               <span
                 className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white shrink-0"

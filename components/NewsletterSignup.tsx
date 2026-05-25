@@ -117,6 +117,9 @@ export default function NewsletterSignup() {
                     onFocus={() => setInputFocused(true)}
                     onBlur={() => setInputFocused(false)}
                     disabled={status === "loading"}
+                    aria-required="true"
+                    aria-invalid={!!fieldError || undefined}
+                    aria-describedby={fieldError ? "newsletter-email-err" : undefined}
                     className="w-full rounded-lg px-4 py-3 text-sm text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: inputFocused
@@ -160,6 +163,7 @@ export default function NewsletterSignup() {
               {/* Inline field error */}
               {fieldError && (
                 <p
+                  id="newsletter-email-err"
                   className="mt-2 text-xs text-left"
                   style={{ color: "rgba(255,160,160,0.9)" }}
                   role="alert"

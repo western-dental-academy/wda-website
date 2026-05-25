@@ -102,8 +102,11 @@ export default function FaqAccordion({ items }: Props) {
                   >
                     {/* Question button */}
                     <button
+                      id={`faq-question-${item._id}`}
+                      type="button"
                       onClick={() => toggle(item._id)}
                       aria-expanded={isOpen}
+                      aria-controls={`faq-answer-${item._id}`}
                       className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
                       style={{ backgroundColor: "transparent" }}
                     >
@@ -147,6 +150,9 @@ export default function FaqAccordion({ items }: Props) {
 
                     {/* Answer — CSS grid expand trick */}
                     <div
+                      id={`faq-answer-${item._id}`}
+                      role="region"
+                      aria-labelledby={`faq-question-${item._id}`}
                       style={{
                         display: "grid",
                         gridTemplateRows: isOpen ? "1fr" : "0fr",

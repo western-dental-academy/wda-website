@@ -190,6 +190,7 @@ export default function ContactForm() {
               value={data.name}
               onChange={field("name")}
               required
+              aria-required="true"
               disabled={loading}
               autoComplete="name"
             />
@@ -204,6 +205,7 @@ export default function ContactForm() {
               value={data.email}
               onChange={field("email")}
               required
+              aria-required="true"
               disabled={loading}
               autoComplete="email"
             />
@@ -286,6 +288,7 @@ export default function ContactForm() {
             value={data.message}
             onChange={field("message")}
             required
+            aria-required="true"
             disabled={loading}
           />
         </div>

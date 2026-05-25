@@ -5,6 +5,19 @@
   --font-body: var(--font-open-sans), sans-serif;
 }
 
+/* ── Keyboard focus ring ──────────────────────────────────────────────────────
+   Applied to every interactive element when reached via keyboard.
+   wda-input overrides this with its own box-shadow indicator below. */
+*:focus-visible {
+  outline: 2px solid #4a9fd4;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wda-input:focus-visible {
+  outline: none; /* box-shadow used instead — see .wda-input:focus below */
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

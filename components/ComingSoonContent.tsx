@@ -113,27 +113,26 @@ export default function ComingSoonContent() {
       </div>
 
       {/* Main content */}
-      <div className="relative z-10 w-full max-w-lg mx-auto px-6 text-center py-16">
+      <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center py-16">
 
-        {/* Logo / video */}
+        {/* Logo / video — full-width centerpiece */}
         <motion.div
-          className="relative mx-auto mb-10 flex items-center justify-center"
-          style={{ width: 300, height: 150 }}
+          className="relative mx-auto mb-8 w-full"
+          style={{ maxWidth: 580 }}
           initial={{ opacity: 0, scale: 0.88 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
           {/* Pulsing glow behind logo */}
           <motion.span
-            className="absolute block rounded-full pointer-events-none"
+            className="absolute inset-0 block pointer-events-none"
             style={{
-              width: 260,
-              height: 130,
               background:
-                "radial-gradient(ellipse, rgba(74,159,212,0.28) 0%, transparent 68%)",
-              filter: "blur(22px)",
+                "radial-gradient(ellipse, rgba(74,159,212,0.32) 0%, transparent 65%)",
+              filter: "blur(32px)",
+              transform: "scaleY(0.65)",
             }}
-            animate={{ scale: [1, 1.18, 1], opacity: [0.55, 1, 0.55] }}
+            animate={{ scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
             aria-hidden
           />
@@ -142,10 +141,10 @@ export default function ComingSoonContent() {
             <Image
               src="/wda-logo-inverted.svg"
               alt="Western Dental Academy"
-              width={240}
-              height={96}
+              width={580}
+              height={232}
               priority
-              className="relative z-10"
+              className="relative z-10 w-full h-auto"
             />
           ) : (
             <video
@@ -154,7 +153,7 @@ export default function ComingSoonContent() {
               muted
               playsInline
               onError={() => setVideoError(true)}
-              className="relative z-10 w-full h-full object-contain"
+              className="relative z-10 w-full h-auto"
               aria-label="Western Dental Academy logo"
             >
               <source

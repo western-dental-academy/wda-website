@@ -606,8 +606,8 @@ export default function Home() {
           }}
         />
 
-        {/* Floating shapes */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        {/* Floating shapes — hidden on mobile to prevent overlap with centered text */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden hidden sm:block z-0">
           <ElegantShape
             delay={0.2}
             width={480}
@@ -643,7 +643,7 @@ export default function Home() {
         </div>
 
 
-        <div className="relative max-w-3xl mx-auto px-6 text-center">
+        <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">
           <AnimateIn>
             <p
               className="text-xs font-bold tracking-[0.2em] uppercase mb-5"

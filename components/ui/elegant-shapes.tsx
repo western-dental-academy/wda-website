@@ -28,7 +28,7 @@ export function ElegantShape({
         ease: [0.23, 0.86, 0.39, 0.96],
         opacity: { duration: 1.2 },
       }}
-      className={cn("absolute", className)}
+      className={cn("absolute pointer-events-none", className)}
     >
       <motion.div
         animate={{ y: [0, 15, 0] }}
@@ -45,7 +45,8 @@ export function ElegantShape({
             "absolute inset-0 rounded-full",
             "bg-gradient-to-r to-transparent",
             gradient,
-            "backdrop-blur-[2px] border border-white/[0.08]",
+            // backdrop-blur removed — it blurs content behind the pill on mobile
+            "border border-white/[0.08]",
             "shadow-[0_8px_32px_0_rgba(255,255,255,0.04)]",
             "after:absolute after:inset-0 after:rounded-full",
             "after:bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.06),transparent_70%)]"

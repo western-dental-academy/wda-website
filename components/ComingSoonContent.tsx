@@ -147,33 +147,28 @@ export default function ComingSoonContent() {
               className="relative z-10 w-full h-auto"
             />
           ) : (
-            /* Isolation layer prevents Framer Motion's GPU-composited ancestor
-               from breaking the screen blend context on mobile browsers. */
-            <div
-              className="relative z-10 w-full"
-              style={{ background: "transparent", isolation: "isolate" }}
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              onError={() => setVideoError(true)}
+              className="relative z-10 w-full h-auto block"
+              style={
+                {
+                  mixBlendMode: "screen",
+                  WebkitMixBlendMode: "screen",
+                  objectFit: "contain",
+                  backgroundColor: "transparent",
+                } as React.CSSProperties
+              }
+              aria-label="Western Dental Academy logo"
             >
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                onError={() => setVideoError(true)}
-                className="w-full h-auto block"
-                style={
-                  {
-                    mixBlendMode: "screen",
-                    WebkitMixBlendMode: "screen",
-                  } as React.CSSProperties
-                }
-                aria-label="Western Dental Academy logo"
-              >
-                <source
-                  src="/assets/WDA%20Logo%20Hyper%20Realistic.webm"
-                  type="video/webm"
-                />
-              </video>
-            </div>
+              <source
+                src="/assets/WDA%20Logo%20Hyper%20Realistic.webm"
+                type="video/webm"
+              />
+            </video>
           )}
         </motion.div>
 

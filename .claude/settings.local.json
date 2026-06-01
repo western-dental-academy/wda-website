@@ -7,7 +7,9 @@
       "Bash(npm install *)",
       "Bash(node -e \"const icons = require\\('lucide-react'\\); const want = ['Facebook','Instagram','Linkedin','Linkedin2','Twitter','X']; want.forEach\\(n => console.log\\(n+':', n in icons ? 'YES' : 'no'\\)\\)\")",
       "Bash(dir \"c:\\\\Users\\\\brost\\\\Desktop\\\\Aiden\\\\WDA\\\\WDA Website\\\\wda-website\\\\public\\\\assets\")",
-      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('framer-motion:', p.dependencies['framer-motion'] || p.devDependencies?.['framer-motion'] || 'NOT INSTALLED'\\)\")"
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('framer-motion:', p.dependencies['framer-motion'] || p.devDependencies?.['framer-motion'] || 'NOT INSTALLED'\\)\")",
+      "Bash(npx next *)",
+      "Bash(Remove-Item \"c:\\\\Users\\\\brost\\\\Desktop\\\\Aiden\\\\WDA\\\\WDA Website\\\\wda-website\\\\middleware.ts\")"
     ]
   }
 }

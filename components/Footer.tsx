@@ -61,7 +61,7 @@ const contactItems = [
   {
     icon: MapPin,
     label: "Address",
-    value: "Edmonton, Alberta, Canada",
+    value: "150 Chippewa Road, Suite 258, Sherwood Park, AB",
     href: undefined,
   },
   {

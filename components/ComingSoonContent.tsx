@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
+import { FloatingPaths } from "@/components/ui/background-paths";
 
 interface Particle {
   id: number;
@@ -16,7 +17,6 @@ interface Particle {
 
 export default function ComingSoonContent() {
   const [particles, setParticles] = useState<Particle[]>([]);
-  const [videoError, setVideoError] = useState(false);
   const [email, setEmail] = useState("");
   const [emailStatus, setEmailStatus] = useState<"idle" | "loading" | "success">("idle");
   const [fieldError, setFieldError] = useState("");
@@ -57,6 +57,10 @@ export default function ComingSoonContent() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{ backgroundColor: "#1E3560" }}
     >
+      {/* Animated line paths — same as homepage hero */}
+      <FloatingPaths position={1} />
+      <FloatingPaths position={-1} />
+
       {/* Dot-grid texture */}
       <div
         className="pointer-events-none absolute inset-0"
@@ -115,10 +119,10 @@ export default function ComingSoonContent() {
       {/* Main content */}
       <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center py-16">
 
-        {/* Logo / video — full-width centerpiece */}
+        {/* Logo — centerpiece with float animation */}
         <motion.div
-          className="relative mx-auto mb-8 w-full"
-          style={{ maxWidth: 580 }}
+          className="relative mx-auto mb-10 w-full"
+          style={{ maxWidth: 360 }}
           initial={{ opacity: 0, scale: 0.88 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
@@ -128,48 +132,24 @@ export default function ComingSoonContent() {
             className="absolute inset-0 block pointer-events-none"
             style={{
               background:
-                "radial-gradient(ellipse, rgba(74,159,212,0.32) 0%, transparent 65%)",
-              filter: "blur(32px)",
-              transform: "scaleY(0.65)",
+                "radial-gradient(ellipse, rgba(74,159,212,0.3) 0%, transparent 65%)",
+              filter: "blur(28px)",
+              transform: "scaleY(0.6)",
             }}
-            animate={{ scale: [1, 1.12, 1], opacity: [0.6, 1, 0.6] }}
+            animate={{ scale: [1, 1.12, 1], opacity: [0.5, 0.9, 0.5] }}
             transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
             aria-hidden
           />
 
-          {videoError ? (
-            <Image
-              src="/wda-logo-inverted.svg"
-              alt="Western Dental Academy"
-              width={580}
-              height={232}
-              priority
-              className="relative z-10 w-full h-auto"
-            />
-          ) : (
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              onError={() => setVideoError(true)}
-              className="relative z-10 w-full h-auto block"
-              style={
-                {
-                  mixBlendMode: "screen",
-                  WebkitMixBlendMode: "screen",
-                  objectFit: "contain",
-                  backgroundColor: "transparent",
-                } as React.CSSProperties
-              }
-              aria-label="Western Dental Academy logo"
-            >
-              <source
-                src="/assets/WDA%20Logo%20Hyper%20Realistic.webm"
-                type="video/webm"
-              />
-            </video>
-          )}
+          <Image
+            src="/wda-logo-inverted.svg"
+            alt="Western Dental Academy"
+            width={360}
+            height={144}
+            priority
+            className="relative z-10 w-full h-auto"
+            style={{ animation: "logoFloat 4s ease-in-out infinite" }}
+          />
         </motion.div>
 
         {/* Eyebrow */}
@@ -450,8 +430,12 @@ export default function ComingSoonContent() {
 
       </div>
 
-      {/* Input placeholder colour (dark background variant) */}
+      {/* Logo float animation + input placeholder colour */}
       <style>{`
+        @keyframes logoFloat {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-12px); }
+        }
         #cs-email::placeholder { color: rgba(255,255,255,0.32); }
       `}</style>
     </div>

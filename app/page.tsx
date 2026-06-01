@@ -4,6 +4,7 @@ import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import { ElegantShape } from "@/components/ui/elegant-shapes";
 import NewsletterSignup from "@/components/NewsletterSignup";
+import HeroHeadlineSection from "@/components/HeroHeadlineSection";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -150,77 +151,7 @@ export default function Home() {
 
         <div className="relative w-full max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 items-center">
           {/* ── Left: copy ── */}
-          <div className="max-w-2xl">
-            {/* Eyebrow */}
-            <div style={heroStyle(0)}>
-              <div
-                className="inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 mb-8"
-                style={{
-                  backgroundColor: "rgba(255,255,255,0.08)",
-                  border: "1px solid rgba(255,255,255,0.13)",
-                }}
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ backgroundColor: "#4A9FD4" }}
-                />
-                <span
-                  className="text-xs font-semibold tracking-[0.18em] uppercase"
-                  style={{ color: "rgba(255,255,255,0.7)" }}
-                >
-                  Edmonton&apos;s Leading Dental Academy
-                </span>
-              </div>
-            </div>
-
-            {/* H1 */}
-            <div style={heroStyle(0.1)}>
-              <h1
-                className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.15] mb-6"
-                style={{
-                  color: "#ffffff",
-                  fontFamily: "var(--font-montserrat), sans-serif",
-                }}
-              >
-                Launch Your
-                <br />
-                <span style={{ color: "#4A9FD4" }}>Dental Career</span>
-                <br />
-                with Confidence.
-              </h1>
-            </div>
-
-            {/* Subheading */}
-            <div style={heroStyle(0.22)}>
-              <p
-                className="text-lg leading-relaxed mb-10 max-w-xl"
-                style={{ color: "rgba(255,255,255,0.68)" }}
-              >
-                Western Dental Academy equips Edmonton&apos;s next generation of
-                dental professionals with hands-on clinical training, expert
-                instruction, and the career-ready skills employers demand.
-              </p>
-            </div>
-
-            {/* CTAs */}
-            <div style={heroStyle(0.34)}>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/programs"
-                  className="rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
-                  style={{ backgroundColor: "#4A9FD4" }}
-                >
-                  Explore Programs
-                </Link>
-                <Link
-                  href="/about"
-                  className="rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 border border-white/25 hover:border-white/50 hover:bg-white/10"
-                >
-                  About WDA
-                </Link>
-              </div>
-            </div>
-          </div>
+          <HeroHeadlineSection />
 
           {/* ── Right: stats card ── */}
           <div style={heroStyle(0.48)} className="w-full lg:w-auto">
@@ -334,11 +265,18 @@ export default function Home() {
             {programs.map((p, i) => (
               <AnimateIn key={p.num} delay={i * 110} className="flex flex-col">
                 <div
-                  className="flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                  className="group relative flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                   style={{ backgroundColor: "#F4F7F9" }}
                 >
                   {/* Blue top accent */}
                   <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
+
+                  {/* Amber left accent — appears on hover */}
+                  <div
+                    className="absolute left-0 top-0 bottom-0 w-[3px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    style={{ backgroundColor: "#E67E22" }}
+                    aria-hidden
+                  />
 
                   <div className="flex flex-col flex-1 p-8">
                     {/* Number + icon row */}

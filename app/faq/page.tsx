@@ -4,6 +4,7 @@ import { sanityFetch, SanityLive } from "@/sanity/lib/live";
 import { FAQ_ITEMS_QUERY } from "@/sanity/lib/queries";
 import type { FaqItem } from "@/types/faqItem";
 import FaqAccordion from "@/components/FaqAccordion";
+import AnimateIn from "@/components/AnimateIn";
 import { ElegantShape } from "@/components/ui/elegant-shapes";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
@@ -116,7 +117,7 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     order: 1,
     question: "Where is Western Dental Academy located?",
     answer:
-      "We are located in Edmonton, Alberta. Contact us for our full address and directions.",
+      "We are located at 150 Chippewa Road, Suite 258, Sherwood Park, AB (within the Edmonton metropolitan area). Book a campus tour through our contact page.",
   },
   {
     _id: "p-gen-2",
@@ -281,7 +282,9 @@ export default async function FaqPage() {
           <ElegantShape delay={0.3} width={150} height={44} rotate={-18} gradient="from-[#1E3560]/[0.04]" className="left-[20%] bottom-[8%]" />
         </div>
         <div className="relative max-w-3xl mx-auto px-6">
-          <FaqAccordion items={items ?? []} />
+          <AnimateIn>
+            <FaqAccordion items={items ?? []} />
+          </AnimateIn>
         </div>
       </section>
 
@@ -294,25 +297,27 @@ export default async function FaqPage() {
           <ElegantShape delay={0.5} width={175} height={50} rotate={21} gradient="from-[#E67E22]/[0.08]" className="right-[20%] top-[5%]" />
         </div>
         <div className="relative max-w-6xl mx-auto px-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            <div>
-              <h2
-                className="text-xl font-bold text-white mb-1"
-                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+          <AnimateIn>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+              <div>
+                <h2
+                  className="text-xl font-bold text-white mb-1"
+                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                >
+                  Still have questions?
+                </h2>
+                <p className="text-sm text-white/60">
+                  Our admissions team is happy to walk you through anything.
+                </p>
+              </div>
+              <Link
+                href="/contact"
+                className="shrink-0 inline-block rounded-lg bg-[#E67E22] px-7 py-3.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17]"
               >
-                Still have questions?
-              </h2>
-              <p className="text-sm text-white/60">
-                Our admissions team is happy to walk you through anything.
-              </p>
+                Get in Touch
+              </Link>
             </div>
-            <Link
-              href="/contact"
-              className="shrink-0 inline-block rounded-lg bg-[#E67E22] px-7 py-3.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17]"
-            >
-              Get in Touch
-            </Link>
-          </div>
+          </AnimateIn>
         </div>
       </section>
     </>

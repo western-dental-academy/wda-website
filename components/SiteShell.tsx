@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -27,9 +28,19 @@ export default function SiteShell({
         Skip to main content
       </a>
       <Navbar />
-      <main id="main-content" className="flex-1 pt-20">
-        {children}
-      </main>
+      <AnimatePresence mode="wait">
+        <motion.main
+          key={pathname}
+          id="main-content"
+          className="flex-1 pt-20"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.22, ease: "easeInOut" }}
+        >
+          {children}
+        </motion.main>
+      </AnimatePresence>
       <Footer />
     </>
   );

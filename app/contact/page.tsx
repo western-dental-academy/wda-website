@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const CONTACT_DETAILS = [
   {
     label: "Address",
-    value: "[Address TBD], Edmonton, Alberta",
+    value: "150 Chippewa Road, Suite 258, Sherwood Park, AB",
     href: undefined,
     icon: (
       <svg
@@ -358,83 +358,38 @@ export default function ContactPage() {
                 </div>
               </AnimateIn>
 
-              {/* Google Maps placeholder */}
+              {/* Google Maps embed */}
               <AnimateIn delay={240}>
-                <div className="rounded-2xl overflow-hidden">
-                  {/*
-                    ── Replace this entire div with a Google Maps <iframe> ──
-                    Example:
-                    <iframe
-                      src="https://www.google.com/maps/embed?pb=YOUR_EMBED_ID"
-                      width="100%"
-                      height="260"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      title="Western Dental Academy location"
-                    />
-                  */}
-                  <div
-                    className="relative w-full flex items-center justify-center"
-                    style={{
-                      height: "260px",
-                      backgroundColor: "#1E3560",
-                      backgroundImage: [
-                        "linear-gradient(rgba(74,159,212,0.07) 1px, transparent 1px)",
-                        "linear-gradient(90deg, rgba(74,159,212,0.07) 1px, transparent 1px)",
-                      ].join(", "),
-                      backgroundSize: "32px 32px",
-                    }}
-                    role="img"
-                    aria-label="Map placeholder — Google Maps embed will appear here"
-                  >
-                    {/* Pin icon */}
-                    <div className="flex flex-col items-center gap-3 text-center px-6">
-                      <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center"
-                        style={{
-                          backgroundColor: "rgba(74,159,212,0.18)",
-                          border: "1.5px solid rgba(74,159,212,0.35)",
-                        }}
-                      >
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="#4A9FD4"
-                          strokeWidth={1.75}
-                          aria-hidden
-                          className="w-5 h-5"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 0 1 15 0z"
-                          />
-                        </svg>
-                      </div>
-                      <div>
-                        <p
-                          className="text-sm font-bold"
-                          style={{ color: "rgba(255,255,255,0.75)" }}
-                        >
-                          Edmonton, Alberta
-                        </p>
-                        <p
-                          className="text-xs mt-1"
-                          style={{ color: "rgba(255,255,255,0.3)" }}
-                        >
-                          Interactive map coming soon
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                <div
+                  className="rounded-2xl overflow-hidden"
+                  style={{
+                    boxShadow: "0 4px 24px rgba(30,53,96,0.10)",
+                    border: "1px solid rgba(30,53,96,0.08)",
+                  }}
+                >
+                  <iframe
+                    src="https://maps.google.com/maps?q=150+Chippewa+Road%2C+Suite+258%2C+Sherwood+Park%2C+AB%2C+Canada&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                    width="100%"
+                    height="300"
+                    style={{ border: "none", display: "block" }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB"
+                  />
                 </div>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=150+Chippewa+Road+Suite+258+Sherwood+Park+AB+Canada"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold transition-colors duration-200"
+                  style={{ color: "#4A9FD4" }}
+                >
+                  Open in Google Maps
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-3 h-3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 8h10M9 4l4 4-4 4" />
+                  </svg>
+                </a>
               </AnimateIn>
             </div>
           </div>

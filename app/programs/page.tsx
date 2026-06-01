@@ -752,7 +752,7 @@ export default async function ProgramsPage() {
                     },
                     {
                       label: "Location",
-                      value: "Edmonton, Alberta — in-person",
+                      value: "Sherwood Park, AB — in-person",
                     },
                   ].map(({ label, value }) => (
                     <li

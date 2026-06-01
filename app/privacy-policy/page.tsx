@@ -444,7 +444,8 @@ export default function PrivacyPolicyPage() {
                   <span className="block font-bold text-[#1E3560]" style={HEADING_FONT}>
                     Western Dental Academy
                   </span>
-                  <span className="block">Edmonton, Alberta, Canada</span>
+                  <span className="block">150 Chippewa Road, Suite 258</span>
+                  <span className="block">Sherwood Park, AB, Canada</span>
                   <span className="block">
                     <a
                       href="mailto:info@westerndentalacademy.com"

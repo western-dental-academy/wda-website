@@ -6,7 +6,8 @@
       "Bash(node -e \"const p = require\\('./package.json'\\); const deps = {...p.dependencies,...p.devDependencies}; ['framer-motion','@radix-ui/react-slot','class-variance-authority'].forEach\\(d => console.log\\(d+':', deps[d] || 'MISSING'\\)\\)\")",
       "Bash(npm install *)",
       "Bash(node -e \"const icons = require\\('lucide-react'\\); const want = ['Facebook','Instagram','Linkedin','Linkedin2','Twitter','X']; want.forEach\\(n => console.log\\(n+':', n in icons ? 'YES' : 'no'\\)\\)\")",
-      "Bash(dir \"c:\\\\Users\\\\brost\\\\Desktop\\\\Aiden\\\\WDA\\\\WDA Website\\\\wda-website\\\\public\\\\assets\")"
+      "Bash(dir \"c:\\\\Users\\\\brost\\\\Desktop\\\\Aiden\\\\WDA\\\\WDA Website\\\\wda-website\\\\public\\\\assets\")",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('framer-motion:', p.dependencies['framer-motion'] || p.devDependencies?.['framer-motion'] || 'NOT INSTALLED'\\)\")"
     ]
   }
 }

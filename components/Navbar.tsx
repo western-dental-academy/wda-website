@@ -63,11 +63,11 @@ export default function Navbar() {
           className="flex items-center gap-3 shrink-0"
         >
           <Image
-            src="/wda-logo-notext.svg"
+            src="/favicon.svg"
             alt=""
-            width={68}
-            height={68}
-            className="h-17 w-auto object-contain"
+            width={52}
+            height={52}
+            className="h-[52px] w-[52px] object-contain"
             priority
           />
           <div className="w-px h-12 bg-[#1E3560]/20" aria-hidden />

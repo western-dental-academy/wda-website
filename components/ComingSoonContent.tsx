@@ -362,6 +362,29 @@ export default function ComingSoonContent() {
           </a>
         </motion.div>
 
+        {/* Address */}
+        <motion.div
+          className="flex items-center justify-center gap-2 text-sm mb-8"
+          style={{ color: "rgba(255,255,255,0.55)" }}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 1.05 }}
+        >
+          <svg
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-4 h-4 shrink-0 self-start mt-0.5"
+            aria-hidden
+          >
+            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+          </svg>
+          <span className="text-center leading-relaxed">
+            150 Chippewa Road, Suite 258
+            <br />
+            Sherwood Park, AB
+          </span>
+        </motion.div>
+
         {/* Social icons */}
         <motion.div
           className="flex items-center justify-center gap-3"

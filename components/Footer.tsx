@@ -101,26 +101,14 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
 
             {/* Logo lockup */}
-            <Link href="/" className="flex items-center gap-3 self-start">
+            <Link href="/" className="self-start">
               <Image
-                src="/wda-logo-inverted-notext.svg"
-                alt=""
-                width={56}
-                height={56}
+                src="/WesternDentalAcademyLogo-Inverted.png"
+                alt="Western Dental Academy Logo"
+                width={1000}
+                height={1000}
                 className="h-14 w-auto object-contain"
               />
-              <div className="w-px h-10 bg-white/20" aria-hidden />
-              <div
-                className="flex flex-col leading-none gap-1.5"
-                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-              >
-                <span className="text-[1rem] font-semibold tracking-[0.08em] uppercase text-white/80">
-                  Western Dental
-                </span>
-                <span className="text-[1rem] font-bold tracking-[0.08em] uppercase text-[#4A9FD4]">
-                  Academy
-                </span>
-              </div>
             </Link>
 
             {/* Tagline */}

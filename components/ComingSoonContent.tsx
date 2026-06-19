@@ -142,10 +142,10 @@ export default function ComingSoonContent() {
           />
 
           <Image
-            src="/wda-logo-inverted.svg"
-            alt="Western Dental Academy"
-            width={360}
-            height={144}
+            src="/WesternDentalAcademyLogo-Inverted.png"
+            alt="Western Dental Academy Logo"
+            width={1000}
+            height={1000}
             priority
             className="relative z-10 w-full h-auto"
             style={{ animation: "logoFloat 4s ease-in-out infinite" }}

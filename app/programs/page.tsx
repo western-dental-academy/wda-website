@@ -25,64 +25,18 @@ export const metadata: Metadata = {
 const PLACEHOLDER_PROGRAMS: Program[] = [
   {
     _id: "placeholder-1",
-    title: "Dental Assisting Certificate",
-    slug: { current: "dental-assisting-certificate" },
+    title: "Dental Assisting Certificate – Distance Delivery Program",
+    slug: { current: "dental-assisting-certificate-distance-delivery" },
     description:
-      "Our flagship program provides comprehensive training in chairside dental assisting. Students master clinical procedures, dental radiography, infection control protocols, and patient communication — graduating fully prepared for immediate employment in dental practices across Alberta.",
-    duration: "12 Months",
+      "Designed for learners who need flexibility without compromising quality.",
+    duration: "Contact for Details",
     cost: "Contact for Pricing",
     highlights: [
-      "Chairside assisting and four-handed dentistry",
-      "Dental radiography and digital imaging",
-      "Infection prevention and control (IPAC)",
-      "Dental materials and instrumentation",
-      "Patient communication and care",
-      "Clinical practicum with real patients",
-    ],
-  },
-  {
-    _id: "placeholder-2",
-    title: "Dental Radiography Certification",
-    slug: { current: "dental-radiography-certification" },
-    description:
-      "A focused course in dental radiography covering intraoral and extraoral imaging techniques, radiation safety protocols, digital imaging software, and proper exposure settings. Ideal for dental assistants looking to expand their scope of practice.",
-    duration: "8 Weeks",
-    cost: "Contact for Pricing",
-    highlights: [
-      "Intraoral and extraoral radiography",
-      "Radiation safety and protective protocols",
-      "Digital imaging software",
-      "Exposure settings and quality assurance",
-    ],
-  },
-  {
-    _id: "placeholder-3",
-    title: "Infection Control & IPAC",
-    slug: { current: "infection-control-ipac" },
-    description:
-      "An intensive short course on infection prevention and control in dental environments. Covers current Alberta Health Services guidelines, sterilization procedures, personal protective equipment, and best practices for maintaining a safe clinical environment.",
-    duration: "4 Weeks",
-    cost: "Contact for Pricing",
-    highlights: [
-      "Alberta Health Services guidelines",
-      "Sterilization and disinfection procedures",
-      "PPE selection and use",
-      "Instrument processing and handling",
-    ],
-  },
-  {
-    _id: "placeholder-4",
-    title: "Dental Office Administration",
-    slug: { current: "dental-office-administration" },
-    description:
-      "Designed for those pursuing a front-desk or administrative role in a dental practice. Covers appointment scheduling, dental billing and insurance claims, patient records management, and dental practice management software.",
-    duration: "6 Months",
-    cost: "Contact for Pricing",
-    highlights: [
-      "Appointment scheduling and recall systems",
-      "Dental billing codes and insurance claims",
-      "Patient records and privacy compliance",
-      "Practice management software",
+      "Complete theory courses online",
+      "Work in a dental clinic while you study",
+      "Attend scheduled hands-on clinical training at Western Dental Academy",
+      "Learn from highly qualified instructors with real-world experience",
+      "Benefit from small class sizes and tailored support",
     ],
   },
 ];
@@ -159,13 +113,28 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
         <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
 
         <div className="flex flex-col flex-1 p-8">
-          {/* Number badge */}
-          <p
-            className="text-xs font-bold tracking-[0.18em] uppercase mb-5"
-            style={{ color: "#4A9FD4" }}
-          >
-            {num}
-          </p>
+          {/* Number + status badge row */}
+          <div className="flex items-center justify-between mb-5">
+            <p
+              className="text-xs font-bold tracking-[0.18em] uppercase"
+              style={{ color: "#4A9FD4" }}
+            >
+              {num}
+            </p>
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+              style={{
+                backgroundColor: "rgba(230,126,34,0.12)",
+                color: "#E67E22",
+              }}
+            >
+              <span
+                className="w-1.5 h-1.5 rounded-full shrink-0"
+                style={{ backgroundColor: "#E67E22" }}
+              />
+              Launching Soon
+            </span>
+          </div>
 
           {/* Title */}
           <h2
@@ -180,7 +149,7 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
 
           {/* Description */}
           <p
-            className="text-sm leading-relaxed flex-1 mb-7"
+            className="text-sm leading-relaxed mb-7"
             style={{ color: "#2B303A" }}
           >
             {program.description}
@@ -188,19 +157,29 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
 
           {/* Highlights (if present) */}
           {program.highlights && program.highlights.length > 0 && (
-            <ul className="flex flex-col gap-2 mb-7">
-              {program.highlights.slice(0, 4).map((h) => (
+            <ul className="flex flex-col gap-2.5 mb-6">
+              {program.highlights.map((h) => (
                 <li key={h} className="flex items-start gap-2.5">
                   <span style={{ color: "#4A9FD4" }}>
                     <CheckIcon />
                   </span>
-                  <span className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
                     {h}
                   </span>
                 </li>
               ))}
             </ul>
           )}
+
+          {/* Closing statement */}
+          <p
+            className="text-sm font-semibold leading-relaxed italic mb-7"
+            style={{ color: "#1E3560" }}
+          >
+            This program prepares graduates to enter the workforce with
+            confidence, competence, and strong clinical skills — no matter where
+            they live.
+          </p>
 
           {/* Divider */}
           <div
@@ -228,11 +207,11 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
 
           {/* CTA */}
           <Link
-            href={`/programs/${program.slug.current}`}
+            href="/contact"
             className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
-            style={{ backgroundColor: "#4A9FD4" }}
+            style={{ backgroundColor: "#E67E22" }}
           >
-            View Program Details
+            Enquire Now
             <span className="transition-transform duration-200 group-hover/link:translate-x-1">
               →
             </span>
@@ -344,9 +323,9 @@ export default async function ProgramsPage() {
             {/* Stats aside */}
             <div className="flex flex-row lg:flex-col gap-6 lg:gap-5 lg:items-end">
               {[
-                { val: String(programs.length), label: "Programs Available" },
-                { val: "100%", label: "Hands-On Training" },
-                { val: "CDAA", label: "Curriculum Aligned" },
+                { val: "Online", label: "Theory Delivery" },
+                { val: "100%", label: "Hands-On Clinical Training" },
+                { val: "Flexible", label: "Learn on Your Schedule" },
               ].map(({ val, label }) => (
                 <div key={label} className="flex flex-col lg:items-end">
                   <span
@@ -389,7 +368,7 @@ export default async function ProgramsPage() {
               className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
               style={{ color: "#4A9FD4" }}
             >
-              All Programs
+              Current Programs
             </p>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <h2
@@ -399,18 +378,17 @@ export default async function ProgramsPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                {programs.length} Program
-                {programs.length !== 1 ? "s" : ""} Available
+                Now Enrolling
               </h2>
               <p className="text-sm max-w-sm" style={{ color: "#2B303A" }}>
-                All programs are delivered in-person in Edmonton, Alberta.
-                Financing options available — contact us for details.
+                Flexible distance delivery — learn online and attend hands-on
+                clinical training at our Sherwood Park facility.
               </p>
             </div>
           </AnimateIn>
 
           {programs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-3xl">
               {programs.map((program, i) => (
                 <ProgramCard key={program._id} program={program} index={i} />
               ))}
@@ -444,12 +422,11 @@ export default async function ProgramsPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          PROGRAM COMPARISON TABLE
+          PROGRAM AT A GLANCE
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
         <div className="max-w-6xl mx-auto px-6">
 
-          {/* Section intro */}
           <AnimateIn className="mb-12">
             <p
               className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
@@ -457,212 +434,90 @@ export default async function ProgramsPage() {
             >
               At a Glance
             </p>
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-              <h2
-                className="text-3xl font-bold leading-tight"
-                style={{
-                  color: "#1E3560",
-                  fontFamily: "var(--font-montserrat), sans-serif",
-                }}
-              >
-                Compare Programs
-              </h2>
-              <p className="text-sm max-w-sm" style={{ color: "rgba(43,48,58,0.65)" }}>
-                Scroll horizontally on smaller screens to view all columns.
-              </p>
-            </div>
+            <h2
+              className="text-3xl font-bold leading-tight"
+              style={{
+                color: "#1E3560",
+                fontFamily: "var(--font-montserrat), sans-serif",
+              }}
+            >
+              Program Overview
+            </h2>
           </AnimateIn>
 
-          {/* Table */}
           <AnimateIn>
             <div
-              className="rounded-2xl overflow-hidden"
+              className="rounded-2xl overflow-hidden max-w-2xl"
               style={{ boxShadow: "0 4px 32px rgba(30,53,96,0.1), 0 1px 4px rgba(30,53,96,0.06)" }}
             >
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse" style={{ minWidth: "700px" }}>
-
-                  {/* ── Header row ── */}
-                  <thead>
-                    <tr style={{ backgroundColor: "#1E3560" }}>
-                      {/* Empty corner cell */}
-                      <th
-                        className="text-left px-6 py-5 w-44"
-                        style={{ borderRight: "1px solid rgba(255,255,255,0.08)" }}
-                      />
-
-                      {/* Program columns */}
-                      {[
-                        { name: "Dental Assisting Certificate", flagship: true },
-                        { name: "Dental Radiography Certification", flagship: false },
-                        { name: "Infection Control & IPAC", flagship: false },
-                        { name: "Dental Office Administration", flagship: false },
-                      ].map(({ name, flagship }, ci) => (
-                        <th
-                          key={name}
-                          className="px-5 py-5 text-left align-top"
-                          style={{
-                            borderRight: ci < 3 ? "1px solid rgba(255,255,255,0.08)" : "none",
-                            borderTop: flagship ? "3px solid #4A9FD4" : "3px solid transparent",
-                          }}
-                        >
-                          {flagship && (
-                            <span
-                              className="inline-block text-[9px] font-bold uppercase tracking-[0.18em] rounded-full px-2.5 py-0.5 mb-2"
-                              style={{
-                                backgroundColor: "rgba(74,159,212,0.2)",
-                                color: "#4A9FD4",
-                              }}
-                            >
-                              Flagship
-                            </span>
-                          )}
-                          <p
-                            className="text-sm font-bold leading-snug text-white"
-                            style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-                          >
-                            {name}
-                          </p>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-
-                  {/* ── Body rows ── */}
-                  <tbody>
-                    {[
-                      {
-                        label: "Program Duration",
-                        values: ["12 Months", "8 Weeks", "4 Weeks", "6 Months"],
-                      },
-                      {
-                        label: "Total Cost",
-                        values: [
-                          "Contact for Pricing",
-                          "Contact for Pricing",
-                          "Contact for Pricing",
-                          "Contact for Pricing",
-                        ],
-                      },
-                      {
-                        label: "Hands-On Clinic Hours",
-                        values: ["200+ Hours", "40 Hours", "16 Hours", "N/A"],
-                        flagship: ["200+ Hours"],
-                      },
-                      {
-                        label: "Certification Earned",
-                        values: [
-                          "Dental Assisting Certificate",
-                          "Radiography Certificate",
-                          "IPAC Certificate",
-                          "Office Admin Certificate",
-                        ],
-                      },
-                      {
-                        label: "Class Schedule",
-                        values: [
-                          "Full-Time",
-                          "Part-Time Available",
-                          "Part-Time Available",
-                          "Full & Part-Time",
-                        ],
-                      },
-                      {
-                        label: "Start Dates",
-                        values: [
-                          "Rolling Admissions",
-                          "Rolling Admissions",
-                          "Rolling Admissions",
-                          "Rolling Admissions",
-                        ],
-                      },
-                      {
-                        label: "Prerequisites",
-                        values: [
-                          "High School Diploma / GED",
-                          "None Required",
-                          "None Required",
-                          "High School Diploma / GED",
-                        ],
-                      },
-                    ].map((row, ri) => {
-                      const rowBg = ri % 2 === 0 ? "#ffffff" : "#F4F7F9";
-                      return (
-                        <tr key={row.label} style={{ backgroundColor: rowBg }}>
-                          {/* Row label */}
-                          <td
-                            className="px-6 py-4 text-xs font-bold uppercase tracking-[0.12em]"
-                            style={{
-                              color: "#1E3560",
-                              fontFamily: "var(--font-montserrat), sans-serif",
-                              borderRight: "1px solid rgba(30,53,96,0.08)",
-                              backgroundColor: ri % 2 === 0 ? "#F4F7F9" : "#edf1f5",
-                            }}
-                          >
-                            {row.label}
-                          </td>
-
-                          {/* Data cells */}
-                          {row.values.map((val, ci) => (
-                            <td
-                              key={ci}
-                              className="px-5 py-4 text-sm"
-                              style={{
-                                color: ci === 0 ? "#1E3560" : "#2B303A",
-                                borderRight: ci < 3 ? "1px solid rgba(30,53,96,0.06)" : "none",
-                                fontWeight: ci === 0 ? 600 : 400,
-                              }}
-                            >
-                              {val}
-                            </td>
-                          ))}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-
-                  {/* ── Footer row: CTA per column ── */}
-                  <tfoot>
-                    <tr style={{ backgroundColor: "#1E3560" }}>
+              <div
+                className="px-6 py-4"
+                style={{ backgroundColor: "#1E3560", borderTop: "3px solid #4A9FD4" }}
+              >
+                <p
+                  className="text-sm font-bold text-white leading-snug"
+                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                >
+                  Dental Assisting Certificate – Distance Delivery Program
+                </p>
+              </div>
+              <table className="w-full border-collapse">
+                <tbody>
+                  {[
+                    { label: "Delivery Format", value: "Online theory + in-person clinical training" },
+                    { label: "Certification Earned", value: "Dental Assisting Certificate" },
+                    { label: "Class Schedule", value: "Flexible — work while you study" },
+                    { label: "Clinical Training", value: "Scheduled at Western Dental Academy" },
+                    { label: "Class Size", value: "Small — tailored support for every learner" },
+                    { label: "Start Dates", value: "Contact us for upcoming intake dates" },
+                    { label: "Prerequisites", value: "Contact us for requirements" },
+                    { label: "Tuition", value: "Contact for Pricing" },
+                  ].map(({ label, value }, ri) => (
+                    <tr key={label} style={{ backgroundColor: ri % 2 === 0 ? "#ffffff" : "#F4F7F9" }}>
                       <td
-                        className="px-6 py-5 text-xs font-bold uppercase tracking-[0.14em]"
+                        className="px-6 py-4 text-xs font-bold uppercase tracking-[0.12em] w-44"
                         style={{
-                          color: "rgba(255,255,255,0.4)",
-                          borderRight: "1px solid rgba(255,255,255,0.08)",
+                          color: "#1E3560",
                           fontFamily: "var(--font-montserrat), sans-serif",
+                          borderRight: "1px solid rgba(30,53,96,0.08)",
+                          backgroundColor: ri % 2 === 0 ? "#F4F7F9" : "#edf1f5",
                         }}
                       >
-                        Ready to apply?
+                        {label}
                       </td>
-                      {[true, false, false, false].map((flagship, ci) => (
-                        <td
-                          key={ci}
-                          className="px-5 py-5"
-                          style={{
-                            borderRight: ci < 3 ? "1px solid rgba(255,255,255,0.08)" : "none",
-                          }}
-                        >
-                          <Link
-                            href="/apply"
-                            className="inline-block rounded-lg px-4 py-2 text-xs font-bold transition-colors duration-200"
-                            style={
-                              flagship
-                                ? { backgroundColor: "#E67E22", color: "#ffffff" }
-                                : {
-                                    backgroundColor: "rgba(255,255,255,0.08)",
-                                    color: "rgba(255,255,255,0.7)",
-                                  }
-                            }
-                          >
-                            Apply Now →
-                          </Link>
-                        </td>
-                      ))}
+                      <td
+                        className="px-5 py-4 text-sm font-medium"
+                        style={{ color: "#1E3560" }}
+                      >
+                        {value}
+                      </td>
                     </tr>
-                  </tfoot>
-
-                </table>
-              </div>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr style={{ backgroundColor: "#1E3560" }}>
+                    <td
+                      className="px-6 py-5 text-xs font-bold uppercase tracking-[0.14em]"
+                      style={{
+                        color: "rgba(255,255,255,0.4)",
+                        borderRight: "1px solid rgba(255,255,255,0.08)",
+                        fontFamily: "var(--font-montserrat), sans-serif",
+                      }}
+                    >
+                      Interested?
+                    </td>
+                    <td className="px-5 py-5">
+                      <Link
+                        href="/contact"
+                        className="inline-block rounded-lg px-4 py-2 text-xs font-bold transition-colors duration-200 hover:bg-[#CF6D17]"
+                        style={{ backgroundColor: "#E67E22", color: "#ffffff" }}
+                      >
+                        Enquire Now →
+                      </Link>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
             </div>
           </AnimateIn>
 
@@ -752,7 +607,7 @@ export default async function ProgramsPage() {
                     },
                     {
                       label: "Location",
-                      value: "Sherwood Park, AB — in-person",
+                      value: "Online theory + hands-on training in Sherwood Park, AB",
                     },
                   ].map(({ label, value }) => (
                     <li

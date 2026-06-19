@@ -16,6 +16,7 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/assets/") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/wda-logo") ||
+    pathname.startsWith("/WesternDentalAcademy") ||
     pathname.startsWith("/og-image")
   ) {
     return NextResponse.next();

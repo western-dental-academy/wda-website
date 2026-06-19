@@ -60,28 +60,16 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label="Western Dental Academy – Home"
-          className="flex items-center gap-3 shrink-0"
+          className="shrink-0"
         >
           <Image
-            src="/favicon.svg"
-            alt=""
-            width={52}
-            height={52}
-            className="h-[52px] w-[52px] object-contain"
+            src="/WesternDentalAcademyLogo.png"
+            alt="Western Dental Academy Logo"
+            width={1000}
+            height={1000}
+            className="h-14 w-auto object-contain"
             priority
           />
-          <div className="w-px h-12 bg-[#1E3560]/20" aria-hidden />
-          <div
-            className="flex flex-col leading-none gap-2"
-            style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-          >
-            <span className="text-[1rem] font-semibold tracking-[0.1em] uppercase text-[#1E3560]">
-              Western Dental
-            </span>
-            <span className="text-[1rem] font-bold tracking-[0.1em] uppercase text-[#4A9FD4]">
-              Academy
-            </span>
-          </div>
         </Link>
 
         {/* Desktop links */}

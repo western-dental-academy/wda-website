@@ -59,9 +59,9 @@ const PLACEHOLDER_TEAM: TeamMember[] = [
 const VALUES = [
   {
     num: "01",
-    name: "Professionalism",
+    name: "Excellence",
     description:
-      "We hold ourselves and our students to the standards of practicing dental professionals — in conduct, clinical technique, and compassionate patient care.",
+      "In teaching, learning, and clinical practice — we hold ourselves and our students to the highest standards of dental education and professional development.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -81,9 +81,9 @@ const VALUES = [
   },
   {
     num: "02",
-    name: "Modern Innovation",
+    name: "Accessibility",
     description:
-      "We use current technology, updated protocols, and evidence-based curriculum to ensure our graduates are prepared for today's dental landscape — not yesterday's.",
+      "For learners across diverse backgrounds and locations — geography, work schedules, and life circumstances should never be barriers to a rewarding career in dentistry.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -96,16 +96,38 @@ const VALUES = [
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+          d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0z"
         />
       </svg>
     ),
   },
   {
     num: "03",
-    name: "Compassion",
+    name: "Integrity",
     description:
-      "Great dental care requires both technical precision and genuine care for the person in the chair. We train both — because one without the other isn't enough.",
+      "In all educational and professional interactions — we are honest, transparent, and accountable in everything we teach, assess, and communicate.",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.75}
+        aria-hidden
+        className="w-5 h-5"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.97zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.97z"
+        />
+      </svg>
+    ),
+  },
+  {
+    num: "04",
+    name: "Community",
+    description:
+      "Engagement and service — we invest in the communities we serve through outreach, oral health education, and partnerships that extend our impact beyond the classroom.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -124,10 +146,10 @@ const VALUES = [
     ),
   },
   {
-    num: "04",
-    name: "Integrity",
+    num: "05",
+    name: "Innovation",
     description:
-      "We are honest about what we teach, how we assess, and what our graduates can realistically expect — from us and from their careers in dentistry.",
+      "In delivery, technology, and curriculum design — we continuously evolve our programs to reflect the latest advancements in dental practice and education.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -140,7 +162,7 @@ const VALUES = [
         <path
           strokeLinecap="round"
           strokeLinejoin="round"
-          d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.97zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.97z"
+          d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
         />
       </svg>
     ),
@@ -375,7 +397,7 @@ export default async function AboutPage() {
           </div>
 
           <h1
-            className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-5 max-w-3xl"
+            className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-4 max-w-3xl"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             Training Tomorrow&apos;s{" "}
@@ -386,13 +408,25 @@ export default async function AboutPage() {
           </h1>
 
           <p
+            className="text-sm font-semibold tracking-wide mb-5"
+            style={{
+              color: "#4A9FD4",
+              fontFamily: "var(--font-montserrat), sans-serif",
+            }}
+          >
+            Excellence in Dental Education. Innovation in Delivery. Commitment to Community.
+          </p>
+
+          <p
             className="text-lg leading-relaxed max-w-xl"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Western Dental Academy is an Edmonton-based training institution
-            built by dental professionals, for dental professionals — committed
-            to producing graduates who are clinically confident and
-            career-ready from day one.
+            Western Dental Academy is a modern, student-centered institution
+            dedicated to advancing dental education and strengthening the oral
+            health workforce across Alberta and beyond. We provide accessible,
+            high-quality learning experiences for new learners entering the
+            profession and for practicing dental professionals seeking to
+            expand their skills.
           </p>
         </div>
 
@@ -428,19 +462,18 @@ export default async function AboutPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                Training the next generation of dental professionals through
-                hands-on learning, modern clinical technology, and a curriculum
-                built around{" "}
-                <span style={{ color: "#4A9FD4" }}>real-world readiness.</span>
+                To deliver exceptional dental education that is flexible,
+                relevant, and grounded in{" "}
+                <span style={{ color: "#4A9FD4" }}>real-world practice.</span>
               </blockquote>
               <p
                 className="text-base leading-relaxed max-w-lg"
                 style={{ color: "#2B303A" }}
               >
-                That mission isn&apos;t a slogan — it drives every hiring
-                decision, every curriculum update, and every hour our students
-                spend in the clinic. If a practice can&apos;t rely on our
-                graduates from day one, we haven&apos;t done our job.
+                That mission drives every program we design, every instructor we
+                hire, and every learning pathway we create. Whether you&apos;re
+                new to the field or a working professional expanding your skills,
+                WDA is built to meet you where you are.
               </p>
             </AnimateIn>
 
@@ -500,9 +533,78 @@ export default async function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          FOUNDING STORY
+          COMMITMENT
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+            <AnimateIn>
+              <p
+                className="text-xs font-bold tracking-[0.2em] uppercase mb-4"
+                style={{ color: "#4A9FD4" }}
+              >
+                Our Commitment
+              </p>
+              <h2
+                className="text-3xl font-bold mb-6 leading-tight"
+                style={{
+                  color: "#1E3560",
+                  fontFamily: "var(--font-montserrat), sans-serif",
+                }}
+              >
+                Accessible, High-Quality Education for Everyone
+              </h2>
+              <p
+                className="text-base leading-relaxed"
+                style={{ color: "#2B303A" }}
+              >
+                We believe that geography, work schedules, and life circumstances
+                should never limit a person&apos;s ability to pursue a rewarding
+                career in dentistry. That&apos;s why Western Dental Academy offers
+                flexible learning pathways — including online theory delivery,
+                hands-on clinical training, and opportunities to work in a dental
+                clinic while you study.
+              </p>
+            </AnimateIn>
+            <AnimateIn delay={130}>
+              <div className="lg:pt-14">
+                <p
+                  className="text-base leading-relaxed mb-8"
+                  style={{ color: "#2B303A" }}
+                >
+                  Our program is designed to support learners in remote and rural
+                  communities, working professionals, and anyone seeking a more
+                  accessible route into the dental field.
+                </p>
+                <div className="flex flex-wrap gap-3">
+                  {[
+                    "Online Theory Delivery",
+                    "Hands-On Clinical Training",
+                    "Work While You Study",
+                    "Remote & Rural Access",
+                  ].map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-block rounded-full px-4 py-1.5 text-xs font-semibold"
+                      style={{
+                        backgroundColor: "rgba(74,159,212,0.12)",
+                        color: "#1E3560",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </AnimateIn>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          FOUNDING STORY
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-24" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-6xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Left: image placeholder */}
@@ -630,6 +732,147 @@ export default async function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          CONTINUING EDUCATION, GUEST SPEAKERS & COMMUNITY
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <AnimateIn className="mb-14 max-w-xl">
+            <p
+              className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
+              style={{ color: "#4A9FD4" }}
+            >
+              Beyond the Classroom
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl font-bold leading-tight"
+              style={{
+                color: "#1E3560",
+                fontFamily: "var(--font-montserrat), sans-serif",
+              }}
+            >
+              Learning That Extends to the Whole Community
+            </h2>
+          </AnimateIn>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                num: "01",
+                title: "Continuing Education & Professional Development",
+                body:
+                  "Western Dental Academy is a hub for lifelong learning. Our continuing education courses and professional development workshops help dental assistants, hygienists, dentists, and administrative professionals stay current with industry standards, new technologies, and evolving best practices. From radiography refreshers to advanced clinical skills, our CE offerings are built to support career growth and elevate the standard of care in dental practices across the province.",
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                  </svg>
+                ),
+              },
+              {
+                num: "02",
+                title: "Guest Speakers & Industry Expertise",
+                body:
+                  "We regularly host guest speakers, including dental specialists, industry innovators, and respected leaders in oral health. These events give learners and professionals access to cutting-edge knowledge, emerging trends, and practical insights that enrich their understanding of the profession.",
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                ),
+              },
+              {
+                num: "03",
+                title: "Community Education & Outreach",
+                body:
+                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. Through community education sessions, school presentations, and partnerships with local organizations, we help individuals and families build the knowledge they need to maintain lifelong oral health. Our outreach initiatives also support underserved and remote communities, reinforcing our belief that oral health education should be accessible to everyone.",
+                icon: (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                  </svg>
+                ),
+              },
+            ].map(({ num, title, body, icon }, i) => (
+              <AnimateIn key={num} delay={i * 100} className="flex flex-col">
+                <div
+                  className="group flex flex-col flex-1 rounded-2xl p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+                  style={{ backgroundColor: "#ffffff" }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white mb-6 shrink-0"
+                    style={{ backgroundColor: "#1E3560" }}
+                  >
+                    {icon}
+                  </div>
+                  <p
+                    className="text-[10px] font-bold tracking-[0.2em] uppercase mb-3"
+                    style={{ color: "#4A9FD4" }}
+                  >
+                    {num}
+                  </p>
+                  <h3
+                    className="text-base font-bold mb-4 leading-snug"
+                    style={{
+                      color: "#1E3560",
+                      fontFamily: "var(--font-montserrat), sans-serif",
+                    }}
+                  >
+                    {title}
+                  </h3>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: "#2B303A" }}
+                  >
+                    {body}
+                  </p>
+                </div>
+              </AnimateIn>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          VISION
+      ═══════════════════════════════════════════════════════════ */}
+      <section
+        className="relative overflow-hidden py-20"
+        style={{ backgroundColor: "#1E3560" }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 80% at 50% 120%, rgba(74,159,212,0.13) 0%, transparent 70%)",
+          }}
+        />
+        <div className="relative max-w-3xl mx-auto px-6 text-center">
+          <AnimateIn>
+            <p
+              className="text-xs font-bold tracking-[0.2em] uppercase mb-5"
+              style={{ color: "#4A9FD4" }}
+            >
+              Our Vision
+            </p>
+            <h2
+              className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight"
+              style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              A Leader in Accessible
+              <br />
+              Dental Education
+            </h2>
+            <p
+              className="text-lg leading-relaxed max-w-2xl mx-auto"
+              style={{ color: "rgba(255,255,255,0.65)" }}
+            >
+              To be a leader in accessible dental education, recognized for
+              innovation, student success, and meaningful contributions to the
+              dental profession and the communities we serve.
+            </p>
+          </AnimateIn>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
           CORE VALUES
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#ffffff" }}>
@@ -649,12 +892,12 @@ export default async function AboutPage() {
                 fontFamily: "var(--font-montserrat), sans-serif",
               }}
             >
-              Core Values
+              Our Values
             </h2>
           </AnimateIn>
 
-          {/* 2×2 grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          {/* Values grid — 2 cols on sm, 3 cols on lg (5 items: 3+2) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {VALUES.map((value, i) => (
               <ValueCard key={value.num} value={value} index={i} />
             ))}

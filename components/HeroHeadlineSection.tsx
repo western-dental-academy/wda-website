@@ -130,9 +130,9 @@ export default function HeroHeadlineSection() {
         initial={initial}
         animate="show"
       >
-        Western Dental Academy equips Edmonton&apos;s next generation of dental
-        professionals with hands-on clinical training, expert instruction, and
-        the career-ready skills employers demand.
+        A modern, student-centered institution delivering flexible, high-quality
+        dental education — empowering new learners and practicing professionals
+        to strengthen Alberta&apos;s oral health workforce.
       </motion.p>
 
       {/* CTAs — follows subheading */}

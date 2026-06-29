@@ -3,6 +3,7 @@ import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
 import SiteShell from "@/components/SiteShell";
 import CookieConsent from "@/components/CookieConsent";
+import MicrosoftClarity from "@/components/MicrosoftClarity";
 import { SanityLive } from "@/sanity/lib/live";
 
 const montserrat = Montserrat({
@@ -27,6 +28,9 @@ export const metadata: Metadata = {
   description:
     "Western Dental Academy trains the next generation of dental professionals through hands-on clinical training and modern curriculum in Edmonton, Alberta.",
   manifest: "/site.webmanifest",
+  verification: {
+    google: "W0YHDjTkJHZIJUqWXgaikKh6KxGXCA29j1mg1hnNNFM",
+  },
   icons: {
     icon: [
       {
@@ -67,6 +71,7 @@ export default function RootLayout({
         <SiteShell>{children}</SiteShell>
         <SanityLive />
         <CookieConsent />
+        <MicrosoftClarity />
       </body>
     </html>
   );

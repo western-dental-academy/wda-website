@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GoogleAnalytics } from "@next/third-parties/google";
 
 const STORAGE_KEY = "wda_cookie_consent";
+const CONSENT_EVENT = "wda-consent-changed";
 
 export default function CookieConsent() {
   const [mounted, setMounted] = useState(false);
@@ -25,6 +26,7 @@ export default function CookieConsent() {
 
   function handleAccept() {
     localStorage.setItem(STORAGE_KEY, "accepted");
+    window.dispatchEvent(new Event(CONSENT_EVENT));
     setBannerVisible(false);
     // Wait for slide-down before removing from DOM
     setTimeout(() => setConsent("accepted"), 480);
@@ -76,7 +78,7 @@ export default function CookieConsent() {
                 </p>
                 <p className="text-xs leading-relaxed text-[#2B303A]/60">
                   This site uses cookies to improve your experience and measure
-                  site usage via Google Analytics. No personal data is sold.{" "}
+                  site usage via analytics tools. No personal data is sold.{" "}
                   <Link
                     href="/privacy-policy"
                     className="underline underline-offset-2 text-[#4A9FD4] hover:text-[#1E3560] transition-colors duration-200"

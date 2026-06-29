@@ -3,6 +3,19 @@ import type { NextRequest } from "next/server";
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Search-engine and framework-critical paths — must be the very first
+  // check, before maintenance mode or any other logic, so crawlers always
+  // get the real file instead of the coming-soon redirect.
+  if (
+    pathname === "/sitemap.xml" ||
+    pathname === "/robots.txt" ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api")
+  ) {
+    return NextResponse.next();
+  }
+
   const hostname = request.headers.get("host") ?? "";
 
   // Pass through Vercel preview deployments (*.vercel.app)
@@ -10,15 +23,11 @@ export function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Pass through Next.js internals and static assets
+  // Pass through remaining static assets
   const decodedPathname = decodeURIComponent(pathname);
   if (
-    pathname.startsWith("/_next/") ||
     pathname.startsWith("/assets/") ||
-    pathname.startsWith("/api/") ||
     pathname === "/favicon.ico" ||
-    pathname === "/sitemap.xml" ||
-    pathname === "/robots.txt" ||
     decodedPathname.startsWith("/Western Dental Academy Logo")
   ) {
     return NextResponse.next();

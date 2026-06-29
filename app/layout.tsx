@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/Western Dental Academy Logo-IconOnly-Updated.svg",
+        url: "/Western Dental Academy Logo- Inverted-Icon Only-Updated.svg",
         type: "image/svg+xml",
       },
     ],
@@ -42,9 +42,9 @@ export const metadata: Metadata = {
     siteName: "Western Dental Academy",
     images: [
       {
-        url: "/Western Dental Academy Logo -Icon Only -Updated.png",
-        width: 1000,
-        height: 1000,
+        url: "/icon-512x512.png",
+        width: 512,
+        height: 512,
         alt: "Western Dental Academy",
       },
     ],

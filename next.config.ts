@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
         hostname: "cdn.sanity.io",
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 };
 

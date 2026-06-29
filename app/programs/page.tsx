@@ -31,6 +31,7 @@ const PLACEHOLDER_PROGRAMS: Program[] = [
       "Designed for learners who need flexibility without compromising quality.",
     duration: "Contact for Details",
     cost: "Contact for Pricing",
+    badge: "Launching Soon",
     highlights: [
       "Complete theory courses online",
       "Work in a dental clinic while you study",
@@ -38,6 +39,20 @@ const PLACEHOLDER_PROGRAMS: Program[] = [
       "Learn from highly qualified instructors with real-world experience",
       "Benefit from small class sizes and tailored support",
     ],
+    closingStatement:
+      "This program prepares graduates to enter the workforce with confidence, competence, and strong clinical skills — no matter where they live.",
+  },
+  {
+    _id: "placeholder-2",
+    title: "Introduction to the Dental Office",
+    slug: { current: "introduction-to-the-dental-office" },
+    description:
+      "An introductory program designed to familiarize students with the dental office environment, ideal for those exploring a future career in dental assisting.",
+    duration: "Contact for Details",
+    cost: "Contact for Pricing",
+    badge: "Coming Soon",
+    eligibility: "Applicable to ages 16 and up — pre dental assisting",
+    note: "Program name may be updated.",
   },
 ];
 
@@ -132,13 +147,13 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
                 className="w-1.5 h-1.5 rounded-full shrink-0"
                 style={{ backgroundColor: "#E67E22" }}
               />
-              Launching Soon
+              {program.badge ?? "Launching Soon"}
             </span>
           </div>
 
           {/* Title */}
           <h2
-            className="text-xl font-bold mb-4 leading-snug"
+            className="text-xl font-bold mb-2 leading-snug"
             style={{
               color: "#1E3560",
               fontFamily: "var(--font-montserrat), sans-serif",
@@ -146,6 +161,16 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
           >
             {program.title}
           </h2>
+
+          {/* Eligibility (if present) */}
+          {program.eligibility && (
+            <p
+              className="text-xs font-semibold mb-4"
+              style={{ color: "#4A9FD4" }}
+            >
+              {program.eligibility}
+            </p>
+          )}
 
           {/* Description */}
           <p
@@ -171,15 +196,15 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
             </ul>
           )}
 
-          {/* Closing statement */}
-          <p
-            className="text-sm font-semibold leading-relaxed italic mb-7"
-            style={{ color: "#1E3560" }}
-          >
-            This program prepares graduates to enter the workforce with
-            confidence, competence, and strong clinical skills — no matter where
-            they live.
-          </p>
+          {/* Closing statement (if present) */}
+          {program.closingStatement && (
+            <p
+              className="text-sm font-semibold leading-relaxed italic mb-7"
+              style={{ color: "#1E3560" }}
+            >
+              {program.closingStatement}
+            </p>
+          )}
 
           {/* Divider */}
           <div
@@ -204,6 +229,16 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
               {program.cost}
             </div>
           </div>
+
+          {/* Note (if present) */}
+          {program.note && (
+            <p
+              className="text-[11px] italic mb-6"
+              style={{ color: "rgba(43,48,58,0.5)" }}
+            >
+              {program.note}
+            </p>
+          )}
 
           {/* CTA */}
           <Link
@@ -388,7 +423,7 @@ export default async function ProgramsPage() {
           </AnimateIn>
 
           {programs.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-3xl">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {programs.map((program, i) => (
                 <ProgramCard key={program._id} program={program} index={i} />
               ))}

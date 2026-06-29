@@ -30,7 +30,7 @@ export default function NotFound() {
       {/* Logo */}
       <Link href="/" aria-label="Western Dental Academy — Home" className="mb-10 opacity-80 hover:opacity-100 transition-opacity duration-200">
         <Image
-          src="/WesternDentalAcademyLogo.png"
+          src="/Western Dental Academy Logo - Updated.svg"
           alt="Western Dental Academy Logo"
           width={1000}
           height={1000}

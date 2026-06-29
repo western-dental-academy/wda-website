@@ -27,12 +27,27 @@ export const metadata: Metadata = {
   description:
     "Western Dental Academy trains the next generation of dental professionals through hands-on clinical training and modern curriculum in Edmonton, Alberta.",
   manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      {
+        url: "/Western Dental Academy Logo-IconOnly-Updated.svg",
+        type: "image/svg+xml",
+      },
+    ],
+  },
   openGraph: {
     title: "Western Dental Academy",
     description: "Dental assistant training in Edmonton, Alberta.",
     url: "https://westerndentalacademy.com",
     siteName: "Western Dental Academy",
-    images: [{ url: "/og-image.jpg" }],
+    images: [
+      {
+        url: "/Western Dental Academy Logo -Icon Only -Updated.png",
+        width: 1000,
+        height: 1000,
+        alt: "Western Dental Academy",
+      },
+    ],
     locale: "en_CA",
     type: "website",
   },

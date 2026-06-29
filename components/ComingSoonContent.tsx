@@ -142,7 +142,7 @@ export default function ComingSoonContent() {
           />
 
           <Image
-            src="/WesternDentalAcademyLogo-Inverted.png"
+            src="/Western Dental Academy Logo Inverted-Updated.png"
             alt="Western Dental Academy Logo"
             width={1000}
             height={1000}

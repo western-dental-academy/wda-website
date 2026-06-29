@@ -63,7 +63,7 @@ export default function Navbar() {
           className="shrink-0"
         >
           <Image
-            src="/WesternDentalAcademyLogo.png"
+            src="/Western Dental Academy Logo - Updated.svg"
             alt="Western Dental Academy Logo"
             width={1000}
             height={1000}

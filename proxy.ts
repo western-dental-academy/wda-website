@@ -11,13 +11,12 @@ export function proxy(request: NextRequest) {
   }
 
   // Pass through Next.js internals and static assets
+  const decodedPathname = decodeURIComponent(pathname);
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/assets/") ||
     pathname === "/favicon.ico" ||
-    pathname.startsWith("/wda-logo") ||
-    pathname.startsWith("/WesternDentalAcademy") ||
-    pathname.startsWith("/og-image")
+    decodedPathname.startsWith("/Western Dental Academy Logo")
   ) {
     return NextResponse.next();
   }

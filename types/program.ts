@@ -11,4 +11,8 @@ export interface Program {
   };
   highlights?: string[];
   isActive?: boolean;
+  badge?: string;
+  eligibility?: string;
+  note?: string;
+  closingStatement?: string;
 }

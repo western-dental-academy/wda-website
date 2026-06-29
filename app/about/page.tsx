@@ -49,7 +49,7 @@ const PLACEHOLDER_TEAM: TeamMember[] = [
     _id: "placeholder-4",
     name: "[Coordinator Name]",
     role: "Program Coordinator & Student Success Advisor",
-    bio: "From admissions through to career placement, [Name] supports students at every stage of their WDA journey — coordinating clinical rotations, connecting graduates with employers, and ensuring every student has what they need to succeed.",
+    bio: "From admissions through to graduation, [Name] supports students at every stage of their WDA journey — coordinating clinical rotations, connecting graduates with employers, and ensuring every student has what they need to succeed.",
     order: 4,
   },
 ];
@@ -470,10 +470,10 @@ export default async function AboutPage() {
                 className="text-base leading-relaxed max-w-lg"
                 style={{ color: "#2B303A" }}
               >
-                That mission drives every program we design, every instructor we
-                hire, and every learning pathway we create. Whether you&apos;re
-                new to the field or a working professional expanding your skills,
-                WDA is built to meet you where you are.
+                That mission drives every program we design and every learning
+                pathway we create. Whether you&apos;re new to the field or a
+                working professional expanding your skills, WDA is built to
+                meet you where you are.
               </p>
             </AnimateIn>
 
@@ -492,9 +492,9 @@ export default async function AboutPage() {
                 <ul className="flex flex-col gap-5">
                   {[
                     "Hands-on clinical training from week one",
-                    "Instructors who are active dental professionals",
+                    "Experienced instructors in dental education",
                     "Small class sizes for individual attention",
-                    "Career placement support through graduation",
+                    "Student support through graduation",
                     "Curriculum aligned with current Alberta standards",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -546,7 +546,7 @@ export default async function AboutPage() {
                 Our Commitment
               </p>
               <h2
-                className="text-3xl font-bold mb-6 leading-tight"
+                className="text-3xl font-bold mb-3 leading-tight"
                 style={{
                   color: "#1E3560",
                   fontFamily: "var(--font-montserrat), sans-serif",
@@ -555,26 +555,45 @@ export default async function AboutPage() {
                 Accessible, High-Quality Education for Everyone
               </h2>
               <p
+                className="text-sm font-semibold tracking-wide mb-6"
+                style={{
+                  color: "#4A9FD4",
+                  fontFamily: "var(--font-montserrat), sans-serif",
+                }}
+              >
+                Built to close the gap.
+              </p>
+              <p
                 className="text-base leading-relaxed"
                 style={{ color: "#2B303A" }}
               >
                 We believe that geography, work schedules, and life circumstances
                 should never limit a person&apos;s ability to pursue a rewarding
-                career in dentistry. That&apos;s why Western Dental Academy offers
-                flexible learning pathways — including online theory delivery,
-                hands-on clinical training, and opportunities to work in a dental
-                clinic while you study.
+                career in the dental industry. That&apos;s why Western Dental Academy
+                offers flexible learning pathways — including online theory
+                delivery, hands-on clinical training, and opportunities to work in
+                a dental clinic while you study.
               </p>
             </AnimateIn>
             <AnimateIn delay={130}>
               <div className="lg:pt-14">
                 <p
+                  className="text-base leading-relaxed mb-6"
+                  style={{ color: "#2B303A" }}
+                >
+                  Our program is designed to support all learners, including
+                  those in remote and rural communities, working professionals,
+                  and anyone seeking a more accessible route into the dental
+                  field.
+                </p>
+                <p
                   className="text-base leading-relaxed mb-8"
                   style={{ color: "#2B303A" }}
                 >
-                  Our program is designed to support learners in remote and rural
-                  communities, working professionals, and anyone seeking a more
-                  accessible route into the dental field.
+                  With smaller class sizes, every student gets personable,
+                  one-on-one interaction with instructors who bring both
+                  real-world clinical experience and dental education expertise
+                  into the classroom.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {[
@@ -760,7 +779,7 @@ export default async function AboutPage() {
                 num: "01",
                 title: "Continuing Education & Professional Development",
                 body:
-                  "Western Dental Academy is a hub for lifelong learning. Our continuing education courses and professional development workshops help dental assistants, hygienists, dentists, and administrative professionals stay current with industry standards, new technologies, and evolving best practices. From radiography refreshers to advanced clinical skills, our CE offerings are built to support career growth and elevate the standard of care in dental practices across the province.",
+                  "Western Dental Academy is a hub for lifelong learning. Our continuing education courses and professional development workshops help dental hygienists, dental assistants, dental healthcare professionals (DHC), and administrative professionals stay current with industry standards, new technologies, and evolving best practices. From radiography refreshers to advanced clinical skills, our CE offerings are built to support career growth and elevate the standard of care in dental practices across the province.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
@@ -782,7 +801,7 @@ export default async function AboutPage() {
                 num: "03",
                 title: "Community Education & Outreach",
                 body:
-                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. Through community education sessions, school presentations, and partnerships with local organizations, we help individuals and families build the knowledge they need to maintain lifelong oral health. Our outreach initiatives also support underserved and remote communities, reinforcing our belief that oral health education should be accessible to everyone.",
+                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. Through community education sessions, school presentations, and partnerships with local organizations, we help individuals and families build the knowledge they need to maintain lifelong oral health. Our outreach initiatives also support underserved and remote communities, reinforcing our belief that oral health education — and accessible pathways into dental assisting — should be available to everyone.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -1014,7 +1033,7 @@ export default async function AboutPage() {
 
           {/* Logo grid */}
           <AnimateIn delay={80}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
               {[
                 {
                   abbr: "CADA",
@@ -1032,14 +1051,19 @@ export default async function AboutPage() {
                   category: "National Association",
                 },
                 {
-                  abbr: "AHS",
-                  name: "Alberta Health Services",
-                  category: "Healthcare Partner",
+                  abbr: "CDSA",
+                  name: "College of Dental Surgeons of Alberta",
+                  category: "Regulatory Body",
                 },
                 {
-                  abbr: "ACE",
-                  name: "Alberta Career Education",
+                  abbr: "CDAC",
+                  name: "Commission on Dental Accreditation of Canada",
                   category: "Accreditation Body",
+                },
+                {
+                  abbr: "NDAEB",
+                  name: "National Dental Assisting Examining Board",
+                  category: "Examining Board",
                 },
               ].map(({ abbr, name, category }) => (
                 <div
@@ -1265,7 +1289,7 @@ export default async function AboutPage() {
                     </svg>
                   ),
                   heading: "State-of-the-Art Equipment",
-                  body: "Train on the same instruments found in professional dental practices — digital imaging, modern handpieces, and current dental materials.",
+                  body: "Train in a modern clinic equipped with digital imaging and charting, and current dental materials found in professional dental practices.",
                 },
                 {
                   icon: (

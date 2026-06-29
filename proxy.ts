@@ -15,7 +15,10 @@ export function proxy(request: NextRequest) {
   if (
     pathname.startsWith("/_next/") ||
     pathname.startsWith("/assets/") ||
+    pathname.startsWith("/api/") ||
     pathname === "/favicon.ico" ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/robots.txt" ||
     decodedPathname.startsWith("/Western Dental Academy Logo")
   ) {
     return NextResponse.next();

@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
-import { ElegantShape } from "@/components/ui/elegant-shapes";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import HeroHeadlineSection from "@/components/HeroHeadlineSection";
 
@@ -544,41 +543,9 @@ export default function Home() {
           }}
         />
 
-        {/* Floating shapes — hidden on mobile to prevent overlap with centered text */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden hidden sm:block z-0">
-          <ElegantShape
-            delay={0.2}
-            width={480}
-            height={110}
-            rotate={12}
-            gradient="from-[#4A9FD4]/[0.12]"
-            className="left-[-8%] top-[10%]"
-          />
-          <ElegantShape
-            delay={0.4}
-            width={380}
-            height={90}
-            rotate={-14}
-            gradient="from-[#4A9FD4]/[0.09]"
-            className="right-[-4%] bottom-[12%]"
-          />
-          <ElegantShape
-            delay={0.5}
-            width={220}
-            height={60}
-            rotate={20}
-            gradient="from-[#E67E22]/[0.08]"
-            className="right-[18%] top-[8%]"
-          />
-          <ElegantShape
-            delay={0.3}
-            width={180}
-            height={50}
-            rotate={-20}
-            gradient="from-white/[0.05]"
-            className="left-[22%] bottom-[8%]"
-          />
-        </div>
+        {/* Streaming lines background */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
 
 
         <div className="relative z-10 max-w-3xl mx-auto px-6 text-center">

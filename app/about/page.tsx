@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import type { TeamMember } from "@/types/teamMember";
-import { ElegantShape } from "@/components/ui/elegant-shapes";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
@@ -1365,13 +1364,9 @@ export default async function AboutPage() {
           }}
         />
 
-        {/* Floating shapes */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <ElegantShape delay={0.2} width={460} height={110} rotate={11} gradient="from-[#4A9FD4]/[0.12]" className="left-[-8%] top-[15%]" />
-          <ElegantShape delay={0.4} width={360} height={88} rotate={-13} gradient="from-[#4A9FD4]/[0.09]" className="right-[-4%] bottom-[15%]" />
-          <ElegantShape delay={0.5} width={210} height={58} rotate={22} gradient="from-[#E67E22]/[0.08]" className="right-[16%] top-[10%]" />
-          <ElegantShape delay={0.3} width={170} height={48} rotate={-18} gradient="from-white/[0.05]" className="left-[20%] bottom-[10%]" />
-        </div>
+        {/* Streaming lines background */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
 
         <div className="relative max-w-3xl mx-auto px-6 text-center">
           <AnimateIn>

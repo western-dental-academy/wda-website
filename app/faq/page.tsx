@@ -5,7 +5,6 @@ import { FAQ_ITEMS_QUERY } from "@/sanity/lib/queries";
 import type { FaqItem } from "@/types/faqItem";
 import FaqAccordion from "@/components/FaqAccordion";
 import AnimateIn from "@/components/AnimateIn";
-import { ElegantShape } from "@/components/ui/elegant-shapes";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 // ─── Placeholder data (shown until Sanity content is published) ───────────────
@@ -274,13 +273,9 @@ export default async function FaqPage() {
 
       {/* ── Accordion ────────────────────────────────── */}
       <section className="relative overflow-hidden py-20" style={{ backgroundColor: "#F4F7F9" }}>
-        {/* Floating shapes — adapted for light background */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <ElegantShape delay={0.2} width={440} height={105} rotate={10} gradient="from-[#4A9FD4]/[0.07]" className="left-[-8%] top-[10%]" />
-          <ElegantShape delay={0.4} width={300} height={75} rotate={-12} gradient="from-[#1E3560]/[0.05]" className="right-[-4%] bottom-[12%]" />
-          <ElegantShape delay={0.5} width={180} height={52} rotate={20} gradient="from-[#4A9FD4]/[0.05]" className="right-[15%] top-[8%]" />
-          <ElegantShape delay={0.3} width={150} height={44} rotate={-18} gradient="from-[#1E3560]/[0.04]" className="left-[20%] bottom-[8%]" />
-        </div>
+        {/* Streaming lines background */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
         <div className="relative max-w-3xl mx-auto px-6">
           <AnimateIn>
             <FaqAccordion items={items ?? []} />
@@ -290,12 +285,9 @@ export default async function FaqPage() {
 
       {/* ── CTA strip ────────────────────────────────── */}
       <section className="relative overflow-hidden py-16" style={{ backgroundColor: "#1E3560" }}>
-        {/* Floating shapes */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <ElegantShape delay={0.2} width={400} height={95} rotate={11} gradient="from-[#4A9FD4]/[0.12]" className="left-[-7%] top-[5%]" />
-          <ElegantShape delay={0.4} width={300} height={75} rotate={-13} gradient="from-[#4A9FD4]/[0.09]" className="right-[-4%] bottom-[5%]" />
-          <ElegantShape delay={0.5} width={175} height={50} rotate={21} gradient="from-[#E67E22]/[0.08]" className="right-[20%] top-[5%]" />
-        </div>
+        {/* Streaming lines background */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
         <div className="relative max-w-6xl mx-auto px-6">
           <AnimateIn>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">

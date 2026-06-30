@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import ContactForm from "@/components/ContactForm";
-import { ElegantShape } from "@/components/ui/elegant-shapes";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
@@ -400,13 +399,9 @@ export default function ContactPage() {
           COMMON QUESTIONS PREVIEW
       ═══════════════════════════════════════════════════════════ */}
       <section style={{ backgroundColor: "#1E3560" }} className="relative overflow-hidden py-16">
-        {/* Floating shapes */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <ElegantShape delay={0.2} width={420} height={100} rotate={11} gradient="from-[#4A9FD4]/[0.12]" className="left-[-7%] top-[10%]" />
-          <ElegantShape delay={0.4} width={320} height={80} rotate={-13} gradient="from-[#4A9FD4]/[0.09]" className="right-[-4%] bottom-[10%]" />
-          <ElegantShape delay={0.5} width={190} height={55} rotate={20} gradient="from-[#E67E22]/[0.08]" className="right-[18%] top-[8%]" />
-          <ElegantShape delay={0.3} width={160} height={45} rotate={-20} gradient="from-white/[0.05]" className="left-[22%] bottom-[8%]" />
-        </div>
+        {/* Streaming lines background */}
+        <FloatingPaths position={1} />
+        <FloatingPaths position={-1} />
         <div className="relative max-w-6xl mx-auto px-6">
           {/* Header row */}
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">

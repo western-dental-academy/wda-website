@@ -94,21 +94,25 @@ export default function Footer() {
 
   return (
     <footer style={{ backgroundColor: "#1E3560" }}>
-      <div className="max-w-6xl mx-auto px-6 pt-12 pb-6">
+      <div className="max-w-6xl mx-auto px-6 pt-20 pb-10">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
           {/* ── Brand column ───────────────────────────── */}
           <div className="flex flex-col gap-4">
 
             {/* Logo lockup */}
-            <Link href="/" className="self-start">
+            <Link href="/" className="self-start flex items-center gap-3.5" aria-label="Western Dental Academy – Home">
               <Image
-                src="/Western Dental Academy Logo- Inverted-Updated.svg"
-                alt="Western Dental Academy Logo"
-                width={1000}
-                height={1000}
-                className="h-14 w-auto object-contain"
+                src="/Western Dental Academy Logo- Inverted-Icon Only-Updated.svg"
+                alt=""
+                width={200}
+                height={200}
+                className="h-[64px] w-[64px] shrink-0 object-contain"
               />
+              <span className="font-heading font-bold uppercase tracking-[0.1em] text-white leading-[1.2]">
+                <span className="block text-xs sm:text-sm">Western Dental</span>
+                <span className="block text-xs sm:text-sm">Academy</span>
+              </span>
             </Link>
 
             {/* Tagline */}
@@ -215,7 +219,7 @@ export default function Footer() {
 
         {/* ── Bottom bar ─────────────────────────────── */}
         <div
-          className="mt-10 pt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+          className="mt-14 pt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
           style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
         >
           <p className="text-xs text-white/40">

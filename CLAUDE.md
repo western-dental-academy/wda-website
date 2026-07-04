@@ -1,6 +1,6 @@
-# CLAUDE.md — Western Dental Academy Website
+# CLAUDE.md — Western Dental Academy (WDA) Project
 
-This file provides Claude Code with full project context for the WDA website build. Read this before making any changes.
+This file provides Claude Code with full persistent context for the WDA ecosystem. Read this entire file before making any changes to any part of the project.
 
 ---
 
@@ -8,187 +8,128 @@ This file provides Claude Code with full project context for the WDA website bui
 
 **Client:** Western Dental Academy (WDA)
 **Website:** westerndentalacademy.com
-**Purpose:** Marketing and enrollment website for a dental professional training institution offering dental assisting programs, continuing education, and hands-on clinical training.
+**Location:** 150 Chippewa Road, Suite 258, Sherwood Park, AB
+**Purpose:** Dental professional training institution — dental assisting programs, continuing education, hands-on clinical training.
 
-**Developer:** Aiden (Make One Productions) — aiden2@westerndentalacademy.com
-**Project folder:** `C:\Users\brost\Desktop\Aiden\WDA\WDA Website\wda-website`
-**GitHub:** github.com/western-dental-academy/wda-website
-**Deployment:** Vercel (WDA account, separate from Make One)
-**CMS:** Sanity (content management for programs, team, blog)
+**Developer:** Aiden Brost — aiden@westerndentalacademy.com
+**Local project folder:** `C:\Users\brost\Desktop\Aiden\WDA\WDA Website\wda-website`
+**GitHub org:** github.com/western-dental-academy
+**Repo:** western-dental-academy/wda-website
+**Deployment:** Vercel (WDA account, separate from Make One Productions)
+**Git push command:** `git push origin HEAD`
+
+---
+
+## Ecosystem Architecture
+
+The WDA platform is three separate but integrated systems:
+
+```
+westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
+         ↕ Internal API routes
+  WDA SIS (Student Info System)  ← Enrollment, records, payments (same Next.js app)
+         ↕ REST API + LTI 1.3
+       Moodle LMS               ← Course delivery (Docker locally / paid host in production)
+               learn.westerndentalacademy.com
+```
 
 ---
 
 ## Tech Stack
 
+### Website & SIS
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **CMS:** Sanity
-- **Fonts:** Montserrat (headings) via Google Fonts — this is the exact font used in the WDA logo
+- **CMS:** Sanity (programs, team, blog, student records)
+- **Auth:** Clerk — NOT YET INSTALLED
+- **Payments:** Stripe — NOT YET INSTALLED
+- **Fonts:** Montserrat (headings), Open Sans (body) via Google Fonts
+- **Animations:** Framer Motion
 - **Deployment:** Vercel
-- **Domain:** westerndentalacademy.com (GoDaddy DNS, Google Workspace email)
+- **Domain registrar:** GoDaddy (.com), Vercel DNS (.ca → 301 redirect to .com)
+
+### Moodle LMS
+- **Platform:** Moodle 5.2.1 (open source, PHP/MySQL)
+- **Local dev:** Docker Desktop
+- **Production hosting:** TBD — Canadian data residency required (Alberta PIPA)
+- **Subdomain:** learn.westerndentalacademy.com (production only)
+- **Integration:** Moodle REST API + LTI 1.3
 
 ---
 
 ## Brand Identity
 
-### Mission
-Western Dental Academy trains next-generation dental professionals through hands-on learning, modern clinical technology, and a curriculum focused on real-world readiness and compassionate patient care.
+### Tagline
+"Excellence in Dental Education. Innovation in Delivery. Commitment to Community."
 
-### Core Values
-Professionalism · Modern Innovation · Compassion · Integrity
+### Supporting Statement
+"Shaping the Future of Dental Excellence."
 
-### Visual Tone
-Clean, trustworthy, academic yet cutting-edge. Lean heavily into whitespace. Think modern dental clinic — sterile, precise, and confident.
+### Voice
+Professional, warm, inspiring, accessible, community-driven. Always Canadian English.
 
----
+### Color Palette
 
-## Color Palette
-
-All colors extracted directly from the official WDA SVG logo.
-
-| Token | Name | Hex | Usage |
-|---|---|---|---|
-| `--color-navy` | Deep Clinical Navy | `#1E3560` | Primary brand color, headings, nav, footer, structural elements |
-| `--color-blue` | Modern Dental Blue | `#4A9FD4` | Accent, buttons, links, icons, H3 headings |
-| `--color-white` | Pristine White | `#FFFFFF` | Page backgrounds |
-| `--color-surface` | Soft Clinical Gray | `#F4F7F9` | Alternating sections, card backgrounds, input fields |
-| `--color-text` | Charcoal Slate | `#2B303A` | Body copy |
-| `--color-accent` | Coral Amber | `#E67E22` | High-conversion CTAs only — "Apply Now", "Book a Clinic Tour", urgent banners, notification badges |
-
-### Tailwind CSS Variables (add to `globals.css`)
-```css
-@layer base {
-  :root {
-    --color-navy: #1E3560;
-    --color-blue: #4A9FD4;
-    --color-white: #FFFFFF;
-    --color-surface: #F4F7F9;
-    --color-text: #2B303A;
-    --color-accent: #E67E22;
-  }
-}
-```
-
----
-
-## Typography
-
-**Primary Font:** Montserrat (matches the logo exactly)
-**Body Font:** Open Sans (clean, legible, complements Montserrat)
-
-Import in `layout.tsx`:
-```ts
-import { Montserrat, Open_Sans } from 'next/font/google'
-
-const montserrat = Montserrat({ subsets: ['latin'], weight: ['500', '600', '700'] })
-const openSans = Open_Sans({ subsets: ['latin'], weight: ['400', '600'] })
-```
-
-### Type Scale
-| Element | Font | Weight | Size | Color |
-|---|---|---|---|---|
-| H1 | Montserrat | 700 | 2.25rem (36px) | `#1E3560` |
-| H2 | Montserrat | 600 | 1.75rem (28px) | `#1E3560` |
-| H3 | Montserrat | 500 | 1.25rem (20px) | `#4A9FD4` |
-| Body | Open Sans | 400 | 1rem (16px) | `#2B303A` |
-| Body line-height | — | — | 1.6 | — |
-
----
-
-## UI & Component Guidelines
-
-### Buttons
-- **Primary:** bg `#4A9FD4`, text white, bold, border-radius `8px`
-- **Hover:** transition to `#1E3560`
-- **Secondary:** outlined, border `#1E3560`, text `#1E3560`
-- **Accent (CTA only):** bg `#E67E22`, text white — use exclusively for "Apply Now", "Book a Clinic Tour", and urgent actions. Never overuse; its power comes from scarcity.
-
-### Cards & Containers
-- Background: `#F4F7F9`
-- Subtle box-shadow for depth (no heavy borders)
-- Generous padding and whitespace
-
-### Layout Philosophy
-- Whitespace is a feature — do not crowd content
-- Clean grid layouts, no clutter
-- Consistent section padding: `py-16` or `py-24`
-- Max content width: `max-w-6xl mx-auto`
-
-### Logo Usage
-- **Light backgrounds:** Full color SVG logo
-- **Dark backgrounds (navy):** Logo text flipped to white `#FFFFFF`
-- **Clear space:** Maintain margin equal to half the logo icon width on all sides
-- Logo file: `WDA_Logo1.svg`
-
----
-
-## Site Structure (Phase 1)
-
-| Page | Route | Purpose |
+| Token | Hex | Usage |
 |---|---|---|
-| Home | `/` | Hero, overview, programs intro, CTA |
-| About | `/about` | Mission, story, values, team |
-| Programs | `/programs` | All dental assisting programs |
-| Program Detail | `/programs/[slug]` | Individual program pages (Sanity) |
-| Contact | `/contact` | Contact form, location, hours |
-| Blog | `/blog` | SEO-driven articles written by WDA staff via Sanity |
-| Blog Post | `/blog/[slug]` | Individual blog post pages (Sanity Portable Text) |
-| FAQ | `/faq` | Frequently asked questions managed via Sanity |
+| Navy | `#0D3B6E` | Primary backgrounds, headings |
+| Blue | `#378ADD` | Secondary, links, UI accents |
+| Light Blue | `#4BA3E3` | Accent, highlight bands |
+| Amber | `#E67E22` | CTA only — buttons, pills |
+| White | `#FFFFFF` | Text on dark backgrounds |
 
-> Phase 2 will add: Blog, Student Resources, Online Enrollment
+Never use Amber for anything other than calls-to-action.
 
----
+### Typography
 
-## Sanity CMS Schema (planned)
+| Use | Font | Weight |
+|---|---|---|
+| All headings | Montserrat | Bold (700) / SemiBold (600) |
+| Body / captions | Open Sans | Regular (400) |
 
-- `program` — title, slug, description, duration, cost, image
-- `teamMember` — name, role, bio, photo
-- `testimonial` — quote, author, program
-- `blogPost` — title, slug, publishedAt, author, mainImage, excerpt, body (Portable Text)
-- `faqItem` — question, answer, category (e.g. Admissions, Programs, Cost, Career)
+### Logo Files (in `/public/images/`)
+- `WesternDentalAcademyLogo.png` — primary horizontal lockup (light backgrounds)
+- `WesternDentalAcademyLogo-Inverted.png` — white version (dark/navy backgrounds)
+- `WesternDentalAcademyLogo-NoText.png` — icon only
+- `WesternDentalAcademyLogo-Inverted-NoText.png` — white icon only
 
----
-
-## Frontend Design Direction
-
-When building UI components or pages, follow this aesthetic direction:
-
-- **Style:** Refined minimalism. Clinical precision. Confident whitespace.
-- **Avoid:** Purple gradients, generic AI aesthetics, overly decorative patterns
-- **Motion:** Subtle scroll-triggered fade-ins, smooth hover transitions on buttons/cards
-- **Imagery:** Use `#F4F7F9` surface backgrounds as placeholders until real photos are provided
-- **Inspiration:** Modern healthcare/education sites — clean, authoritative, welcoming
-
-This is a professional institution website. Every design decision should reinforce trust, credibility, and modernity.
+### Favicon
+`favicon.ico` and `apple-icon.png` live in `/app` (not `/public`) — Next.js App Router convention.
 
 ---
 
-## Design Philosophy (Frontend Skill)
+## Website Structure
 
-Before building any UI component or page:
+### Pages Built
+- `/` — Home
+- `/about` — About WDA
+- `/programs` — Programs listing
+- `/programs/[slug]` — Individual program pages
+- `/blog` — Blog listing (Sanity-driven)
+- `/blog/[slug]` — Blog posts
+- `/faq` — FAQ
+- `/apply` — Multi-step application form (EXISTS — NOT yet connected to Sanity)
+- `/book-a-tour` — Tour booking
+- `/contact` — Contact + Google Maps embed
+- `/edmonton-dental-careers` — Local SEO page
+- `/privacy-policy`, `/terms-of-use`, `/accessibility` — Legal pages
+- `/coming-soon` — Maintenance mode page
+- `not-found.tsx` — Custom 404
 
-- **Commit to intentionality** — every design decision should feel deliberate, not default. Ask: does this look like it was made specifically for WDA, or does it look like a template?
-- **Typography** — Montserrat is locked for headings per brand guidelines. Be intentional with pairing; Open Sans is the body font. Never fall back to system fonts (Arial, Roboto) outside the defined type scale.
-- **Motion** — use purposefully. Scroll-triggered fade-ins, smooth hover transitions on buttons and cards. One well-orchestrated page load with staggered reveals creates more impact than scattered micro-interactions.
-- **Atmosphere** — create depth with subtle gradients, soft shadows, and layered transparencies. Avoid flat, lifeless layouts.
-- **Spatial composition** — generous negative space is a feature. Use asymmetry and grid-breaking moments where appropriate to avoid predictable layouts.
-- **Color** — `#1E3560` dominates, `#4A9FD4` accents sharply. Don't distribute colors evenly — let navy anchor the structure and blue punctuate key moments.
-
-### Never use:
-- Generic purple gradients or unbranded color schemes
-- Cookie-cutter hero/card patterns with no distinctive character
-- Predictable, template-like layouts
-- Overly decorative patterns that contradict the clean clinical tone
-- Any font outside the defined type scale without explicit instruction
+### Maintenance Mode
+```
+MAINTENANCE_MODE=true
+PREVIEW_KEY=wda2026   # Access full site at ?preview=wda2026
+```
+Middleware in `proxy.ts` handles routing. Studio access: `http://localhost:3000/studio?preview=wda2026`
 
 ---
 
-## SEO
+## SEO & Metadata
 
-Use the built-in Next.js Metadata API — no extra packages needed. Every page must have a `metadata` export.
+Every page must export a `metadata` object.
 
-### Default metadata (in `app/layout.tsx`)
 ```ts
 export const metadata = {
   title: {
@@ -208,73 +149,269 @@ export const metadata = {
 }
 ```
 
-### Per-page metadata example
-```ts
-export const metadata = {
-  title: 'Dental Assisting Program',
-  description: 'Learn about our dental assisting program — duration, cost, and start dates.',
-}
-```
-
-### Required files in `/app`
-- `sitemap.ts` — auto-generates sitemap.xml for Google indexing
-- `robots.ts` — controls crawler access
-
-### Target keywords (to weave into page copy and metadata)
-- dental assistant training Edmonton
-- dental assisting program Alberta
-- dental academy Edmonton
-- become a dental assistant Edmonton
+Target keywords: dental assistant training Edmonton, dental assisting program Alberta, dental academy Edmonton, become a dental assistant Edmonton.
 
 ---
 
 ## Google Analytics
 
-Use `@next/third-parties` for GA4 integration.
-
-### Install
-```bash
-npm install @next/third-parties
-```
-
-### Add to `app/layout.tsx`
 ```ts
 import { GoogleAnalytics } from '@next/third-parties/google'
-
-export default function RootLayout({ children }) {
-  return (
-    <html>
-      <body>{children}</body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
-    </html>
-  )
-}
+// <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID!} />
 ```
 
-### Environment variable
-Add to `.env.local`:
-```
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-```
-
-Also add to Vercel environment variables in the WDA project dashboard. Never hardcode the GA ID directly in the source.
+Env var: `NEXT_PUBLIC_GA_ID` — never hardcode.
 
 ---
 
-## Development Notes
+## Sanity CMS
 
-- Always use the App Router (`/app` directory)
-- All Sanity content fetching via server components
-- Images via `next/image` with proper sizing
-- Mobile-first responsive design
-- Accessibility: WCAG 2.1 AA minimum (proper contrast ratios, alt text, semantic HTML)
-- Environment variables go in `.env.local` (never commit to GitHub)
-- GA ID and Sanity tokens must also be added to Vercel environment variables
+### Studio Access (local)
+`http://localhost:3000/studio?preview=wda2026`
+
+### Schema Types (all in `sanity/schemaTypes/`)
+- `program` — WDA programs (add `moodleCourseId` field — number)
+- `teamMember` — staff profiles
+- `testimonial` — student quotes
+- `blogPost` — blog articles (Portable Text)
+- `faqItem` — FAQ entries
+- `student` — student records ✓ BUILT
+
+### Structure
+Defined in `sanity/structure.ts` — all schema types must be added here to appear in studio sidebar.
+
+### Student Schema Fields
+- `firstName`, `lastName`, `email`, `phone`
+- `status` — pending / accepted / rejected / enrolled / withdrawn (default: pending)
+- `program` — reference to program document
+- `moodleUserId` — number, readOnly, auto-populated on acceptance
+- `clerkUserId` — string, readOnly, auto-populated on Clerk account creation
+- `stripeCustomerId` — string, readOnly, auto-populated on Stripe customer creation
+- `applicationDate`, `acceptedDate`
+- `notes` — internal staff notes, not visible to student
+
+---
+
+## SIS — Student Information System
+
+### Build Status
+| Module | Status |
+|---|---|
+| Sanity student schema | ✓ Complete |
+| Apply form UI (/apply) | ✓ Exists — NOT connected to Sanity |
+| Apply form → Sanity API route | ✗ Not built |
+| Clerk authentication | ✗ Not installed |
+| Admin approval flow | ✗ Not built |
+| Moodle provisioning on approval | ✗ Not built |
+| Stripe payments | ✗ Not installed |
+
+### Enrollment Flow (to be built)
+```
+Student submits /apply form
+        ↓
+/api/students/apply saves to Sanity (status: pending)
+        ↓
+Admin reviews in Sanity Studio → changes status to accepted
+        ↓
+Sanity webhook → /api/students/provision
+        ↓
+Create Clerk account → create Moodle user → store moodleUserId in Sanity
+        ↓
+Enroll in Moodle course based on program.moodleCourseId
+        ↓
+Send Stripe payment link
+        ↓
+Student pays → /api/webhooks/stripe → unlock course content
+```
+
+### Clerk (NOT YET INSTALLED)
+- Install: `npm install @clerk/nextjs`
+- Roles: `student`, `instructor`, `admin`, `finance`
+- Role checks via `auth().sessionClaims` in server components and API routes
+
+### Stripe (NOT YET INSTALLED)
+- Use Stripe Checkout or Elements — never handle raw card data
+- Webhook: `/api/webhooks/stripe` — always verify signatures
+- WDA is a Ltd. corporation — register as "Company" in Stripe with CRA business number
+- Store `stripeCustomerId` and `stripePaymentIntentId` on Sanity student documents
+
+---
+
+## Moodle LMS Integration
+
+### Local Development
+- **Docker folder:** `C:\Users\brost\Desktop\Aiden\WDA\moodle-local\`
+- **Start:** `docker compose up -d`
+- **Stop:** `docker compose stop`
+- **Local URL:** `http://localhost:8080/moodle`
+- **Admin:** username `admin` / password `Admin1234!`
+- **Moodle version:** 5.2.1 — requires MySQL 8.4
+- **APACHE_DOCUMENT_ROOT:** `/var/www/html/moodle/public` (Moodle 5.2 requirement)
+- **config.php wwwroot:** `http://localhost:8080` (no /moodle suffix)
+- **Moodledata:** `/var/moodledata`
+- **Welcome email errors on enrollment:** safe to ignore locally (no mail server in Docker)
+
+### Moodle Courses
+| Course | Short Name | Moodle ID |
+|---|---|---|
+| Dental Assisting Certificate — Distance Delivery | DAC-DD | 2 |
+
+### Moodle API Configuration
+- Web services: enabled
+- REST protocol: enabled
+- External service: **WDA SIS** (authorised users only)
+- Authorised user: admin (aiden@westerndentalacademy.com)
+- Functions enabled:
+  - `core_user_create_users`
+  - `core_user_update_users`
+  - `enrol_manual_enrol_users`
+  - `core_completion_get_activities_completion_status`
+  - `gradereport_user_get_grade_items`
+  - `core_course_get_courses`
+
+### Moodle API Client
+**Location:** `lib/moodle/client.ts` ✓ BUILT AND TESTED
+
+Exports:
+- `moodleRequest(wsfunction, params)` — base request
+- `createMoodleUser(user)` — create student in Moodle
+- `updateMoodleUser(moodleUserId, fields)` — update/suspend user
+- `enrolMoodleUser(moodleUserId, moodleCourseId, roleId?)` — enrol student (roleId 5 = student)
+- `getMoodleProgress(moodleUserId, moodleCourseId)` — completion status
+- `getMoodleGrades(moodleUserId, moodleCourseId)` — grade items
+- `getMoodleCourses()` — list all courses
+
+**Note:** `enrolMoodleUser` silently catches "Message was not sent" errors — enrollment succeeds despite this error in local Docker.
+
+### Test Routes (dev only — remove before production)
+- `GET /api/moodle/test` — lists all Moodle courses
+- `GET /api/moodle/test-enroll` — creates test student and enrolls in DAC-DD
+
+### SIS → Moodle Sync
+| SIS Event | Moodle Action | API Route |
+|---|---|---|
+| Application approved | Create Moodle user | `/api/moodle/create-user` |
+| Student enrolled | Enroll in course | `/api/moodle/enroll` |
+| Payment confirmed | Unlock course content | `/api/moodle/activate` |
+| Student withdrawn | Suspend account | `/api/moodle/suspend` |
+
+### Moodle → SIS Sync
+| Moodle Event | SIS Action |
+|---|---|
+| Module completed | Update progress in Sanity |
+| Quiz grade recorded | Store in student transcript |
+| Course completed | Generate PDF certificate |
+
+### Production Migration (when ready)
+1. Export Moodle backup (Site admin → Courses → Backups)
+2. Sign up with paid Canadian host
+3. Import backup to production instance
+4. Add CNAME in GoDaddy: `learn` → host value
+5. Generate new API token, update Vercel env vars
+
+---
+
+## API Routes Reference
+
+| Route | Method | Status | Purpose |
+|---|---|---|---|
+| `/api/moodle/test` | GET | Dev only | List Moodle courses |
+| `/api/moodle/test-enroll` | GET | Dev only | Test enrollment |
+| `/api/students/apply` | POST | Not built | Save application to Sanity |
+| `/api/students/provision` | POST | Not built | Full provisioning on acceptance |
+| `/api/moodle/create-user` | POST | Not built | Provision student in Moodle |
+| `/api/moodle/enroll` | POST | Not built | Enroll student in course |
+| `/api/moodle/activate` | POST | Not built | Activate after payment |
+| `/api/moodle/suspend` | POST | Not built | Suspend Moodle account |
+| `/api/lti/launch` | POST | Not built | LTI 1.3 SSO to Moodle |
+| `/api/webhooks/stripe` | POST | Not built | Stripe payment events |
+| `/api/webhooks/moodle` | POST | Not built | Moodle completion events |
+
+---
+
+## Security & Compliance
+
+### Alberta PIPA
+All student data must stay on Canadian servers.
+- Moodle host: DigitalOcean Toronto or MoodleCloud CA
+- Third-party security review required before go-live with live PII and payments
+
+### Security Practices
+- Input validation: **Zod** on all API route inputs
+- Security headers in `next.config.ts`
+- Never hardcode secrets — `.env.local` + Vercel dashboard
+- Verify all webhook signatures before processing
+- Use LTI 1.3 (not deprecated LTI 1.1)
+
+---
+
+## Environment Variables (Full List)
+
+```bash
+# Analytics
+NEXT_PUBLIC_GA_ID=
+
+# Sanity
+NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=
+
+# Clerk (not yet installed)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+
+# Stripe (not yet installed)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+# Moodle
+MOODLE_URL=http://localhost:8080
+MOODLE_TOKEN=
+MOODLE_COURSE_DAC_DD=2
+
+# Maintenance Mode
+MAINTENANCE_MODE=true
+PREVIEW_KEY=wda2026
+```
+
+---
+
+## DNS Reference
+
+| Record | Type | Value | Purpose |
+|---|---|---|---|
+| `@` | A | `76.76.21.21` | westerndentalacademy.com → Vercel |
+| `www` | CNAME | `cname.vercel-dns.com` | www redirect |
+| `.ca` nameservers | NS | `ns1/ns2.vercel-dns.com` | .ca → 301 to .com |
+| `learn` | CNAME | `<moodle-host-value>` | Moodle subdomain (production) |
+| MX records | MX | Microsoft 365 | Email |
+| SPF / DKIM / DMARC | TXT | M365 values | Email authentication |
 
 ---
 
 ## Key Contacts
 
-| Role | Name | Email |
+| Name | Role | Contact |
 |---|---|---|
-| Developer | Aiden | aiden2@westerndentalacademy.com |
+| Jolene | WDA Owner / Administrator | — |
+| Lance | WDA Owner (funding decisions) | — |
+| Tammy | WDA Staff | — |
+| Aiden Brost | Digital Operations & Technology Coordinator | aiden@westerndentalacademy.com |
+
+---
+
+## Build Phases
+
+| Phase | Scope | Status |
+|---|---|---|
+| 1 | Marketing website (all pages, Sanity, brand, SEO) | ✓ Complete |
+| 2 | Sanity student schema | ✓ Complete |
+| 3 | Moodle local Docker setup + REST API client | ✓ Complete |
+| 4 | Connect /apply form → Sanity API route | Next |
+| 5 | Clerk authentication install + setup | Planned |
+| 6 | Admin approval flow → Moodle auto-provisioning | Planned |
+| 7 | Stripe payments + webhook | Planned |
+| 8 | Student portal — course dashboard, certificates | Planned |
+| 9 | LTI 1.3 SSO | Planned |
+| 10 | Production Moodle hosting + migration | Planned |

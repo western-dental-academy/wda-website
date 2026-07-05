@@ -264,16 +264,29 @@ export default function ApplyForm() {
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (step < 4) {
-      next();
-      return;
-    }
-    // Step 4 — final submission
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
-    setSubmitted(true);
+  e.preventDefault();
+  if (step < 4) {
+    next();
+    return;
   }
+  // Step 4 — final submission
+  setSubmitting(true);
+  try {
+    const res = await fetch('/api/students/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.error);
+    setSubmitted(true);
+  } catch (err) {
+    console.error('Submission error:', err);
+    setErrors({ email: 'Something went wrong. Please try again or contact us directly.' });
+  } finally {
+    setSubmitting(false);
+  }
+}
 
   // ── Success screen ──────────────────────────────────────────────────────────
   if (submitted) {

@@ -39,9 +39,10 @@ westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **CMS:** Sanity (programs, team, blog, student records)
+- **CMS:** Sanity (programs, team, blog, student records, subscribers)
 - **Auth:** Clerk ✓ INSTALLED
 - **Payments:** Stripe ✓ INSTALLED (test mode — awaiting business details to activate live)
+- **PDF Generation:** @react-pdf/renderer
 - **Fonts:** Montserrat (headings), Open Sans (body) via Google Fonts
 - **Animations:** Framer Motion
 - **Deployment:** Vercel
@@ -83,7 +84,7 @@ westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
 "Shaping the Future of Dental Excellence."
 
 ### Voice
-Professional, warm, inspiring, accessible, community-driven. Always Canadian English.
+Professional, warm, inspiring, accessible, community-driven. Always Canadian English (programme, colour, centre, etc.).
 
 ### Color Palette
 
@@ -105,9 +106,10 @@ Never use Amber for anything other than calls-to-action.
 | Body / captions | Open Sans | Regular (400) |
 
 ### Logo Files (in `/public/`)
-- `WesternDentalAcademyLogo-Alternate.svg` — alternate stacked logo (light backgrounds)
-- `WesternDentalAcademyLogo-Alternate-Inverted.svg` — alternate stacked logo (dark/navy backgrounds)
+- `WesternDentalAcademyLogo-Alternate.svg` — stacked logo, cropped tight (light backgrounds)
+- `WesternDentalAcademyLogo-Alternate-Inverted.svg` — stacked logo, cropped tight (dark/navy backgrounds)
 - Original PNG logos also in `/public/` for other uses
+- Navbar and footer use the alternate SVG versions
 
 ### Favicon
 `favicon.ico` and `apple-icon.png` live in `/app` (not `/public`) — Next.js App Router convention.
@@ -117,7 +119,7 @@ Never use Amber for anything other than calls-to-action.
 ## Website Structure
 
 ### Pages Built
-- `/` — Home
+- `/` — Home (includes newsletter signup)
 - `/about` — About WDA
 - `/programs` — Programs listing
 - `/programs/[slug]` — Individual program pages
@@ -131,7 +133,7 @@ Never use Amber for anything other than calls-to-action.
 - `/privacy-policy`, `/terms-of-use`, `/accessibility` — Legal pages
 - `/coming-soon` — Maintenance mode page
 - `/portal` — Student portal ✓ BUILT (protected by Clerk)
-- `/sign-in` — Clerk sign-in page (student login goes here — NOT D2L)
+- `/sign-in` — Clerk sign-in page (student login — NOT D2L)
 - `/sign-up` — Clerk sign-up page
 - `not-found.tsx` — Custom 404
 
@@ -148,13 +150,30 @@ Studio access: `http://localhost:3000/studio?preview=wda2026`
 ## Middleware (proxy.ts)
 
 The project uses `proxy.ts` (not `middleware.ts`) — Next.js 16 convention.
-Clerk is integrated directly into `proxy.ts` using `clerkMiddleware`.
+Clerk is integrated via `clerkMiddleware`.
 
-Protected routes:
-- `/portal(.*)` — requires Clerk authentication
-- `/api/students/provision(.*)` — requires Clerk authentication
+**Critical:** API routes must be passed through BEFORE the Clerk handler runs. The current structure is:
 
-Public routes: everything else (marketing pages, apply form, sign-in/sign-up).
+```typescript
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // API routes pass through first — before Clerk
+  if (pathname.startsWith('/api') || pathname.startsWith('/__clerk') || ...) {
+    return NextResponse.next()
+  }
+
+  // Clerk runs on non-API routes only
+  const clerkResponse = await clerkHandler(request, {} as any)
+  if (clerkResponse) return clerkResponse
+
+  // ... maintenance mode logic
+}
+```
+
+Protected routes (Clerk auth required):
+- `/portal(.*)`
+- `/api/students/provision(.*)`
 
 ---
 
@@ -164,12 +183,13 @@ Public routes: everything else (marketing pages, apply form, sign-in/sign-up).
 `http://localhost:3000/studio?preview=wda2026`
 
 ### Schema Types (all in `sanity/schemaTypes/`)
-- `program` — WDA programs (includes `moodleCourseId` number field)
+- `program` — WDA programmes (includes `moodleCourseId` number field)
 - `teamMember` — staff profiles
 - `testimonial` — student quotes
 - `blogPost` — blog articles (Portable Text)
 - `faqItem` — FAQ entries
-- `student` — student records ✓ BUILT
+- `student` — student records ✓
+- `subscriber` — newsletter subscribers ✓
 
 ### Student Schema Fields
 - `firstName`, `lastName`, `email`, `phone`
@@ -177,22 +197,27 @@ Public routes: everything else (marketing pages, apply form, sign-in/sign-up).
 - `program` — reference to program document
 - `moodleUserId` — number, readOnly, auto-populated on acceptance
 - `clerkUserId` — string, readOnly, auto-populated on first portal visit
-- `stripeCustomerId` — string, readOnly, auto-populated on Stripe customer creation
-- `stripePaymentIntentId` — string, readOnly, auto-populated on payment
+- `stripeCustomerId` — string, readOnly
+- `stripePaymentIntentId` — string, readOnly
 - `paymentStatus` — unpaid / pending / paid / refunded (default: unpaid)
-- `tuitionAmount` — number in CAD dollars (set by admin)
+- `tuitionAmount` — number in CAD dollars (set by admin in Studio)
 - `applicationDate`, `acceptedDate`
-- `notes` — internal staff notes, not visible to student
+- `notes` — internal staff notes
+
+### Subscriber Schema Fields
+- `email` — required, validated
+- `subscribedAt` — datetime, auto-set
+- `source` — defaults to "website"
+- `active` — boolean, uncheck to unsubscribe
 
 ### Sanity API Token
-Must be **Editor** role (read + write) — a read-only token will cause API route failures.
+Must be **Editor** role (read + write) — read-only token will fail on all write operations.
 
 ### Sanity Webhook
 - **Local URL:** `https://<ngrok-url>/api/webhooks/sanity`
 - **Production URL:** `https://westerndentalacademy.com/api/webhooks/sanity`
 - **Secret:** `SANITY_WEBHOOK_SECRET=wda-sanity-webhook-2026`
-- **Trigger:** Update on `student` documents
-- **Filter:** `_type == "student"`
+- **Trigger:** Update on `student` documents where `_type == "student"`
 - **Logic:** Only acts when `status === 'accepted'`
 - **Note:** ngrok URL changes on each restart — update at sanity.io/manage each session
 
@@ -213,6 +238,7 @@ Must be **Editor** role (read + write) — a read-only token will cause API rout
 | Certificate generation (PDF) | ✓ Complete |
 | Stripe payments (test mode) | ✓ Complete |
 | Stripe webhook → payment status | ✓ Complete |
+| Newsletter subscription → Sanity | ✓ Complete |
 | LTI 1.3 SSO | ✗ Deferred until production Moodle |
 
 ### Enrollment Flow (WORKING)
@@ -245,12 +271,12 @@ Portal shows progress, grades, profile, certificate when complete
 ### Stripe Payments ✓ (test mode)
 - Package: `stripe`, `@stripe/stripe-js`
 - Client: `lib/stripe/client.ts` — uses `apiVersion: '2026-06-24.dahlia'`
-- Checkout route: `POST /api/stripe/checkout` — creates Stripe Checkout session
-- Webhook route: `POST /api/webhooks/stripe` — handles `checkout.session.completed`
+- Checkout route: `POST /api/stripe/checkout`
+- Webhook route: `POST /api/webhooks/stripe`
 - Currency: CAD
 - Test card: `4242 4242 4242 4242`, any future expiry, any CVC
 - Local webhook testing: `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
-- `STRIPE_WEBHOOK_SECRET` from CLI is for local only — production will have a different secret from Stripe dashboard
+- `STRIPE_WEBHOOK_SECRET` from CLI is for local only — production needs different secret from Stripe dashboard
 
 ### To activate Stripe live payments, need from Lance/Jolene:
 - Legal business name exactly as on incorporation certificate
@@ -265,6 +291,13 @@ Portal shows progress, grades, profile, certificate when complete
 - API route: `GET /api/students/certificate`
 - Only available when all Moodle modules complete (100%)
 - Downloads as `WDA-Certificate-[FirstName]-[LastName].pdf`
+
+### Newsletter Subscription ✓
+- API route: `POST /api/subscribe`
+- Saves to Sanity `subscriber` document type
+- Checks for duplicates before saving
+- Viewable in Sanity Studio under Subscribers
+- For sending newsletters: export list and send from Outlook using info@westerndentalacademy.com
 
 ---
 
@@ -322,7 +355,7 @@ Exports:
 - Status-based UI: no record / pending / accepted / enrolled
 - Tuition payment card with Stripe Checkout
 - Course progress bar with percentage
-- Module completion list with real activity names
+- Module completion list with real activity names from Moodle
 - Grade display from Moodle
 - Student profile section
 - Certificate download at 100% completion
@@ -343,11 +376,23 @@ Exports:
 | `/api/students/link-clerk` | POST | ✓ | Link Clerk ID to Sanity student |
 | `/api/students/certificate` | GET | ✓ | Generate PDF certificate |
 | `/api/stripe/checkout` | POST | ✓ | Create Stripe Checkout session |
+| `/api/subscribe` | POST | ✓ | Save newsletter subscriber to Sanity |
 | `/api/webhooks/sanity` | POST | ✓ | Moodle provisioning on acceptance |
 | `/api/webhooks/stripe` | POST | ✓ | Update payment status on completion |
 | `/api/moodle/test` | GET | Dev only | List Moodle courses |
 | `/api/moodle/test-enroll` | GET | Dev only | Test enrollment |
 | `/api/lti/launch` | POST | Not built | LTI 1.3 SSO (deferred) |
+
+---
+
+## Local Development — What to Run
+
+Three things need to be running for full local functionality:
+
+1. **Dev server** (VS Code terminal): `npm run dev`
+2. **Moodle** (PowerShell): `cd C:\Users\brost\Desktop\Aiden\WDA\moodle-local && docker compose up -d`
+3. **Stripe CLI** (PowerShell, admin): `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
+4. **ngrok** (only for Sanity webhook testing): `ngrok http 3000` then update webhook URL at sanity.io/manage
 
 ---
 
@@ -364,6 +409,7 @@ All student data must stay on Canadian servers.
 - Verify all webhook signatures (`@sanity/webhook`, Stripe)
 - `CLERK_SECRET_KEY` and `STRIPE_SECRET_KEY` server-side only
 - `SANITY_API_TOKEN` must be Editor role
+- API routes must be passed through BEFORE Clerk handler in `proxy.ts`
 
 ---
 
@@ -431,13 +477,17 @@ PREVIEW_KEY=wda2026
 | 6 | Sanity webhook → Moodle auto-provisioning | ✓ Complete |
 | 7 | Student portal — progress, grades, profile, certificates | ✓ Complete |
 | 8 | Stripe payments (test mode) | ✓ Complete |
-| 9 | Activate Stripe live + production Moodle hosting | Waiting on business details |
-| 10 | LTI 1.3 SSO | After production Moodle |
-| 11 | Go live — flip maintenance mode off | Final step |
+| 9 | Newsletter subscription → Sanity | ✓ Complete |
+| 10 | Activate Stripe live + production Moodle hosting | Waiting on business details |
+| 11 | LTI 1.3 SSO | After production Moodle |
+| 12 | Go live — flip maintenance mode off | Final step |
+
+---
 
 ## Go-Live Checklist
 - [ ] Stripe business details from Lance/Jolene → activate live payments
 - [ ] Update `STRIPE_WEBHOOK_SECRET` in Vercel to production webhook secret
+- [ ] Add production Stripe webhook in Stripe dashboard → `https://westerndentalacademy.com/api/webhooks/stripe`
 - [ ] Set up production Moodle on Canadian host
 - [ ] Update `MOODLE_URL` in Vercel to production URL
 - [ ] Update `MOODLE_TOKEN` in Vercel to production token
@@ -446,3 +496,4 @@ PREVIEW_KEY=wda2026
 - [ ] Set `MAINTENANCE_MODE=false` in Vercel
 - [ ] Third-party security review
 - [ ] Test full enrollment flow on production
+- [ ] Switch Stripe from test keys to live keys in Vercel

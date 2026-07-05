@@ -3,6 +3,11 @@ import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import type { TeamMember } from "@/types/teamMember";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { sanityFetch } from "@/sanity/lib/live";
+import { TEAM_MEMBERS_QUERY } from "@/sanity/lib/queries";
+import Image from 'next/image'
+import { urlFor } from '@/lib/sanity/image'
+import TeamCard from '@/components/TeamCard'
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -12,46 +17,6 @@ export const metadata: Metadata = {
     "Learn about Western Dental Academy — our mission, founding story, core values, and the team of dental professionals behind Edmonton's leading dental training institution.",
 };
 
-// ─── Sanity fetch (activate when CMS is connected) ────────────────────────────
-//
-// import { sanityFetch } from "@/sanity/lib/live";
-// import { TEAM_MEMBERS_QUERY } from "@/sanity/lib/queries";
-//
-// Replace `PLACEHOLDER_TEAM` below with:
-// const { data: team } = await sanityFetch({ query: TEAM_MEMBERS_QUERY });
-
-// ─── Placeholder data ──────────────────────────────────────────────────────────
-
-const PLACEHOLDER_TEAM: TeamMember[] = [
-  {
-    _id: "placeholder-1",
-    name: "Dr. [Director Name]",
-    role: "Director & Lead Clinical Instructor",
-    bio: "A practicing dental professional with over 15 years of clinical experience in Edmonton, Dr. [Name] founded WDA with a single goal: to produce graduates who are ready to work on day one. Their hands-on teaching philosophy shapes every aspect of the WDA curriculum.",
-    order: 1,
-  },
-  {
-    _id: "placeholder-2",
-    name: "[Instructor Name]",
-    role: "Senior Dental Assisting Instructor",
-    bio: "A Certified Dental Assistant with extensive chairside experience across general and specialty dental practices, [Name] brings real-world clinical knowledge into the classroom — bridging the gap between theory and confident practice.",
-    order: 2,
-  },
-  {
-    _id: "placeholder-3",
-    name: "[Instructor Name]",
-    role: "Radiography & IPAC Instructor",
-    bio: "Specializing in dental radiography and infection prevention protocols, [Name] ensures WDA students are trained to current Alberta Health Services standards and leave the program with the technical precision the industry demands.",
-    order: 3,
-  },
-  {
-    _id: "placeholder-4",
-    name: "[Coordinator Name]",
-    role: "Program Coordinator & Student Success Advisor",
-    bio: "From admissions through to graduation, [Name] supports students at every stage of their WDA journey — coordinating clinical rotations, connecting graduates with employers, and ensuring every student has what they need to succeed.",
-    order: 4,
-  },
-];
 
 // ─── Core values ───────────────────────────────────────────────────────────────
 
@@ -168,95 +133,7 @@ const VALUES = [
   },
 ];
 
-// ─── Team member card ──────────────────────────────────────────────────────────
 
-function TeamCard({ member, index }: { member: TeamMember; index: number }) {
-  const initials = member.name
-    .replace(/\[|\]/g, "")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-
-  return (
-    <AnimateIn delay={index * 90} className="flex flex-col">
-      <div
-        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
-        style={{ backgroundColor: "#ffffff" }}
-      >
-        {/* Photo area */}
-        <div
-          className="relative h-52 flex items-center justify-center overflow-hidden"
-          style={{ backgroundColor: "#1E3560" }}
-        >
-          {/* Ghost monogram behind the initials */}
-          <span
-            className="absolute select-none pointer-events-none font-bold"
-            style={{
-              fontFamily: "var(--font-montserrat), sans-serif",
-              fontSize: "9rem",
-              color: "rgba(255,255,255,0.04)",
-              lineHeight: 1,
-              userSelect: "none",
-            }}
-            aria-hidden
-          >
-            {initials}
-          </span>
-          {/* Foreground initial badge */}
-          <div
-            className="relative z-10 w-20 h-20 rounded-full flex items-center justify-center"
-            style={{
-              backgroundColor: "rgba(74,159,212,0.15)",
-              border: "2px solid rgba(74,159,212,0.3)",
-            }}
-          >
-            <span
-              className="text-2xl font-bold"
-              style={{
-                color: "#4A9FD4",
-                fontFamily: "var(--font-montserrat), sans-serif",
-              }}
-            >
-              {initials}
-            </span>
-          </div>
-          {/* "Photo coming" label */}
-          <p
-            className="absolute bottom-3 text-xs font-semibold tracking-wide"
-            style={{ color: "rgba(255,255,255,0.2)" }}
-          >
-            Photo coming soon
-          </p>
-        </div>
-
-        {/* Content */}
-        <div className="flex flex-col flex-1 p-7">
-          <p
-            className="text-xs font-bold tracking-[0.15em] uppercase mb-2"
-            style={{ color: "#4A9FD4" }}
-          >
-            {member.role}
-          </p>
-          <h3
-            className="text-lg font-bold mb-4"
-            style={{
-              color: "#1E3560",
-              fontFamily: "var(--font-montserrat), sans-serif",
-            }}
-          >
-            {member.name}
-          </h3>
-          <p className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
-            {member.bio}
-          </p>
-        </div>
-      </div>
-    </AnimateIn>
-  );
-}
 
 // ─── Value card ────────────────────────────────────────────────────────────────
 
@@ -321,8 +198,8 @@ function ValueCard({
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default async function AboutPage() {
-  // Swap this line when Sanity is connected:
-  const team = PLACEHOLDER_TEAM;
+  
+  const { data: team } = await sanityFetch({ query: TEAM_MEMBERS_QUERY });
 
   return (
     <>

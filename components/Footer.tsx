@@ -101,18 +101,14 @@ export default function Footer() {
           <div className="flex flex-col gap-4">
 
             {/* Logo lockup */}
-            <Link href="/" className="self-start flex items-center gap-3.5" aria-label="Western Dental Academy – Home">
+            <Link href="/" className="self-start" aria-label="Western Dental Academy – Home">
               <Image
-                src="/Western Dental Academy Logo- Inverted-Icon Only-Updated.svg"
+                src="/Western Dental Academy Logo - Alternate - Inverted.svg"
                 alt=""
-                width={200}
-                height={200}
-                className="h-[64px] w-[64px] shrink-0 object-contain"
+                width={180}
+                height={180}
+                className="h-[180px] w-[180px] shrink-0 object-contain"
               />
-              <span className="font-heading font-bold uppercase tracking-[0.1em] text-white leading-[1.2]">
-                <span className="block text-xs sm:text-sm">Western Dental</span>
-                <span className="block text-xs sm:text-sm">Academy</span>
-              </span>
             </Link>
 
             {/* Tagline */}

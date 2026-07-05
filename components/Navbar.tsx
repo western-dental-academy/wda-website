@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -54,26 +53,21 @@ export default function Navbar() {
       {/* ── Desktop nav ─────────────────────────────────────────────────── */}
       <nav
         aria-label="Primary navigation"
-        className="max-w-6xl mx-auto px-6 h-[80px] flex items-center justify-between"
+        className="max-w-6xl mx-auto px-6 py-1 flex items-center justify-between"
       >
         {/* Logo */}
         <Link
           href="/"
           aria-label="Western Dental Academy – Home"
-          className="flex items-center gap-3.5 shrink-0"
+          className="shrink-0"
         >
-          <Image
-            src="/Western Dental Academy Logo-IconOnly-Updated.svg"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Western Dental Academy Logo - Alternate.svg"
             alt=""
-            width={200}
-            height={200}
-            className="h-[60px] w-[60px] shrink-0 object-contain"
-            priority
+            style={{ height: '70px', width: 'auto' }}
+            className="shrink-0"
           />
-          <span className="font-heading font-bold uppercase tracking-[0.1em] text-[#1E3560] leading-[1.2]">
-            <span className="block text-xs sm:text-sm">Western Dental</span>
-            <span className="block text-xs sm:text-sm">Academy</span>
-          </span>
         </Link>
 
         {/* Desktop links */}

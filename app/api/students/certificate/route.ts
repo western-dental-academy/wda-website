@@ -53,7 +53,7 @@ export async function GET() {
 
     const pdfBuffer = await generateCertificate(studentName, programName, completionDate)
 
-    return new Response(pdfBuffer, {
+    return new Response(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="WDA-Certificate-${student.firstName}-${student.lastName}.pdf"`,

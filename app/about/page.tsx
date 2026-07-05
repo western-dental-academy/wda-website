@@ -199,7 +199,7 @@ function ValueCard({
 
 export default async function AboutPage() {
   
-  const { data: team } = await sanityFetch({ query: TEAM_MEMBERS_QUERY });
+  const { data: team } = await sanityFetch({ query: TEAM_MEMBERS_QUERY }) as { data: any[] };
 
   return (
     <>

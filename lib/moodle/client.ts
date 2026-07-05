@@ -114,3 +114,8 @@ export async function getMoodleGrades(
 export async function getMoodleCourses() {
   return moodleRequest('core_course_get_courses')
 }
+export async function getMoodleCourseContents(moodleCourseId: number) {
+  return moodleRequest('core_course_get_contents', {
+    courseid: moodleCourseId,
+  })
+}

@@ -70,7 +70,7 @@ export default async function PortalPage() {
               Your Moodle account is ready. Visit Moodle to access your course.
             </p>
             <Link
-              href="http://localhost:8080/moodle"
+              href={`${process.env.MOODLE_URL}/course/view.php?id=2`}
               className="rounded-lg px-6 py-2.5 text-sm font-bold text-white"
               style={{ backgroundColor: '#1E3560' }}
             >

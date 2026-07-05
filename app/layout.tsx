@@ -1,3 +1,4 @@
+import {ClerkProvider} from "@clerk/nextjs";
 import type { Metadata } from "next";
 import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
@@ -68,10 +69,12 @@ export default function RootLayout({
       className={`${montserrat.variable} ${openSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <SiteShell>{children}</SiteShell>
-        <SanityLive />
-        <CookieConsent />
-        <MicrosoftClarity />
+        <ClerkProvider>
+          <SiteShell>{children}</SiteShell>
+          <SanityLive />
+          <CookieConsent />
+          <MicrosoftClarity />
+        </ClerkProvider>
       </body>
     </html>
   );

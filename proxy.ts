@@ -1,77 +1,78 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-export function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const isProtectedRoute = createRouteMatcher([
+  '/portal(.*)',
+  '/api/students/provision(.*)',
+])
 
-  // Search-engine and framework-critical paths — must be the very first
-  // check, before maintenance mode or any other logic, so crawlers always
-  // get the real file instead of the coming-soon redirect.
+const clerkHandler = clerkMiddleware(async (auth, request: NextRequest) => {
+  if (isProtectedRoute(request)) {
+    await auth.protect()
+  }
+})
+
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Run Clerk auth check
+  const clerkResponse = await clerkHandler(request, {} as any)
+  if (clerkResponse) return clerkResponse
+
   if (
-    pathname === "/sitemap.xml" ||
-    pathname === "/robots.txt" ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api")
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt' ||
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/__clerk')
   ) {
-    return NextResponse.next();
+    return NextResponse.next()
   }
 
-  const hostname = request.headers.get("host") ?? "";
+  const hostname = request.headers.get('host') ?? ''
+  if (hostname.endsWith('.vercel.app')) return NextResponse.next()
 
-  // Pass through Vercel preview deployments (*.vercel.app)
-  if (hostname.endsWith(".vercel.app")) {
-    return NextResponse.next();
-  }
-
-  // Pass through remaining static assets
-  const decodedPathname = decodeURIComponent(pathname);
+  const decodedPathname = decodeURIComponent(pathname)
   if (
-    pathname.startsWith("/assets/") ||
-    pathname === "/favicon.ico" ||
-    decodedPathname.startsWith("/Western Dental Academy Logo")
+    pathname.startsWith('/assets/') ||
+    pathname === '/favicon.ico' ||
+    decodedPathname.startsWith('/Western Dental Academy Logo')
   ) {
-    return NextResponse.next();
+    return NextResponse.next()
   }
 
-  // Already on the coming-soon page — don't redirect again
-  if (pathname === "/coming-soon") {
-    return NextResponse.next();
-  }
+  if (pathname === '/coming-soon') return NextResponse.next()
 
-  // Maintenance mode is off — normal site operation
-  if (process.env.MAINTENANCE_MODE !== "true") {
-    return NextResponse.next();
-  }
+  if (process.env.MAINTENANCE_MODE !== 'true') return NextResponse.next()
 
-  // Preview bypass via cookie (set on a prior visit with the correct key)
-  const previewCookie = request.cookies.get("wda-preview");
-  if (previewCookie?.value === "true") {
-    return NextResponse.next();
-  }
+  const previewCookie = request.cookies.get('wda-preview')
+  if (previewCookie?.value === 'true') return NextResponse.next()
 
-  // Preview bypass via query param — grants a 24-hour cookie
-  const previewParam = request.nextUrl.searchParams.get("preview");
+  const previewParam = request.nextUrl.searchParams.get('preview')
   if (previewParam && previewParam === process.env.PREVIEW_KEY) {
-    const destination = request.nextUrl.clone();
-    destination.searchParams.delete("preview");
-    const response = NextResponse.redirect(destination);
-    response.cookies.set("wda-preview", "true", {
+    const destination = request.nextUrl.clone()
+    destination.searchParams.delete('preview')
+    const response = NextResponse.redirect(destination)
+    response.cookies.set('wda-preview', 'true', {
       maxAge: 60 * 60 * 24,
       httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
-      path: "/",
-    });
-    return response;
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+    })
+    return response
   }
 
-  // Redirect everything else to /coming-soon
-  const url = request.nextUrl.clone();
-  url.pathname = "/coming-soon";
-  url.search = "";
-  return NextResponse.redirect(url);
+  const url = request.nextUrl.clone()
+  url.pathname = '/coming-soon'
+  url.search = ''
+  return NextResponse.redirect(url)
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|assets/).*)"],
-};
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|assets/).*)',
+    '/__clerk/:path*',
+  ],
+}

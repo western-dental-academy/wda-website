@@ -2,6 +2,7 @@ import { currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@sanity/client'
 import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents } from '@/lib/moodle/client'
 import Link from 'next/link'
+import PayTuitionButton from '@/components/PayTuitionButton'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -19,6 +20,7 @@ export default async function PortalPage() {
     `*[_type == "student" && email == $email][0]{
       _id, firstName, lastName, email, phone, status,
       moodleUserId, applicationDate, acceptedDate,
+      paymentStatus, tuitionAmount, stripeCustomerId,
       program->{ _id, title, moodleCourseId }
     }`,
     { email }
@@ -123,7 +125,38 @@ export default async function PortalPage() {
             </p>
           </div>
         )}
-
+{/* Payment */}
+{isEnrolled && (
+  <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+    <div className="flex items-center justify-between flex-wrap gap-4">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#378ADD' }}>
+          Tuition Payment
+        </p>
+        <h2 className="text-lg font-bold text-[#1E3560]">
+          {student.paymentStatus === 'paid' ? 'Tuition Paid' : 'Payment Required'}
+        </h2>
+        <p className="text-sm mt-1" style={{ color: 'rgba(43,48,58,0.6)' }}>
+          {student.paymentStatus === 'paid'
+            ? 'Your tuition has been received. Thank you.'
+            : `Your tuition of $${student.tuitionAmount?.toLocaleString() ?? '2,500'} CAD is outstanding.`}
+        </p>
+      </div>
+      <div>
+        {student.paymentStatus === 'paid' ? (
+          <div
+            className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+            style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#16a34a' }}
+          >
+            Paid
+          </div>
+        ) : (
+          <PayTuitionButton />
+        )}
+      </div>
+    </div>
+  </div>
+)}
         {isEnrolled && (
           <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
             <div className="flex items-center justify-between mb-6 flex-wrap gap-4">

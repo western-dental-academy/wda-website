@@ -16,19 +16,20 @@ const clerkHandler = clerkMiddleware(async (auth, request: NextRequest) => {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Run Clerk auth check
-  const clerkResponse = await clerkHandler(request, {} as any)
-  if (clerkResponse) return clerkResponse
-
+  // Always pass through API and static routes before anything else
   if (
-    pathname === '/sitemap.xml' ||
-    pathname === '/robots.txt' ||
-    pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
-    pathname.startsWith('/__clerk')
+    pathname.startsWith('/__clerk') ||
+    pathname.startsWith('/_next') ||
+    pathname === '/sitemap.xml' ||
+    pathname === '/robots.txt'
   ) {
     return NextResponse.next()
   }
+
+  // Run Clerk auth check for non-API routes
+  const clerkResponse = await clerkHandler(request, {} as any)
+  if (clerkResponse) return clerkResponse
 
   const hostname = request.headers.get('host') ?? ''
   if (hostname.endsWith('.vercel.app')) return NextResponse.next()

@@ -5,8 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
 
-const BRIGHTSPACE_URL = "https://brightspace.com";
-
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
@@ -94,16 +92,14 @@ export default function Navbar() {
           </ul>
 
           <div className="flex items-center gap-2 shrink-0">
-            <a
-              href={BRIGHTSPACE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Student Login – opens in new tab"
+            <Link
+              href="/portal"
+              aria-label="Student Login"
               className="flex items-center gap-1.5 rounded-lg border border-[#1E3560]/20 px-3.5 py-2 text-sm font-semibold text-[#1E3560]/65 transition-colors duration-200 hover:border-[#1E3560]/45 hover:text-[#1E3560] whitespace-nowrap"
             >
               <Lock className="w-3.5 h-3.5 shrink-0" strokeWidth={2} aria-hidden />
               Student Login
-            </a>
+            </Link>
 
             <div className="w-px h-5 bg-[#1E3560]/15 shrink-0" aria-hidden />
 
@@ -185,17 +181,15 @@ export default function Navbar() {
             <div className="my-2 border-t border-[#1E3560]/8" aria-hidden />
 
             {/* Student Login */}
-            <a
-              href={BRIGHTSPACE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/portal"
               tabIndex={menuOpen ? 0 : -1}
-              aria-label="Student Login – opens in new tab"
+              aria-label="Student Login"
               className="flex items-center justify-center gap-2 rounded-lg border border-[#1E3560]/20 px-5 py-3 text-sm font-semibold text-[#1E3560]/65 transition-colors duration-200 hover:border-[#1E3560]/40 hover:text-[#1E3560]"
             >
               <Lock className="w-4 h-4 shrink-0" strokeWidth={2} aria-hidden />
               Student Login
-            </a>
+            </Link>
 
             <Link
               href="/book-a-tour"

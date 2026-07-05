@@ -21,13 +21,24 @@ export default function NewsletterSignup() {
     return true;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!validate()) return;
     setStatus("loading");
-    // Simulated submission — wire to a real endpoint (e.g. Mailchimp, ConvertKit) when ready
-    await new Promise((r) => setTimeout(r, 900));
-    setStatus("success");
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setStatus("success");
+    } catch (err) {
+      console.error('Subscribe error:', err)
+      setFieldError("Something went wrong. Please try again.")
+      setStatus("idle")
+    }
   }
 
   return (

@@ -13,7 +13,7 @@ This file provides Claude Code with full persistent context for the WDA ecosyste
 
 **Developer:** Aiden Brost — aiden@westerndentalacademy.com
 **Local project folder:** `C:\Users\brost\Desktop\Aiden\WDA\WDA Website\wda-website`
-**GitHub org:** github.com/western-dental-academy
+**GitHub org:** github.com/western-dental-academy (private repo)
 **Repo:** western-dental-academy/wda-website
 **Deployment:** Vercel (WDA account, separate from Make One Productions)
 **Git push command:** `git push origin HEAD`
@@ -43,6 +43,8 @@ westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
 - **Auth:** Clerk ✓ INSTALLED
 - **Payments:** Stripe ✓ INSTALLED (test mode — awaiting business details to activate live)
 - **PDF Generation:** @react-pdf/renderer
+- **Rate Limiting:** @upstash/ratelimit + @upstash/redis (Upstash Redis)
+- **Bot Protection:** react-google-recaptcha-v3 (reCAPTCHA v3)
 - **Fonts:** Montserrat (headings), Open Sans (body) via Google Fonts
 - **Animations:** Framer Motion
 - **Deployment:** Vercel
@@ -120,13 +122,13 @@ Never use Amber for anything other than calls-to-action.
 
 ### Pages Built
 - `/` — Home (includes newsletter signup)
-- `/about` — About WDA
+- `/about` — About WDA (team members pulled from Sanity)
 - `/programs` — Programs listing
 - `/programs/[slug]` — Individual program pages
 - `/blog` — Blog listing (Sanity-driven)
 - `/blog/[slug]` — Blog posts
 - `/faq` — FAQ
-- `/apply` — Multi-step application form ✓ Connected to Sanity
+- `/apply` — Multi-step application form ✓ Connected to Sanity + reCAPTCHA
 - `/book-a-tour` — Tour booking
 - `/contact` — Contact + Google Maps embed
 - `/edmonton-dental-careers` — Local SEO page
@@ -152,7 +154,7 @@ Studio access: `http://localhost:3000/studio?preview=wda2026`
 The project uses `proxy.ts` (not `middleware.ts`) — Next.js 16 convention.
 Clerk is integrated via `clerkMiddleware`.
 
-**Critical:** API routes must be passed through BEFORE the Clerk handler runs. The current structure is:
+**Critical:** API routes must be passed through BEFORE the Clerk handler runs:
 
 ```typescript
 export async function proxy(request: NextRequest) {
@@ -166,7 +168,6 @@ export async function proxy(request: NextRequest) {
   // Clerk runs on non-API routes only
   const clerkResponse = await clerkHandler(request, {} as any)
   if (clerkResponse) return clerkResponse
-
   // ... maintenance mode logic
 }
 ```
@@ -184,7 +185,7 @@ Protected routes (Clerk auth required):
 
 ### Schema Types (all in `sanity/schemaTypes/`)
 - `program` — WDA programmes (includes `moodleCourseId` number field)
-- `teamMember` — staff profiles
+- `teamMember` — staff profiles (photo support via @sanity/image-url)
 - `testimonial` — student quotes
 - `blogPost` — blog articles (Portable Text)
 - `faqItem` — FAQ entries
@@ -203,12 +204,6 @@ Protected routes (Clerk auth required):
 - `tuitionAmount` — number in CAD dollars (set by admin in Studio)
 - `applicationDate`, `acceptedDate`
 - `notes` — internal staff notes
-
-### Subscriber Schema Fields
-- `email` — required, validated
-- `subscribedAt` — datetime, auto-set
-- `source` — defaults to "website"
-- `active` — boolean, uncheck to unsubscribe
 
 ### Sanity API Token
 Must be **Editor** role (read + write) — read-only token will fail on all write operations.
@@ -230,6 +225,8 @@ Must be **Editor** role (read + write) — read-only token will fail on all writ
 |---|---|
 | Sanity student schema | ✓ Complete |
 | Apply form → Sanity | ✓ Complete |
+| reCAPTCHA v3 on apply form | ✓ Complete |
+| Rate limiting on apply + subscribe | ✓ Complete |
 | Clerk authentication | ✓ Complete |
 | Sanity webhook → Moodle provisioning | ✓ Complete |
 | Clerk ↔ Sanity student linking | ✓ Complete |
@@ -239,11 +236,12 @@ Must be **Editor** role (read + write) — read-only token will fail on all writ
 | Stripe payments (test mode) | ✓ Complete |
 | Stripe webhook → payment status | ✓ Complete |
 | Newsletter subscription → Sanity | ✓ Complete |
+| Team members on About page from Sanity | ✓ Complete |
 | LTI 1.3 SSO | ✗ Deferred until production Moodle |
 
 ### Enrollment Flow (WORKING)
 ```
-Student submits /apply form
+Student submits /apply form (reCAPTCHA verified)
         ↓
 /api/students/apply saves to Sanity (status: pending)
         ↓
@@ -262,6 +260,21 @@ Stripe webhook → /api/webhooks/stripe → paymentStatus set to "paid"
 Portal shows progress, grades, profile, certificate when complete
 ```
 
+### reCAPTCHA v3
+- Package: `react-google-recaptcha-v3`
+- Provider: `components/RecaptchaProvider.tsx` (client component wrapping layout)
+- Hook: `useGoogleReCaptcha` in `components/ApplyForm.tsx`
+- Verification: server-side in `/api/students/apply/route.ts`
+- **Only enforced in production** (`NODE_ENV === 'production'`) — skipped locally to avoid localhost scoring issues
+- Score threshold: 0.5
+
+### Rate Limiting
+- Package: `@upstash/ratelimit` + `@upstash/redis`
+- Client: `lib/ratelimit.ts`
+- Apply form: 5 requests per 10 minutes per IP
+- Subscribe form: 3 requests per 10 minutes per IP
+- Returns 429 with user-friendly message
+
 ### Clerk Authentication ✓
 - Package: `@clerk/nextjs`
 - `ClerkProvider` wraps body in `app/layout.tsx`
@@ -276,28 +289,18 @@ Portal shows progress, grades, profile, certificate when complete
 - Currency: CAD
 - Test card: `4242 4242 4242 4242`, any future expiry, any CVC
 - Local webhook testing: `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
-- `STRIPE_WEBHOOK_SECRET` from CLI is for local only — production needs different secret from Stripe dashboard
-
-### To activate Stripe live payments, need from Lance/Jolene:
-- Legal business name exactly as on incorporation certificate
-- CRA Business Number (9-digit BN)
-- Registered business address
-- Business bank account details
-- Beneficial owner (25%+) — full legal name, DOB, home address, last 4 digits of SIN
 
 ### Certificate Generation ✓
 - Package: `@react-pdf/renderer`
 - Generator: `lib/certificate/generate.tsx`
 - API route: `GET /api/students/certificate`
 - Only available when all Moodle modules complete (100%)
-- Downloads as `WDA-Certificate-[FirstName]-[LastName].pdf`
 
 ### Newsletter Subscription ✓
 - API route: `POST /api/subscribe`
+- Rate limited: 3 requests per 10 minutes per IP
 - Saves to Sanity `subscriber` document type
-- Checks for duplicates before saving
 - Viewable in Sanity Studio under Subscribers
-- For sending newsletters: export list and send from Outlook using info@westerndentalacademy.com
 
 ---
 
@@ -308,11 +311,10 @@ Portal shows progress, grades, profile, certificate when complete
 - **Start:** `docker compose up -d`
 - **Stop:** `docker compose stop`
 - **Local URL:** `http://localhost:8080`
-- **Admin:** username `admin` / password `Admin1234!`
+- **Admin password:** Changed from default — check password manager
 - **Moodle version:** 5.2.1 — requires MySQL 8.4
 - **APACHE_DOCUMENT_ROOT:** `/var/www/html/moodle/public`
 - **config.php wwwroot:** `http://localhost:8080`
-- **Welcome email errors on enrollment:** safe to ignore locally
 
 ### Moodle Courses
 | Course | Short Name | Moodle ID |
@@ -347,6 +349,17 @@ Exports:
 
 ---
 
+## About Page — Team Members
+
+- Team members are pulled dynamically from Sanity Studio
+- Schema: `teamMember` — name, role, bio, photo, order
+- Photo support via `@sanity/image-url` — utility at `lib/sanity/image.ts`
+- TeamCard component: `components/TeamCard.tsx` (client component with read more toggle)
+- Photos use `urlFor(photo).width(600).height(320).fit('crop').url()`
+- Display order: lower numbers appear first — set in Sanity Studio
+
+---
+
 ## Student Portal (/portal)
 
 ### Features Built
@@ -372,11 +385,11 @@ Exports:
 
 | Route | Method | Status | Purpose |
 |---|---|---|---|
-| `/api/students/apply` | POST | ✓ | Save application to Sanity |
+| `/api/students/apply` | POST | ✓ | Save application to Sanity (rate limited + reCAPTCHA) |
 | `/api/students/link-clerk` | POST | ✓ | Link Clerk ID to Sanity student |
 | `/api/students/certificate` | GET | ✓ | Generate PDF certificate |
 | `/api/stripe/checkout` | POST | ✓ | Create Stripe Checkout session |
-| `/api/subscribe` | POST | ✓ | Save newsletter subscriber to Sanity |
+| `/api/subscribe` | POST | ✓ | Save newsletter subscriber (rate limited) |
 | `/api/webhooks/sanity` | POST | ✓ | Moodle provisioning on acceptance |
 | `/api/webhooks/stripe` | POST | ✓ | Update payment status on completion |
 | `/api/moodle/test` | GET | Dev only | List Moodle courses |
@@ -385,31 +398,33 @@ Exports:
 
 ---
 
-## Local Development — What to Run
+## Security Implementation
 
-Three things need to be running for full local functionality:
+### Completed
+- ✓ Rate limiting on apply and subscribe routes (Upstash Redis)
+- ✓ reCAPTCHA v3 on apply form (production only)
+- ✓ Clerk authentication on portal routes
+- ✓ Stripe webhook signature verification
+- ✓ Sanity webhook signature verification
+- ✓ GitHub repo set to private
+- ✓ Moodle admin password changed from default
+- ✓ API routes pass through before Clerk handler
 
-1. **Dev server** (VS Code terminal): `npm run dev`
-2. **Moodle** (PowerShell): `cd C:\Users\brost\Desktop\Aiden\WDA\moodle-local && docker compose up -d`
-3. **Stripe CLI** (PowerShell, admin): `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
-4. **ngrok** (only for Sanity webhook testing): `ngrok http 3000` then update webhook URL at sanity.io/manage
+### Still To Do Before Go-Live
+- [ ] Add reCAPTCHA to newsletter subscribe form
+- [ ] Zod input validation on all API routes
+- [ ] Security headers in `next.config.ts`
+- [ ] Third-party security review
+- [ ] PIPA compliance documentation
 
 ---
 
-## Security & Compliance
+## Local Development — What to Run
 
-### Alberta PIPA
-All student data must stay on Canadian servers.
-- Moodle host: DigitalOcean Toronto or MoodleCloud CA
-- Third-party security review required before go-live
-
-### Security Practices
-- Input validation: **Zod** on all API route inputs
-- Never hardcode secrets — `.env.local` + Vercel dashboard
-- Verify all webhook signatures (`@sanity/webhook`, Stripe)
-- `CLERK_SECRET_KEY` and `STRIPE_SECRET_KEY` server-side only
-- `SANITY_API_TOKEN` must be Editor role
-- API routes must be passed through BEFORE Clerk handler in `proxy.ts`
+1. **Dev server** (VS Code terminal): `npm run dev`
+2. **Moodle** (PowerShell): `cd C:\Users\brost\Desktop\Aiden\WDA\moodle-local && docker compose up -d`
+3. **Stripe CLI** (PowerShell admin): `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
+4. **ngrok** (only for Sanity webhook testing): `ngrok http 3000` then update webhook URL at sanity.io/manage
 
 ---
 
@@ -442,6 +457,14 @@ MOODLE_COURSE_DAC_DD=2
 
 # Sanity Webhook
 SANITY_WEBHOOK_SECRET=wda-sanity-webhook-2026
+
+# reCAPTCHA
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=
+RECAPTCHA_SECRET_KEY=
+
+# Upstash Rate Limiting
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 
 # Site
 NEXT_PUBLIC_SITE_URL=http://localhost:3000   # https://westerndentalacademy.com in production
@@ -478,9 +501,11 @@ PREVIEW_KEY=wda2026
 | 7 | Student portal — progress, grades, profile, certificates | ✓ Complete |
 | 8 | Stripe payments (test mode) | ✓ Complete |
 | 9 | Newsletter subscription → Sanity | ✓ Complete |
-| 10 | Activate Stripe live + production Moodle hosting | Waiting on business details |
-| 11 | LTI 1.3 SSO | After production Moodle |
-| 12 | Go live — flip maintenance mode off | Final step |
+| 10 | Team members on About page from Sanity | ✓ Complete |
+| 11 | Security hardening (rate limiting, reCAPTCHA, private repo) | ✓ Complete |
+| 12 | Activate Stripe live + production Moodle hosting | Waiting on business details |
+| 13 | LTI 1.3 SSO | After production Moodle |
+| 14 | Go live — flip maintenance mode off | Final step |
 
 ---
 
@@ -488,12 +513,16 @@ PREVIEW_KEY=wda2026
 - [ ] Stripe business details from Lance/Jolene → activate live payments
 - [ ] Update `STRIPE_WEBHOOK_SECRET` in Vercel to production webhook secret
 - [ ] Add production Stripe webhook in Stripe dashboard → `https://westerndentalacademy.com/api/webhooks/stripe`
-- [ ] Set up production Moodle on Canadian host
-- [ ] Update `MOODLE_URL` in Vercel to production URL
+- [ ] Switch Stripe from test keys to live keys in Vercel
+- [ ] Set up production Moodle on Canadian host (DigitalOcean Toronto or MoodleCloud CA)
+- [ ] Export local Moodle backup and import to production
+- [ ] Add CNAME in GoDaddy: `learn` → production host value
+- [ ] Update `MOODLE_URL` in Vercel to `https://learn.westerndentalacademy.com`
 - [ ] Update `MOODLE_TOKEN` in Vercel to production token
 - [ ] Update Sanity webhook URL from ngrok to `https://westerndentalacademy.com/api/webhooks/sanity`
 - [ ] Update `NEXT_PUBLIC_SITE_URL` in Vercel to `https://westerndentalacademy.com`
 - [ ] Set `MAINTENANCE_MODE=false` in Vercel
+- [ ] Change Moodle admin password on production instance
 - [ ] Third-party security review
 - [ ] Test full enrollment flow on production
-- [ ] Switch Stripe from test keys to live keys in Vercel
+- [ ] Confirm westerndentalacademy.com loads correctly

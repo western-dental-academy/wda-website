@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
+import { applyRatelimit } from '@/lib/ratelimit'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -10,6 +11,18 @@ const client = createClient({
 })
 
 export async function POST(req: NextRequest) {
+  
+  // Rate limiting
+  const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1'
+  const { success } = await applyRatelimit.limit(ip)
+  if (!success) {
+    return Response.json(
+      { error: 'Too many requests. Please try again in a few minutes.' },
+      { status: 429 }
+    )
+  }
+  
+  
   try {
     const body = await req.json()
 

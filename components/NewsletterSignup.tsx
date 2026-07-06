@@ -34,9 +34,9 @@ async function handleSubmit(e: React.FormEvent) {
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       setStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       console.error('Subscribe error:', err)
-      setFieldError("Something went wrong. Please try again.")
+      setFieldError(err.message ?? "Something went wrong. Please try again.")
       setStatus("idle")
     }
   }

@@ -133,27 +133,21 @@ export default function ContactForm() {
   }
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setStatus("loading");
+  e.preventDefault();
+  setStatus("loading");
 
-    // ── Activate when a real endpoint exists ────────────────────────────────
-    // try {
-    //   const res = await fetch("/api/contact", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data),
-    //   });
-    //   if (!res.ok) throw new Error();
-    //   setStatus("success");
-    // } catch {
-    //   setStatus("error");
-    // }
-    // ────────────────────────────────────────────────────────────────────────
-
-    // Simulated success — remove once real endpoint is wired
-    await new Promise((r) => setTimeout(r, 1200));
+  try {
+    const res = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error();
     setStatus("success");
+  } catch {
+    setStatus("error");
   }
+}
 
   if (status === "success") {
     return (

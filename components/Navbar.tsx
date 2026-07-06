@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
+import { motion } from "framer-motion";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -59,13 +60,21 @@ export default function Navbar() {
           aria-label="Western Dental Academy – Home"
           className="shrink-0"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/Western Dental Academy Logo - Alternate.svg"
-            alt=""
-            style={{ height: '70px', width: 'auto' }}
-            className="shrink-0"
-          />
+          <motion.div
+            className="inline-flex"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            whileHover={{ scale: 1.04, transition: { duration: 0.2, ease: "easeOut" } }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/Western Dental Academy Logo - Alternate.svg"
+              alt=""
+              style={{ height: '70px', width: 'auto' }}
+              className="shrink-0"
+            />
+          </motion.div>
         </Link>
 
         {/* Desktop links */}

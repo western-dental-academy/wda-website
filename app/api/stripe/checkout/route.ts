@@ -53,6 +53,9 @@ export async function POST(req: NextRequest) {
       await client.patch(student._id).set({ stripeCustomerId }).commit()
     }
 
+    
+    const processingFee = Math.round((amountInCents + 30) / (1 - 0.029) - amountInCents)
+
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
       customer: stripeCustomerId,
@@ -66,6 +69,17 @@ export async function POST(req: NextRequest) {
               description: 'Western Dental Academy — Tuition Payment',
             },
             unit_amount: amountInCents,
+          },
+          quantity: 1,
+        },
+        {
+          price_data: {
+            currency: 'cad',
+            product_data: {
+              name: 'Payment Processing Fee',
+              description: 'Credit/debit card processing fee (2.9% + $0.30)',
+            },
+            unit_amount: processingFee,
           },
           quantity: 1,
         },

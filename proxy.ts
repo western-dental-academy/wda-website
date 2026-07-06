@@ -18,7 +18,8 @@ export async function proxy(request: NextRequest) {
 
   // Always pass through API and static routes
   if (
-    pathname.startsWith('/api') ||
+    pathname.startsWith('/api/webhooks') ||
+    pathname.startsWith('/api/moodle') ||
     pathname.startsWith('/__clerk') ||
     pathname.startsWith('/_next') ||
     pathname === '/sitemap.xml' ||
@@ -42,7 +43,11 @@ export async function proxy(request: NextRequest) {
 
   if (pathname === '/coming-soon') return NextResponse.next()
 
-  // ── Maintenance mode check BEFORE Clerk ──
+  // ── Always run Clerk first so auth() works everywhere ──
+  const clerkResponse = await clerkHandler(request, {} as any)
+  if (clerkResponse) return clerkResponse
+
+  // ── Maintenance mode check ──
   if (process.env.MAINTENANCE_MODE === 'true') {
     const previewCookie = request.cookies.get('wda-preview')
     if (previewCookie?.value === 'true') return NextResponse.next()
@@ -68,9 +73,12 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // ── Clerk auth check (only runs when not in maintenance mode) ──
-  const clerkResponse = await clerkHandler(request, {} as any)
-  if (clerkResponse) return clerkResponse
-
   return NextResponse.next()
+}
+
+export const config = {
+  matcher: [
+    '/((?!_next/static|_next/image|favicon.ico|assets/).*)',
+    '/__clerk/:path*',
+  ],
 }

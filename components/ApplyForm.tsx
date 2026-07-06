@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -207,6 +208,7 @@ export default function ApplyForm() {
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const { executeRecaptcha } = useGoogleReCaptcha()
 
   // Focus the step heading whenever the active step changes
   const stepHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -271,11 +273,16 @@ export default function ApplyForm() {
   }
   // Step 4 — final submission
   setSubmitting(true);
-  try {
-    const res = await fetch('/api/students/apply', {
+    try {
+      let recaptchaToken = ''
+if (executeRecaptcha) {
+  recaptchaToken = await executeRecaptcha('apply_form')
+}
+      
+      const res = await fetch('/api/students/apply', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, recaptchaToken }),
     });
     const result = await res.json();
     if (!result.success) throw new Error(result.error);

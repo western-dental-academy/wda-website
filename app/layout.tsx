@@ -1,11 +1,12 @@
-import {ClerkProvider} from "@clerk/nextjs";
-import type { Metadata } from "next";
+import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
 import SiteShell from "@/components/SiteShell";
 import CookieConsent from "@/components/CookieConsent";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
 import { SanityLive } from "@/sanity/lib/live";
+import RecaptchaProvider from '@/components/RecaptchaProvider'
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -58,6 +59,11 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -69,12 +75,14 @@ export default function RootLayout({
       className={`${montserrat.variable} ${openSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <ClerkProvider>
-          <SiteShell>{children}</SiteShell>
-          <SanityLive />
-          <CookieConsent />
-          <MicrosoftClarity />
-        </ClerkProvider>
+        <RecaptchaProvider>
+          <ClerkProvider>
+            <SiteShell>{children}</SiteShell>
+            <SanityLive />
+            <CookieConsent />
+            <MicrosoftClarity />
+          </ClerkProvider>
+        </RecaptchaProvider>
       </body>
     </html>
   );

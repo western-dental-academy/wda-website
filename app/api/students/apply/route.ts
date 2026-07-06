@@ -11,7 +11,7 @@ const client = createClient({
 })
 
 export async function POST(req: NextRequest) {
-  
+
   // Rate limiting
   const ip = req.headers.get('x-forwarded-for') ?? '127.0.0.1'
   const { success } = await applyRatelimit.limit(ip)
@@ -21,11 +21,27 @@ export async function POST(req: NextRequest) {
       { status: 429 }
     )
   }
-  
-  
-  try {
-    const body = await req.json()
 
+  // Parse body
+  const { recaptchaToken, ...formData } = await req.json()
+
+  // Verify reCAPTCHA
+  if (recaptchaToken && process.env.NODE_ENV === 'production') {
+  const recaptchaRes = await fetch(
+    `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.RECAPTCHA_SECRET_KEY}&response=${recaptchaToken}`,
+    { method: 'POST' }
+  )
+  const recaptchaData = await recaptchaRes.json()
+
+  if (!recaptchaData.success || recaptchaData.score < 0.5) {
+    return Response.json(
+      { error: 'reCAPTCHA verification failed. Please try again.' },
+      { status: 400 }
+    )
+  }
+}
+
+  try {
     const {
       firstName,
       lastName,
@@ -38,7 +54,7 @@ export async function POST(req: NextRequest) {
       program,
       startDate,
       referral,
-    } = body
+    } = formData
 
     // Basic validation
     if (!firstName || !lastName || !email || !phone || !program) {

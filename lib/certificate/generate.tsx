@@ -1,4 +1,5 @@
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer'
+import QRCode from 'qrcode'
 
 const styles = StyleSheet.create({
   page: {
@@ -60,7 +61,38 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 11,
     color: '#888888',
-    marginBottom: 40,
+    marginBottom: 24,
+  },
+  verificationRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 20,
+  },
+  qrCode: {
+    width: 64,
+    height: 64,
+  },
+  verificationText: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+  },
+  certificateIdLabel: {
+    fontSize: 9,
+    color: '#888888',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  certificateId: {
+    fontSize: 13,
+    color: '#0D3B6E',
+    fontFamily: 'Helvetica-Bold',
+  },
+  verifyUrl: {
+    fontSize: 9,
+    color: '#378ADD',
   },
   footer: {
     fontSize: 10,
@@ -74,9 +106,19 @@ interface CertificateProps {
   studentName: string
   programName: string
   completionDate: string
+  certificateId: string
+  verificationUrl: string
+  qrCodeDataUrl: string
 }
 
-function CertificateDocument({ studentName, programName, completionDate }: CertificateProps) {
+function CertificateDocument({
+  studentName,
+  programName,
+  completionDate,
+  certificateId,
+  verificationUrl,
+  qrCodeDataUrl,
+}: CertificateProps) {
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
@@ -89,6 +131,16 @@ function CertificateDocument({ studentName, programName, completionDate }: Certi
           <Text style={styles.programName}>{programName}</Text>
           <View style={styles.accentLineBottom} />
           <Text style={styles.date}>Issued {completionDate}</Text>
+
+          <View style={styles.verificationRow}>
+            <Image src={qrCodeDataUrl} style={styles.qrCode} />
+            <View style={styles.verificationText}>
+              <Text style={styles.certificateIdLabel}>Certificate ID</Text>
+              <Text style={styles.certificateId}>{certificateId}</Text>
+              <Text style={styles.verifyUrl}>{verificationUrl}</Text>
+            </View>
+          </View>
+
           <Text style={styles.footer}>westerndentalacademy.com</Text>
         </View>
       </Page>
@@ -99,13 +151,30 @@ function CertificateDocument({ studentName, programName, completionDate }: Certi
 export async function generateCertificate(
   studentName: string,
   programName: string,
-  completionDate: string
+  completionDate: string,
+  certificateId: string,
+  verificationUrl: string
 ): Promise<Buffer> {
-  const doc = <CertificateDocument
-    studentName={studentName}
-    programName={programName}
-    completionDate={completionDate}
-  />
+  // Generate QR code as data URL
+  const qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
+    width: 128,
+    margin: 1,
+    color: {
+      dark: '#0D3B6E',
+      light: '#ffffff',
+    },
+  })
+
+  const doc = (
+    <CertificateDocument
+      studentName={studentName}
+      programName={programName}
+      completionDate={completionDate}
+      certificateId={certificateId}
+      verificationUrl={verificationUrl}
+      qrCodeDataUrl={qrCodeDataUrl}
+    />
+  )
   const asPdf = pdf(doc)
   const blob = await asPdf.toBlob()
   const arrayBuffer = await blob.arrayBuffer()

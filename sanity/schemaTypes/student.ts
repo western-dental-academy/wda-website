@@ -105,6 +105,19 @@ defineField({
       type: 'datetime',
     }),
     defineField({
+  name: 'certificateId',
+  title: 'Certificate ID',
+  type: 'string',
+  description: 'Auto-generated unique certificate verification code',
+  readOnly: true,
+}),
+defineField({
+  name: 'certificateIssuedDate',
+  title: 'Certificate Issued Date',
+  type: 'datetime',
+  readOnly: true,
+}),
+    defineField({
       name: 'notes',
       title: 'Internal Notes',
       type: 'text',

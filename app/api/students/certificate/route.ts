@@ -11,6 +11,16 @@ const client = createClient({
   useCdn: false,
 })
 
+function generateCertificateId(): string {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  const year = new Date().getFullYear()
+  let code = ''
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return `WDA-${year}-${code}`
+}
+
 export async function GET() {
   try {
     const { userId } = await auth()
@@ -23,7 +33,7 @@ export async function GET() {
 
     const student = await client.fetch(
       `*[_type == "student" && email == $email][0]{
-        firstName, lastName, moodleUserId,
+        _id, firstName, lastName, moodleUserId, certificateId,
         program->{ title, moodleCourseId }
       }`,
       { email }
@@ -43,6 +53,16 @@ export async function GET() {
       return new Response('Course not yet complete', { status: 403 })
     }
 
+    // Generate or reuse certificate ID
+    let certificateId = student.certificateId
+    if (!certificateId) {
+      certificateId = generateCertificateId()
+      await client.patch(student._id).set({
+        certificateId,
+        certificateIssuedDate: new Date().toISOString(),
+      }).commit()
+    }
+
     const studentName = `${student.firstName} ${student.lastName}`
     const programName = student.program?.title ?? 'Dental Assisting Certificate'
     const completionDate = new Date().toLocaleDateString('en-CA', {
@@ -50,8 +70,9 @@ export async function GET() {
       month: 'long',
       day: 'numeric',
     })
+    const verificationUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/verify/${certificateId}`
 
-    const pdfBuffer = await generateCertificate(studentName, programName, completionDate)
+    const pdfBuffer = await generateCertificate(studentName, programName, completionDate, certificateId, verificationUrl)
 
     return new Response(new Uint8Array(pdfBuffer), {
       headers: {

@@ -1,106 +1,141 @@
 import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer'
 import QRCode from 'qrcode'
+import fs from 'fs'
+import path from 'path'
+
+// ── Brand tokens ────────────────────────────────────────────────────────────
+const NAVY  = '#0D3B6E'
+const BLUE  = '#378ADD'
+const AMBER = '#E67E22'
+const MID   = '#666666'
+const LIGHT = '#888888'
 
 const styles = StyleSheet.create({
   page: {
     backgroundColor: '#ffffff',
-    padding: 60,
+    padding: 48,
     fontFamily: 'Helvetica',
   },
   border: {
-    border: '3px solid #0D3B6E',
-    padding: 40,
+    border: `3px solid ${NAVY}`,
+    padding: 36,
     height: '100%',
-    display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
   },
-  accentLine: {
-    width: 60,
-    height: 3,
-    backgroundColor: '#E67E22',
-    marginBottom: 24,
+
+  // ── Logo ──────────────────────────────────────────────────────────────────
+  logo: {
+    width: 220,
+    height: 75,
+    marginBottom: 12,
   },
-  institution: {
-    fontSize: 11,
-    color: '#378ADD',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-    marginBottom: 16,
+
+  // ── Thin amber rule under logo ────────────────────────────────────────────
+  topRule: {
+    width: 100,
+    height: 2,
+    backgroundColor: AMBER,
+    marginBottom: 14,
   },
+
+  // ── "This certifies that" ─────────────────────────────────────────────────
   certifies: {
-    fontSize: 13,
-    color: '#666666',
-    marginBottom: 12,
+    fontSize: 12,
+    color: MID,
+    marginBottom: 10,
   },
+
+  // ── Amber accent lines framing the student name ───────────────────────────
+  nameAccent: {
+    width: 160,
+    height: 3,
+    backgroundColor: AMBER,
+  },
+
+  // ── Student name ──────────────────────────────────────────────────────────
   studentName: {
-    fontSize: 36,
-    color: '#0D3B6E',
+    fontSize: 44,
+    color: NAVY,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 12,
+    textAlign: 'center',
+    marginTop: 10,
+    marginBottom: 10,
   },
+
+  // ── "has successfully completed" ─────────────────────────────────────────
   completed: {
-    fontSize: 13,
-    color: '#666666',
+    fontSize: 12,
+    color: MID,
+    marginTop: 18,
     marginBottom: 8,
   },
+
+  // ── Programme name ────────────────────────────────────────────────────────
   programName: {
     fontSize: 20,
-    color: '#0D3B6E',
+    color: NAVY,
     fontFamily: 'Helvetica-Bold',
-    marginBottom: 24,
     textAlign: 'center',
+    marginBottom: 16,
   },
-  accentLineBottom: {
-    width: 60,
-    height: 3,
-    backgroundColor: '#E67E22',
-    marginBottom: 24,
-  },
+
+  // ── Issue date ────────────────────────────────────────────────────────────
   date: {
-    fontSize: 11,
-    color: '#888888',
-    marginBottom: 24,
+    fontSize: 10,
+    color: LIGHT,
   },
-  verificationRow: {
-    display: 'flex',
+
+  // ── Pushes footer to bottom of flex container ─────────────────────────────
+  spacer: {
+    flex: 1,
+  },
+
+  // ── Footer text (centred at bottom) ──────────────────────────────────────
+  footer: {
+    fontSize: 9,
+    color: BLUE,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
+
+  // ── Verification block — absolute, bottom-right ───────────────────────────
+  verificationBlock: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 20,
-  },
-  qrCode: {
-    width: 64,
-    height: 64,
+    gap: 8,
   },
   verificationText: {
-    display: 'flex',
     flexDirection: 'column',
-    gap: 4,
+    gap: 3,
+    alignItems: 'flex-end',
   },
   certificateIdLabel: {
-    fontSize: 9,
-    color: '#888888',
+    fontSize: 7,
+    color: LIGHT,
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   certificateId: {
-    fontSize: 13,
-    color: '#0D3B6E',
+    fontSize: 9,
+    color: NAVY,
     fontFamily: 'Helvetica-Bold',
   },
   verifyUrl: {
-    fontSize: 9,
-    color: '#378ADD',
+    fontSize: 7,
+    color: BLUE,
   },
-  footer: {
-    fontSize: 10,
-    color: '#378ADD',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
+  qrCode: {
+    width: 44,
+    height: 44,
   },
 })
+
+// ── Types ────────────────────────────────────────────────────────────────────
 
 interface CertificateProps {
   studentName: string
@@ -109,7 +144,10 @@ interface CertificateProps {
   certificateId: string
   verificationUrl: string
   qrCodeDataUrl: string
+  logoDataUrl: string
 }
+
+// ── Document component ───────────────────────────────────────────────────────
 
 function CertificateDocument({
   studentName,
@@ -118,35 +156,66 @@ function CertificateDocument({
   certificateId,
   verificationUrl,
   qrCodeDataUrl,
+  logoDataUrl,
 }: CertificateProps) {
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
         <View style={styles.border}>
-          <View style={styles.accentLine} />
-          <Text style={styles.institution}>Western Dental Academy</Text>
+
+          {/* Top spacer — balances the bottom spacer to centre content */}
+          <View style={styles.spacer} />
+
+          {/* Logo */}
+          <Image src={logoDataUrl} style={styles.logo} />
+
+          {/* Thin amber rule */}
+          <View style={styles.topRule} />
+
+          {/* Certifies */}
           <Text style={styles.certifies}>This certifies that</Text>
+
+          {/* Amber line above name */}
+          <View style={styles.nameAccent} />
+
+          {/* Student name */}
           <Text style={styles.studentName}>{studentName}</Text>
+
+          {/* Amber line below name */}
+          <View style={styles.nameAccent} />
+
+          {/* Completed */}
           <Text style={styles.completed}>has successfully completed</Text>
+
+          {/* Programme name */}
           <Text style={styles.programName}>{programName}</Text>
-          <View style={styles.accentLineBottom} />
+
+          {/* Issue date */}
           <Text style={styles.date}>Issued {completionDate}</Text>
 
-          <View style={styles.verificationRow}>
-            <Image src={qrCodeDataUrl} style={styles.qrCode} />
+          {/* Push footer down */}
+          <View style={styles.spacer} />
+
+          {/* Footer */}
+          <Text style={styles.footer}>westerndentalacademy.com</Text>
+
+          {/* Verification block — bottom-right, subtle */}
+          <View style={styles.verificationBlock}>
             <View style={styles.verificationText}>
               <Text style={styles.certificateIdLabel}>Certificate ID</Text>
               <Text style={styles.certificateId}>{certificateId}</Text>
               <Text style={styles.verifyUrl}>{verificationUrl}</Text>
             </View>
+            <Image src={qrCodeDataUrl} style={styles.qrCode} />
           </View>
 
-          <Text style={styles.footer}>westerndentalacademy.com</Text>
         </View>
       </Page>
     </Document>
   )
 }
+
+// ── Generator ────────────────────────────────────────────────────────────────
 
 export async function generateCertificate(
   studentName: string,
@@ -155,15 +224,20 @@ export async function generateCertificate(
   certificateId: string,
   verificationUrl: string
 ): Promise<Buffer> {
-  // Generate QR code as data URL
-  const qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
-    width: 128,
-    margin: 1,
-    color: {
-      dark: '#0D3B6E',
-      light: '#ffffff',
-    },
-  })
+  const [qrCodeDataUrl, logoBuffer] = await Promise.all([
+    QRCode.toDataURL(verificationUrl, {
+      width: 128,
+      margin: 1,
+      color: { dark: NAVY, light: '#ffffff' },
+    }),
+    Promise.resolve(
+      fs.readFileSync(
+        path.join(process.cwd(), 'public', 'Western Dental Academy Logo Alternate-1.png')
+      )
+    ),
+  ])
+
+  const logoDataUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
 
   const doc = (
     <CertificateDocument
@@ -173,8 +247,10 @@ export async function generateCertificate(
       certificateId={certificateId}
       verificationUrl={verificationUrl}
       qrCodeDataUrl={qrCodeDataUrl}
+      logoDataUrl={logoDataUrl}
     />
   )
+
   const asPdf = pdf(doc)
   const blob = await asPdf.toBlob()
   const arrayBuffer = await blob.arrayBuffer()

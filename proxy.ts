@@ -1,22 +1,7 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-
-const isProtectedRoute = createRouteMatcher([
-  '/portal(.*)',
-  '/api/students/provision(.*)',
-])
-
-const clerkHandler = clerkMiddleware(async (auth, request: NextRequest) => {
-  if (isProtectedRoute(request)) {
-    await auth.protect()
-  }
-})
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Always pass through API and static routes before anything else
+  // Always pass through API and static routes
   if (
     pathname.startsWith('/api') ||
     pathname.startsWith('/__clerk') ||
@@ -27,13 +12,9 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Run Clerk auth check for non-API routes
-  const clerkResponse = await clerkHandler(request, {} as any)
-  if (clerkResponse) return clerkResponse
-
   const hostname = request.headers.get('host') ?? ''
   if (hostname === 'wda-website.vercel.app') return NextResponse.next()
-if (hostname.match(/wda-website-[a-z0-9]+-aiden-wda\.vercel\.app/)) return NextResponse.next()
+  if (hostname.match(/wda-website-[a-z0-9]+-aiden-wda\.vercel\.app/)) return NextResponse.next()
 
   const decodedPathname = decodeURIComponent(pathname)
   if (
@@ -46,35 +27,35 @@ if (hostname.match(/wda-website-[a-z0-9]+-aiden-wda\.vercel\.app/)) return NextR
 
   if (pathname === '/coming-soon') return NextResponse.next()
 
-  if (process.env.MAINTENANCE_MODE !== 'true') return NextResponse.next()
+  // ── Maintenance mode check BEFORE Clerk ──
+  if (process.env.MAINTENANCE_MODE === 'true') {
+    const previewCookie = request.cookies.get('wda-preview')
+    if (previewCookie?.value === 'true') return NextResponse.next()
 
-  const previewCookie = request.cookies.get('wda-preview')
-  if (previewCookie?.value === 'true') return NextResponse.next()
+    const previewParam = request.nextUrl.searchParams.get('preview')
+    if (previewParam && previewParam === process.env.PREVIEW_KEY) {
+      const destination = request.nextUrl.clone()
+      destination.searchParams.delete('preview')
+      const response = NextResponse.redirect(destination)
+      response.cookies.set('wda-preview', 'true', {
+        maxAge: 60 * 60 * 24,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        path: '/',
+      })
+      return response
+    }
 
-  const previewParam = request.nextUrl.searchParams.get('preview')
-  if (previewParam && previewParam === process.env.PREVIEW_KEY) {
-    const destination = request.nextUrl.clone()
-    destination.searchParams.delete('preview')
-    const response = NextResponse.redirect(destination)
-    response.cookies.set('wda-preview', 'true', {
-      maxAge: 60 * 60 * 24,
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-    })
-    return response
+    const url = request.nextUrl.clone()
+    url.pathname = '/coming-soon'
+    url.search = ''
+    return NextResponse.redirect(url)
   }
 
-  const url = request.nextUrl.clone()
-  url.pathname = '/coming-soon'
-  url.search = ''
-  return NextResponse.redirect(url)
-}
+  // ── Clerk auth check (only runs when not in maintenance mode) ──
+  const clerkResponse = await clerkHandler(request, {} as any)
+  if (clerkResponse) return clerkResponse
 
-export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|assets/).*)',
-    '/__clerk/:path*',
-  ],
+  return NextResponse.next()
 }

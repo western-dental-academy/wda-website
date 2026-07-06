@@ -71,7 +71,7 @@ export default function Navbar() {
             <img
               src="/Western Dental Academy Logo - Alternate.svg"
               alt=""
-              style={{ height: '70px', width: 'auto' }}
+              style={{ height: '56px', width: 'auto' }}
               className="shrink-0"
             />
           </motion.div>

@@ -32,7 +32,8 @@ export async function proxy(request: NextRequest) {
   if (clerkResponse) return clerkResponse
 
   const hostname = request.headers.get('host') ?? ''
-  if (hostname.endsWith('.vercel.app')) return NextResponse.next()
+  if (hostname === 'wda-website.vercel.app') return NextResponse.next()
+if (hostname.match(/wda-website-[a-z0-9]+-aiden-wda\.vercel\.app/)) return NextResponse.next()
 
   const decodedPathname = decodeURIComponent(pathname)
   if (

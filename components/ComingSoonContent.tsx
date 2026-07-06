@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 interface Particle {
@@ -141,14 +140,12 @@ export default function ComingSoonContent() {
             aria-hidden
           />
 
-          <Image
-            src="/Western Dental Academy Logo- Inverted-Updated.svg"
-            alt="Western Dental Academy Logo"
-            width={1000}
-            height={1000}
-            priority
-            className="relative z-10 w-full h-auto"
-            style={{ animation: "logoFloat 4s ease-in-out infinite" }}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/Western Dental Academy Logo - Alternate - Inverted.svg"
+            alt="Western Dental Academy"
+            style={{ height: '80px', width: 'auto', animation: "logoFloat 4s ease-in-out infinite" }}
+            className="relative z-10 mx-auto"
           />
         </motion.div>
 

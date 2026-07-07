@@ -43,15 +43,14 @@ export async function proxy(request: NextRequest) {
 
   if (pathname === '/coming-soon') return NextResponse.next()
 
-  // ── Maintenance mode check FIRST ──
+  // ── Always run Clerk first so auth() works everywhere ──
+  const clerkResponse = await clerkHandler(request, {} as any)
+  if (clerkResponse) return clerkResponse
+
+  // ── Maintenance mode check ──
   if (process.env.MAINTENANCE_MODE === 'true') {
     const previewCookie = request.cookies.get('wda-preview')
-    if (previewCookie?.value === 'true') {
-      // Still run Clerk for authenticated routes even in maintenance mode
-      const clerkResponse = await clerkHandler(request, {} as any)
-      if (clerkResponse) return clerkResponse
-      return NextResponse.next()
-    }
+    if (previewCookie?.value === 'true') return NextResponse.next()
 
     const previewParam = request.nextUrl.searchParams.get('preview')
     if (previewParam && previewParam === process.env.PREVIEW_KEY) {
@@ -73,10 +72,6 @@ export async function proxy(request: NextRequest) {
     url.search = ''
     return NextResponse.redirect(url)
   }
-
-  // ── Clerk auth check (only when not in maintenance mode) ──
-  const clerkResponse = await clerkHandler(request, {} as any)
-  if (clerkResponse) return clerkResponse
 
   return NextResponse.next()
 }

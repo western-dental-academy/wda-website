@@ -391,7 +391,7 @@ export default function ComingSoonContent() {
         >
           {/* Instagram */}
           <a
-            href="https://instagram.com/westerndentalacademy"
+            href="https://www.instagram.com/westerndentalacademy/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Western Dental Academy on Instagram – opens in new tab"
@@ -413,7 +413,7 @@ export default function ComingSoonContent() {
 
           {/* Facebook */}
           <a
-            href="https://facebook.com/westerndentalacademy"
+            href="https://www.facebook.com/profile.php?id=61591275340547"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Western Dental Academy on Facebook – opens in new tab"
@@ -431,7 +431,7 @@ export default function ComingSoonContent() {
 
           {/* LinkedIn */}
           <a
-            href="https://linkedin.com/company/western-dental-academy"
+            href="https://www.linkedin.com/company/western-dental-academy/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Western Dental Academy on LinkedIn – opens in new tab"

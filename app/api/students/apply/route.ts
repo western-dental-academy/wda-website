@@ -1,6 +1,9 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
 import { applyRatelimit } from '@/lib/ratelimit'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -83,6 +86,63 @@ export async function POST(req: NextRequest) {
       ]
         .filter(Boolean)
         .join('\n'),
+    })
+
+    // Notify admin of new application
+    await resend.emails.send({
+      from: 'Western Dental Academy <info@westerndentalacademy.com>',
+      to: 'info@westerndentalacademy.com',
+      subject: `New Application: ${firstName} ${lastName} — ${program}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #1E3560; padding: 24px 32px;">
+            <h1 style="color: white; margin: 0; font-size: 20px;">New Student Application</h1>
+            <p style="color: rgba(255,255,255,0.6); margin: 4px 0 0; font-size: 14px;">Western Dental Academy</p>
+          </div>
+          
+          <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+            <p style="color: #1E3560; font-size: 15px; margin-bottom: 24px;">A new application has been submitted and is awaiting review.</p>
+            
+            <table style="width: 100%; border-collapse: collapse;">
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; font-size: 13px; width: 140px;">Name</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #1E3560; font-size: 13px; font-weight: 600;">${firstName} ${lastName}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; font-size: 13px;">Email</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; font-size: 13px;"><a href="mailto:${email}" style="color: #378ADD;">${email}</a></td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; font-size: 13px;">Phone</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #1E3560; font-size: 13px;">${phone}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; font-size: 13px;">Programme</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #1E3560; font-size: 13px;">${program}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #6b7280; font-size: 13px;">Preferred Start</td>
+                <td style="padding: 10px 0; border-bottom: 1px solid #f3f4f6; color: #1E3560; font-size: 13px;">${startDate}</td>
+              </tr>
+              <tr>
+                <td style="padding: 10px 0; color: #6b7280; font-size: 13px;">Referral</td>
+                <td style="padding: 10px 0; color: #1E3560; font-size: 13px;">${referral}</td>
+              </tr>
+            </table>
+
+            <div style="margin-top: 28px;">
+              <a href="https://westerndentalacademy.com/studio/structure/students" 
+                 style="background-color: #E67E22; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+                Review Application in Sanity Studio
+              </a>
+            </div>
+          </div>
+
+          <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — westerndentalacademy.com</p>
+          </div>
+        </div>
+      `,
     })
 
     return Response.json({ success: true, studentId: student._id })

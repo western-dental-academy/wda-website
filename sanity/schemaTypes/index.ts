@@ -6,7 +6,8 @@ import { blogPostType } from "./blogPost";
 import { faqItemType } from "./faqItem";
 import student from "./student";
 import subscriber from './subscriber'
+import announcement from './announcement'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber],
+  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement],
 }

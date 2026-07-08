@@ -26,6 +26,14 @@ export default async function PortalPage() {
     { email }
   )
 
+  // Fetch active announcements
+  const announcements = await client.fetch(
+    `*[_type == "announcement" && active == true && (!defined(expiresAt) || expiresAt > now()) && (!defined(program) || program._ref == $programId)] | order(publishedAt desc)[0...5]{
+      _id, title, message, type, publishedAt
+    }`,
+    { programId: student?.program?._id ?? '' }
+  )
+
   const moodleCourseId = student?.program?.moodleCourseId ?? Number(process.env.MOODLE_COURSE_DAC_DD)
   const moodleCourseUrl = process.env.MOODLE_URL + '/course/view.php?id=' + moodleCourseId
 
@@ -99,6 +107,52 @@ export default async function PortalPage() {
           )}
         </div>
       </div>
+
+      {/* Announcements */}
+      {announcements?.length > 0 && (
+        <div className="max-w-4xl mx-auto px-6 pt-6 flex flex-col gap-3">
+          {announcements.map((announcement: any) => {
+            const typeStyles: Record<string, { bg: string; border: string; color: string; label: string }> = {
+              info: { bg: 'rgba(55,138,221,0.06)', border: '#378ADD', color: '#1E3560', label: 'Info' },
+              important: { bg: 'rgba(220,38,38,0.06)', border: '#dc2626', color: '#dc2626', label: 'Important' },
+              reminder: { bg: 'rgba(230,126,34,0.06)', border: '#E67E22', color: '#E67E22', label: 'Reminder' },
+              success: { bg: 'rgba(34,197,94,0.06)', border: '#22c55e', color: '#16a34a', label: 'Good News' },
+            }
+            const style = typeStyles[announcement.type] ?? typeStyles.info
+            return (
+              <div
+                key={announcement._id}
+                className="rounded-xl p-5"
+                style={{
+                  backgroundColor: style.bg,
+                  borderLeft: `4px solid ${style.border}`,
+                }}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className="text-xs font-bold uppercase tracking-widest"
+                    style={{ color: style.color }}
+                  >
+                    {style.label}
+                  </span>
+                  <span className="text-xs" style={{ color: 'rgba(43,48,58,0.4)' }}>
+                    {new Date(announcement.publishedAt).toLocaleDateString('en-CA', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </span>
+                </div>
+                <p className="text-sm font-semibold mb-1" style={{ color: '#1E3560' }}>
+                  {announcement.title}
+                </p>
+                <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>
+                  {announcement.message}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col gap-6">
 

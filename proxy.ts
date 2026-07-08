@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server'
 
 const isProtectedRoute = createRouteMatcher([
   '/portal(.*)',
+  '/admin(.*)',
   '/api/students/provision(.*)',
 ])
 

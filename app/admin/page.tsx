@@ -33,7 +33,7 @@ export default async function AdminPage() {
   const students = await client.fetch(
     `*[_type == "student"] | order(applicationDate desc) {
       _id, firstName, lastName, email, status, paymentStatus,
-      applicationDate, acceptedDate, tuitionAmount, cohort,
+      applicationDate, acceptedDate, tuitionAmount, cohort, notes,
       program->{ title }
     }`
   )
@@ -45,6 +45,22 @@ export default async function AdminPage() {
     enrolled: students.filter((s: any) => s.status === 'enrolled').length,
     paid: students.filter((s: any) => s.paymentStatus === 'paid').length,
   }
+
+  // Parse referral sources from notes
+  const referralCounts: Record<string, number> = {}
+  students.forEach((student: any) => {
+    if (student.notes) {
+      const match = student.notes.match(/Referral: (.+)/m)
+      if (match) {
+        const source = match[1].trim()
+        referralCounts[source] = (referralCounts[source] ?? 0) + 1
+      }
+    }
+  })
+
+  const referralData = Object.entries(referralCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
 
   const statusColour: Record<string, string> = {
     pending: '#E67E22',
@@ -100,6 +116,34 @@ export default async function AdminPage() {
             </div>
           ))}
         </div>
+
+        {/* Referral Sources */}
+{referralData.length > 0 && (
+  <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+    <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
+      <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Referral Sources</h2>
+    </div>
+    <div className="p-6 flex flex-col gap-3">
+      {referralData.map(([source, count]) => {
+        const pct = Math.round((count / students.length) * 100)
+        return (
+          <div key={source}>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm" style={{ color: '#1E3560' }}>{source}</span>
+              <span className="text-sm font-bold" style={{ color: '#378ADD' }}>{count} ({pct}%)</span>
+            </div>
+            <div className="w-full rounded-full h-2" style={{ backgroundColor: 'rgba(30,53,96,0.08)' }}>
+              <div
+                className="h-2 rounded-full"
+                style={{ width: `${pct}%`, backgroundColor: '#378ADD' }}
+              />
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
 
         {/* Student table */}
         <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>

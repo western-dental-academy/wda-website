@@ -143,3 +143,17 @@ export async function addUserToMoodleCohort(
     'members[0][usertype][value]': moodleUserId,
   })
 }
+
+export async function getMoodleAssignments(moodleCourseId: number) {
+  return moodleRequest('mod_assign_get_assignments', {
+    'courseids[0]': moodleCourseId,
+  })
+}
+
+export async function getMoodleSubmissions(assignmentIds: number[]) {
+  const params: Record<string, unknown> = {}
+  assignmentIds.forEach((id, i) => {
+    params[`assignmentids[${i}]`] = id
+  })
+  return moodleRequest('mod_assign_get_submissions', params)
+}

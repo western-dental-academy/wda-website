@@ -1,8 +1,8 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@sanity/client'
-import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents } from '@/lib/moodle/client'
 import Link from 'next/link'
 import PayTuitionButton from '@/components/PayTuitionButton'
+import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents, getMoodleAssignments, getMoodleSubmissions } from '@/lib/moodle/client'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -48,6 +48,20 @@ export default async function PortalPage() {
       courseContents = await getMoodleCourseContents(moodleCourseId)
     } catch (error) {
       console.error('Moodle fetch error:', error)
+    }
+  }
+
+  let assignments = null
+  let submissions = null
+  if (student?.moodleUserId && moodleCourseId) {
+    try {
+      assignments = await getMoodleAssignments(moodleCourseId)
+      if (assignments?.courses?.[0]?.assignments?.length > 0) {
+        const assignmentIds = assignments.courses[0].assignments.map((a: any) => a.id)
+        submissions = await getMoodleSubmissions(assignmentIds)
+      }
+    } catch (error) {
+      console.error('Assignment fetch error:', error)
     }
   }
 
@@ -275,6 +289,78 @@ export default async function PortalPage() {
             </div>
           </div>
         )}
+
+{/* Assignment Status */}
+{isEnrolled && assignments?.courses?.[0]?.assignments?.length > 0 && (
+  <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+    <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#378ADD' }}>
+      Assignment Status
+    </p>
+    <div className="flex flex-col gap-2">
+      {assignments.courses[0].assignments.map((assignment: any) => {
+        const submission = submissions?.assignments
+          ?.find((a: any) => a.assignmentid === assignment.id)
+          ?.submissions
+          ?.find((s: any) => s.userid === student.moodleUserId)
+
+        const status = submission?.status ?? 'notsubmitted'
+        const gradingStatus = submission?.gradingstatus ?? 'notgraded'
+
+        const statusConfig: Record<string, { label: string; color: string; bg: string }> = {
+          submitted: { label: 'Submitted', color: '#16a34a', bg: 'rgba(34,197,94,0.08)' },
+          draft: { label: 'Draft Saved', color: '#E67E22', bg: 'rgba(230,126,34,0.08)' },
+          notsubmitted: { label: 'Not Submitted', color: 'rgba(43,48,58,0.4)', bg: 'rgba(30,53,96,0.04)' },
+          reopened: { label: 'Reopened', color: '#378ADD', bg: 'rgba(55,138,221,0.08)' },
+        }
+
+        const gradingConfig: Record<string, { label: string; color: string }> = {
+          graded: { label: 'Graded', color: '#16a34a' },
+          notgraded: { label: 'Awaiting Grade', color: 'rgba(43,48,58,0.4)' },
+          marking_workflow_state: { label: 'In Review', color: '#378ADD' },
+        }
+
+        const statusStyle = statusConfig[status] ?? statusConfig.notsubmitted
+        const gradingStyle = gradingConfig[gradingStatus] ?? gradingConfig.notgraded
+
+        return (
+          <div
+            key={assignment.id}
+            className="flex items-center justify-between rounded-lg px-4 py-3"
+            style={{ backgroundColor: '#F4F7F9' }}
+          >
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
+                {assignment.name}
+              </span>
+              {assignment.duedate > 0 && (
+                <span className="text-xs" style={{ color: 'rgba(43,48,58,0.45)' }}>
+                  Due {new Date(assignment.duedate * 1000).toLocaleDateString('en-CA', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
+              >
+                {statusStyle.label}
+              </span>
+              {status === 'submitted' && (
+                <span className="text-xs font-semibold" style={{ color: gradingStyle.color }}>
+                  {gradingStyle.label}
+                </span>
+              )}
+            </div>
+          </div>
+        )
+      })}
+    </div>
+  </div>
+)}
 
         {isEnrolled && courseComplete && (
           <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>

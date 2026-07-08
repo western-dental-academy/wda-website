@@ -3,6 +3,7 @@ import { createClient } from '@sanity/client'
 import Link from 'next/link'
 import PayTuitionButton from '@/components/PayTuitionButton'
 import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents, getMoodleAssignments, getMoodleSubmissions } from '@/lib/moodle/client'
+import { stripe } from '@/lib/stripe/client'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -25,6 +26,20 @@ export default async function PortalPage() {
     }`,
     { email }
   )
+
+  // Fetch payment history from Stripe
+  let paymentHistory = null
+  if (student?.stripeCustomerId) {
+    try {
+      const charges = await stripe.charges.list({
+        customer: student.stripeCustomerId,
+        limit: 10,
+      })
+      paymentHistory = charges.data
+    } catch (error) {
+      console.error('Stripe payment history error:', error)
+    }
+  }
 
   // Fetch active announcements
   const announcements = await client.fetch(
@@ -424,6 +439,63 @@ export default async function PortalPage() {
             </div>
           </div>
         )}
+
+        {/* Payment History */}
+{isEnrolled && paymentHistory && paymentHistory.length > 0 && (
+  <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+    <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#378ADD' }}>
+      Payment History
+    </p>
+    <div className="flex flex-col gap-2">
+      {paymentHistory.map((charge: any) => (
+        <div
+          key={charge.id}
+          className="flex items-center justify-between rounded-lg px-4 py-3"
+          style={{ backgroundColor: '#F4F7F9' }}
+        >
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
+              {charge.description ?? 'Tuition Payment'}
+            </span>
+            <span className="text-xs" style={{ color: 'rgba(43,48,58,0.45)' }}>
+              {new Date(charge.created * 1000).toLocaleDateString('en-CA', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-bold" style={{ color: '#1E3560' }}>
+              ${(charge.amount / 100).toFixed(2)} {charge.currency.toUpperCase()}
+            </span>
+            <span
+              className="text-xs font-semibold px-2.5 py-1 rounded-full"
+              style={{
+                backgroundColor: charge.status === 'succeeded' ? 'rgba(34,197,94,0.08)' : 'rgba(220,38,38,0.08)',
+                color: charge.status === 'succeeded' ? '#16a34a' : '#dc2626',
+              }}
+            >
+              {charge.status === 'succeeded' ? 'Paid' : charge.status}
+            </span>
+            {charge.receipt_url && (
+              <a
+                href={charge.receipt_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold"
+                style={{ color: '#378ADD' }}
+              >
+                Receipt
+              </a>
+            )}
+            
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
 
         {isEnrolled && (
           <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>

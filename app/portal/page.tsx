@@ -241,6 +241,25 @@ export default async function PortalPage() {
           </div>
         )}
 
+        {/* Transcript */}
+{isEnrolled && (
+  <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+    <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#378ADD' }}>
+      Academic Transcript
+    </p>
+    <p className="text-sm mb-5" style={{ color: 'rgba(43,48,58,0.6)' }}>
+      Download your official academic transcript showing your grades and module completion.
+    </p>
+    <Link
+      href="/api/students/transcript"
+      className="inline-flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white"
+      style={{ backgroundColor: '#1E3560' }}
+    >
+      Download Transcript
+    </Link>
+  </div>
+)}
+
         {isEnrolled && (
           <div className="rounded-2xl p-8 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
             <p className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: '#378ADD' }}>

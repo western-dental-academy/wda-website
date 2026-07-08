@@ -119,3 +119,27 @@ export async function getMoodleCourseContents(moodleCourseId: number) {
     courseid: moodleCourseId,
   })
 }
+
+export async function addUserToMoodleCohort(
+  moodleUserId: number,
+  cohortIdNumber: string
+) {
+  // First get the cohort ID from the ID number
+  const cohorts = await moodleRequest('core_cohort_get_cohorts', {
+    'cohortids[0]': 0,
+  })
+
+  // Find cohort by idnumber
+  const cohort = cohorts?.find((c: any) => c.idnumber === cohortIdNumber)
+  if (!cohort) {
+    console.error(`Cohort not found: ${cohortIdNumber}`)
+    return null
+  }
+
+  return moodleRequest('core_cohort_add_cohort_members', {
+    'members[0][cohorttype][type]': 'id',
+    'members[0][cohorttype][value]': cohort.id,
+    'members[0][usertype][type]': 'id',
+    'members[0][usertype][value]': moodleUserId,
+  })
+}

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
-import { createMoodleUser, enrolMoodleUser, updateMoodleUser } from '@/lib/moodle/client'
+import { createMoodleUser, enrolMoodleUser, updateMoodleUser, addUserToMoodleCohort } from '@/lib/moodle/client'
 import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'
 import { Resend } from 'resend'
 
@@ -147,6 +147,15 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
 
     // Enrol in Moodle course
     await enrolMoodleUser(moodleUserId, moodleCourseId)
+
+    // Add to cohort if specified on student record
+    if (payload.cohort) {
+      try {
+        await addUserToMoodleCohort(moodleUserId, payload.cohort)
+      } catch (err) {
+        console.error('Failed to add student to cohort:', err)
+      }
+    }
 
     // Store moodleUserId back on Sanity student record
     await client.patch(_id).set({

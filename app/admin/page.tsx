@@ -5,8 +5,10 @@ import Link from 'next/link'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
-  'aiden2@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
+  'alana@westerndentalacademy.com',
+  'collette@westerndentalacademy.com',
+  'tammy@westerndentalacademy.com',
 ]
 
 const client = createClient({
@@ -31,7 +33,7 @@ export default async function AdminPage() {
   const students = await client.fetch(
     `*[_type == "student"] | order(applicationDate desc) {
       _id, firstName, lastName, email, status, paymentStatus,
-      applicationDate, acceptedDate, tuitionAmount,
+      applicationDate, acceptedDate, tuitionAmount, cohort,
       program->{ title }
     }`
   )
@@ -108,7 +110,7 @@ export default async function AdminPage() {
             <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: '#F4F7F9' }}>
-                  {['Name', 'Email', 'Programme', 'Applied', 'Status', 'Payment', 'Tuition'].map(h => (
+                  {['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(30,53,96,0.4)' }}>
                       {h}
                     </th>
@@ -134,6 +136,11 @@ export default async function AdminPage() {
                         {student.program?.title ?? '—'}
                       </p>
                     </td>
+                    <td className="px-4 py-3">
+  <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>
+    {student.cohort ?? '—'}
+  </p>
+</td>
                     <td className="px-4 py-3">
                       <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>
                         {student.applicationDate

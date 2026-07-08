@@ -105,6 +105,12 @@ defineField({
       type: 'datetime',
     }),
     defineField({
+  name: 'cohort',
+  title: 'Cohort',
+  type: 'string',
+  description: 'e.g. DAC-DD-2026-09 — must match Moodle cohort ID number',
+}),
+    defineField({
   name: 'certificateId',
   title: 'Certificate ID',
   type: 'string',

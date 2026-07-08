@@ -32,12 +32,13 @@ export async function POST(req: NextRequest) {
       return Response.json({ message: 'No action needed' })
     }
 
-    // Get the program to find the Moodle course ID
-    const programDoc = program?._ref
-      ? await client.fetch(`*[_id == $id][0]{ moodleCourseId }`, { id: program._ref })
-      : null
+    // Get the program to find the Moodle course ID and tuition amount
+const programDoc = program?._ref
+  ? await client.fetch(`*[_id == $id][0]{ moodleCourseId, tuitionAmount }`, { id: program._ref })
+  : null
 
-    const moodleCourseId = programDoc?.moodleCourseId ?? Number(process.env.MOODLE_COURSE_DAC_DD)
+const moodleCourseId = programDoc?.moodleCourseId ?? Number(process.env.MOODLE_COURSE_DAC_DD)
+const tuitionAmount = programDoc?.tuitionAmount ?? null
 
     // Create Moodle user
     const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -56,9 +57,10 @@ export async function POST(req: NextRequest) {
 
     // Store moodleUserId back on Sanity student record
     await client.patch(_id).set({
-      moodleUserId,
-      acceptedDate: new Date().toISOString(),
-    }).commit()
+  moodleUserId,
+  acceptedDate: new Date().toISOString(),
+  ...(tuitionAmount ? { tuitionAmount } : {}),
+}).commit()
 
     return Response.json({
       success: true,

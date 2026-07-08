@@ -35,6 +35,18 @@ export const programType = defineType({
       description: 'e.g. "$3,500 CAD"',
     }),
     defineField({
+  name: "tuitionAmount",
+  title: "Tuition Amount (CAD)",
+  type: "number",
+  description: "Exact tuition in dollars — used for Stripe payments (e.g. 3500)",
+}),
+defineField({
+  name: "moodleCourseId",
+  title: "Moodle Course ID",
+  type: "number",
+  description: "The numeric ID of the corresponding Moodle course",
+}),
+    defineField({
       name: "image",
       type: "image",
       options: { hotspot: true },

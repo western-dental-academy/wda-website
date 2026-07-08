@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
-import { createMoodleUser, enrolMoodleUser } from '@/lib/moodle/client'
+import { createMoodleUser, enrolMoodleUser, updateMoodleUser } from '@/lib/moodle/client'
 import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'
 import { Resend } from 'resend'
 
@@ -30,10 +30,100 @@ export async function POST(req: NextRequest) {
     const payload = JSON.parse(body)
     const { _id, status, firstName, lastName, email, phone, program } = payload
 
-    // Only act when status changes to 'accepted'
-    if (status !== 'accepted') {
-      return Response.json({ message: 'No action needed' })
+    // Handle rejection
+if (status === 'rejected') {
+  await resend.emails.send({
+    from: 'Western Dental Academy <info@westerndentalacademy.com>',
+    to: email,
+    subject: `Your Application to Western Dental Academy`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #1E3560; padding: 32px;">
+          <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
+          <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Application Update</p>
+        </div>
+        <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+          <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dear ${firstName},</p>
+          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+            Thank you for your interest in Western Dental Academy and for taking the time to apply.
+            After careful review, we are unable to offer you admission at this time.
+          </p>
+          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+            We encourage you to reapply in a future intake. If you would like feedback on your application 
+            or information about future opportunities, please don't hesitate to reach out to our admissions team.
+          </p>
+          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+            We wish you all the best in your future endeavours.
+          </p>
+          <a href="mailto:info@westerndentalacademy.com" 
+             style="background-color: #1E3560; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+            Contact Admissions
+          </a>
+        </div>
+        <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+          <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB</p>
+        </div>
+      </div>
+    `,
+  })
+  return Response.json({ message: 'Rejection email sent' })
+}
+
+// Handle withdrawal
+if (status === 'withdrawn') {
+  // Fetch moodleUserId from Sanity
+  const studentDoc = await client.fetch(
+    `*[_id == $id][0]{ moodleUserId }`,
+    { id: _id }
+  )
+
+  // Suspend Moodle account if exists
+  if (studentDoc?.moodleUserId) {
+    try {
+      await updateMoodleUser(studentDoc.moodleUserId, { suspended: 1 })
+    } catch (err) {
+      console.error('Failed to suspend Moodle account:', err)
     }
+  }
+
+  await resend.emails.send({
+    from: 'Western Dental Academy <info@westerndentalacademy.com>',
+    to: email,
+    subject: `Your Enrolment at Western Dental Academy`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background-color: #1E3560; padding: 32px;">
+          <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
+          <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Enrolment Update</p>
+        </div>
+        <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+          <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dear ${firstName},</p>
+          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+            We are writing to confirm that your withdrawal from Western Dental Academy has been processed.
+            Your access to course materials has been deactivated.
+          </p>
+          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+            If you wish to re-enrol in the future or have any questions about your withdrawal, 
+            please contact our admissions team — we would be happy to assist you.
+          </p>
+          <a href="mailto:info@westerndentalacademy.com" 
+             style="background-color: #1E3560; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+            Contact Us
+          </a>
+        </div>
+        <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+          <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB</p>
+        </div>
+      </div>
+    `,
+  })
+  return Response.json({ message: 'Withdrawal email sent' })
+}
+
+// Only continue with provisioning for accepted students
+if (status !== 'accepted') {
+  return Response.json({ message: 'No action needed' })
+}
 
     // Get the program to find the Moodle course ID and tuition amount
 const programDoc = program?._ref

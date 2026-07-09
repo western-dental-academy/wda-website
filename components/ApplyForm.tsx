@@ -18,6 +18,7 @@ interface FormData {
   program: string;
   startDate: string;
   referral: string;
+  rdaNumber: string;
 }
 
 type Errors = Partial<Record<keyof FormData, string>>;
@@ -36,6 +37,7 @@ const INITIAL: FormData = {
   program: "",
   startDate: "",
   referral: "",
+  rdaNumber: "",
 };
 
 const STEPS = [
@@ -669,7 +671,10 @@ export default function ApplyForm() {
               <div className="relative">
                 <select
                   id="apply-program" value={data.program}
-                  onChange={(e) => set("program", e.target.value)}
+                  onChange={(e) => {
+                    set("program", e.target.value);
+                    if (e.target.value !== "Continuing Education") set("rdaNumber", "");
+                  }}
                   aria-required="true" aria-invalid={!!errors.program || undefined}
                   aria-describedby={errors.program ? "err-program" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.program ? " invalid" : ""}`}
@@ -680,6 +685,35 @@ export default function ApplyForm() {
                 <Chevron />
               </div>
               <FieldError id="err-program" msg={errors.program} />
+
+              {/* RDA Number — slides in when Continuing Education is selected */}
+              <div
+                aria-hidden={data.program !== "Continuing Education"}
+                style={{
+                  display: "grid",
+                  gridTemplateRows: data.program === "Continuing Education" ? "1fr" : "0fr",
+                  opacity: data.program === "Continuing Education" ? 1 : 0,
+                  transition: "grid-template-rows 280ms ease-out, opacity 220ms ease-out",
+                }}
+              >
+                <div style={{ overflow: "hidden" }}>
+                  <div className="pt-5">
+                    <FieldLabel htmlFor="apply-rdaNumber" optional>RDA Number</FieldLabel>
+                    <input
+                      id="apply-rdaNumber"
+                      type="text"
+                      placeholder="e.g. RDA-12345"
+                      value={data.rdaNumber}
+                      onChange={(e) => set("rdaNumber", e.target.value)}
+                      tabIndex={data.program === "Continuing Education" ? 0 : -1}
+                      className="wda-input"
+                    />
+                    <p className="mt-1.5 text-[11px]" style={{ color: "rgba(43,48,58,0.4)" }}>
+                      If you are a Registered Dental Assistant, please enter your RDA number.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="sm:max-w-[calc(50%-0.625rem)]">
@@ -848,6 +882,9 @@ export default function ApplyForm() {
               <ReviewField label="Program"               value={data.program}              />
               <ReviewField label="Preferred Start Date"  value={formatDate(data.startDate)} />
               <ReviewField label="How You Heard About Us" value={data.referral}            />
+              {data.rdaNumber && (
+                <ReviewField label="RDA Number" value={data.rdaNumber} />
+              )}
             </ReviewSection>
 
             <ReviewSection title="Documents" onEdit={setStep} toStep={4}>

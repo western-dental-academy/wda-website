@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       program,
       startDate,
       referral,
+      rdaNumber,
       transcriptAssetId,
     } = formData
 
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
         `Education: ${education} (${educationYear})`,
         experience ? `Experience: ${experience}` : null,
         `Program Interest: ${program}`,
+        rdaNumber ? `RDA Number: ${rdaNumber}` : null,
         `Preferred Start: ${startDate}`,
         `Referral: ${referral}`,
       ]

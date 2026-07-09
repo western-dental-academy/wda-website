@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import Link from 'next/link'
 import StudentActions from '@/components/StudentActions'
+import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -63,6 +64,39 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
 
+  // ── Revenue metrics ────────────────────────────────────────────────────────
+
+  let succeededCharges: { amount: number; created: number }[] = []
+  try {
+    const charges = await stripe.charges.list({ limit: 100 })
+    succeededCharges = charges.data
+      .filter((c) => c.status === 'succeeded')
+      .map((c) => ({ amount: c.amount, created: c.created }))
+  } catch (err) {
+    console.error('Stripe revenue fetch error:', err)
+  }
+
+  const startOfMonth = new Date(
+    new Date().getFullYear(),
+    new Date().getMonth(),
+    1
+  ).getTime() / 1000
+
+  const totalRevenue    = succeededCharges.reduce((sum, c) => sum + c.amount, 0) / 100
+  const thisMonthRevenue = succeededCharges
+    .filter((c) => c.created >= startOfMonth)
+    .reduce((sum, c) => sum + c.amount, 0) / 100
+  const outstandingBalance = students
+    .filter((s: any) =>
+      (s.status === 'accepted' || s.status === 'enrolled') &&
+      s.paymentStatus !== 'paid' &&
+      s.tuitionAmount
+    )
+    .reduce((sum: number, s: any) => sum + (s.tuitionAmount as number), 0)
+
+  const formatCAD = (dollars: number) =>
+    '$' + dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
   const statusColour: Record<string, string> = {
     pending: '#E67E22',
     accepted: '#378ADD',
@@ -116,6 +150,29 @@ export default async function AdminPage() {
               <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
             </div>
           ))}
+        </div>
+
+        {/* Revenue */}
+        <div className="mb-10">
+          <p
+            className="text-xs font-bold uppercase tracking-widest mb-3"
+            style={{ color: 'rgba(30,53,96,0.4)' }}
+          >
+            Revenue
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[
+              { label: 'Total Revenue Collected', value: formatCAD(totalRevenue),     colour: '#1E3560' },
+              { label: "This Month's Revenue",    value: formatCAD(thisMonthRevenue), colour: '#378ADD' },
+              { label: 'Outstanding Balance',     value: formatCAD(outstandingBalance), colour: '#E67E22' },
+              { label: 'Paid Students',           value: String(stats.paid),          colour: '#22c55e' },
+            ].map(({ label, value, colour }) => (
+              <div key={label} className="rounded-xl p-5 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+                <p className="text-3xl font-bold mb-1" style={{ color: colour }}>{value}</p>
+                <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Referral Sources */}

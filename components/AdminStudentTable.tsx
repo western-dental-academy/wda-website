@@ -31,19 +31,6 @@ interface Student {
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
-function parseNotes(notes: string | null | undefined): Record<string, string> {
-  if (!notes) return {}
-  const result: Record<string, string> = {}
-  for (const line of notes.split('\n')) {
-    const idx = line.indexOf(': ')
-    if (idx !== -1) {
-      const key = line.slice(0, idx).trim()
-      const val = line.slice(idx + 2).trim()
-      if (key && val) result[key] = val
-    }
-  }
-  return result
-}
 
 function buildTranscriptUrl(assetId: string): string {
   const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -146,8 +133,19 @@ function ReviewPanel({ student, onClose }: { student: Student | null; onClose: (
   }, [student?._id])
 
   const open  = student !== null
-  const notes = parseNotes(student?.notes)
   const asset = student?.transcriptFile?.asset
+
+  const notesMap = Object.fromEntries(
+    (student?.notes ?? '')
+      .split(/\r?\n/)
+      .map(line => line.trim())
+      .filter(line => line.includes(': '))
+      .map(line => {
+        const colonIndex = line.indexOf(': ')
+        return [line.slice(0, colonIndex).trim(), line.slice(colonIndex + 2).trim()]
+      })
+      .filter(([, value]) => value && value !== 'undefined' && value !== 'null')
+  )
 
   async function updateStatus(newStatus: string) {
     if (!student) return
@@ -229,13 +227,13 @@ function ReviewPanel({ student, onClose }: { student: Student | null; onClose: (
               </PanelSection>
 
               <PanelSection title="Application Details">
-                <PanelField label="Programme"       value={student.program?.title ?? notes['Program Interest'] ?? '—'} />
-                <PanelField label="Preferred Start" value={notes['Preferred Start'] ?? '—'} />
-                <PanelField label="Referral Source" value={notes['Referral'] ?? '—'} />
-                <PanelField label="Date of Birth"   value={notes['Date of Birth'] ?? '—'} />
-                <PanelField label="Education"       value={notes['Education'] ?? '—'} />
-                {notes['Experience'] && (
-                  <PanelField label="Experience" value={notes['Experience']} wide />
+                <PanelField label="Programme"       value={student.program?.title ?? notesMap['Program Interest'] ?? '—'} />
+                <PanelField label="Preferred Start" value={notesMap['Preferred Start'] ?? '—'} />
+                <PanelField label="Referral Source" value={notesMap['Referral'] ?? '—'} />
+                <PanelField label="Date of Birth"   value={notesMap['Date of Birth'] ?? '—'} />
+                <PanelField label="Education"       value={notesMap['Education'] ?? '—'} />
+                {notesMap['Experience'] && (
+                  <PanelField label="Experience" value={notesMap['Experience']} wide />
                 )}
               </PanelSection>
 

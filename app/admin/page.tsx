@@ -110,13 +110,24 @@ export default async function AdminPage() {
               Student Management
             </h1>
           </div>
-          <Link
-            href="/studio/structure/students"
-            className="rounded-lg px-4 py-2 text-sm font-semibold"
-            style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
-          >
-            Open Sanity Studio
-          </Link>
+          <div className="flex items-center gap-3">
+            <a
+              href="http://localhost:8080"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-lg px-4 py-2 text-sm font-semibold"
+              style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+            >
+              Go to Moodle ↗
+            </a>
+            <Link
+              href="/studio/structure/students"
+              className="rounded-lg px-4 py-2 text-sm font-semibold"
+              style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+            >
+              Open Sanity Studio
+            </Link>
+          </div>
         </div>
       </div>
 

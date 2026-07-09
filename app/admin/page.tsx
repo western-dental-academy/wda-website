@@ -2,6 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import Link from 'next/link'
+import StudentActions from '@/components/StudentActions'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -154,7 +155,7 @@ export default async function AdminPage() {
             <table className="w-full">
               <thead>
                 <tr style={{ backgroundColor: '#F4F7F9' }}>
-                  {['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition'].map(h => (
+                  {['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition', 'Actions'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(30,53,96,0.4)' }}>
                       {h}
                     </th>
@@ -219,11 +220,14 @@ export default async function AdminPage() {
                         {student.tuitionAmount ? `$${student.tuitionAmount.toLocaleString()}` : '—'}
                       </p>
                     </td>
+                    <td className="px-4 py-3">
+                      <StudentActions studentId={student._id} currentStatus={student.status} />
+                    </td>
                   </tr>
                 ))}
                 {students.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center text-sm" style={{ color: 'rgba(43,48,58,0.4)' }}>
+                    <td colSpan={9} className="px-4 py-10 text-center text-sm" style={{ color: 'rgba(43,48,58,0.4)' }}>
                       No students yet.
                     </td>
                   </tr>

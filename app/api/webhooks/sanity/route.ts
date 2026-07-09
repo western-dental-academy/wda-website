@@ -156,11 +156,6 @@ if (status !== 'accepted') {
         await clerkClient.users.updateUser(newUser.id, {
           skipPasswordChecks: true,
         })
-
-        // Create a sign-in token so the student can set up their account
-        await clerkClient.users.createUserSignInToken({
-          userId: clerkUserId,
-        })
       }
     } catch (err) {
       console.error('Failed to create Clerk account:', err)

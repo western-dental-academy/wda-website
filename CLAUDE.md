@@ -13,7 +13,7 @@ This file provides Claude Code with full persistent context for the WDA ecosyste
 
 **Developer:** Aiden Brost — aiden@westerndentalacademy.com
 **Local project folder:** `C:\Users\brost\Desktop\Aiden\WDA\WDA Website\wda-website`
-**GitHub org:** github.com/western-dental-academy (private repo)
+**GitHub org:** github.com/western-dental-academy (public repo)
 **Repo:** western-dental-academy/wda-website
 **Deployment:** Vercel (WDA account, separate from Make One Productions)
 **Git push command:** `git push origin HEAD`
@@ -26,8 +26,8 @@ This file provides Claude Code with full persistent context for the WDA ecosyste
 westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
          ↕ Internal API routes
   WDA SIS (Student Info System)  ← Enrollment, records, payments (same Next.js app)
-         ↕ REST API + LTI 1.3
-       Moodle LMS               ← Course delivery (Docker locally / paid host in production)
+         ↕ REST API
+       Moodle LMS               ← Course delivery (DigitalOcean Toronto)
                learn.westerndentalacademy.com
 ```
 
@@ -39,23 +39,41 @@ westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
 - **Framework:** Next.js 15 (App Router)
 - **Language:** TypeScript
 - **Styling:** Tailwind CSS
-- **CMS:** Sanity (programs, team, blog, student records, subscribers)
-- **Auth:** Clerk ✓ INSTALLED
-- **Payments:** Stripe ✓ INSTALLED (test mode — awaiting business details to activate live)
+- **CMS:** Sanity (programs, team, blog, student records, subscribers, announcements)
+- **Auth:** Clerk ✓ INSTALLED (production instance)
+- **Payments:** Stripe ✓ LIVE (Canadian CAD, Scotia bank account)
+- **Email:** Resend (from info@westerndentalacademy.com)
 - **PDF Generation:** @react-pdf/renderer
-- **Rate Limiting:** @upstash/ratelimit + @upstash/redis (Upstash Redis)
+- **Rate Limiting:** @upstash/ratelimit + @upstash/redis
 - **Bot Protection:** react-google-recaptcha-v3 (reCAPTCHA v3)
+- **Progress Bar:** nextjs-toploader
 - **Fonts:** Montserrat (headings), Open Sans (body) via Google Fonts
 - **Animations:** Framer Motion
 - **Deployment:** Vercel
 - **Domain registrar:** GoDaddy (.com), Vercel DNS (.ca → 301 redirect to .com)
 
-### Moodle LMS
-- **Platform:** Moodle 5.2.1 (open source, PHP/MySQL)
-- **Local dev:** Docker Desktop
-- **Production hosting:** TBD — Canadian data residency required (Alberta PIPA)
-- **Subdomain:** learn.westerndentalacademy.com (production only)
-- **Integration:** Moodle REST API + LTI 1.3 (LTI deferred until production hosting)
+### Moodle LMS — PRODUCTION
+- **Platform:** Moodle 5.2.1
+- **Hosting:** DigitalOcean Droplet — Toronto TOR1 (PIPA compliant)
+- **Server IP:** 143.110.221.1
+- **Server specs:** 4GB RAM, 2 vCPU, 80GB SSD (~$24/month)
+- **URL:** https://learn.westerndentalacademy.com
+- **Admin login:** admin / (check password manager — changed from default)
+- **SSH:** `ssh root@143.110.221.1`
+- **Moodle files on server:** `/opt/moodle/`
+- **Docker compose:** `/opt/moodle/docker-compose.yml`
+- **Nginx config:** `/etc/nginx/sites-available/moodle`
+- **SSL:** Let's Encrypt (auto-renews via certbot)
+
+### Moodle Server Notes
+- Docker containers: `wda_moodle` (Apache/PHP) and `wda_moodle_db` (MySQL 8.4)
+- Apache runs on port 8080 internally, Nginx proxies 443 → 8080
+- Nginx must pass `Host: learn.westerndentalacademy.com` header or Moodle redirects
+- `config.php` has `$CFG->sslproxy = true` — required for HTTPS behind proxy
+- `wwwroot` = `https://learn.westerndentalacademy.com`
+- Restart containers: `cd /opt/moodle && docker compose restart`
+- Web services enabled via CLI: `docker exec -u www-data wda_moodle php /var/www/html/moodle/admin/cli/cfg.php --name=enablewebservices --set=1`
+- REST protocol enabled via CLI: `docker exec -u www-data wda_moodle php /var/www/html/moodle/admin/cli/cfg.php --name=webserviceprotocols --set=rest`
 
 ---
 
@@ -72,7 +90,7 @@ westerndentalacademy.com        ← Public marketing website (Next.js / Vercel)
 | Aiden Brost | Digital Operations and Technology Coordinator | Social Media Development Strategist, Website Development/Maintenance, IT Support and Maintenance, Software Development |
 
 **Decision makers for tech/software approvals:** Lance Parker, Ryan Zmurchuk, Jolene Moore
-**LMS content owners:** Alana Welsh, Collette Funk-Ross, Tamara Parker
+**LMS content owners:** Alana Welsh, Collette Funk-Ross, Tamara Parker (all have Teacher + Course creator roles in Moodle)
 **Student enrollment:** Jolene Moore
 
 ---
@@ -110,8 +128,7 @@ Never use Amber for anything other than calls-to-action.
 ### Logo Files (in `/public/`)
 - `WesternDentalAcademyLogo-Alternate.svg` — stacked logo, cropped tight (light backgrounds)
 - `WesternDentalAcademyLogo-Alternate-Inverted.svg` — stacked logo, cropped tight (dark/navy backgrounds)
-- Original PNG logos also in `/public/` for other uses
-- Navbar and footer use the alternate SVG versions
+- `Western Dental Academy Logo Alternate-1.png` — PNG version for PDFs (certificates, transcripts, ID cards)
 
 ### Favicon
 `favicon.ico` and `apple-icon.png` live in `/app` (not `/public`) — Next.js App Router convention.
@@ -121,22 +138,24 @@ Never use Amber for anything other than calls-to-action.
 ## Website Structure
 
 ### Pages Built
-- `/` — Home (includes newsletter signup)
-- `/about` — About WDA (team members pulled from Sanity)
+- `/` — Home (newsletter signup)
+- `/about` — About WDA (team members from Sanity)
 - `/programs` — Programs listing
 - `/programs/[slug]` — Individual program pages
 - `/blog` — Blog listing (Sanity-driven)
 - `/blog/[slug]` — Blog posts
 - `/faq` — FAQ
-- `/apply` — Multi-step application form ✓ Connected to Sanity + reCAPTCHA
+- `/apply` — Multi-step application form (5 steps including transcript upload)
 - `/book-a-tour` — Tour booking
-- `/contact` — Contact + Google Maps embed
+- `/contact` — Contact + Google Maps embed + Resend email
 - `/edmonton-dental-careers` — Local SEO page
 - `/privacy-policy`, `/terms-of-use`, `/accessibility` — Legal pages
 - `/coming-soon` — Maintenance mode page
-- `/portal` — Student portal ✓ BUILT (protected by Clerk)
-- `/sign-in` — Clerk sign-in page (student login — NOT D2L)
-- `/sign-up` — Clerk sign-up page
+- `/portal` — Student portal (protected by Clerk, tabbed layout)
+- `/admin` — Staff admin dashboard (protected, whitelist-based)
+- `/sign-in` — Clerk sign-in (redirects admin → /admin, students → /portal)
+- `/sign-up` — Clerk sign-up
+- `/verify/[code]` — Public certificate verification page
 - `not-found.tsx` — Custom 404
 
 ### Maintenance Mode
@@ -154,26 +173,12 @@ Studio access: `http://localhost:3000/studio?preview=wda2026`
 The project uses `proxy.ts` (not `middleware.ts`) — Next.js 16 convention.
 Clerk is integrated via `clerkMiddleware`.
 
-**Critical:** API routes must be passed through BEFORE the Clerk handler runs:
-
-```typescript
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl
-
-  // API routes pass through first — before Clerk
-  if (pathname.startsWith('/api') || pathname.startsWith('/__clerk') || ...) {
-    return NextResponse.next()
-  }
-
-  // Clerk runs on non-API routes only
-  const clerkResponse = await clerkHandler(request, {} as any)
-  if (clerkResponse) return clerkResponse
-  // ... maintenance mode logic
-}
-```
+**Critical:** API routes must pass through BEFORE Clerk handler. `/auth/redirect` must bypass maintenance mode check.
 
 Protected routes (Clerk auth required):
 - `/portal(.*)`
+- `/admin(.*)`
+- `/auth/redirect(.*)`
 - `/api/students/provision(.*)`
 
 ---
@@ -183,201 +188,251 @@ Protected routes (Clerk auth required):
 ### Studio Access (local)
 `http://localhost:3000/studio?preview=wda2026`
 
-### Schema Types (all in `sanity/schemaTypes/`)
-- `program` — WDA programmes (includes `moodleCourseId` number field)
-- `teamMember` — staff profiles (photo support via @sanity/image-url)
+### Schema Types
+- `program` — WDA programmes (includes `moodleCourseId`, `tuitionAmount`)
+- `teamMember` — staff profiles (photo via @sanity/image-url)
 - `testimonial` — student quotes
-- `blogPost` — blog articles (Portable Text)
+- `blogPost` — blog articles
 - `faqItem` — FAQ entries
 - `student` — student records ✓
 - `subscriber` — newsletter subscribers ✓
+- `announcement` — student portal announcements ✓
 
 ### Student Schema Fields
 - `firstName`, `lastName`, `email`, `phone`
-- `status` — pending / accepted / rejected / enrolled / withdrawn (default: pending)
+- `status` — pending / accepted / rejected / enrolled / withdrawn
 - `program` — reference to program document
-- `moodleUserId` — number, readOnly, auto-populated on acceptance
-- `clerkUserId` — string, readOnly, auto-populated on first portal visit
-- `stripeCustomerId` — string, readOnly
-- `stripePaymentIntentId` — string, readOnly
-- `paymentStatus` — unpaid / pending / paid / refunded (default: unpaid)
-- `tuitionAmount` — number in CAD dollars (set by admin in Studio)
+- `cohort` — string matching Moodle cohort ID number (e.g. `DAC-DD-2026-09`)
+- `moodleUserId` — number, readOnly
+- `clerkUserId` — string, readOnly
+- `stripeCustomerId`, `stripePaymentIntentId` — readOnly
+- `paymentStatus` — unpaid / pending / paid / refunded
+- `tuitionAmount` — auto-populated from program on acceptance
+- `certificateId` — unique verification code (e.g. `WDA-2026-A4F2K`)
+- `certificateIssuedDate` — datetime
+- `transcriptFile` — file asset uploaded during application
 - `applicationDate`, `acceptedDate`
-- `notes` — internal staff notes
+- `notes` — internal notes, parsed for admin review panel
 
 ### Sanity API Token
-Must be **Editor** role (read + write) — read-only token will fail on all write operations.
+Must be **Editor** role (read + write).
 
 ### Sanity Webhook
-- **Local URL:** `https://<ngrok-url>/api/webhooks/sanity`
 - **Production URL:** `https://westerndentalacademy.com/api/webhooks/sanity`
 - **Secret:** `SANITY_WEBHOOK_SECRET=wda-sanity-webhook-2026`
-- **Trigger:** Update on `student` documents where `_type == "student"`
-- **Logic:** Only acts when `status === 'accepted'`
-- **Note:** ngrok URL changes on each restart — update at sanity.io/manage each session
+- **Trigger:** Update on `student` documents
+- **Logic:** Handles accepted (Moodle provision + Clerk account + welcome email), rejected (email), withdrawn (Moodle suspend + email)
+- **Loop prevention:** Skips if `moodleUserId` already set
 
 ---
 
 ## SIS — Student Information System
 
-### Build Status
+### Build Status — ALL COMPLETE
 | Module | Status |
 |---|---|
-| Sanity student schema | ✓ Complete |
-| Apply form → Sanity | ✓ Complete |
-| reCAPTCHA v3 on apply form | ✓ Complete |
-| Rate limiting on apply + subscribe | ✓ Complete |
-| Clerk authentication | ✓ Complete |
-| Sanity webhook → Moodle provisioning | ✓ Complete |
-| Clerk ↔ Sanity student linking | ✓ Complete |
-| Student portal (/portal) | ✓ Complete |
-| Progress & grade tracking | ✓ Complete |
-| Certificate generation (PDF) | ✓ Complete |
-| Stripe payments (test mode) | ✓ Complete |
-| Stripe webhook → payment status | ✓ Complete |
-| Newsletter subscription → Sanity | ✓ Complete |
-| Team members on About page from Sanity | ✓ Complete |
-| LTI 1.3 SSO | ✗ Deferred until production Moodle |
+| Sanity student schema | ✓ |
+| Apply form (5 steps + transcript upload) | ✓ |
+| reCAPTCHA v3 on apply form | ✓ |
+| Rate limiting on apply + subscribe | ✓ |
+| Clerk authentication (production instance) | ✓ |
+| Auto Clerk account creation on acceptance | ✓ |
+| Sanity webhook → Moodle provisioning | ✓ |
+| Sanity webhook → rejection/withdrawal emails | ✓ |
+| Moodle account suspension on withdrawal | ✓ |
+| Clerk ↔ Sanity student linking | ✓ |
+| Student portal (tabbed — 7 tabs) | ✓ |
+| Announcements system | ✓ |
+| Assignment submission status | ✓ |
+| Course progress tracking | ✓ |
+| Grade display | ✓ |
+| Payment history | ✓ |
+| Programme calendar | ✓ |
+| Certificate generation (PDF + QR) | ✓ |
+| Certificate verification page | ✓ |
+| Grade export to PDF transcript | ✓ |
+| Digital student ID card PDF | ✓ |
+| Stripe payments (LIVE) | ✓ |
+| Stripe processing fee pass-through | ✓ |
+| Newsletter subscription → Sanity | ✓ |
+| Contact form → Resend | ✓ |
+| Admin dashboard | ✓ |
+| Admin quick accept/reject/withdraw | ✓ |
+| Application review panel (with transcript) | ✓ |
+| Revenue dashboard | ✓ |
+| Referral tracking | ✓ |
+| Student search and filter | ✓ |
+| Moodle progress in admin table | ✓ |
+| Cohort management | ✓ |
+| Weekly progress email digest (cron) | ✓ |
+| Payment reminder cron | ✓ |
+| Admin notification on new application | ✓ |
+| Welcome email on acceptance | ✓ |
 
-### Enrollment Flow (WORKING)
+### Enrollment Flow (WORKING END TO END)
 ```
-Student submits /apply form (reCAPTCHA verified)
+Student submits /apply form (reCAPTCHA, transcript upload)
         ↓
-/api/students/apply saves to Sanity (status: pending)
+Admin notified via email
         ↓
-Jolene (COO) changes status to "accepted" in Sanity Studio → Publish
+Staff reviews application + transcript in admin dashboard review panel
         ↓
-Sanity webhook → /api/webhooks/sanity
+Staff clicks Accept → Sanity webhook fires
         ↓
-Create Moodle user → Enrol in course → Store moodleUserId in Sanity
+Clerk account created → welcome email sent with sign-in instructions
         ↓
-Student logs into portal → Clerk ID linked to Sanity record
+Moodle user created → enrolled in course → cohort assigned (if set)
         ↓
-Student pays tuition via Stripe Checkout
+Student signs in → redirected to /portal
         ↓
-Stripe webhook → /api/webhooks/stripe → paymentStatus set to "paid"
+Student pays tuition via Stripe Checkout (with processing fee)
         ↓
-Portal shows progress, grades, profile, certificate when complete
+Stripe webhook → paymentStatus = "paid"
+        ↓
+Student completes course → certificate + transcript + ID card available
 ```
 
-### reCAPTCHA v3
-- Package: `react-google-recaptcha-v3`
-- Provider: `components/RecaptchaProvider.tsx` (client component wrapping layout)
-- Hook: `useGoogleReCaptcha` in `components/ApplyForm.tsx`
-- Verification: server-side in `/api/students/apply/route.ts`
-- **Only enforced in production** (`NODE_ENV === 'production'`) — skipped locally to avoid localhost scoring issues
-- Score threshold: 0.5
+### Student ID Number
+`studentId = moodleUserId + 99999`
+- First student: Moodle ID 1 → Student ID 100000
+- Displayed in: portal profile, admin table, student ID card PDF
 
-### Rate Limiting
-- Package: `@upstash/ratelimit` + `@upstash/redis`
-- Client: `lib/ratelimit.ts`
-- Apply form: 5 requests per 10 minutes per IP
-- Subscribe form: 3 requests per 10 minutes per IP
-- Returns 429 with user-friendly message
+### Student Portal Tabs
+1. **Overview** — announcements, progress bar, enrollment status
+2. **Course** — module completion, assignment status, Go to Moodle button
+3. **Grades** — grade table from Moodle
+4. **Calendar** — assignment due dates, announcements
+5. **Payments** — tuition payment, payment history
+6. **Documents** — certificate, transcript, student ID card
+7. **Profile** — student information
 
-### Clerk Authentication ✓
-- Package: `@clerk/nextjs`
-- `ClerkProvider` wraps body in `app/layout.tsx`
-- `auth()` and `currentUser()` are async — always await them
-- Never expose `CLERK_SECRET_KEY` in client code
+### Admin Dashboard Features
+- Stats cards (total, pending, accepted, enrolled, paid)
+- Revenue dashboard (Stripe data)
+- Referral tracking chart
+- Student table with search/filter
+- Student ID column
+- Moodle progress bars per student
+- Quick Accept/Reject/Withdraw buttons
+- Application review panel (full details + transcript preview)
+- Go to Moodle button
+- Open Sanity Studio button
+- Sign out button
 
-### Stripe Payments ✓ (test mode)
-- Package: `stripe`, `@stripe/stripe-js`
-- Client: `lib/stripe/client.ts` — uses `apiVersion: '2026-06-24.dahlia'`
-- Checkout route: `POST /api/stripe/checkout`
-- Webhook route: `POST /api/webhooks/stripe`
+### Admin Email Whitelist (in app/admin/page.tsx and app/portal/layout.tsx)
+```
+aiden@westerndentalacademy.com
+aiden2@westerndentalacademy.com
+jolene@westerndentalacademy.com
+alana@westerndentalacademy.com
+collette@westerndentalacademy.com
+tammy@westerndentalacademy.com
+```
+
+### Sign-In Flow
+- Everyone uses `/sign-in`
+- After sign-in → `/portal` → layout checks admin email → admins redirected to `/admin`
+- Students stay on `/portal`
+- Clerk Client Trust: **DISABLED** in both dev and production instances
+
+### Stripe Payments (LIVE)
 - Currency: CAD
-- Test card: `4242 4242 4242 4242`, any future expiry, any CVC
-- Local webhook testing: `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
-
-### Certificate Generation ✓
-- Package: `@react-pdf/renderer`
-- Generator: `lib/certificate/generate.tsx`
-- API route: `GET /api/students/certificate`
-- Only available when all Moodle modules complete (100%)
-
-### Newsletter Subscription ✓
-- API route: `POST /api/subscribe`
-- Rate limited: 3 requests per 10 minutes per IP
-- Saves to Sanity `subscriber` document type
-- Viewable in Sanity Studio under Subscribers
+- Bank: Scotia
+- Processing fee: `Math.round((amountInCents + 30) / (1 - 0.029) - amountInCents)` passed through to student
+- Webhook: `https://westerndentalacademy.com/api/webhooks/stripe`
+- Payout: automatic daily to Scotia account
 
 ---
 
 ## Moodle LMS Integration
 
-### Local Development
-- **Docker folder:** `C:\Users\brost\Desktop\Aiden\WDA\moodle-local\`
-- **Start:** `docker compose up -d`
-- **Stop:** `docker compose stop`
-- **Local URL:** `http://localhost:8080`
-- **Admin password:** Changed from default — check password manager
-- **Moodle version:** 5.2.1 — requires MySQL 8.4
-- **APACHE_DOCUMENT_ROOT:** `/var/www/html/moodle/public`
-- **config.php wwwroot:** `http://localhost:8080`
+### Production Moodle
+- **URL:** `https://learn.westerndentalacademy.com`
+- **SSH:** `ssh root@143.110.221.1`
+- **Admin:** admin / (check password manager)
+- **Instructor accounts:** Alana Welsh, Collette Funk-Ross, Tamara Parker (Teacher + Course creator)
 
 ### Moodle Courses
 | Course | Short Name | Moodle ID |
 |---|---|---|
 | Dental Assisting Certificate — Distance Delivery | DAC-DD | 2 |
+| NDAB Exam Preparation | NDAB | TBD (no moodleCourseId — Moodle not required) |
 
 ### Moodle API Configuration
 - Web services: enabled
 - REST protocol: enabled
 - External service: **WDA SIS** (authorised users only)
 - Functions enabled:
-  - `core_user_create_users`
-  - `core_user_update_users`
+  - `core_user_create_users`, `core_user_update_users`, `core_user_get_users`
   - `enrol_manual_enrol_users`
   - `core_completion_get_activities_completion_status`
   - `gradereport_user_get_grade_items`
-  - `core_course_get_courses`
-  - `core_course_get_contents`
+  - `core_course_get_courses`, `core_course_get_contents`
+  - `core_cohort_get_cohorts`, `core_cohort_add_cohort_members`
+  - `mod_assign_get_assignments`, `mod_assign_get_submissions`
+  - `core_webservice_get_site_info`
 
 ### Moodle API Client
-**Location:** `lib/moodle/client.ts` ✓
+**Location:** `lib/moodle/client.ts`
 
-Exports:
-- `moodleRequest(wsfunction, params)` — base request
-- `createMoodleUser(user)` — create student in Moodle
-- `updateMoodleUser(moodleUserId, fields)` — update/suspend user
-- `enrolMoodleUser(moodleUserId, moodleCourseId, roleId?)` — enrol student
-- `getMoodleProgress(moodleUserId, moodleCourseId)` — completion status
-- `getMoodleGrades(moodleUserId, moodleCourseId)` — grade items
-- `getMoodleCourses()` — list all courses
-- `getMoodleCourseContents(moodleCourseId)` — get modules with names
+Exports: `moodleRequest`, `createMoodleUser`, `updateMoodleUser`, `enrolMoodleUser`, `getMoodleProgress`, `getMoodleGrades`, `getMoodleCourses`, `getMoodleCourseContents`, `getMoodleAssignments`, `getMoodleSubmissions`, `addUserToMoodleCohort`
 
----
+**Note:** Programmes without `moodleCourseId` (e.g. NDAB) skip all Moodle provisioning.
 
-## About Page — Team Members
-
-- Team members are pulled dynamically from Sanity Studio
-- Schema: `teamMember` — name, role, bio, photo, order
-- Photo support via `@sanity/image-url` — utility at `lib/sanity/image.ts`
-- TeamCard component: `components/TeamCard.tsx` (client component with read more toggle)
-- Photos use `urlFor(photo).width(600).height(320).fit('crop').url()`
-- Display order: lower numbers appear first — set in Sanity Studio
+### Cohort Management
+- Cohorts created in Moodle with ID format: `[PROGRAM-CODE]-[YEAR]-[MONTH]`
+- Example: `DAC-DD-2026-09` = Dental Assisting Certificate, September 2026 intake
+- Set `cohort` field on student record in Sanity → auto-assigned to Moodle cohort on acceptance
 
 ---
 
-## Student Portal (/portal)
+## Documents Generated (PDFs)
 
-### Features Built
-- Protected by Clerk
-- Links Clerk user to Sanity student record on every visit
-- Status-based UI: no record / pending / accepted / enrolled
-- Tuition payment card with Stripe Checkout
-- Course progress bar with percentage
-- Module completion list with real activity names from Moodle
-- Grade display from Moodle
-- Student profile section
-- Certificate download at 100% completion
-- Go to Moodle course button
+### Certificate of Completion
+- Location: `lib/certificate/generate.tsx`
+- Route: `GET /api/students/certificate`
+- Requires: 100% module completion in Moodle
+- Includes: student name, programme, date, unique ID, QR code
+- QR links to: `westerndentalacademy.com/verify/[certificateId]`
 
-### Portal Components
-- `app/portal/page.tsx` — main portal server component
-- `app/portal/layout.tsx` — auth check + Clerk linking
-- `components/PayTuitionButton.tsx` — client component for Stripe checkout
+### Academic Transcript
+- Location: `lib/transcript/generate.tsx`
+- Route: `GET /api/students/transcript`
+- Includes: student info, grade table, module completion, WDA logo
+
+### Student ID Card
+- Location: `lib/idcard/generate.tsx`
+- Route: `GET /api/students/id-card`
+- Student ID: `moodleUserId + 99999` (6-digit format starting at 100000)
+- Includes: name, programme, student ID, QR code
+
+### Certificate Verification
+- Public page: `/verify/[code]`
+- Anyone can verify by scanning QR code or visiting the URL
+
+---
+
+## Automated Emails (via Resend from info@westerndentalacademy.com)
+
+| Trigger | Email | Recipient |
+|---|---|---|
+| New application submitted | Admin notification with details + Sanity Studio link | info@westerndentalacademy.com |
+| Application accepted | Welcome email with sign-in instructions | Student |
+| Application rejected | Professional decline email | Student |
+| Student withdrawn | Withdrawal confirmation | Student |
+| Payment not received after 3 days | Payment reminder | Student |
+| Every Monday 8AM MDT | Weekly progress digest | All enrolled students |
+| Contact form submitted | Contact form contents | info@westerndentalacademy.com |
+
+---
+
+## Cron Jobs (Vercel)
+
+Defined in `vercel.json`:
+- `GET /api/cron/payment-reminder` — runs daily at 9:00 AM UTC
+- `GET /api/cron/progress-digest` — runs every Monday at 14:00 UTC (8:00 AM MDT)
+
+Both require `Authorization: Bearer ${CRON_SECRET}` header.
 
 ---
 
@@ -385,35 +440,41 @@ Exports:
 
 | Route | Method | Status | Purpose |
 |---|---|---|---|
-| `/api/students/apply` | POST | ✓ | Save application to Sanity (rate limited + reCAPTCHA) |
+| `/api/students/apply` | POST | ✓ | Save application + transcript ref to Sanity |
+| `/api/students/upload-transcript` | POST | ✓ | Upload transcript file to Sanity assets |
 | `/api/students/link-clerk` | POST | ✓ | Link Clerk ID to Sanity student |
 | `/api/students/certificate` | GET | ✓ | Generate PDF certificate |
+| `/api/students/transcript` | GET | ✓ | Generate PDF transcript |
+| `/api/students/id-card` | GET | ✓ | Generate PDF student ID card |
 | `/api/stripe/checkout` | POST | ✓ | Create Stripe Checkout session |
-| `/api/subscribe` | POST | ✓ | Save newsletter subscriber (rate limited) |
-| `/api/webhooks/sanity` | POST | ✓ | Moodle provisioning on acceptance |
-| `/api/webhooks/stripe` | POST | ✓ | Update payment status on completion |
+| `/api/subscribe` | POST | ✓ | Save newsletter subscriber |
+| `/api/contact` | POST | ✓ | Send contact form via Resend |
+| `/api/webhooks/sanity` | POST | ✓ | Student status changes → Moodle + emails |
+| `/api/webhooks/stripe` | POST | ✓ | Payment confirmed → update Sanity |
+| `/api/admin/update-student-status` | POST | ✓ | Quick accept/reject/withdraw from admin dashboard |
+| `/api/admin/student-progress` | GET | ✓ | Fetch Moodle progress for admin table |
+| `/api/cron/payment-reminder` | GET | ✓ | Daily payment reminder cron |
+| `/api/cron/progress-digest` | GET | ✓ | Weekly progress email cron |
 | `/api/moodle/test` | GET | Dev only | List Moodle courses |
 | `/api/moodle/test-enroll` | GET | Dev only | Test enrollment |
-| `/api/lti/launch` | POST | Not built | LTI 1.3 SSO (deferred) |
 
 ---
 
 ## Security Implementation
 
 ### Completed
-- ✓ Rate limiting on apply and subscribe routes (Upstash Redis)
+- ✓ Rate limiting on apply and subscribe (Upstash Redis)
 - ✓ reCAPTCHA v3 on apply form (production only)
-- ✓ Clerk authentication on portal routes
+- ✓ Clerk auth on portal and admin routes
+- ✓ Admin email whitelist on dashboard and API routes
 - ✓ Stripe webhook signature verification
 - ✓ Sanity webhook signature verification
-- ✓ GitHub repo set to private
 - ✓ Moodle admin password changed from default
 - ✓ API routes pass through before Clerk handler
+- ✓ Clerk Client Trust disabled
 
 ### Still To Do Before Go-Live
-- [ ] Add reCAPTCHA to newsletter subscribe form
 - [ ] Zod input validation on all API routes
-- [ ] Security headers in `next.config.ts`
 - [ ] Third-party security review
 - [ ] PIPA compliance documentation
 
@@ -422,9 +483,9 @@ Exports:
 ## Local Development — What to Run
 
 1. **Dev server** (VS Code terminal): `npm run dev`
-2. **Moodle** (PowerShell): `cd C:\Users\brost\Desktop\Aiden\WDA\moodle-local && docker compose up -d`
-3. **Stripe CLI** (PowerShell admin): `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
-4. **ngrok** (only for Sanity webhook testing): `ngrok http 3000` then update webhook URL at sanity.io/manage
+2. **Local Moodle** (optional — now using production): `cd C:\Users\brost\Desktop\Aiden\WDA\moodle-local && docker compose up -d`
+3. **Stripe CLI** (only for local payment testing): `C:\stripe\stripe.exe listen --forward-to localhost:3000/api/webhooks/stripe`
+4. **ngrok** (only for local Sanity webhook testing): `ngrok http 3000` then update webhook URL at sanity.io/manage
 
 ---
 
@@ -439,19 +500,21 @@ NEXT_PUBLIC_SANITY_PROJECT_ID=
 NEXT_PUBLIC_SANITY_DATASET=production
 SANITY_API_TOKEN=          # Must be Editor role
 
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
+# Clerk (production instance)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=   # pk_live_...
+CLERK_SECRET_KEY=                     # sk_live_...
 NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
 NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/portal?preview=wda2026
+NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/portal?preview=wda2026
 
-# Stripe
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=   # pk_test_... (pk_live_... when activated)
-STRIPE_SECRET_KEY=                     # sk_test_... (sk_live_... when activated)
-STRIPE_WEBHOOK_SECRET=                 # whsec_... (different for local vs production)
+# Stripe (LIVE)
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=   # pk_live_...
+STRIPE_SECRET_KEY=                     # sk_live_...
+STRIPE_WEBHOOK_SECRET=                 # whsec_... (production webhook secret)
 
-# Moodle
-MOODLE_URL=http://localhost:8080       # https://learn.westerndentalacademy.com in production
+# Moodle (PRODUCTION)
+MOODLE_URL=https://learn.westerndentalacademy.com
 MOODLE_TOKEN=
 MOODLE_COURSE_DAC_DD=2
 
@@ -466,8 +529,14 @@ RECAPTCHA_SECRET_KEY=
 UPSTASH_REDIS_REST_URL=
 UPSTASH_REDIS_REST_TOKEN=
 
+# Resend
+RESEND_API_KEY=
+
+# Cron
+CRON_SECRET=wda-cron-secret-2026
+
 # Site
-NEXT_PUBLIC_SITE_URL=http://localhost:3000   # https://westerndentalacademy.com in production
+NEXT_PUBLIC_SITE_URL=https://westerndentalacademy.com   # http://localhost:3000 locally
 
 # Maintenance Mode
 MAINTENANCE_MODE=true
@@ -483,8 +552,14 @@ PREVIEW_KEY=wda2026
 | `@` | A | `76.76.21.21` | westerndentalacademy.com → Vercel |
 | `www` | CNAME | `cname.vercel-dns.com` | www redirect |
 | `.ca` nameservers | NS | `ns1/ns2.vercel-dns.com` | .ca → 301 to .com |
-| `learn` | CNAME | `<moodle-host-value>` | Moodle subdomain (production) |
+| `learn` | A | `143.110.221.1` | Moodle on DigitalOcean |
+| `clerk` | CNAME | `frontend-api.clerk.services` | Clerk production |
+| `accounts` | CNAME | `accounts.clerk.services` | Clerk accounts portal |
+| `clkmail` | CNAME | `mail.o5mey20qhs9e.clerk.services` | Clerk email |
+| `clk._domainkey` | CNAME | `dkim1.o5mey20qhs9e.clerk.services` | Clerk DKIM |
+| `clk2._domainkey` | CNAME | `dkim2.o5mey20qhs9e.clerk.services` | Clerk DKIM |
 | MX / SPF / DKIM / DMARC | — | Microsoft 365 values | Email |
+| Resend CNAME | — | Resend values | Transactional email |
 
 ---
 
@@ -492,37 +567,29 @@ PREVIEW_KEY=wda2026
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Marketing website (all pages, Sanity, brand, SEO) | ✓ Complete |
-| 2 | Sanity student schema | ✓ Complete |
-| 3 | Moodle local Docker setup + REST API client | ✓ Complete |
-| 4 | Connect /apply form → Sanity API route | ✓ Complete |
-| 5 | Clerk authentication | ✓ Complete |
-| 6 | Sanity webhook → Moodle auto-provisioning | ✓ Complete |
-| 7 | Student portal — progress, grades, profile, certificates | ✓ Complete |
-| 8 | Stripe payments (test mode) | ✓ Complete |
-| 9 | Newsletter subscription → Sanity | ✓ Complete |
-| 10 | Team members on About page from Sanity | ✓ Complete |
-| 11 | Security hardening (rate limiting, reCAPTCHA, private repo) | ✓ Complete |
-| 12 | Activate Stripe live + production Moodle hosting | Waiting on business details |
-| 13 | LTI 1.3 SSO | After production Moodle |
-| 14 | Go live — flip maintenance mode off | Final step |
+| 1 | Marketing website | ✓ Complete |
+| 2 | Sanity schemas | ✓ Complete |
+| 3 | Moodle local setup + API client | ✓ Complete |
+| 4 | Apply form → Sanity (with transcript upload) | ✓ Complete |
+| 5 | Clerk authentication (production) | ✓ Complete |
+| 6 | Sanity webhook → full provisioning flow | ✓ Complete |
+| 7 | Student portal (7 tabs) | ✓ Complete |
+| 8 | Stripe payments (LIVE) | ✓ Complete |
+| 9 | Automation (emails, crons, cohorts) | ✓ Complete |
+| 10 | Admin dashboard (full features) | ✓ Complete |
+| 11 | PDF documents (certificate, transcript, ID card) | ✓ Complete |
+| 12 | Production Moodle on DigitalOcean Toronto | ✓ Complete |
+| 13 | Go live — flip maintenance mode off | Next |
 
 ---
 
 ## Go-Live Checklist
-- [ ] Stripe business details from Lance/Jolene → activate live payments
-- [ ] Update `STRIPE_WEBHOOK_SECRET` in Vercel to production webhook secret
-- [ ] Add production Stripe webhook in Stripe dashboard → `https://westerndentalacademy.com/api/webhooks/stripe`
-- [ ] Switch Stripe from test keys to live keys in Vercel
-- [ ] Set up production Moodle on Canadian host (DigitalOcean Toronto or MoodleCloud CA)
-- [ ] Export local Moodle backup and import to production
-- [ ] Add CNAME in GoDaddy: `learn` → production host value
-- [ ] Update `MOODLE_URL` in Vercel to `https://learn.westerndentalacademy.com`
-- [ ] Update `MOODLE_TOKEN` in Vercel to production token
-- [ ] Update Sanity webhook URL from ngrok to `https://westerndentalacademy.com/api/webhooks/sanity`
-- [ ] Update `NEXT_PUBLIC_SITE_URL` in Vercel to `https://westerndentalacademy.com`
 - [ ] Set `MAINTENANCE_MODE=false` in Vercel
-- [ ] Change Moodle admin password on production instance
-- [ ] Third-party security review
-- [ ] Test full enrollment flow on production
+- [ ] Confirm all Vercel env vars are production values
+- [ ] Test full enrollment flow on production (apply → accept → Moodle → portal → pay → certificate)
 - [ ] Confirm westerndentalacademy.com loads correctly
+- [ ] Third-party security review
+- [ ] Send staff their Clerk login credentials
+- [ ] Brief instructors on Moodle (learn.westerndentalacademy.com)
+- [ ] Add WDA branding to Moodle (logo, colours)
+- [ ] Set up first cohort in Moodle (DAC-DD-2026-09 or similar)

@@ -166,52 +166,55 @@ const programDoc = program?._ref
   ? await client.fetch(`*[_id == $id][0]{ moodleCourseId, tuitionAmount, title }`, { id: program._ref })
   : null
 
-const moodleCourseId = programDoc?.moodleCourseId ?? Number(process.env.MOODLE_COURSE_DAC_DD)
+const moodleCourseId = programDoc?.moodleCourseId ?? null
 const tuitionAmount = programDoc?.tuitionAmount ?? null
 
-    // Check if Moodle user already exists
-    let moodleUserId: number
+    // Moodle provisioning — skipped when the programme has no moodleCourseId
+    let moodleUserId: number | undefined
 
-    const existingUsers = await moodleRequest('core_user_get_users', {
-      'criteria[0][key]': 'email',
-      'criteria[0][value]': email,
-    })
-
-    if (existingUsers?.users?.length > 0) {
-      moodleUserId = existingUsers.users[0].id
-    } else {
-      // Create new Moodle user
-      const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
-      const newUsers = await createMoodleUser({
-        username: `${username}_${Date.now()}`,
-        password: `Wda${Date.now()}!`,
-        firstname: firstName,
-        lastname: lastName,
-        email,
+    if (moodleCourseId) {
+      const existingMoodleUsers = await moodleRequest('core_user_get_users', {
+        'criteria[0][key]': 'email',
+        'criteria[0][value]': email,
       })
-      moodleUserId = newUsers[0].id
-    }
 
-    // Enrol in Moodle course
-    await enrolMoodleUser(moodleUserId, moodleCourseId)
-
-    // Add to cohort if specified on student record
-    if (payload.cohort) {
-      try {
-        await addUserToMoodleCohort(moodleUserId, payload.cohort)
-      } catch (err) {
-        console.error('Failed to add student to cohort:', err)
+      let resolvedId: number
+      if (existingMoodleUsers?.users?.length > 0) {
+        resolvedId = existingMoodleUsers.users[0].id
+      } else {
+        const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+        const newUsers = await createMoodleUser({
+          username: `${username}_${Date.now()}`,
+          password: `Wda${Date.now()}!`,
+          firstname: firstName,
+          lastname: lastName,
+          email,
+        })
+        resolvedId = newUsers[0].id
       }
+
+      await enrolMoodleUser(resolvedId, moodleCourseId)
+
+      if (payload.cohort) {
+        try {
+          await addUserToMoodleCohort(resolvedId, payload.cohort)
+        } catch (err) {
+          console.error('Failed to add student to cohort:', err)
+        }
+      }
+
+      moodleUserId = resolvedId
     }
 
-    // Store moodleUserId (and clerkUserId if newly created) back on Sanity student record
+    // Update Sanity — always set acceptedDate; moodleUserId only when provisioned
     await client.patch(_id).set({
-  moodleUserId,
-  acceptedDate: new Date().toISOString(),
-  ...(tuitionAmount ? { tuitionAmount } : {}),
-  ...(clerkUserId ? { clerkUserId } : {}),
-}).commit()
-// Send welcome email to student
+      acceptedDate: new Date().toISOString(),
+      ...(tuitionAmount ? { tuitionAmount } : {}),
+      ...(clerkUserId ? { clerkUserId } : {}),
+      ...(moodleUserId ? { moodleUserId } : {}),
+    }).commit()
+
+    // Send welcome email to student
     await resend.emails.send({
       from: 'Western Dental Academy <info@westerndentalacademy.com>',
       to: email,

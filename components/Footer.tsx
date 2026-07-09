@@ -237,6 +237,12 @@ export default function Footer() {
                 {label}
               </Link>
             ))}
+            <Link
+              href="/sign-in"
+              className="text-xs text-white/25 hover:text-white/50 transition-colors duration-200"
+            >
+              Staff Login
+            </Link>
           </div>
         </div>
       </div>

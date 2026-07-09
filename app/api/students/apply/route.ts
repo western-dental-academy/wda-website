@@ -57,6 +57,7 @@ export async function POST(req: NextRequest) {
       program,
       startDate,
       referral,
+      transcriptAssetId,
     } = formData
 
     // Basic validation
@@ -76,6 +77,12 @@ export async function POST(req: NextRequest) {
       phone,
       status: 'pending',
       applicationDate: new Date().toISOString(),
+      ...(transcriptAssetId ? {
+        transcriptFile: {
+          _type: 'file',
+          asset: { _type: 'reference', _ref: transcriptAssetId },
+        },
+      } : {}),
       notes: [
         `Date of Birth: ${dob}`,
         `Education: ${education} (${educationYear})`,

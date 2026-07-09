@@ -39,10 +39,11 @@ const INITIAL: FormData = {
 };
 
 const STEPS = [
-  { n: 1, label: "Personal" },
+  { n: 1, label: "Personal"  },
   { n: 2, label: "Education" },
-  { n: 3, label: "Programs" },
-  { n: 4, label: "Review" },
+  { n: 3, label: "Programs"  },
+  { n: 4, label: "Documents" },
+  { n: 5, label: "Review"    },
 ];
 
 const EDUCATION_OPTIONS = [
@@ -62,10 +63,13 @@ const PROGRAM_OPTIONS = [
 
 const REFERRAL_OPTIONS = ["Google", "Social Media", "Friend or Family", "Other"];
 
-const TODAY = new Date().toISOString().split("T")[0];
+const TODAY   = new Date().toISOString().split("T")[0];
 const MAX_DOB = new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000)
   .toISOString()
   .split("T")[0];
+
+const ALLOWED_FILE_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -203,24 +207,62 @@ function ReviewField({
 // ─── Main component ────────────────────────────────────────────────────────────
 
 export default function ApplyForm() {
-  const [step, setStep] = useState(1);
-  const [data, setData] = useState<FormData>(INITIAL);
-  const [errors, setErrors] = useState<Errors>({});
+  const [step, setStep]             = useState(1);
+  const [data, setData]             = useState<FormData>(INITIAL);
+  const [errors, setErrors]         = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const { executeRecaptcha } = useGoogleReCaptcha()
+  const [submitted, setSubmitted]   = useState(false);
 
-  // Focus the step heading whenever the active step changes
+  // Transcript upload state
+  const [transcriptFile,       setTranscriptFile]       = useState<File | null>(null);
+  const [transcriptPreviewUrl, setTranscriptPreviewUrl] = useState<string | null>(null);
+  const [transcriptAssetId,    setTranscriptAssetId]    = useState<string | null>(null);
+  const [uploading,            setUploading]            = useState(false);
+  const [uploadError,          setUploadError]          = useState('');
+
+  const { executeRecaptcha } = useGoogleReCaptcha();
+
   const stepHeadingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
-    if (!submitted) {
-      stepHeadingRef.current?.focus();
-    }
+    if (!submitted) stepHeadingRef.current?.focus();
   }, [step, submitted]);
+
+  // Clean up blob URL on unmount or when preview changes
+  useEffect(() => {
+    return () => {
+      if (transcriptPreviewUrl) URL.revokeObjectURL(transcriptPreviewUrl);
+    };
+  }, [transcriptPreviewUrl]);
 
   function set<K extends keyof FormData>(key: K, value: string) {
     setData((d) => ({ ...d, [key]: value }));
     if (errors[key]) setErrors((e) => ({ ...e, [key]: undefined }));
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Revoke previous preview
+    if (transcriptPreviewUrl) URL.revokeObjectURL(transcriptPreviewUrl);
+    setTranscriptAssetId(null);
+    setUploadError('');
+
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError('File is too large. Maximum size is 10 MB.');
+      return;
+    }
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      setUploadError('Invalid file type. Please upload a PDF, JPG, or PNG.');
+      return;
+    }
+
+    setTranscriptFile(file);
+    if (file.type.startsWith('image/')) {
+      setTranscriptPreviewUrl(URL.createObjectURL(file));
+    } else {
+      setTranscriptPreviewUrl(null);
+    }
   }
 
   function validate(): boolean {
@@ -228,12 +270,12 @@ export default function ApplyForm() {
 
     if (step === 1) {
       if (!data.firstName.trim()) e.firstName = "First name is required.";
-      if (!data.lastName.trim()) e.lastName = "Last name is required.";
-      if (!data.email.trim()) e.email = "Email address is required.";
+      if (!data.lastName.trim())  e.lastName  = "Last name is required.";
+      if (!data.email.trim())     e.email     = "Email address is required.";
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
         e.email = "Enter a valid email address.";
       if (!data.phone.trim()) e.phone = "Phone number is required.";
-      if (!data.dob) e.dob = "Date of birth is required.";
+      if (!data.dob)          e.dob   = "Date of birth is required.";
     }
 
     if (step === 2) {
@@ -247,9 +289,9 @@ export default function ApplyForm() {
     }
 
     if (step === 3) {
-      if (!data.program) e.program = "Please select a program.";
+      if (!data.program)   e.program  = "Please select a program.";
       if (!data.startDate) e.startDate = "Preferred start date is required.";
-      if (!data.referral) e.referral = "Please let us know how you heard about us.";
+      if (!data.referral)  e.referral  = "Please let us know how you heard about us.";
     }
 
     setErrors(e);
@@ -257,7 +299,7 @@ export default function ApplyForm() {
   }
 
   function next() {
-    if (validate()) setStep((s) => Math.min(s + 1, 4));
+    if (validate()) setStep((s) => Math.min(s + 1, 5));
   }
 
   function back() {
@@ -266,34 +308,56 @@ export default function ApplyForm() {
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
-  if (step < 4) {
-    next();
-    return;
-  }
-  // Step 4 — final submission
-  setSubmitting(true);
+    e.preventDefault();
+
+    if (step < 4) { next(); return; }
+
+    // Step 4 → 5: upload transcript then advance
+    if (step === 4) {
+      if (!transcriptFile) return;
+      // Already uploaded (e.g. user went back and didn't change file)
+      if (transcriptAssetId) { setStep(5); return; }
+
+      setUploading(true);
+      setUploadError('');
+      try {
+        const fd = new FormData();
+        fd.append('file', transcriptFile);
+        const res = await fetch('/api/students/upload-transcript', { method: 'POST', body: fd });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error || 'Upload failed');
+        setTranscriptAssetId(result.assetId);
+        setStep(5);
+      } catch (err: any) {
+        setUploadError(err.message ?? 'Upload failed. Please try again.');
+      } finally {
+        setUploading(false);
+      }
+      return;
+    }
+
+    // Step 5 — final submission
+    setSubmitting(true);
     try {
-      let recaptchaToken = ''
-if (executeRecaptcha) {
-  recaptchaToken = await executeRecaptcha('apply_form')
-}
-      
+      let recaptchaToken = '';
+      if (executeRecaptcha) {
+        recaptchaToken = await executeRecaptcha('apply_form');
+      }
       const res = await fetch('/api/students/apply', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...data, recaptchaToken }),
-    });
-    const result = await res.json();
-    if (!result.success) throw new Error(result.error);
-    setSubmitted(true);
-  } catch (err) {
-    console.error('Submission error:', err);
-    setErrors({ email: 'Something went wrong. Please try again or contact us directly.' });
-  } finally {
-    setSubmitting(false);
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...data, recaptchaToken, transcriptAssetId }),
+      });
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error);
+      setSubmitted(true);
+    } catch (err) {
+      console.error('Submission error:', err);
+      setErrors({ email: 'Something went wrong. Please try again or contact us directly.' });
+    } finally {
+      setSubmitting(false);
+    }
   }
-}
 
   // ── Success screen ──────────────────────────────────────────────────────────
   if (submitted) {
@@ -359,7 +423,7 @@ if (executeRecaptcha) {
   }
 
   // ── Progress indicator ──────────────────────────────────────────────────────
-  const fillWidth = `calc(${(step - 1) / 3} * (100% - 36px))`;
+  const fillWidth = `calc(${(step - 1) / 4} * (100% - 36px))`;
 
   return (
     <form
@@ -372,32 +436,26 @@ if (executeRecaptcha) {
         boxShadow: "0 4px 24px rgba(30,53,96,0.06), 0 1px 4px rgba(30,53,96,0.04)",
       }}
     >
-      {/* Visually hidden live region — announces step changes to screen readers */}
+      {/* Visually hidden live region */}
       <div aria-live="polite" aria-atomic="true" className="sr-only">
-        Step {step} of 4: {STEPS[step - 1].label}
+        Step {step} of 5: {STEPS[step - 1].label}
       </div>
 
       {/* ── Progress bar ── */}
       <div className="relative mb-10">
-        {/* Gray track */}
         <div
           className="absolute left-[18px] right-[18px] top-[18px] h-0.5"
           style={{ backgroundColor: "rgba(30,53,96,0.1)" }}
           aria-hidden
         />
-        {/* Blue fill */}
         <div
           className="absolute left-[18px] top-[18px] h-0.5 transition-[width] duration-500 ease-out"
           style={{ width: fillWidth, backgroundColor: "#4A9FD4" }}
           aria-hidden
         />
-        {/* Step circles */}
-        <ol
-          className="relative flex items-start justify-between"
-          aria-label="Application steps"
-        >
+        <ol className="relative flex items-start justify-between" aria-label="Application steps">
           {STEPS.map((s) => {
-            const done = step > s.n;
+            const done   = step > s.n;
             const active = step === s.n;
             return (
               <li key={s.n} className="flex flex-col items-center gap-2.5">
@@ -412,19 +470,8 @@ if (executeRecaptcha) {
                   aria-label={`Step ${s.n}: ${s.label}${done ? " – completed" : active ? " – current" : ""}`}
                 >
                   {done ? (
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                      className="w-4 h-4"
-                      aria-hidden
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4.5 12.75l6 6 9-13.5"
-                      />
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-4 h-4" aria-hidden>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                     </svg>
                   ) : (
                     s.n
@@ -453,7 +500,7 @@ if (executeRecaptcha) {
         style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
         aria-hidden
       >
-        Step {step} of 4 &mdash; {STEPS[step - 1].label}
+        Step {step} of 5 &mdash; {STEPS[step - 1].label}
       </p>
 
       {/* ── Step 1: Personal Information ── */}
@@ -478,14 +525,9 @@ if (executeRecaptcha) {
               <div>
                 <FieldLabel htmlFor="apply-firstName">First Name</FieldLabel>
                 <input
-                  id="apply-firstName"
-                  type="text"
-                  autoComplete="given-name"
-                  placeholder="Jane"
-                  value={data.firstName}
-                  onChange={(e) => set("firstName", e.target.value)}
-                  aria-required="true"
-                  aria-invalid={!!errors.firstName || undefined}
+                  id="apply-firstName" type="text" autoComplete="given-name" placeholder="Jane"
+                  value={data.firstName} onChange={(e) => set("firstName", e.target.value)}
+                  aria-required="true" aria-invalid={!!errors.firstName || undefined}
                   aria-describedby={errors.firstName ? "err-firstName" : undefined}
                   className={`wda-input${errors.firstName ? " invalid" : ""}`}
                 />
@@ -494,14 +536,9 @@ if (executeRecaptcha) {
               <div>
                 <FieldLabel htmlFor="apply-lastName">Last Name</FieldLabel>
                 <input
-                  id="apply-lastName"
-                  type="text"
-                  autoComplete="family-name"
-                  placeholder="Smith"
-                  value={data.lastName}
-                  onChange={(e) => set("lastName", e.target.value)}
-                  aria-required="true"
-                  aria-invalid={!!errors.lastName || undefined}
+                  id="apply-lastName" type="text" autoComplete="family-name" placeholder="Smith"
+                  value={data.lastName} onChange={(e) => set("lastName", e.target.value)}
+                  aria-required="true" aria-invalid={!!errors.lastName || undefined}
                   aria-describedby={errors.lastName ? "err-lastName" : undefined}
                   className={`wda-input${errors.lastName ? " invalid" : ""}`}
                 />
@@ -512,14 +549,9 @@ if (executeRecaptcha) {
             <div>
               <FieldLabel htmlFor="apply-email">Email Address</FieldLabel>
               <input
-                id="apply-email"
-                type="email"
-                autoComplete="email"
-                placeholder="jane@example.com"
-                value={data.email}
-                onChange={(e) => set("email", e.target.value)}
-                aria-required="true"
-                aria-invalid={!!errors.email || undefined}
+                id="apply-email" type="email" autoComplete="email" placeholder="jane@example.com"
+                value={data.email} onChange={(e) => set("email", e.target.value)}
+                aria-required="true" aria-invalid={!!errors.email || undefined}
                 aria-describedby={errors.email ? "err-email" : undefined}
                 className={`wda-input${errors.email ? " invalid" : ""}`}
               />
@@ -529,14 +561,9 @@ if (executeRecaptcha) {
             <div>
               <FieldLabel htmlFor="apply-phone">Phone Number</FieldLabel>
               <input
-                id="apply-phone"
-                type="tel"
-                autoComplete="tel"
-                placeholder="(780) 000-0000"
-                value={data.phone}
-                onChange={(e) => set("phone", e.target.value)}
-                aria-required="true"
-                aria-invalid={!!errors.phone || undefined}
+                id="apply-phone" type="tel" autoComplete="tel" placeholder="(780) 000-0000"
+                value={data.phone} onChange={(e) => set("phone", e.target.value)}
+                aria-required="true" aria-invalid={!!errors.phone || undefined}
                 aria-describedby={errors.phone ? "err-phone" : undefined}
                 className={`wda-input${errors.phone ? " invalid" : ""}`}
               />
@@ -546,16 +573,10 @@ if (executeRecaptcha) {
             <div>
               <FieldLabel htmlFor="apply-dob">Date of Birth</FieldLabel>
               <input
-                id="apply-dob"
-                type="date"
-                max={MAX_DOB}
-                value={data.dob}
-                onChange={(e) => set("dob", e.target.value)}
-                aria-required="true"
-                aria-invalid={!!errors.dob || undefined}
-                aria-describedby={
-                  errors.dob ? "err-dob" : "hint-dob"
-                }
+                id="apply-dob" type="date" max={MAX_DOB}
+                value={data.dob} onChange={(e) => set("dob", e.target.value)}
+                aria-required="true" aria-invalid={!!errors.dob || undefined}
+                aria-describedby={errors.dob ? "err-dob" : "hint-dob"}
                 className={`wda-input${errors.dob ? " invalid" : ""}`}
               />
               <FieldError id="err-dob" msg={errors.dob} />
@@ -571,8 +592,7 @@ if (executeRecaptcha) {
       {step === 2 && (
         <div>
           <h2
-            ref={stepHeadingRef}
-            tabIndex={-1}
+            ref={stepHeadingRef} tabIndex={-1}
             className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
@@ -587,20 +607,14 @@ if (executeRecaptcha) {
               <FieldLabel htmlFor="apply-education">Highest Level of Education Completed</FieldLabel>
               <div className="relative">
                 <select
-                  id="apply-education"
-                  value={data.education}
+                  id="apply-education" value={data.education}
                   onChange={(e) => set("education", e.target.value)}
-                  aria-required="true"
-                  aria-invalid={!!errors.education || undefined}
+                  aria-required="true" aria-invalid={!!errors.education || undefined}
                   aria-describedby={errors.education ? "err-education" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.education ? " invalid" : ""}`}
                 >
                   <option value="">Select education level</option>
-                  {EDUCATION_OPTIONS.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
-                  ))}
+                  {EDUCATION_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
                 <Chevron />
               </div>
@@ -610,15 +624,10 @@ if (executeRecaptcha) {
             <div className="sm:max-w-[calc(50%-0.625rem)]">
               <FieldLabel htmlFor="apply-educationYear">Year Completed</FieldLabel>
               <input
-                id="apply-educationYear"
-                type="number"
-                min="1950"
-                max={new Date().getFullYear()}
+                id="apply-educationYear" type="number" min="1950" max={new Date().getFullYear()}
                 placeholder={`e.g. ${new Date().getFullYear() - 4}`}
-                value={data.educationYear}
-                onChange={(e) => set("educationYear", e.target.value)}
-                aria-required="true"
-                aria-invalid={!!errors.educationYear || undefined}
+                value={data.educationYear} onChange={(e) => set("educationYear", e.target.value)}
+                aria-required="true" aria-invalid={!!errors.educationYear || undefined}
                 aria-describedby={errors.educationYear ? "err-educationYear" : undefined}
                 className={`wda-input${errors.educationYear ? " invalid" : ""}`}
               />
@@ -630,11 +639,9 @@ if (executeRecaptcha) {
                 Relevant Healthcare or Dental Experience
               </FieldLabel>
               <textarea
-                id="apply-experience"
-                rows={4}
+                id="apply-experience" rows={4}
                 placeholder="Describe any dental assisting, healthcare, or customer service experience you have — or leave blank if none."
-                value={data.experience}
-                onChange={(e) => set("experience", e.target.value)}
+                value={data.experience} onChange={(e) => set("experience", e.target.value)}
                 className="wda-input resize-none"
               />
             </div>
@@ -646,8 +653,7 @@ if (executeRecaptcha) {
       {step === 3 && (
         <div>
           <h2
-            ref={stepHeadingRef}
-            tabIndex={-1}
+            ref={stepHeadingRef} tabIndex={-1}
             className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
@@ -662,20 +668,14 @@ if (executeRecaptcha) {
               <FieldLabel htmlFor="apply-program">Program of Interest</FieldLabel>
               <div className="relative">
                 <select
-                  id="apply-program"
-                  value={data.program}
+                  id="apply-program" value={data.program}
                   onChange={(e) => set("program", e.target.value)}
-                  aria-required="true"
-                  aria-invalid={!!errors.program || undefined}
+                  aria-required="true" aria-invalid={!!errors.program || undefined}
                   aria-describedby={errors.program ? "err-program" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.program ? " invalid" : ""}`}
                 >
                   <option value="">Select a program</option>
-                  {PROGRAM_OPTIONS.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
-                  ))}
+                  {PROGRAM_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
                 <Chevron />
               </div>
@@ -685,13 +685,9 @@ if (executeRecaptcha) {
             <div className="sm:max-w-[calc(50%-0.625rem)]">
               <FieldLabel htmlFor="apply-startDate">Preferred Start Date</FieldLabel>
               <input
-                id="apply-startDate"
-                type="date"
-                min={TODAY}
-                value={data.startDate}
-                onChange={(e) => set("startDate", e.target.value)}
-                aria-required="true"
-                aria-invalid={!!errors.startDate || undefined}
+                id="apply-startDate" type="date" min={TODAY}
+                value={data.startDate} onChange={(e) => set("startDate", e.target.value)}
+                aria-required="true" aria-invalid={!!errors.startDate || undefined}
                 aria-describedby={errors.startDate ? "err-startDate" : undefined}
                 className={`wda-input${errors.startDate ? " invalid" : ""}`}
               />
@@ -702,20 +698,14 @@ if (executeRecaptcha) {
               <FieldLabel htmlFor="apply-referral">How Did You Hear About Us?</FieldLabel>
               <div className="relative">
                 <select
-                  id="apply-referral"
-                  value={data.referral}
+                  id="apply-referral" value={data.referral}
                   onChange={(e) => set("referral", e.target.value)}
-                  aria-required="true"
-                  aria-invalid={!!errors.referral || undefined}
+                  aria-required="true" aria-invalid={!!errors.referral || undefined}
                   aria-describedby={errors.referral ? "err-referral" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.referral ? " invalid" : ""}`}
                 >
                   <option value="">Select an option</option>
-                  {REFERRAL_OPTIONS.map((o) => (
-                    <option key={o} value={o}>
-                      {o}
-                    </option>
-                  ))}
+                  {REFERRAL_OPTIONS.map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
                 <Chevron />
               </div>
@@ -725,12 +715,107 @@ if (executeRecaptcha) {
         </div>
       )}
 
-      {/* ── Step 4: Review & Submit ── */}
+      {/* ── Step 4: Documents ── */}
       {step === 4 && (
         <div>
           <h2
-            ref={stepHeadingRef}
-            tabIndex={-1}
+            ref={stepHeadingRef} tabIndex={-1}
+            className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
+            style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+          >
+            Documents
+          </h2>
+          <p className="text-sm mb-8" style={{ color: "rgba(43,48,58,0.55)" }}>
+            Please upload your most recent high school transcript or equivalent before submitting your application.
+          </p>
+
+          <div>
+            <FieldLabel htmlFor="apply-transcript">High School Transcript</FieldLabel>
+            <p className="text-xs mb-4" style={{ color: "rgba(43,48,58,0.5)" }}>
+              Please upload your most recent high school transcript or equivalent. Accepted formats: PDF, JPG, PNG (max 10MB)
+            </p>
+
+            {!transcriptFile ? (
+              /* Upload zone */
+              <label
+                htmlFor="apply-transcript"
+                className="flex flex-col items-center justify-center gap-3 w-full rounded-xl border-2 border-dashed cursor-pointer p-10 transition-colors duration-200 hover:border-[#4A9FD4]"
+                style={{ borderColor: "rgba(30,53,96,0.2)", backgroundColor: "#F4F7F9" }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-10 h-10" style={{ color: "rgba(30,53,96,0.3)" }} aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>
+                  Click to choose file
+                </span>
+                <span className="text-xs" style={{ color: "rgba(43,48,58,0.4)" }}>
+                  PDF, JPG, or PNG — max 10 MB
+                </span>
+                <input
+                  id="apply-transcript"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                  onChange={handleFileChange}
+                  className="sr-only"
+                  aria-required="true"
+                />
+              </label>
+            ) : (
+              /* File selected */
+              <div className="flex flex-col gap-4">
+                <div
+                  className="flex items-center gap-3 rounded-xl p-4"
+                  style={{ backgroundColor: "#F4F7F9", border: "1.5px solid rgba(30,53,96,0.1)" }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-8 h-8 shrink-0" style={{ color: "#378ADD" }} aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                  </svg>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate" style={{ color: "#1E3560" }}>
+                      {transcriptFile.name}
+                    </p>
+                    <p className="text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+                      {(transcriptFile.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <label htmlFor="apply-transcript-change" className="text-xs font-semibold cursor-pointer shrink-0" style={{ color: "#4A9FD4" }}>
+                    Change
+                    <input
+                      id="apply-transcript-change"
+                      type="file"
+                      accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                      onChange={handleFileChange}
+                      className="sr-only"
+                    />
+                  </label>
+                </div>
+
+                {/* Image preview */}
+                {transcriptPreviewUrl && (
+                  <img
+                    src={transcriptPreviewUrl}
+                    alt="Transcript preview"
+                    className="rounded-lg max-h-48 object-contain"
+                    style={{ border: "1px solid rgba(30,53,96,0.08)" }}
+                  />
+                )}
+              </div>
+            )}
+
+            {uploadError && (
+              <p className="mt-3 text-xs font-medium" style={{ color: "#dc2626" }} role="alert">
+                {uploadError}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Step 5: Review & Submit ── */}
+      {step === 5 && (
+        <div>
+          <h2
+            ref={stepHeadingRef} tabIndex={-1}
             className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
@@ -739,38 +824,42 @@ if (executeRecaptcha) {
           <p className="text-sm mb-8" style={{ color: "rgba(43,48,58,0.55)" }}>
             Please review your information. Use the{" "}
             <span className="font-semibold text-[#1E3560]">Edit</span> buttons or{" "}
-            <span className="font-semibold text-[#1E3560]">Back</span> to make changes before
-            submitting.
+            <span className="font-semibold text-[#1E3560]">Back</span> to make changes before submitting.
           </p>
 
           <div className="flex flex-col gap-4">
             <ReviewSection title="Personal Information" onEdit={setStep} toStep={1}>
-              <ReviewField label="First Name" value={data.firstName} />
-              <ReviewField label="Last Name" value={data.lastName} />
-              <ReviewField label="Email Address" value={data.email} />
-              <ReviewField label="Phone Number" value={data.phone} />
+              <ReviewField label="First Name"    value={data.firstName}      />
+              <ReviewField label="Last Name"     value={data.lastName}       />
+              <ReviewField label="Email Address" value={data.email}          />
+              <ReviewField label="Phone Number"  value={data.phone}          />
               <ReviewField label="Date of Birth" value={formatDate(data.dob)} />
             </ReviewSection>
 
             <ReviewSection title="Education & Background" onEdit={setStep} toStep={2}>
-              <ReviewField label="Highest Education" value={data.education} />
-              <ReviewField label="Year Completed" value={data.educationYear} />
+              <ReviewField label="Highest Education" value={data.education}     />
+              <ReviewField label="Year Completed"    value={data.educationYear} />
               {data.experience && (
                 <ReviewField label="Experience" value={data.experience} wide />
               )}
             </ReviewSection>
 
             <ReviewSection title="Program Selection" onEdit={setStep} toStep={3}>
-              <ReviewField label="Program" value={data.program} />
-              <ReviewField label="Preferred Start Date" value={formatDate(data.startDate)} />
-              <ReviewField label="How You Heard About Us" value={data.referral} />
+              <ReviewField label="Program"               value={data.program}              />
+              <ReviewField label="Preferred Start Date"  value={formatDate(data.startDate)} />
+              <ReviewField label="How You Heard About Us" value={data.referral}            />
+            </ReviewSection>
+
+            <ReviewSection title="Documents" onEdit={setStep} toStep={4}>
+              <ReviewField
+                label="High School Transcript"
+                value={transcriptFile?.name ?? "—"}
+                wide
+              />
             </ReviewSection>
           </div>
 
-          <p
-            className="text-xs mt-6 leading-relaxed"
-            style={{ color: "rgba(43,48,58,0.45)" }}
-          >
+          <p className="text-xs mt-6 leading-relaxed" style={{ color: "rgba(43,48,58,0.45)" }}>
             By submitting this application you confirm that the information provided is
             accurate and consent to being contacted by Western Dental Academy&apos;s admissions
             team regarding your application.
@@ -787,7 +876,7 @@ if (executeRecaptcha) {
           <button
             type="button"
             onClick={back}
-            disabled={submitting}
+            disabled={submitting || uploading}
             className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border transition-colors duration-200 hover:border-[#1E3560] hover:text-[#1E3560] disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ borderColor: "rgba(30,53,96,0.2)", color: "rgba(30,53,96,0.55)" }}
           >
@@ -797,13 +886,25 @@ if (executeRecaptcha) {
           <div />
         )}
 
-        {step < 4 ? (
+        {step < 5 ? (
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4]"
+            disabled={(step === 4 && !transcriptFile) || uploading}
+            className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: "#1E3560" }}
           >
-            Continue →
+            {uploading ? (
+              <>
+                <span
+                  className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white shrink-0"
+                  style={{ animation: "spin 0.75s linear infinite" }}
+                  aria-hidden
+                />
+                Uploading…
+              </>
+            ) : (
+              "Continue →"
+            )}
           </button>
         ) : (
           <button

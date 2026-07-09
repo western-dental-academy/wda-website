@@ -124,6 +124,13 @@ defineField({
   readOnly: true,
 }),
     defineField({
+      name: 'transcriptFile',
+      title: 'High School Transcript',
+      type: 'file',
+      description: 'Uploaded by student during application',
+      readOnly: true,
+    }),
+    defineField({
       name: 'notes',
       title: 'Internal Notes',
       type: 'text',

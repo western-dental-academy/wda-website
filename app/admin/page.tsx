@@ -35,9 +35,10 @@ export default async function AdminPage() {
 
   const students = await client.fetch(
     `*[_type == "student"] | order(applicationDate desc) {
-      _id, firstName, lastName, email, status, paymentStatus,
+      _id, firstName, lastName, email, phone, status, paymentStatus,
       applicationDate, acceptedDate, tuitionAmount, cohort, notes,
-      moodleUserId, program->{ title }
+      moodleUserId, program->{ title },
+      transcriptFile { asset->{ _id, url, originalFilename } }
     }`
   )
 

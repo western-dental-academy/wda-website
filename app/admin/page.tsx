@@ -2,7 +2,7 @@ import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import Link from 'next/link'
-import StudentActions from '@/components/StudentActions'
+import AdminStudentTable from '@/components/AdminStudentTable'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -97,20 +97,6 @@ export default async function AdminPage() {
   const formatCAD = (dollars: number) =>
     '$' + dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
-  const statusColour: Record<string, string> = {
-    pending: '#E67E22',
-    accepted: '#378ADD',
-    enrolled: '#22c55e',
-    rejected: '#dc2626',
-    withdrawn: '#888',
-  }
-
-  const paymentColour: Record<string, string> = {
-    paid: '#22c55e',
-    unpaid: '#dc2626',
-    pending: '#E67E22',
-  }
-
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F4F7F9' }}>
       {/* Header */}
@@ -204,95 +190,7 @@ export default async function AdminPage() {
 )}
 
         {/* Student table */}
-        <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-          <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
-            <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>All Students</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr style={{ backgroundColor: '#F4F7F9' }}>
-                  {['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition', 'Actions'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-xs font-bold uppercase tracking-widest" style={{ color: 'rgba(30,53,96,0.4)' }}>
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {students.map((student: any, i: number) => (
-                  <tr
-                    key={student._id}
-                    style={{ borderTop: i > 0 ? '1px solid rgba(30,53,96,0.06)' : 'none' }}
-                  >
-                    <td className="px-4 py-3">
-                      <p className="text-sm font-semibold" style={{ color: '#1E3560' }}>
-                        {student.firstName} {student.lastName}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>{student.email}</p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>
-                        {student.program?.title ?? '—'}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-  <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>
-    {student.cohort ?? '—'}
-  </p>
-</td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm" style={{ color: 'rgba(43,48,58,0.7)' }}>
-                        {student.applicationDate
-                          ? new Date(student.applicationDate).toLocaleDateString('en-CA')
-                          : '—'}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-block rounded-full px-2.5 py-0.5 text-xs font-bold uppercase"
-                        style={{
-                          backgroundColor: `${statusColour[student.status]}20`,
-                          color: statusColour[student.status] ?? '#888',
-                        }}
-                      >
-                        {student.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className="inline-block rounded-full px-2.5 py-0.5 text-xs font-bold uppercase"
-                        style={{
-                          backgroundColor: `${paymentColour[student.paymentStatus ?? 'unpaid']}20`,
-                          color: paymentColour[student.paymentStatus ?? 'unpaid'],
-                        }}
-                      >
-                        {student.paymentStatus ?? 'unpaid'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm font-medium" style={{ color: '#1E3560' }}>
-                        {student.tuitionAmount ? `$${student.tuitionAmount.toLocaleString()}` : '—'}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      <StudentActions studentId={student._id} currentStatus={student.status} />
-                    </td>
-                  </tr>
-                ))}
-                {students.length === 0 && (
-                  <tr>
-                    <td colSpan={9} className="px-4 py-10 text-center text-sm" style={{ color: 'rgba(43,48,58,0.4)' }}>
-                      No students yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <AdminStudentTable students={students} />
 
       </div>
     </main>

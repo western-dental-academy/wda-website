@@ -43,6 +43,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  if (pathname === '/auth/redirect') return NextResponse.next()
   if (pathname === '/coming-soon') return NextResponse.next()
 
   // ── Maintenance mode check FIRST ──

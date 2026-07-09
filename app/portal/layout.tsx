@@ -1,5 +1,13 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+
+const ADMIN_EMAILS = [
+  'aiden@westerndentalacademy.com',
+  'jolene@westerndentalacademy.com',
+  'alana@westerndentalacademy.com',
+  'collette@westerndentalacademy.com',
+  'tammy@westerndentalacademy.com',
+]
 
 export default async function PortalLayout({
   children,
@@ -10,6 +18,12 @@ export default async function PortalLayout({
 
   if (!userId) {
     redirect('/sign-in')
+  }
+
+  const user = await currentUser()
+  const email = user?.emailAddresses[0]?.emailAddress ?? ''
+  if (ADMIN_EMAILS.includes(email)) {
+    redirect('/admin')
   }
 
   // Link Clerk account to Sanity student record on every portal visit

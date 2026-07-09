@@ -1,4 +1,5 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
+import { SignOutButton } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import Link from 'next/link'
@@ -127,6 +128,14 @@ export default async function AdminPage() {
             >
               Open Sanity Studio
             </Link>
+            <SignOutButton signOutOptions={{ redirectUrl: '/sign-in' }}>
+              <button
+                className="rounded-lg px-4 py-2 text-sm font-semibold"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+              >
+                Sign Out
+              </button>
+            </SignOutButton>
           </div>
         </div>
       </div>

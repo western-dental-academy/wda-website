@@ -1,4 +1,5 @@
 import { currentUser } from '@clerk/nextjs/server'
+import { SignOutButton } from '@clerk/nextjs'
 import { createClient } from '@sanity/client'
 import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents, getMoodleAssignments, getMoodleSubmissions } from '@/lib/moodle/client'
 import { stripe } from '@/lib/stripe/client'
@@ -138,18 +139,28 @@ export default async function PortalPage() {
               </p>
             )}
           </div>
-          {student && (
-            <div
-              className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.1)',
-                color: STATUS_COLOUR[student.status] ?? '#fff',
-                border: '1px solid ' + (STATUS_COLOUR[student.status] ?? 'rgba(255,255,255,0.2)'),
-              }}
-            >
-              {student.status}
-            </div>
-          )}
+          <div className="flex items-center gap-3 flex-wrap">
+            {student && (
+              <div
+                className="rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest"
+                style={{
+                  backgroundColor: 'rgba(255,255,255,0.1)',
+                  color: STATUS_COLOUR[student.status] ?? '#fff',
+                  border: '1px solid ' + (STATUS_COLOUR[student.status] ?? 'rgba(255,255,255,0.2)'),
+                }}
+              >
+                {student.status}
+              </div>
+            )}
+            <SignOutButton signOutOptions={{ redirectUrl: '/sign-in' }}>
+              <button
+                className="rounded-lg px-4 py-2 text-sm font-semibold"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+              >
+                Sign Out
+              </button>
+            </SignOutButton>
+          </div>
         </div>
       </div>
 

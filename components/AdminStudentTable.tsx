@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import StudentActions from '@/components/StudentActions'
+import StudentProgressBar from '@/components/StudentProgressBar'
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -34,7 +35,7 @@ const PAYMENT_COLOUR: Record<string, string> = {
   pending: '#E67E22',
 }
 
-const COLS = ['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition', 'Actions']
+const COLS = ['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition', 'Progress', 'Actions']
 
 // ── Input style helper — navy border on focus ─────────────────────────────────
 
@@ -255,6 +256,9 @@ export default function AdminStudentTable({ students }: { students: Student[] })
                   <p className="text-sm font-medium" style={{ color: '#1E3560' }}>
                     {student.tuitionAmount ? `$${student.tuitionAmount.toLocaleString()}` : '—'}
                   </p>
+                </td>
+                <td className="px-4 py-3">
+                  <StudentProgressBar studentId={student._id} status={student.status} />
                 </td>
                 <td className="px-4 py-3">
                   <StudentActions studentId={student._id} currentStatus={student.status} />

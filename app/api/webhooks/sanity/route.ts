@@ -1,10 +1,12 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
-import { createMoodleUser, enrolMoodleUser, updateMoodleUser, addUserToMoodleCohort } from '@/lib/moodle/client'
+import { moodleRequest, createMoodleUser, enrolMoodleUser, updateMoodleUser, addUserToMoodleCohort } from '@/lib/moodle/client'
 import { isValidSignature, SIGNATURE_HEADER_NAME } from '@sanity/webhook'
 import { Resend } from 'resend'
+import { createClerkClient } from '@clerk/backend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! })
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -125,6 +127,45 @@ if (status !== 'accepted') {
   return Response.json({ message: 'No action needed' })
 }
 
+    // Prevent re-provisioning if already done — stops webhook loop
+    const existingStudent = await client.fetch(
+      `*[_id == $id][0]{ moodleUserId, clerkUserId }`,
+      { id: _id }
+    )
+    if (existingStudent?.moodleUserId) {
+      return Response.json({ message: 'Already provisioned — skipping' })
+    }
+
+    // Create or find Clerk account for student
+    let clerkUserId: string | null = null
+    try {
+      const existingUsers = await clerkClient.users.getUserList({ emailAddress: [email] })
+
+      if (existingUsers.totalCount > 0) {
+        clerkUserId = existingUsers.data[0].id
+      } else {
+        const newUser = await clerkClient.users.createUser({
+          emailAddress: [email],
+          firstName,
+          lastName,
+          password: `WDA_${Date.now()}!`,
+          skipPasswordChecks: true,
+        })
+        clerkUserId = newUser.id
+
+        await clerkClient.users.updateUser(newUser.id, {
+          skipPasswordChecks: true,
+        })
+
+        // Create a sign-in token so the student can set up their account
+        await clerkClient.users.createUserSignInToken({
+          userId: clerkUserId,
+        })
+      }
+    } catch (err) {
+      console.error('Failed to create Clerk account:', err)
+    }
+
     // Get the program to find the Moodle course ID and tuition amount
 const programDoc = program?._ref
   ? await client.fetch(`*[_id == $id][0]{ moodleCourseId, tuitionAmount, title }`, { id: program._ref })
@@ -133,17 +174,28 @@ const programDoc = program?._ref
 const moodleCourseId = programDoc?.moodleCourseId ?? Number(process.env.MOODLE_COURSE_DAC_DD)
 const tuitionAmount = programDoc?.tuitionAmount ?? null
 
-    // Create Moodle user
-    const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
-    const newUsers = await createMoodleUser({
-      username: `${username}_${Date.now()}`,
-      password: `Wda${Date.now()}!`,
-      firstname: firstName,
-      lastname: lastName,
-      email,
+    // Check if Moodle user already exists
+    let moodleUserId: number
+
+    const existingUsers = await moodleRequest('core_user_get_users', {
+      'criteria[0][key]': 'email',
+      'criteria[0][value]': email,
     })
 
-    const moodleUserId = newUsers[0].id
+    if (existingUsers?.users?.length > 0) {
+      moodleUserId = existingUsers.users[0].id
+    } else {
+      // Create new Moodle user
+      const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+      const newUsers = await createMoodleUser({
+        username: `${username}_${Date.now()}`,
+        password: `Wda${Date.now()}!`,
+        firstname: firstName,
+        lastname: lastName,
+        email,
+      })
+      moodleUserId = newUsers[0].id
+    }
 
     // Enrol in Moodle course
     await enrolMoodleUser(moodleUserId, moodleCourseId)
@@ -157,11 +209,12 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
       }
     }
 
-    // Store moodleUserId back on Sanity student record
+    // Store moodleUserId (and clerkUserId if newly created) back on Sanity student record
     await client.patch(_id).set({
   moodleUserId,
   acceptedDate: new Date().toISOString(),
   ...(tuitionAmount ? { tuitionAmount } : {}),
+  ...(clerkUserId ? { clerkUserId } : {}),
 }).commit()
 // Send welcome email to student
     await resend.emails.send({
@@ -183,18 +236,19 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
             </p>
 
             <div style="background-color: #F4F7F9; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-              <p style="color: #1E3560; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin: 0 0 12px;">Your Next Steps</p>
+              <p style="color: #1E3560; font-size: 13px; font-weight: 700; margin: 0 0 12px;">How to Access Your Student Portal</p>
               <ol style="color: #4b5563; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
-                <li>Log into your student portal to pay your tuition</li>
-                <li>Once payment is confirmed, your course will be activated in Moodle</li>
-                <li>Access your course materials at <a href="https://westerndentalacademy.com/portal" style="color: #378ADD;">your student portal</a></li>
+                <li>Click the button below to go to the sign-in page</li>
+                <li>Click <strong>Forgot password?</strong> and enter your email address</li>
+                <li>Check your email for a password reset link</li>
+                <li>Set your password and you will be taken to your student portal</li>
               </ol>
             </div>
 
             <div style="text-align: center; margin-bottom: 24px;">
-              <a href="https://westerndentalacademy.com/portal" 
+              <a href="https://westerndentalacademy.com/sign-in"
                  style="background-color: #E67E22; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block;">
-                Go to Your Student Portal
+                Set Up Your Portal Access
               </a>
             </div>
 

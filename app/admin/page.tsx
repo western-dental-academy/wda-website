@@ -37,7 +37,7 @@ export default async function AdminPage() {
     `*[_type == "student"] | order(applicationDate desc) {
       _id, firstName, lastName, email, status, paymentStatus,
       applicationDate, acceptedDate, tuitionAmount, cohort, notes,
-      program->{ title }
+      moodleUserId, program->{ title }
     }`
   )
 

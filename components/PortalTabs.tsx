@@ -834,6 +834,24 @@ export default function PortalTabs({
                 Download Transcript
               </Link>
             </div>
+
+            {(student.status === 'accepted' || student.status === 'enrolled') && student.moodleUserId && (
+              <div className={CARD} style={{ border: CARD_BORDER }}>
+                <p className="text-xs font-bold uppercase tracking-widest mb-2" style={{ color: '#378ADD' }}>
+                  Student ID Card
+                </p>
+                <p className="text-sm mb-5" style={{ color: 'rgba(43,48,58,0.6)' }}>
+                  Download your digital student ID card as a PDF.
+                </p>
+                <a
+                  href="/api/students/id-card"
+                  className="inline-flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white"
+                  style={{ backgroundColor: '#378ADD' }}
+                >
+                  Download Student ID
+                </a>
+              </div>
+            )}
           </div>
         )}
 
@@ -844,10 +862,11 @@ export default function PortalTabs({
               <p className="text-xs font-bold uppercase tracking-widest mb-6" style={{ color: '#378ADD' }}>Your Profile</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {[
-                  { label: 'Full Name', value: student.firstName + ' ' + student.lastName },
-                  { label: 'Email',     value: student.email },
-                  { label: 'Phone',     value: student.phone ?? '—' },
-                  { label: 'Programme', value: student.program?.title ?? '—' },
+                  { label: 'Full Name',  value: student.firstName + ' ' + student.lastName },
+                  ...(student.moodleUserId ? [{ label: 'Student ID', value: String(student.moodleUserId + 99999) }] : []),
+                  { label: 'Email',      value: student.email },
+                  { label: 'Phone',      value: student.phone ?? '—' },
+                  { label: 'Programme',  value: student.program?.title ?? '—' },
                   {
                     label: 'Applied',
                     value: student.applicationDate

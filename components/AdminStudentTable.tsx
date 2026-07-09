@@ -16,6 +16,7 @@ interface Student {
   applicationDate?: string | null
   tuitionAmount?: number | null
   cohort?: string | null
+  moodleUserId?: number | null
   program?: { title: string } | null
 }
 
@@ -35,7 +36,7 @@ const PAYMENT_COLOUR: Record<string, string> = {
   pending: '#E67E22',
 }
 
-const COLS = ['Name', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition', 'Progress', 'Actions']
+const COLS = ['Name', 'Student ID', 'Email', 'Programme', 'Cohort', 'Applied', 'Status', 'Payment', 'Tuition', 'Progress', 'Actions']
 
 // ── Input style helper — navy border on focus ─────────────────────────────────
 
@@ -208,6 +209,11 @@ export default function AdminStudentTable({ students }: { students: Student[] })
                 <td className="px-4 py-3">
                   <p className="text-sm font-semibold" style={{ color: '#1E3560' }}>
                     {student.firstName} {student.lastName}
+                  </p>
+                </td>
+                <td className="px-4 py-3">
+                  <p className="text-sm tabular-nums" style={{ color: 'rgba(43,48,58,0.7)' }}>
+                    {student.moodleUserId ? student.moodleUserId + 99999 : '—'}
                   </p>
                 </td>
                 <td className="px-4 py-3">

@@ -1,5 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
+import { linkClerkToStudent } from '@/lib/students/link-clerk'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -26,16 +27,7 @@ export default async function PortalLayout({
     redirect('/admin')
   }
 
-  // Link Clerk account to Sanity student record on every portal visit
-  // This is a no-op if already linked
-  try {
-    await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/students/link-clerk`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    })
-  } catch (error) {
-    console.error('Failed to link Clerk account:', error)
-  }
+  await linkClerkToStudent(userId, email)
 
   return <>{children}</>
 }

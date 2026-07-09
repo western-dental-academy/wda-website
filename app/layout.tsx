@@ -7,6 +7,7 @@ import CookieConsent from "@/components/CookieConsent";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
 import { SanityLive } from "@/sanity/lib/live";
 import RecaptchaProvider from '@/components/RecaptchaProvider'
+import NextTopLoader from 'nextjs-toploader'
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -75,6 +76,7 @@ export default function RootLayout({
       className={`${montserrat.variable} ${openSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <NextTopLoader color="#E67E22" height={3} showSpinner={false} />
         <RecaptchaProvider>
           <ClerkProvider>
             <SiteShell>{children}</SiteShell>

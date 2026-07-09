@@ -129,12 +129,10 @@ export default function PortalTabs({
   moodleCourseUrl,
   paymentHistory,
 }: PortalTabsProps) {
-  // All hooks must be declared before any early returns (React rules)
-  const [activeTab, setActiveTab] = useState('overview')
-
-  const now = new Date()
-  const [viewYear, setViewYear]   = useState(now.getFullYear())
-  const [viewMonth, setViewMonth] = useState(now.getMonth())
+  // All hooks at the top — no code between them, no conditional hooks
+  const [activeTab,   setActiveTab]   = useState('overview')
+  const [viewYear,    setViewYear]    = useState(() => new Date().getFullYear())
+  const [viewMonth,   setViewMonth]   = useState(() => new Date().getMonth())
   const [selectedDay, setSelectedDay] = useState<string | null>(null)
 
   // ── Non-enrolled early returns ────────────────────────────────────────────
@@ -206,6 +204,7 @@ export default function PortalTabs({
 
   // ── Enrolled ──────────────────────────────────────────────────────────────
 
+  const now = new Date()
   const assignments = assignmentCourses?.[0]?.assignments ?? []
 
   // ── Calendar event map ────────────────────────────────────────────────────

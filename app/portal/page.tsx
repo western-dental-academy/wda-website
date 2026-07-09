@@ -1,5 +1,6 @@
 import { currentUser } from '@clerk/nextjs/server'
 import { SignOutButton } from '@clerk/nextjs'
+import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents, getMoodleAssignments, getMoodleSubmissions } from '@/lib/moodle/client'
 import { stripe } from '@/lib/stripe/client'
@@ -25,6 +26,18 @@ const STATUS_COLOUR: Record<string, string> = {
 export default async function PortalPage() {
   const user = await currentUser()
   const email = user?.emailAddresses[0]?.emailAddress ?? ''
+
+  const ADMIN_EMAILS = [
+    'aiden@westerndentalacademy.com',
+    'jolene@westerndentalacademy.com',
+    'alana@westerndentalacademy.com',
+    'collette@westerndentalacademy.com',
+    'tammy@westerndentalacademy.com',
+  ]
+
+  if (email && ADMIN_EMAILS.includes(email)) {
+    redirect('/admin')
+  }
 
   const student = await client.fetch(
     `*[_type == "student" && email == $email][0]{

@@ -137,17 +137,22 @@ if (status !== 'accepted') {
 
     // Prevent re-provisioning if already done — stops webhook loop
     const existingStudent = await client.fetch(
-      `*[_id == $id][0]{ moodleUserId, clerkUserId }`,
+      `*[_id == $id][0]{ moodleUserId, clerkUserId, processingStartedAt }`,
       { id: _id }
     )
     console.log('Webhook fired for student:', _id, 'status:', status)
     console.log('Existing student data:', JSON.stringify(existingStudent))
     console.log('skipClerkCreation:', !!existingStudent?.clerkUserId)
     console.log('moodleUserId check:', existingStudent?.moodleUserId)
-    // If moodleUserId is set — fully provisioned, skip everything
-    if (existingStudent?.moodleUserId) {
-      return Response.json({ message: 'Already provisioned — skipping' })
+    // Already being processed or fully provisioned — skip
+    if (existingStudent?.moodleUserId || existingStudent?.processingStartedAt) {
+      return Response.json({ message: 'Already processing or provisioned — skipping' })
     }
+
+    // Mark as processing immediately to prevent loop on subsequent webhook triggers
+    await client.patch(_id).set({
+      processingStartedAt: new Date().toISOString(),
+    }).commit()
 
     // If clerkUserId is set but no moodleUserId — Clerk done but Moodle pending
     // Skip Clerk creation but still provision Moodle
@@ -180,12 +185,6 @@ if (status !== 'accepted') {
       }
     }
 
-    // Mark as being processed immediately to prevent loops on subsequent webhook triggers
-    await client.patch(_id).set({
-      clerkUserId: clerkUserId ?? 'processing',
-      acceptedDate: new Date().toISOString(),
-    }).commit()
-
     // Get the program to find the Moodle course ID and tuition amount
 const programDoc = program?._ref
   ? await client.fetch(`*[_id == $id][0]{ moodleCourseId, tuitionAmount, title }`, { id: program._ref })
@@ -198,38 +197,47 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
     console.log('Proceeding to Moodle provisioning for:', email)
     let moodleUserId: number | undefined
 
-    if (moodleCourseId) {
-      const existingMoodleUsers = await moodleRequest('core_user_get_users', {
-        'criteria[0][key]': 'email',
-        'criteria[0][value]': email,
-      })
-
-      let resolvedId: number
-      if (existingMoodleUsers?.users?.length > 0) {
-        resolvedId = existingMoodleUsers.users[0].id
-      } else {
-        const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
-        const newUsers = await createMoodleUser({
-          username: `${username}_${Date.now()}`,
-          password: `Wda${Date.now()}!`,
-          firstname: firstName,
-          lastname: lastName,
-          email,
+    try {
+      if (moodleCourseId) {
+        console.log('Looking up Moodle user for:', email)
+        const existingMoodleUsers = await moodleRequest('core_user_get_users', {
+          'criteria[0][key]': 'email',
+          'criteria[0][value]': email,
         })
-        resolvedId = newUsers[0].id
-      }
 
-      await enrolMoodleUser(resolvedId, moodleCourseId)
-
-      if (payload.cohort) {
-        try {
-          await addUserToMoodleCohort(resolvedId, payload.cohort)
-        } catch (err) {
-          console.error('Failed to add student to cohort:', err)
+        let resolvedId: number
+        if (existingMoodleUsers?.users?.length > 0) {
+          resolvedId = existingMoodleUsers.users[0].id
+        } else {
+          const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9]/g, '')
+          const newUsers = await createMoodleUser({
+            username: `${username}_${Date.now()}`,
+            password: `Wda${Date.now()}!`,
+            firstname: firstName,
+            lastname: lastName,
+            email,
+          })
+          resolvedId = newUsers[0].id
         }
-      }
 
-      moodleUserId = resolvedId
+        await enrolMoodleUser(resolvedId, moodleCourseId)
+
+        if (payload.cohort) {
+          try {
+            await addUserToMoodleCohort(resolvedId, payload.cohort)
+          } catch (err) {
+            console.error('Failed to add student to cohort:', err)
+          }
+        }
+
+        moodleUserId = resolvedId
+        console.log('Moodle provisioning complete, userId:', moodleUserId)
+      }
+    } catch (moodleError) {
+      console.error('Moodle provisioning failed:', String(moodleError))
+      // Clear processingStartedAt so admin can retry by re-publishing in Studio
+      await client.patch(_id).set({ processingStartedAt: null }).commit()
+      return Response.json({ message: 'Moodle provisioning failed — will need manual retry', error: String(moodleError) })
     }
 
     // Update Sanity — always set acceptedDate; moodleUserId only when provisioned

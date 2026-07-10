@@ -131,6 +131,14 @@ defineField({
       readOnly: true,
     }),
     defineField({
+      name: 'processingStartedAt',
+      title: 'Processing Started At',
+      type: 'datetime',
+      description: 'Set by webhook to prevent duplicate provisioning — cleared on Moodle failure',
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
       name: 'notes',
       title: 'Internal Notes',
       type: 'text',

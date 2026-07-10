@@ -140,33 +140,40 @@ if (status !== 'accepted') {
       `*[_id == $id][0]{ moodleUserId, clerkUserId }`,
       { id: _id }
     )
-    if (existingStudent?.moodleUserId || existingStudent?.clerkUserId) {
+    // If moodleUserId is set — fully provisioned, skip everything
+    if (existingStudent?.moodleUserId) {
       return Response.json({ message: 'Already provisioned — skipping' })
     }
 
+    // If clerkUserId is set but no moodleUserId — Clerk done but Moodle pending
+    // Skip Clerk creation but still provision Moodle
+    const skipClerkCreation = !!existingStudent?.clerkUserId
+
     // Create or find Clerk account for student
-    let clerkUserId: string | null = null
-    try {
-      const existingUsers = await clerkClient.users.getUserList({ emailAddress: [email] })
+    let clerkUserId: string | null = skipClerkCreation ? existingStudent.clerkUserId : null
+    if (!skipClerkCreation) {
+      try {
+        const existingUsers = await clerkClient.users.getUserList({ emailAddress: [email] })
 
-      if (existingUsers.totalCount > 0) {
-        clerkUserId = existingUsers.data[0].id
-      } else {
-        const newUser = await clerkClient.users.createUser({
-          emailAddress: [email],
-          firstName,
-          lastName,
-          password: `WDA_${Date.now()}!`,
-          skipPasswordChecks: true,
-        })
-        clerkUserId = newUser.id
+        if (existingUsers.totalCount > 0) {
+          clerkUserId = existingUsers.data[0].id
+        } else {
+          const newUser = await clerkClient.users.createUser({
+            emailAddress: [email],
+            firstName,
+            lastName,
+            password: `WDA_${Date.now()}!`,
+            skipPasswordChecks: true,
+          })
+          clerkUserId = newUser.id
 
-        await clerkClient.users.updateUser(newUser.id, {
-          skipPasswordChecks: true,
-        })
+          await clerkClient.users.updateUser(newUser.id, {
+            skipPasswordChecks: true,
+          })
+        }
+      } catch (err) {
+        console.error('Failed to create Clerk account:', err)
       }
-    } catch (err) {
-      console.error('Failed to create Clerk account:', err)
     }
 
     // Mark as being processed immediately to prevent loops on subsequent webhook triggers

@@ -140,6 +140,10 @@ if (status !== 'accepted') {
       `*[_id == $id][0]{ moodleUserId, clerkUserId }`,
       { id: _id }
     )
+    console.log('Webhook fired for student:', _id, 'status:', status)
+    console.log('Existing student data:', JSON.stringify(existingStudent))
+    console.log('skipClerkCreation:', !!existingStudent?.clerkUserId)
+    console.log('moodleUserId check:', existingStudent?.moodleUserId)
     // If moodleUserId is set — fully provisioned, skip everything
     if (existingStudent?.moodleUserId) {
       return Response.json({ message: 'Already provisioned — skipping' })
@@ -191,6 +195,7 @@ const moodleCourseId = programDoc?.moodleCourseId ?? null
 const tuitionAmount = programDoc?.tuitionAmount ?? null
 
     // Moodle provisioning — skipped when the programme has no moodleCourseId
+    console.log('Proceeding to Moodle provisioning for:', email)
     let moodleUserId: number | undefined
 
     if (moodleCourseId) {

@@ -34,40 +34,44 @@ export async function POST(req: NextRequest) {
 
     // Handle rejection
 if (status === 'rejected') {
-  await resend.emails.send({
-    from: 'Western Dental Academy <info@westerndentalacademy.com>',
-    to: email,
-    subject: `Your Application to Western Dental Academy`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #1E3560; padding: 32px;">
-          <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
-          <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Application Update</p>
+  try {
+    await resend.emails.send({
+      from: 'Western Dental Academy <info@westerndentalacademy.com>',
+      to: email,
+      subject: `Your Application to Western Dental Academy`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #1E3560; padding: 32px;">
+            <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
+            <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Application Update</p>
+          </div>
+          <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+            <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dear ${firstName},</p>
+            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+              Thank you for your interest in Western Dental Academy and for taking the time to apply.
+              After careful review, we are unable to offer you admission at this time.
+            </p>
+            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+              We encourage you to reapply in a future intake. If you would like feedback on your application
+              or information about future opportunities, please don't hesitate to reach out to our admissions team.
+            </p>
+            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+              We wish you all the best in your future endeavours.
+            </p>
+            <a href="mailto:info@westerndentalacademy.com"
+               style="background-color: #1E3560; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+              Contact Admissions
+            </a>
+          </div>
+          <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB</p>
+          </div>
         </div>
-        <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-          <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dear ${firstName},</p>
-          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
-            Thank you for your interest in Western Dental Academy and for taking the time to apply.
-            After careful review, we are unable to offer you admission at this time.
-          </p>
-          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
-            We encourage you to reapply in a future intake. If you would like feedback on your application 
-            or information about future opportunities, please don't hesitate to reach out to our admissions team.
-          </p>
-          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-            We wish you all the best in your future endeavours.
-          </p>
-          <a href="mailto:info@westerndentalacademy.com" 
-             style="background-color: #1E3560; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
-            Contact Admissions
-          </a>
-        </div>
-        <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
-          <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB</p>
-        </div>
-      </div>
-    `,
-  })
+      `,
+    })
+  } catch (emailError) {
+    console.error('Rejection email failed:', emailError)
+  }
   return Response.json({ message: 'Rejection email sent' })
 }
 
@@ -88,37 +92,41 @@ if (status === 'withdrawn') {
     }
   }
 
-  await resend.emails.send({
-    from: 'Western Dental Academy <info@westerndentalacademy.com>',
-    to: email,
-    subject: `Your Enrolment at Western Dental Academy`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background-color: #1E3560; padding: 32px;">
-          <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
-          <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Enrolment Update</p>
+  try {
+    await resend.emails.send({
+      from: 'Western Dental Academy <info@westerndentalacademy.com>',
+      to: email,
+      subject: `Your Enrolment at Western Dental Academy`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #1E3560; padding: 32px;">
+            <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
+            <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Enrolment Update</p>
+          </div>
+          <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+            <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dear ${firstName},</p>
+            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
+              We are writing to confirm that your withdrawal from Western Dental Academy has been processed.
+              Your access to course materials has been deactivated.
+            </p>
+            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+              If you wish to re-enrol in the future or have any questions about your withdrawal,
+              please contact our admissions team — we would be happy to assist you.
+            </p>
+            <a href="mailto:info@westerndentalacademy.com"
+               style="background-color: #1E3560; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+              Contact Us
+            </a>
+          </div>
+          <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+            <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB</p>
+          </div>
         </div>
-        <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-          <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Dear ${firstName},</p>
-          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 16px;">
-            We are writing to confirm that your withdrawal from Western Dental Academy has been processed.
-            Your access to course materials has been deactivated.
-          </p>
-          <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-            If you wish to re-enrol in the future or have any questions about your withdrawal, 
-            please contact our admissions team — we would be happy to assist you.
-          </p>
-          <a href="mailto:info@westerndentalacademy.com" 
-             style="background-color: #1E3560; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
-            Contact Us
-          </a>
-        </div>
-        <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
-          <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB</p>
-        </div>
-      </div>
-    `,
-  })
+      `,
+    })
+  } catch (emailError) {
+    console.error('Withdrawal email failed:', emailError)
+  }
   return Response.json({ message: 'Withdrawal email sent' })
 }
 
@@ -132,7 +140,7 @@ if (status !== 'accepted') {
       `*[_id == $id][0]{ moodleUserId, clerkUserId }`,
       { id: _id }
     )
-    if (existingStudent?.moodleUserId) {
+    if (existingStudent?.moodleUserId || existingStudent?.clerkUserId) {
       return Response.json({ message: 'Already provisioned — skipping' })
     }
 
@@ -160,6 +168,12 @@ if (status !== 'accepted') {
     } catch (err) {
       console.error('Failed to create Clerk account:', err)
     }
+
+    // Mark as being processed immediately to prevent loops on subsequent webhook triggers
+    await client.patch(_id).set({
+      clerkUserId: clerkUserId ?? 'processing',
+      acceptedDate: new Date().toISOString(),
+    }).commit()
 
     // Get the program to find the Moodle course ID and tuition amount
 const programDoc = program?._ref
@@ -215,56 +229,61 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
     }).commit()
 
     // Send welcome email to student
-    await resend.emails.send({
-      from: 'Western Dental Academy <info@westerndentalacademy.com>',
-      to: email,
-      subject: `Welcome to Western Dental Academy, ${firstName}!`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <div style="background-color: #1E3560; padding: 32px;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to Western Dental Academy</h1>
-            <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Your application has been accepted</p>
-          </div>
-          
-          <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
-            <p style="color: #1E3560; font-size: 16px; font-weight: 600; margin-bottom: 8px;">Congratulations, ${firstName}!</p>
-            <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
-              We are thrilled to welcome you to the <strong>${programDoc?.title ?? 'Dental Assisting Certificate'}</strong> programme at Western Dental Academy. 
-              Your application has been reviewed and accepted by our admissions team.
-            </p>
-
-            <div style="background-color: #F4F7F9; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-              <p style="color: #1E3560; font-size: 13px; font-weight: 700; margin: 0 0 12px;">How to Access Your Student Portal</p>
-              <ol style="color: #4b5563; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
-                <li>Click the button below to go to the sign-in page</li>
-                <li>Click <strong>Forgot password?</strong> and enter your email address</li>
-                <li>Check your email for a password reset link</li>
-                <li>Set your password and you will be taken to your student portal</li>
-              </ol>
+    try {
+      await resend.emails.send({
+        from: 'Western Dental Academy <info@westerndentalacademy.com>',
+        to: email,
+        subject: `Welcome to Western Dental Academy, ${firstName}!`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #1E3560; padding: 32px;">
+              <h1 style="color: white; margin: 0; font-size: 24px;">Welcome to Western Dental Academy</h1>
+              <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Your application has been accepted</p>
             </div>
 
-            <div style="text-align: center; margin-bottom: 24px;">
-              <a href="https://westerndentalacademy.com/sign-in"
-                 style="background-color: #E67E22; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block;">
-                Set Up Your Portal Access
-              </a>
+            <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+              <p style="color: #1E3560; font-size: 16px; font-weight: 600; margin-bottom: 8px;">Congratulations, ${firstName}!</p>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">
+                We are thrilled to welcome you to the <strong>${programDoc?.title ?? 'Dental Assisting Certificate'}</strong> programme at Western Dental Academy.
+                Your application has been reviewed and accepted by our admissions team.
+              </p>
+
+              <div style="background-color: #F4F7F9; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                <p style="color: #1E3560; font-size: 13px; font-weight: 700; margin: 0 0 12px;">How to Access Your Student Portal</p>
+                <ol style="color: #4b5563; font-size: 14px; line-height: 1.8; margin: 0; padding-left: 20px;">
+                  <li>Click the button below to go to the sign-in page</li>
+                  <li>Click <strong>Forgot password?</strong> and enter your email address</li>
+                  <li>Check your email for a password reset link</li>
+                  <li>Set your password and you will be taken to your student portal</li>
+                </ol>
+              </div>
+
+              <div style="text-align: center; margin-bottom: 24px;">
+                <a href="https://westerndentalacademy.com/sign-in"
+                   style="background-color: #E67E22; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px; display: inline-block;">
+                  Set Up Your Portal Access
+                </a>
+              </div>
+
+              <p style="color: #6b7280; font-size: 13px; line-height: 1.6;">
+                If you have any questions, please don't hesitate to reach out to our admissions team at
+                <a href="mailto:info@westerndentalacademy.com" style="color: #378ADD;">info@westerndentalacademy.com</a>.
+                We are here to support you throughout your journey.
+              </p>
             </div>
 
-            <p style="color: #6b7280; font-size: 13px; line-height: 1.6;">
-              If you have any questions, please don't hesitate to reach out to our admissions team at 
-              <a href="mailto:info@westerndentalacademy.com" style="color: #378ADD;">info@westerndentalacademy.com</a>.
-              We are here to support you throughout your journey.
-            </p>
+            <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+              <p style="color: #9ca3af; font-size: 12px; margin: 0;">
+                Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB
+              </p>
+            </div>
           </div>
-
-          <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
-            <p style="color: #9ca3af; font-size: 12px; margin: 0;">
-              Western Dental Academy — 150 Chippewa Road, Suite 258, Sherwood Park, AB
-            </p>
-          </div>
-        </div>
-      `,
-    })
+        `,
+      })
+    } catch (emailError) {
+      console.error('Welcome email failed:', emailError)
+      // Don't throw — email failure shouldn't block provisioning
+    }
 
     return Response.json({
       success: true,

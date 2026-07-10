@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect } from 'react'
+import Link from 'next/link'
 import StudentActions from '@/components/StudentActions'
 import StudentProgressBar from '@/components/StudentProgressBar'
 
@@ -476,9 +477,13 @@ export default function AdminStudentTable({ students }: { students: Student[] })
                 >
                   {/* Name */}
                   <td className="px-4 py-3">
-                    <p className="text-sm font-semibold whitespace-nowrap" style={{ color: '#1E3560' }}>
+                    <Link
+                      href={`/admin/students/${student._id}`}
+                      className="text-sm font-semibold whitespace-nowrap transition-colors duration-150 hover:text-[#378ADD]"
+                      style={{ color: '#1E3560' }}
+                    >
                       {student.firstName} {student.lastName}
-                    </p>
+                    </Link>
                   </td>
 
                   {/* Student ID */}

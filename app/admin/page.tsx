@@ -114,7 +114,7 @@ export default async function AdminPage() {
           </div>
           <div className="flex items-center gap-3">
             <a
-              href="http://localhost:8080"
+              href="https://learn.westerndentalacademy.com"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg px-4 py-2 text-sm font-semibold"

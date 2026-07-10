@@ -144,9 +144,20 @@ if (status !== 'accepted') {
     console.log('Existing student data:', JSON.stringify(existingStudent))
     console.log('skipClerkCreation:', !!existingStudent?.clerkUserId)
     console.log('moodleUserId check:', existingStudent?.moodleUserId)
-    // Already being processed or fully provisioned — skip
-    if (existingStudent?.moodleUserId || existingStudent?.processingStartedAt) {
-      return Response.json({ message: 'Already processing or provisioned — skipping' })
+    // Check if already processing or provisioned
+    if (existingStudent?.moodleUserId) {
+      return Response.json({ message: 'Already provisioned — skipping' })
+    }
+
+    if (existingStudent?.processingStartedAt) {
+      const startedAt = new Date(existingStudent.processingStartedAt).getTime()
+      const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
+      if (startedAt > fiveMinutesAgo) {
+        // Started less than 5 minutes ago — still processing, skip
+        return Response.json({ message: 'Already processing — skipping' })
+      }
+      // Started more than 5 minutes ago and moodleUserId still null — allow retry
+      console.log('Processing timeout — retrying Moodle provisioning')
     }
 
     // Mark as processing immediately to prevent loop on subsequent webhook triggers

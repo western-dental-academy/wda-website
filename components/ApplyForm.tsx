@@ -401,9 +401,15 @@ export default function ApplyForm() {
           <strong className="text-[#1E3560]">{data.email}</strong> within one to two
           business days.
         </p>
-        <p className="text-xs mb-10" style={{ color: "rgba(43,48,58,0.45)" }}>
-          If you don&apos;t hear from us, check your spam folder or contact us directly.
-        </p>
+        <div
+          className="mt-4 mb-8 rounded-lg px-4 py-3 text-sm text-left"
+          style={{ backgroundColor: 'rgba(230,126,34,0.08)', border: '1px solid rgba(230,126,34,0.2)' }}
+        >
+          <p style={{ color: '#1E3560' }}>
+            <strong>📬 Check your junk/spam folder</strong> — our emails sometimes end up there.
+            Add <strong>info@westerndentalacademy.com</strong> to your contacts to ensure you receive all communications from us.
+          </p>
+        </div>
         <div className="flex items-center justify-center gap-4">
           <Link
             href="/"

@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     }
 
     const payload = JSON.parse(body)
-    const { _id, status, firstName, lastName, email, phone, program } = payload
+    const { _id, status, firstName, lastName, email, program } = payload
 
     // Handle rejection
 if (status === 'rejected') {
@@ -140,6 +140,10 @@ if (status !== 'accepted') {
       `*[_id == $id][0]{ moodleUserId, clerkUserId, processingStartedAt }`,
       { id: _id }
     )
+    console.log('Raw existingStudent:', JSON.stringify(existingStudent))
+    console.log('moodleUserId:', existingStudent?.moodleUserId)
+    console.log('processingStartedAt:', existingStudent?.processingStartedAt)
+    console.log('clerkUserId:', existingStudent?.clerkUserId)
     console.log('Webhook fired for student:', _id, 'status:', status)
     console.log('Existing student data:', JSON.stringify(existingStudent))
     console.log('skipClerkCreation:', !!existingStudent?.clerkUserId)

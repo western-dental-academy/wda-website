@@ -140,14 +140,6 @@ if (status !== 'accepted') {
       `*[_id == $id][0]{ moodleUserId, clerkUserId, processingStartedAt }`,
       { id: _id }
     )
-    console.log('Raw existingStudent:', JSON.stringify(existingStudent))
-    console.log('moodleUserId:', existingStudent?.moodleUserId)
-    console.log('processingStartedAt:', existingStudent?.processingStartedAt)
-    console.log('clerkUserId:', existingStudent?.clerkUserId)
-    console.log('Webhook fired for student:', _id, 'status:', status)
-    console.log('Existing student data:', JSON.stringify(existingStudent))
-    console.log('skipClerkCreation:', !!existingStudent?.clerkUserId)
-    console.log('moodleUserId check:', existingStudent?.moodleUserId)
     // Check if already processing or provisioned
     if (existingStudent?.moodleUserId) {
       return Response.json({ message: 'Already provisioned — skipping' })
@@ -161,7 +153,6 @@ if (status !== 'accepted') {
         return Response.json({ message: 'Already processing — skipping' })
       }
       // Started more than 5 minutes ago and moodleUserId still null — allow retry
-      console.log('Processing timeout — retrying Moodle provisioning')
     }
 
     // Mark as processing immediately to prevent loop on subsequent webhook triggers
@@ -209,22 +200,16 @@ const moodleCourseId = programDoc?.moodleCourseId ?? null
 const tuitionAmount = programDoc?.tuitionAmount ?? null
 
     // Moodle provisioning — skipped when the programme has no moodleCourseId
-    console.log('Proceeding to Moodle provisioning for:', email)
     let moodleUserId: number | undefined
 
     try {
       if (moodleCourseId) {
-        console.log('Looking up Moodle user for:', email)
-        console.log('About to call core_user_get_users for:', email)
-        console.log('MOODLE_URL env:', process.env.MOODLE_URL)
-        console.log('MOODLE_TOKEN exists:', !!process.env.MOODLE_TOKEN)
         let existingMoodleUsers
         try {
           existingMoodleUsers = await moodleRequest('core_user_get_users', {
             'criteria[0][key]': 'email',
             'criteria[0][value]': email,
           })
-          console.log('core_user_get_users result:', JSON.stringify(existingMoodleUsers))
         } catch (userLookupError) {
           console.error('core_user_get_users failed:', String(userLookupError))
           throw userLookupError
@@ -256,7 +241,6 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
         }
 
         moodleUserId = resolvedId
-        console.log('Moodle provisioning complete, userId:', moodleUserId)
       }
     } catch (moodleError) {
       console.error('Moodle provisioning failed:', String(moodleError))

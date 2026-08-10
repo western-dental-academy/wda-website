@@ -215,10 +215,20 @@ const tuitionAmount = programDoc?.tuitionAmount ?? null
     try {
       if (moodleCourseId) {
         console.log('Looking up Moodle user for:', email)
-        const existingMoodleUsers = await moodleRequest('core_user_get_users', {
-          'criteria[0][key]': 'email',
-          'criteria[0][value]': email,
-        })
+        console.log('About to call core_user_get_users for:', email)
+        console.log('MOODLE_URL env:', process.env.MOODLE_URL)
+        console.log('MOODLE_TOKEN exists:', !!process.env.MOODLE_TOKEN)
+        let existingMoodleUsers
+        try {
+          existingMoodleUsers = await moodleRequest('core_user_get_users', {
+            'criteria[0][key]': 'email',
+            'criteria[0][value]': email,
+          })
+          console.log('core_user_get_users result:', JSON.stringify(existingMoodleUsers))
+        } catch (userLookupError) {
+          console.error('core_user_get_users failed:', String(userLookupError))
+          throw userLookupError
+        }
 
         let resolvedId: number
         if (existingMoodleUsers?.users?.length > 0) {

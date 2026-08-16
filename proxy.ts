@@ -48,6 +48,13 @@ export async function proxy(request: NextRequest) {
 
   // ── Maintenance mode check FIRST ──
   if (process.env.MAINTENANCE_MODE === 'true') {
+    // Staff time-tracking routes are always reachable — Clerk handles their own auth gates
+    if (pathname.startsWith('/staff')) {
+      const clerkResponse = await clerkHandler(request, {} as any)
+      if (clerkResponse) return clerkResponse
+      return NextResponse.next()
+    }
+
     const previewCookie = request.cookies.get('wda-preview')
     if (previewCookie?.value === 'true') {
       // Still run Clerk for authenticated routes even in maintenance mode

@@ -36,4 +36,27 @@ export const structure: StructureResolver = (S) =>
         .title('Announcements')
         .schemaType('announcement')
         .child(S.documentTypeList('announcement').title('Announcements')),
+
+      S.divider(),
+
+      S.listItem()
+        .title('Staff Time Tracking')
+        .child(
+          S.list()
+            .title('Staff Time Tracking')
+            .items([
+              S.listItem()
+                .title('Staff Members')
+                .schemaType('staffMember')
+                .child(S.documentTypeList('staffMember').title('Staff Members')),
+              S.listItem()
+                .title('Hours Log')
+                .schemaType('hoursLog')
+                .child(S.documentTypeList('hoursLog').title('Hours Log')),
+              S.listItem()
+                .title('Time-Off Requests')
+                .schemaType('timeOffRequest')
+                .child(S.documentTypeList('timeOffRequest').title('Time-Off Requests')),
+            ])
+        ),
     ]);

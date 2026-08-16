@@ -7,7 +7,10 @@ import { faqItemType } from "./faqItem";
 import student from "./student";
 import subscriber from './subscriber'
 import announcement from './announcement'
+import staffMember from './staffMember'
+import hoursLog from './hoursLog'
+import timeOffRequest from './timeOffRequest'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement],
+  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest],
 }

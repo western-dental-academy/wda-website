@@ -53,7 +53,7 @@ function fmtH(hours: number): string {
 
 export default async function OwnerPage() {
   const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  if (!userId) redirect('/sign-in?redirect_url=%2Fstaff%2Fowner')
 
   const viewer = await client.fetch(
     `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id, fullName, role }`,

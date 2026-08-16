@@ -12,7 +12,7 @@ const client = createClient({
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
   const { userId } = await auth()
-  if (!userId) redirect('/sign-in')
+  if (!userId) redirect('/sign-in?redirect_url=%2Fstaff')
 
   const staff = await client.fetch(
     `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id }`,

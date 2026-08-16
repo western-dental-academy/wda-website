@@ -48,8 +48,16 @@ export async function proxy(request: NextRequest) {
 
   // ── Maintenance mode check FIRST ──
   if (process.env.MAINTENANCE_MODE === 'true') {
-    // Staff time-tracking routes are always reachable — Clerk handles their own auth gates
-    if (pathname.startsWith('/staff')) {
+    // Staff time-tracking routes bypass maintenance mode.
+    // Also bypass /sign-in and /sign-up (needed for the auth redirect chain when staff
+    // are logged out: /staff → layout redirects to /sign-in → must not hit coming-soon)
+    // and /api/time (so the ClockWidget API calls work from the staff page).
+    if (
+      pathname.startsWith('/staff') ||
+      pathname.startsWith('/sign-in') ||
+      pathname.startsWith('/sign-up') ||
+      pathname.startsWith('/api/time')
+    ) {
       const clerkResponse = await clerkHandler(request, {} as any)
       if (clerkResponse) return clerkResponse
       return NextResponse.next()

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import Link from 'next/link'
 import AdminStudentTable from '@/components/AdminStudentTable'
+import AdminAnnouncements from '@/components/AdminAnnouncements'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -65,6 +66,18 @@ export default async function AdminPage() {
   const referralData = Object.entries(referralCounts)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
+
+  const [announcements, programmes] = await Promise.all([
+    client.fetch(
+      `*[_type == "announcement" && active == true] | order(publishedAt desc){
+        _id, title, message, type, publishedAt, expiresAt,
+        program->{ _id, title }
+      }`
+    ),
+    client.fetch(
+      `*[_type == "program"] | order(title asc){ _id, title }`
+    ),
+  ])
 
   // ── Revenue metrics ────────────────────────────────────────────────────────
 
@@ -181,6 +194,9 @@ export default async function AdminPage() {
             ))}
           </div>
         </div>
+
+        {/* Announcements */}
+        <AdminAnnouncements initialAnnouncements={announcements} programmes={programmes} />
 
         {/* Referral Sources */}
 {referralData.length > 0 && (

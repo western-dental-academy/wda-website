@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
   if (expiresAt) doc.expiresAt = new Date(expiresAt).toISOString()
 
   try {
-    const created = await client.create(doc)
+    const created = await client.create(doc as { _type: string; [key: string]: unknown })
     return NextResponse.json({ announcement: created })
   } catch (err) {
     console.error('Sanity announcement create error:', err)

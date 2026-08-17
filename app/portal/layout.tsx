@@ -4,6 +4,7 @@ import { linkClerkToStudent } from '@/lib/students/link-clerk'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
+  'aiden2@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',
@@ -23,6 +24,8 @@ export default async function PortalLayout({
 
   const user = await currentUser()
   const email = user?.emailAddresses[0]?.emailAddress ?? ''
+  console.log('Portal layout — user email:', email)
+  console.log('Is admin:', ADMIN_EMAILS.includes(email))
   if (ADMIN_EMAILS.includes(email)) {
     redirect('/admin')
   }

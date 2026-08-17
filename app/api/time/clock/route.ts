@@ -52,7 +52,7 @@ export async function GET() {
   return Response.json({ active: active ?? null, weekHours: computeHours(weekLogs) })
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   const { userId } = await auth()
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -68,10 +68,13 @@ export async function POST() {
   )
 
   if (active) {
-    const updated = await client
-      .patch(active._id)
-      .set({ clockOut: new Date().toISOString() })
-      .commit()
+    const body = await request.json().catch(() => ({}))
+    const note: string | undefined =
+      typeof body.note === 'string' && body.note.trim() ? body.note.trim() : undefined
+
+    let patch = client.patch(active._id).set({ clockOut: new Date().toISOString() })
+    if (note) patch = patch.set({ notes: note })
+    const updated = await patch.commit()
     return Response.json({ action: 'clocked-out', entry: updated })
   } else {
     const entry = await client.create({

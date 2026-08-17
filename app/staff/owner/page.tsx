@@ -188,7 +188,12 @@ export default async function OwnerPage() {
                     }}
                   >
                     <td className="px-6 py-4 font-medium" style={{ color: '#0D3B6E' }}>
-                      {row.fullName}
+                      <Link
+                        href={`/staff/owner/log/${row._id}`}
+                        className="hover:underline underline-offset-2"
+                      >
+                        {row.fullName}
+                      </Link>
                     </td>
                     <td className="px-6 py-4" style={{ color: '#2B303A' }}>{fmtH(row.thisWeek)}</td>
                     <td className="px-6 py-4" style={{ color: '#2B303A' }}>{fmtH(row.lastWeek)}</td>

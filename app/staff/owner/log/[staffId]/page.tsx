@@ -19,7 +19,7 @@ type LogEntry = {
 }
 
 function fmtTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' })
+  return new Date(iso).toLocaleTimeString('en-CA', { timeZone: 'America/Edmonton', hour: 'numeric', minute: '2-digit' })
 }
 
 function fmtDuration(clockIn: string, clockOut: string): string {
@@ -70,11 +70,15 @@ export default async function StaffLogPage({
 
   if (!member) redirect('/staff/owner')
 
-  // Group entries by calendar date (YYYY-MM-DD derived from clockIn)
+  // Group entries by Edmonton calendar date (YYYY-MM-DD)
   const grouped: Record<string, LogEntry[]> = {}
   for (const log of logs) {
-    const dt = new Date(log.clockIn)
-    const key = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`
+    const key = new Date(log.clockIn).toLocaleDateString('en-CA', {
+      timeZone: 'America/Edmonton',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
     if (!grouped[key]) grouped[key] = []
     grouped[key].push(log)
   }

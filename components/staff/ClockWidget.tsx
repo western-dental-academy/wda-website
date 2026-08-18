@@ -113,7 +113,7 @@ export default function ClockWidget({ initialActive, initialWeekHours }: Props) 
   }
 
   const clockInTime = active
-    ? new Date(active.clockIn).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' })
+    ? new Date(active.clockIn).toLocaleTimeString('en-CA', { timeZone: 'America/Edmonton', hour: 'numeric', minute: '2-digit' })
     : null
 
   const totalWeekHours = active

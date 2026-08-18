@@ -8,7 +8,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
   'Front Office Excellence Workshop': 199,
   'Ergonomics & Career Longevity Workshop': 199,
   'Inventory & Supply Management Workshop': 199,
-  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 3000,
+  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 35,
 }
 
 const client = createClient({
@@ -28,13 +28,14 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { firstName, lastName, email, phone, workshop, preferredDate, questions } = body as {
+    const { firstName, lastName, email, phone, workshop, preferredDate, workshopDateId, questions } = body as {
       firstName?: string
       lastName?: string
       email?: string
       phone?: string
       workshop?: string
       preferredDate?: string
+      workshopDateId?: string
       questions?: string
     }
 
@@ -47,6 +48,24 @@ export async function POST(req: NextRequest) {
     const price = WORKSHOP_PRICES[workshop]
     if (!price) return Response.json({ error: 'Invalid workshop selection' }, { status: 400 })
 
+    // Capacity check when a specific date is selected
+    if (workshopDateId) {
+      const [registeredCount, dateDoc] = await Promise.all([
+        client.fetch<number>(
+          `count(*[_type == "workshopRegistration" && workshopDateId == $wdid && stripePaymentStatus == "paid"])`,
+          { wdid: workshopDateId },
+        ),
+        client.fetch<{ capacity: number } | null>(
+          `*[_type == "workshopDate" && _id == $wdid][0]{ capacity }`,
+          { wdid: workshopDateId },
+        ),
+      ])
+      const capacity = dateDoc?.capacity ?? 20
+      if (registeredCount >= capacity) {
+        return Response.json({ error: 'This workshop date is full' }, { status: 400 })
+      }
+    }
+
     // Save registration to Sanity (unpaid — payment status updated on success page)
     const registration = await client.create({
       _type: 'workshopRegistration',
@@ -56,6 +75,7 @@ export async function POST(req: NextRequest) {
       phone: phone.trim(),
       workshop,
       preferredDate: preferredDate ?? 'Contact us for available dates',
+      workshopDateId: workshopDateId || undefined,
       questions: questions?.trim() || undefined,
       stripePaymentStatus: 'unpaid',
       registeredAt: new Date().toISOString(),

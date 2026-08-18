@@ -34,6 +34,7 @@ export default defineType({
       type: 'string',
       options: {
         list: [
+          { title: 'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer', value: 'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer' },
           { title: 'NDAB Skills Refresher Workshop', value: 'NDAB Skills Refresher Workshop' },
           { title: 'Dental Practice Software Masterclass', value: 'Dental Practice Software Masterclass' },
           { title: 'Front Office Excellence Workshop', value: 'Front Office Excellence Workshop' },
@@ -78,6 +79,22 @@ export default defineType({
       title: 'Registered At',
       type: 'datetime',
       initialValue: () => new Date().toISOString(),
+    }),
+    defineField({
+      name: 'workshopDateId',
+      title: 'Workshop Date',
+      type: 'string',
+    }),
+    defineField({
+      name: 'checkedIn',
+      title: 'Checked In',
+      type: 'boolean',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'checkedInAt',
+      title: 'Checked In At',
+      type: 'datetime',
     }),
   ],
   preview: {

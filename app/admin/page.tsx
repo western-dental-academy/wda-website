@@ -5,6 +5,7 @@ import { createClient } from '@sanity/client'
 import Link from 'next/link'
 import AdminStudentTable from '@/components/AdminStudentTable'
 import AdminAnnouncements from '@/components/AdminAnnouncements'
+import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration } from '@/components/AdminWorkshopRegistrations'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -67,7 +68,7 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
 
-  const [announcements, programmes] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -76,6 +77,15 @@ export default async function AdminPage() {
     ),
     client.fetch(
       `*[_type == "program"] | order(title asc){ _id, title }`
+    ),
+    client.fetch(
+      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity }`
+    ),
+    client.fetch(
+      `*[_type == "workshopRegistration"] | order(registeredAt desc){
+        _id, firstName, lastName, email, workshop, registeredAt,
+        stripePaymentStatus, checkedIn, checkedInAt, workshopDateId
+      }`
     ),
   ])
 
@@ -111,6 +121,16 @@ export default async function AdminPage() {
 
   const formatCAD = (dollars: number) =>
     '$' + dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  // Build DateGroup array for workshop registrations
+  const dateGroups: DateGroup[] = (workshopDates as Array<{ _id: string; workshop: string; date: string; capacity: number }>)
+    .map((d) => ({
+      dateId: d._id,
+      workshop: d.workshop,
+      date: d.date,
+      capacity: d.capacity,
+      registrations: (workshopRegs as WorkshopRegistration[]).filter((r) => r.workshopDateId === d._id),
+    }))
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F4F7F9' }}>
@@ -225,6 +245,9 @@ export default async function AdminPage() {
     </div>
   </div>
 )}
+
+        {/* Workshop registrations */}
+        <AdminWorkshopRegistrations groups={dateGroups} />
 
         {/* Student table */}
         <AdminStudentTable students={students} />

@@ -104,7 +104,7 @@ const workshops: Workshop[] = [
     num: "06",
     title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
     badge: "Launching Soon",
-    price: 30,
+    price: 35,
     duration: "1.5 hours",
     description:
       "Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice.",

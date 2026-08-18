@@ -11,10 +11,20 @@ interface FormData {
   phone: string;
   workshop: string;
   preferredDate: string;
+  workshopDateId: string;
   questions: string;
 }
 
 type Errors = Partial<Record<keyof FormData, string>>;
+
+interface WorkshopDate {
+  id: string;
+  workshop: string;
+  date: string;
+  capacity: number;
+  registered: number;
+  isFull: boolean;
+}
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
@@ -25,6 +35,7 @@ const INITIAL: FormData = {
   phone: "",
   workshop: "",
   preferredDate: "Contact us for available dates",
+  workshopDateId: "",
   questions: "",
 };
 
@@ -35,15 +46,13 @@ const STEPS = [
 ];
 
 const WORKSHOP_OPTIONS = [
-  { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 30 },
+  { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 35 },
   { label: "NDAB Skills Refresher Workshop",         price: 299 },
   { label: "Dental Practice Software Masterclass",   price: 249 },
   { label: "Front Office Excellence Workshop",       price: 199 },
   { label: "Ergonomics & Career Longevity Workshop", price: 199 },
   { label: "Inventory & Supply Management Workshop", price: 199 },
 ];
-
-const DATE_OPTIONS = ["Contact us for available dates"];
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -53,6 +62,26 @@ function calcFee(amountInCents: number): number {
 
 function fmtCAD(cents: number): string {
   return `$${(cents / 100).toFixed(2)}`;
+}
+
+function formatWorkshopDate(iso: string): string {
+  const d = new Date(iso);
+  const datePart = d.toLocaleDateString("en-CA", {
+    timeZone: "America/Edmonton",
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+  const timePart = d
+    .toLocaleTimeString("en-CA", {
+      timeZone: "America/Edmonton",
+      hour: "numeric",
+      minute: "2-digit",
+    })
+    .replace("a.m.", "AM")
+    .replace("p.m.", "PM");
+  return `${datePart} — ${timePart}`;
 }
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
@@ -121,10 +150,27 @@ export default function WorkshopRegisterForm() {
   const [redirecting, setRedirecting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
 
+  // Workshop dates fetched from API
+  const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
+  const [datesLoading, setDatesLoading]   = useState(true);
+  const [datesError, setDatesError]       = useState(false);
+
   const stepHeadingRef = useRef<HTMLHeadingElement>(null);
+
   useEffect(() => {
     stepHeadingRef.current?.focus();
   }, [step]);
+
+  // Fetch available dates on mount
+  useEffect(() => {
+    fetch("/api/workshops/dates")
+      .then((r) => r.json())
+      .then((dates: WorkshopDate[]) => {
+        setWorkshopDates(Array.isArray(dates) ? dates : []);
+      })
+      .catch(() => setDatesError(true))
+      .finally(() => setDatesLoading(false));
+  }, []);
 
   function set<K extends keyof FormData>(key: K, value: string) {
     setData((d) => ({ ...d, [key]: value }));
@@ -145,6 +191,13 @@ export default function WorkshopRegisterForm() {
 
     if (step === 2) {
       if (!data.workshop) e.workshop = "Please select a workshop.";
+      // Require a date selection if dates exist for the chosen workshop
+      if (data.workshop) {
+        const hasDates = workshopDates.some((d) => d.workshop === data.workshop);
+        if (hasDates && !data.workshopDateId) {
+          e.workshopDateId = "Please select a date.";
+        }
+      }
     }
 
     setErrors(e);
@@ -168,7 +221,16 @@ export default function WorkshopRegisterForm() {
       const res = await fetch("/api/workshops/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phone: data.phone,
+          workshop: data.workshop,
+          preferredDate: data.preferredDate,
+          workshopDateId: data.workshopDateId || undefined,
+          questions: data.questions,
+        }),
       });
       const result = await res.json();
       if (!res.ok || !result.url) throw new Error(result.error ?? "Something went wrong.");
@@ -185,6 +247,10 @@ export default function WorkshopRegisterForm() {
   const amountCents  = (selectedWorkshop?.price ?? 0) * 100;
   const feeCents     = amountCents > 0 ? calcFee(amountCents) : 0;
   const totalCents   = amountCents + feeCents;
+
+  // Dates available for the selected workshop
+  const availableDates = workshopDates.filter((d) => d.workshop === data.workshop);
+  const hasDates = availableDates.length > 0;
 
   // Progress bar
   const fillWidth = `calc(${(step - 1) / 2} * (100% - 36px))`;
@@ -350,12 +416,17 @@ export default function WorkshopRegisterForm() {
           </p>
 
           <div className="flex flex-col gap-5">
+            {/* Workshop dropdown */}
             <div>
               <FieldLabel htmlFor="reg-workshop">Workshop</FieldLabel>
               <div className="relative">
                 <select
                   id="reg-workshop" value={data.workshop}
-                  onChange={(e) => set("workshop", e.target.value)}
+                  onChange={(e) => {
+                    set("workshop", e.target.value);
+                    set("workshopDateId", "");
+                    set("preferredDate", "Contact us for available dates");
+                  }}
                   aria-required="true" aria-invalid={!!errors.workshop || undefined}
                   aria-describedby={errors.workshop ? "err-workshop" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.workshop ? " invalid" : ""}`}
@@ -372,25 +443,65 @@ export default function WorkshopRegisterForm() {
               <FieldError id="err-workshop" msg={errors.workshop} />
             </div>
 
-            <div>
-              <FieldLabel htmlFor="reg-date">Preferred Date</FieldLabel>
-              <div className="relative">
-                <select
-                  id="reg-date" value={data.preferredDate}
-                  onChange={(e) => set("preferredDate", e.target.value)}
-                  className="wda-input pr-10 cursor-pointer"
-                >
-                  {DATE_OPTIONS.map((o) => (
-                    <option key={o} value={o}>{o}</option>
-                  ))}
-                </select>
-                <Chevron />
-              </div>
-              <p className="mt-1.5 text-[11px]" style={{ color: "rgba(43,48,58,0.4)" }}>
-                We will confirm your workshop date by email after registration.
-              </p>
-            </div>
+            {/* Date selection — dynamic based on available dates */}
+            {data.workshop && (
+              datesLoading ? (
+                <p className="text-xs" style={{ color: "rgba(43,48,58,0.4)" }}>
+                  Loading available dates…
+                </p>
+              ) : datesError ? (
+                <p className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                  Could not load dates. Contact us to confirm availability.
+                </p>
+              ) : hasDates ? (
+                <div>
+                  <FieldLabel htmlFor="reg-date">Workshop Date</FieldLabel>
+                  <div className="relative">
+                    <select
+                      id="reg-date"
+                      value={data.workshopDateId}
+                      onChange={(e) => {
+                        const selected = availableDates.find((d) => d.id === e.target.value);
+                        set("workshopDateId", e.target.value);
+                        set(
+                          "preferredDate",
+                          selected ? formatWorkshopDate(selected.date) : "Contact us for available dates",
+                        );
+                      }}
+                      aria-required="true"
+                      aria-invalid={!!errors.workshopDateId || undefined}
+                      aria-describedby={errors.workshopDateId ? "err-date" : undefined}
+                      className={`wda-input pr-10 cursor-pointer${errors.workshopDateId ? " invalid" : ""}`}
+                    >
+                      <option value="">Select a date</option>
+                      {availableDates.map((d) => (
+                        <option key={d.id} value={d.id} disabled={d.isFull}>
+                          {d.isFull
+                            ? `Full — ${formatWorkshopDate(d.date)}`
+                            : `${formatWorkshopDate(d.date)} (${d.registered}/${d.capacity} registered)`}
+                        </option>
+                      ))}
+                    </select>
+                    <Chevron />
+                  </div>
+                  <FieldError id="err-date" msg={errors.workshopDateId} />
+                </div>
+              ) : (
+                <div>
+                  <p
+                    className="text-[11px] font-semibold uppercase tracking-wide mb-1"
+                    style={{ color: "rgba(30,53,96,0.45)" }}
+                  >
+                    Preferred Date
+                  </p>
+                  <p className="text-sm" style={{ color: "rgba(43,48,58,0.6)" }}>
+                    Contact us for available dates — we'll confirm scheduling by email after registration.
+                  </p>
+                </div>
+              )
+            )}
 
+            {/* Questions */}
             <div>
               <FieldLabel htmlFor="reg-questions" optional>
                 Questions or Special Requests
@@ -452,6 +563,19 @@ export default function WorkshopRegisterForm() {
               </p>
               <p className="text-xs" style={{ color: "rgba(43,48,58,0.55)" }}>{data.email}</p>
             </div>
+
+            {/* Date if selected */}
+            {data.workshopDateId && data.preferredDate !== "Contact us for available dates" && (
+              <div
+                className="px-6 py-3"
+                style={{ backgroundColor: "#F4F7F9", borderBottom: "1px solid rgba(30,53,96,0.08)" }}
+              >
+                <p className="text-xs font-semibold mb-0.5" style={{ color: "rgba(30,53,96,0.45)" }}>
+                  Date
+                </p>
+                <p className="text-sm" style={{ color: "#1E3560" }}>{data.preferredDate}</p>
+              </div>
+            )}
 
             {/* Line items */}
             <div className="bg-white">

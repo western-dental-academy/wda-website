@@ -40,6 +40,25 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem()
+        .title('Workshops')
+        .child(
+          S.list()
+            .title('Workshops')
+            .items([
+              S.listItem()
+                .title('Workshop Dates')
+                .schemaType('workshopDate')
+                .child(S.documentTypeList('workshopDate').title('Workshop Dates')),
+              S.listItem()
+                .title('Workshop Registrations')
+                .schemaType('workshopRegistration')
+                .child(S.documentTypeList('workshopRegistration').title('Workshop Registrations')),
+            ])
+        ),
+
+      S.divider(),
+
+      S.listItem()
         .title('Staff Time Tracking')
         .child(
           S.list()

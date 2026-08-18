@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     }
 
     
-    const processingFee = Math.round((amountInCents + 30) / (1 - 0.029) - amountInCents)
+    const processingFee = Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents)
 
     // Create Stripe Checkout session
     const session = await stripe.checkout.sessions.create({
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
             currency: 'cad',
             product_data: {
               name: 'Payment Processing Fee',
-              description: 'Credit/debit card processing fee (2.9% + $0.30)',
+              description: 'Credit/debit card processing fee (3.3% + $0.30)',
             },
             unit_amount: processingFee,
           },

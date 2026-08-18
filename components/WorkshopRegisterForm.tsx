@@ -47,7 +47,7 @@ const DATE_OPTIONS = ["Contact us for available dates"];
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 function calcFee(amountInCents: number): number {
-  return Math.round((amountInCents + 30) / (1 - 0.029) - amountInCents);
+  return Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents);
 }
 
 function fmtCAD(cents: number): string {
@@ -475,7 +475,7 @@ export default function WorkshopRegisterForm() {
                 style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}
               >
                 <p className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
-                  Payment processing fee (2.9% + $0.30)
+                  Payment processing fee (3.3% + $0.30)
                 </p>
                 <p className="text-xs shrink-0 ml-4" style={{ color: "rgba(43,48,58,0.5)" }}>
                   {fmtCAD(feeCents)}

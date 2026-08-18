@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
     } as { _type: string; [key: string]: unknown })
 
     const amountInCents = price * 100
-    const processingFee = Math.round((amountInCents + 30) / (1 - 0.029) - amountInCents)
+    const processingFee = Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
 
     const session = await stripe.checkout.sessions.create({
@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
             currency: 'cad',
             product_data: {
               name: 'Payment Processing Fee',
-              description: 'Credit/debit card processing fee (2.9% + $0.30)',
+              description: 'Credit/debit card processing fee (3.3% + $0.30)',
             },
             unit_amount: processingFee,
           },

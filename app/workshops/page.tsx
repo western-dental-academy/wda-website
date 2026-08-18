@@ -13,7 +13,22 @@ export const metadata: Metadata = {
 
 // ─── Workshop data ─────────────────────────────────────────────────────────────
 
-const workshops = [
+interface Workshop {
+  num: string;
+  title: string;
+  badge: string;
+  description: string;
+  highlights: string[];
+  tags: string[];
+  price?: number;
+  duration?: string;
+  whatToBring?: string;
+  idealFor?: string;
+  cadaNote?: string;
+  learningOutcomes?: string[];
+}
+
+const workshops: Workshop[] = [
   {
     num: "01",
     title: "Clinical Skills Workshop",
@@ -85,6 +100,37 @@ const workshops = [
     ],
     tags: ["Exam Preparation", "Self-Directed", "Certificate of Attendance"],
   },
+  {
+    num: "06",
+    title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
+    badge: "Launching Soon",
+    price: 30,
+    duration: "1.5 hours",
+    description:
+      "Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice.",
+    highlights: [
+      "Ergonomic risk factors and posture principles for dental practice",
+      "Guided breathwork techniques to reduce tension and support focus",
+      "Yoga-inspired movement sequences adapted for dental professionals",
+      "Targeted stretches for neck, shoulders, wrists, and lower back",
+      "Closing Yoga Nidra relaxation practice",
+    ],
+    tags: ["Interactive", "Wellness", "CADA CCP Support", "Certificate of Attendance"],
+    whatToBring: "Water bottle, yoga mat, and comfortable clothes",
+    idealFor: "Dentists, dental hygienists, dental assistants, treatment coordinators, and all dental team members",
+    cadaNote:
+      "Meets CADA Competency Profile #s B-4-2, I-5-3, or I-5-4. Provides a certificate of attendance to support your annual CCP submission.",
+    learningOutcomes: [
+      "Identify common ergonomic risk factors and injury patterns associated with dental practice",
+      "Apply key principles of neutral posture and body mechanics during clinical procedures",
+      "Recognise the relationship between sustained posture, musculoskeletal health, and career longevity",
+      "Perform guided breathwork exercises to reduce physical tension and support mental focus during the workday",
+      "Demonstrate yoga-inspired movement sequences designed to counteract the demands of chairside work",
+      "Practise targeted stretches to relieve common areas of strain in the neck, shoulders, wrists, and lower back",
+      "Develop a personalised ergonomic self-care plan to integrate into daily practice routines",
+      "Experience a Yoga Nidra relaxation practice as a tool for recovery, stress reduction, and burnout prevention",
+    ],
+  },
 ];
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
@@ -112,7 +158,7 @@ function WorkshopCard({
   workshop,
   index,
 }: {
-  workshop: (typeof workshops)[number];
+  workshop: Workshop;
   index: number;
 }) {
   return (
@@ -158,6 +204,25 @@ function WorkshopCard({
           >
             {workshop.title}
           </h2>
+
+          {/* Price + duration (shown when set) */}
+          {(workshop.price !== undefined || workshop.duration) && (
+            <div className="flex items-center gap-3 mb-4 -mt-1">
+              {workshop.price !== undefined && (
+                <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
+                  ${workshop.price} CAD
+                </span>
+              )}
+              {workshop.price !== undefined && workshop.duration && (
+                <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
+              )}
+              {workshop.duration && (
+                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                  {workshop.duration}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Description */}
           <p
@@ -205,6 +270,90 @@ function WorkshopCard({
               </span>
             ))}
           </div>
+
+          {/* What to bring / Ideal for */}
+          {(workshop.whatToBring || workshop.idealFor) && (
+            <div className="mb-5 flex flex-col gap-2">
+              {workshop.whatToBring && (
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    What to bring:{" "}
+                  </span>
+                  {workshop.whatToBring}
+                </p>
+              )}
+              {workshop.idealFor && (
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    Ideal for:{" "}
+                  </span>
+                  {workshop.idealFor}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* CADA note */}
+          {workshop.cadaNote && (
+            <div
+              className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
+              style={{
+                backgroundColor: "rgba(230,126,34,0.08)",
+                border: "1px solid rgba(230,126,34,0.18)",
+              }}
+            >
+              <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
+              <span style={{ color: "#2B303A" }}>{workshop.cadaNote}</span>
+            </div>
+          )}
+
+          {/* Learning outcomes — native collapsible */}
+          {workshop.learningOutcomes && workshop.learningOutcomes.length > 0 && (
+            <details
+              className="mb-6 rounded-lg overflow-hidden"
+              style={{ border: "1px solid rgba(30,53,96,0.09)" }}
+            >
+              <summary
+                className="list-none flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none"
+                style={{ backgroundColor: "rgba(30,53,96,0.04)", color: "#1E3560" }}
+              >
+                <span
+                  className="text-[11px] font-bold uppercase tracking-wide"
+                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                >
+                  Learning Outcomes ({workshop.learningOutcomes.length})
+                </span>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  className="w-3.5 h-3.5 shrink-0"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </summary>
+              <ul className="px-4 py-4 flex flex-col gap-2.5">
+                {workshop.learningOutcomes.map((lo, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span style={{ color: "#4A9FD4" }}>
+                      <CheckIcon />
+                    </span>
+                    <span className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                      {lo}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
 
           {/* CTA */}
           <Link

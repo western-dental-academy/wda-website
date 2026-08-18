@@ -35,6 +35,7 @@ const STEPS = [
 ];
 
 const WORKSHOP_OPTIONS = [
+  { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 30 },
   { label: "NDAB Skills Refresher Workshop",         price: 299 },
   { label: "Dental Practice Software Masterclass",   price: 249 },
   { label: "Front Office Excellence Workshop",       price: 199 },

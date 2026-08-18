@@ -8,6 +8,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
   'Front Office Excellence Workshop': 199,
   'Ergonomics & Career Longevity Workshop': 199,
   'Inventory & Supply Management Workshop': 199,
+  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 3000,
 }
 
 const client = createClient({

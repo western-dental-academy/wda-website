@@ -4,7 +4,6 @@ import { createClient } from '@sanity/client'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
-  'aiden2@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',

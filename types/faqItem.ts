@@ -1,4 +1,4 @@
-export type FaqCategory = "Admissions" | "Programs" | "Cost" | "Career" | "General";
+export type FaqCategory = "Registration" | "Workshops" | "Cost" | "Career" | "General";
 
 export interface FaqItem {
   _id: string;

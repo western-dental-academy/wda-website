@@ -10,63 +10,63 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 // ─── Placeholder data (shown until Sanity content is published) ───────────────
 
 const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
-  // Admissions
+  // Registration
   {
-    _id: "p-adm-1",
-    category: "Admissions",
+    _id: "p-reg-1",
+    category: "Registration",
     order: 1,
-    question: "What are the requirements to enroll in the Dental Assisting program?",
+    question: "What do I need to register for a WDA workshop?",
     answer:
-      "Applicants must have a high school diploma or equivalent (Alberta Grade 12 or GED). No prior dental experience is required — we welcome students from all backgrounds who have a passion for healthcare.",
+      "No prior dental experience is required. Our workshops are open to dental professionals at all stages, as well as individuals exploring a career in the dental field. Registration is completed online in a few simple steps.",
   },
   {
-    _id: "p-adm-2",
-    category: "Admissions",
+    _id: "p-reg-2",
+    category: "Registration",
     order: 2,
-    question: "How do I apply to Western Dental Academy?",
+    question: "How do I register for a workshop?",
     answer:
-      "You can apply by filling out our online application form or by contacting us directly at our Edmonton campus. Our admissions team will guide you through the process and answer any questions.",
+      "Visit our Workshops page to browse available sessions and click Register to complete your registration online. You can also contact our team directly and we'll walk you through the process.",
   },
   {
-    _id: "p-adm-3",
-    category: "Admissions",
+    _id: "p-reg-3",
+    category: "Registration",
     order: 3,
-    question: "Is there an age requirement to enroll?",
-    answer: "Students must be at least 18 years of age at the time of enrollment.",
+    question: "Is there an age requirement to attend a workshop?",
+    answer: "Participants must be at least 18 years of age at the time of the workshop.",
   },
-  // Programs
+  // Workshops
   {
-    _id: "p-prg-1",
-    category: "Programs",
+    _id: "p-wsh-1",
+    category: "Workshops",
     order: 1,
-    question: "How long is the Dental Assisting program?",
+    question: "How long do WDA workshops run?",
     answer:
-      "Our Dental Assisting program is designed to be completed in a condensed, focused timeframe so you can enter the workforce quickly. Contact us for current program duration and upcoming start dates.",
+      "Workshop duration varies by course — from single-day intensives to multi-day sessions. Each workshop listing includes a duration overview. Contact us for current scheduling and upcoming dates.",
   },
   {
-    _id: "p-prg-2",
-    category: "Programs",
+    _id: "p-wsh-2",
+    category: "Workshops",
     order: 2,
-    question: "Is the training hands-on or mostly online?",
+    question: "Are workshops hands-on or online?",
     answer:
-      "Western Dental Academy emphasizes hands-on, real-world training. Students work in our state-of-the-art on-site clinic using modern dental equipment alongside experienced dental professionals.",
+      "Western Dental Academy prioritises hands-on, practical training. Participants work in our modern on-site facility using professional-grade dental equipment alongside experienced practitioners. Some workshops may include distance delivery components — check individual workshop descriptions for details.",
   },
   {
-    _id: "p-prg-3",
-    category: "Programs",
+    _id: "p-wsh-3",
+    category: "Workshops",
     order: 3,
-    question: "Do you offer continuing education for working dental professionals?",
+    question: "Do you offer workshops for working dental professionals?",
     answer:
-      "Yes — we offer continuing education courses designed for practicing dental teams looking to expand their skills and stay current with modern techniques and technology.",
+      "Yes — our professional development workshops are designed for dental teams at all experience levels, from those new to the field to seasoned practitioners looking to sharpen specific skills or meet continuing competency requirements.",
   },
   // Cost
   {
     _id: "p-cst-1",
     category: "Cost",
     order: 1,
-    question: "How much does the Dental Assisting program cost?",
+    question: "How much do WDA workshops cost?",
     answer:
-      "Program tuition varies depending on the course. Contact our admissions team for current pricing, payment plan options, and any available financial assistance.",
+      "Workshop fees vary by course. Contact our team for current pricing and registration details. Payment is processed securely online at the time of registration.",
   },
   {
     _id: "p-cst-2",
@@ -74,40 +74,40 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     order: 2,
     question: "Are payment plans available?",
     answer:
-      "Yes, we offer flexible payment options to help make your education accessible. Reach out to our admissions team to discuss what works best for your situation.",
+      "Yes, we offer flexible payment options to help make professional development accessible. Reach out to our team to discuss what works best for your situation.",
   },
   {
     _id: "p-cst-3",
     category: "Cost",
     order: 3,
-    question: "Is financial aid available?",
+    question: "Can workshop hours be applied toward CADA CCP requirements?",
     answer:
-      "We encourage students to explore Alberta Student Aid and other funding options. Our admissions team can point you in the right direction.",
+      "WDA workshops provide a Certificate of Attendance that participants may submit as part of their Continuing Competency Programme (CCP) hours documentation with CADA. We encourage participants to verify current CADA requirements directly, as eligibility is determined by CADA.",
   },
   // Career
   {
     _id: "p-car-1",
     category: "Career",
     order: 1,
-    question: "What career opportunities are available after graduation?",
+    question: "How can WDA workshops support my dental career?",
     answer:
-      "Graduates are prepared to work in general dental practices, specialist offices, orthodontic clinics, pediatric dentistry, and more across Alberta and Canada.",
+      "Our workshops provide practical, skills-based training to help dental professionals expand their capabilities, stay current with modern techniques, and demonstrate continued professional development. They are designed to complement existing credentials, not replace formal registration or licensing pathways.",
   },
   {
     _id: "p-car-2",
     category: "Career",
     order: 2,
-    question: "Will I be job-ready when I graduate?",
+    question: "Will I gain practical skills through WDA workshops?",
     answer:
-      "Yes — our curriculum is built around clinical readiness. You'll graduate with hands-on experience and the practical skills employers are looking for from day one.",
+      "Yes — WDA training is built around real-world application. You'll practise in our on-site clinic environment with modern equipment, guided by experienced dental professionals, so that new skills translate directly to your work.",
   },
   {
     _id: "p-car-3",
     category: "Career",
     order: 3,
-    question: "Do you help with job placement after graduation?",
+    question: "Do WDA workshops lead to provincial registration or licensing?",
     answer:
-      "We support our graduates in their career journey and maintain connections with dental practices in the Edmonton area. Contact us to learn more about our graduate support resources.",
+      "WDA workshops issue a Certificate of Attendance, not a provincial credential. Becoming a registered dental assistant in Alberta requires meeting CADA's registration requirements independently. WDA workshops can support your professional development and contribute to CCP documentation, but do not grant registration or licensing on their own.",
   },
   // General
   {
@@ -122,7 +122,7 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     _id: "p-gen-2",
     category: "General",
     order: 2,
-    question: "How do I get in touch with the admissions team?",
+    question: "How do I get in touch with the WDA team?",
     answer:
       "You can reach us through the contact form on our website, by phone, or by email. We typically respond within one business day.",
   },
@@ -132,14 +132,14 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     order: 3,
     question: "Do you offer in-person campus tours?",
     answer:
-      "Yes — we encourage prospective students to visit our facility and see our clinic firsthand. Book a campus tour through our contact page.",
+      "Yes — we welcome visitors to our facility. Come see our clinic and training spaces firsthand. Book a campus tour through our contact page.",
   },
 ];
 
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Answers to the most common questions about Western Dental Academy — admissions, programs, tuition, and career outcomes.",
+    "Answers to the most common questions about Western Dental Academy — workshop registration, fees, professional development, and CADA CCP support.",
 };
 
 export default async function FaqPage() {
@@ -251,8 +251,8 @@ export default async function FaqPage() {
             className="text-lg leading-relaxed max-w-xl"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Browse common questions about admissions, programs, tuition, and
-            career outcomes. Can&apos;t find what you&apos;re looking for?{" "}
+            Browse common questions about our workshops, registration, fees,
+            and professional development opportunities. Can&apos;t find what you&apos;re looking for?{" "}
             <Link
               href="/contact"
               className="font-semibold underline underline-offset-2 transition-colors hover:text-white"

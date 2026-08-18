@@ -4,18 +4,18 @@ import { useState } from "react";
 import type { FaqItem, FaqCategory } from "@/types/faqItem";
 
 const CATEGORY_ORDER: FaqCategory[] = [
-  "Admissions",
-  "Programs",
+  "Registration",
+  "Workshops",
   "Cost",
   "Career",
   "General",
 ];
 
 const CATEGORY_LABELS: Record<FaqCategory, string> = {
-  Admissions: "Admissions",
-  Programs: "Programs",
-  Cost: "Cost & Financial Aid",
-  Career: "Career Outcomes",
+  Registration: "Registration",
+  Workshops: "Workshops",
+  Cost: "Cost & Payment",
+  Career: "Professional Development",
   General: "General",
 };
 

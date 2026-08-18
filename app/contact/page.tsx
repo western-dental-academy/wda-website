@@ -9,7 +9,7 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact Western Dental Academy — ask about programs, admissions, campus tours, or schedule a call with our team. We respond within one business day.",
+    "Contact Western Dental Academy — ask about our workshops, registration, campus tours, or schedule a call with our team. We respond within one business day.",
 };
 
 // ─── Contact details ───────────────────────────────────────────────────────────
@@ -176,9 +176,9 @@ export default function ContactPage() {
             className="text-lg leading-relaxed max-w-xl"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Questions about a program, admissions, campus tours, or anything
-            else — our team is here to help. Expect a reply within one
-            business day.
+            Questions about our workshops, registration, campus tours, or
+            anything else — our team is here to help. Expect a reply within
+            one business day.
           </p>
         </div>
 
@@ -435,16 +435,16 @@ export default function ContactPage() {
           <div className="flex flex-col gap-4">
             {[
               {
-                q: "Do I need prior experience to apply?",
-                a: "No prior experience is required for our Dental Assisting Certificate. Our program is designed to take you from the fundamentals all the way to clinical readiness — no background in healthcare is needed.",
+                q: "Do I need prior experience to attend a workshop?",
+                a: "No prior dental experience is required. Our workshops welcome dental professionals at all stages, as well as individuals exploring the dental field. Simply register online to secure your spot.",
               },
               {
-                q: "How long does the Dental Assisting Certificate program take?",
-                a: "The full-time program runs for approximately 12 months, combining in-class instruction, hands-on lab work, and a supervised clinical practicum at partner dental offices across the Edmonton area.",
+                q: "How long do WDA workshops run?",
+                a: "Workshop duration varies by course — from single-day intensives to multi-day sessions. Visit our Workshops page or contact us for current scheduling and upcoming dates.",
               },
               {
-                q: "What does tuition cost, and are there payment options?",
-                a: "Tuition varies by program. We offer flexible payment plans and can help connect eligible students with student loan options. Contact our admissions team for a full fee schedule and to discuss your financial options.",
+                q: "What do workshops cost, and are there payment options?",
+                a: "Workshop fees vary by course. We offer flexible payment options and are happy to discuss what works best for your situation. Contact our team for a full fee schedule.",
               },
             ].map(({ q, a }) => (
               <div
@@ -482,9 +482,9 @@ export default function ContactPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {[
                 {
-                  label: "Explore Programs",
-                  description: "Browse all WDA programs and find the right fit.",
-                  href: "/programs",
+                  label: "Explore Workshops",
+                  description: "Browse all WDA workshops and find the right fit.",
+                  href: "/workshops",
                   icon: (
                     <svg
                       viewBox="0 0 24 24"

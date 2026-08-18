@@ -5,17 +5,17 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Programs", href: "/programs" },
+  { label: "Workshops", href: "/workshops" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
 
 const programLinks = [
-  { label: "Dental Assisting Certificate", href: "/programs" },
-  { label: "Continuing Education", href: "/programs" },
-  { label: "Clinical Practicum", href: "/programs" },
-  { label: "Dental Office Administration", href: "/programs" },
+  { label: "Clinical Skills Workshop", href: "/workshops" },
+  { label: "Dental Radiography Essentials", href: "/workshops" },
+  { label: "Infection Control & Sterilization", href: "/workshops" },
+  { label: "NDAB Exam Preparation", href: "/workshops" },
 ];
 
 const socialLinks = [
@@ -157,10 +157,10 @@ export default function Footer() {
                 ))}
                 <li>
                   <Link
-                    href="/apply"
+                    href="/workshops"
                     className="text-sm font-bold text-[#E67E22] hover:text-[#F39C52] transition-colors duration-200"
                   >
-                    Enroll Now →
+                    Explore Workshops →
                   </Link>
                 </li>
               </ul>
@@ -172,7 +172,7 @@ export default function Footer() {
                 className={HEADING}
                 style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
-                Programs
+                Workshops
               </p>
               <ul className="space-y-2">
                 {programLinks.map(({ label, href }) => (

@@ -10,10 +10,10 @@ import HeroHeadlineSection from "@/components/HeroHeadlineSection";
 const programs = [
   {
     num: "01",
-    title: "Dental Assisting Certificate",
+    title: "Clinical Skills Workshop",
     description:
-      "Our flagship 12-month program covers clinical chairside procedures, radiography, dental materials, infection control, and compassionate patient communication.",
-    tags: ["12 Months", "Full-Time", "In-Person"],
+      "Hands-on workshop covering chairside techniques, instrument handling, infection control, and clinical protocols — delivered by practicing dental professionals.",
+    tags: ["Hands-On", "Expert-Led"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
@@ -22,10 +22,10 @@ const programs = [
   },
   {
     num: "02",
-    title: "Continuing Education",
+    title: "Dental Radiography Essentials",
     description:
-      "Short-format courses for working dental professionals seeking to upgrade skills, maintain certifications, or expand their clinical scope of practice in Alberta.",
-    tags: ["Flexible Schedule", "Evenings & Weekends"],
+      "Practical training in digital radiography techniques, radiation safety procedures, and image handling for dental support staff and office teams across Alberta.",
+    tags: ["Technical Skills", "Safety Focused"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
@@ -34,10 +34,10 @@ const programs = [
   },
   {
     num: "03",
-    title: "Clinical Practicum",
+    title: "Office Administration & Patient Communication",
     description:
-      "A supervised, real-patient experience that bridges classroom theory with hands-on clinical confidence — performed in a professional dental environment from day one.",
-    tags: ["Supervised", "Real Patients", "Integrated"],
+      "Professional development covering patient intake, appointment workflows, dental software, and effective communication in a modern dental office environment.",
+    tags: ["Professional Skills", "Office Ready"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
         <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0z" />
@@ -84,21 +84,21 @@ const testimonials = [
     quote:
       "WDA gave me the clinical confidence I needed from day one. By the time I graduated, I already felt like a professional — not a student stepping into the unknown.",
     name: "Sarah M.",
-    program: "Dental Assisting Certificate, 2024",
+    program: "WDA Workshop Participant, 2024",
     initials: "SM",
   },
   {
     quote:
       "The instructors are actual dental professionals. They don't just teach from a textbook — they teach from real experience, and you can feel the difference.",
     name: "Jordan K.",
-    program: "Dental Assisting Certificate, 2023",
+    program: "WDA Workshop Participant, 2023",
     initials: "JK",
   },
   {
     quote:
       "I had a job offer before I even crossed the stage. The career support team went above and beyond to make sure I was ready and connected.",
     name: "Priya D.",
-    program: "Dental Assisting Certificate, 2024",
+    program: "WDA Workshop Participant, 2024",
     initials: "PD",
   },
 ];
@@ -166,14 +166,14 @@ export default function Home() {
                 className="text-[10px] font-bold tracking-[0.22em] uppercase mb-7"
                 style={{ color: "#4A9FD4" }}
               >
-                Program Highlights
+                What to Expect
               </p>
 
               <div className="flex flex-col gap-6">
                 {[
-                  { val: "100%", label: "Hands-on clinical training" },
-                  { val: "12 Mo.", label: "Full program duration" },
-                  { val: "Day 1", label: "Clinical training begins" },
+                  { val: "100%", label: "Hands-on workshop delivery" },
+                  { val: "Flexible", label: "Workshop schedule formats" },
+                  { val: "Expert", label: "Industry-led instruction" },
                 ].map(({ val, label }) => (
                   <div key={val} className="flex items-center gap-4">
                     <span
@@ -251,11 +251,12 @@ export default function Home() {
                 fontFamily: "var(--font-montserrat), sans-serif",
               }}
             >
-              Programs Built for Real Careers
+              Professional Development Workshops
             </h2>
             <p style={{ color: "#2B303A" }}>
-              Every program at WDA is designed with one goal: placing graduates
-              in dental careers they&apos;re fully prepared for.
+              Every workshop at WDA is designed to build practical, real-world
+              skills — delivered by experienced dental professionals in a
+              hands-on clinical setting.
             </p>
           </AnimateIn>
 
@@ -328,7 +329,7 @@ export default function Home() {
                     </div>
 
                     <Link
-                      href="/programs"
+                      href="/workshops"
                       className="group inline-flex items-center gap-1.5 text-sm font-bold transition-colors duration-200"
                       style={{ color: "#4A9FD4" }}
                     >
@@ -346,11 +347,11 @@ export default function Home() {
           {/* Bottom CTA */}
           <AnimateIn className="text-center mt-14" delay={80}>
             <Link
-              href="/programs"
+              href="/workshops"
               className="inline-flex items-center gap-2 rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
               style={{ backgroundColor: "#1E3560" }}
             >
-              View All Programs
+              Explore All Workshops
             </Link>
           </AnimateIn>
         </div>
@@ -554,37 +555,37 @@ export default function Home() {
               className="text-xs font-bold tracking-[0.2em] uppercase mb-5"
               style={{ color: "#4A9FD4" }}
             >
-              Enroll Today
+              Get Started
             </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Ready to Launch Your
+              Ready to Advance Your
               <br />
-              Dental Career?
+              Dental Skills?
             </h2>
             <p
               className="text-lg leading-relaxed mb-10 max-w-xl mx-auto"
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
-              Applications are now open for our next program cohort. Take the
-              first step toward a rewarding career in dental care — we&apos;d
-              love to meet you.
+              Registrations are now open for our upcoming workshops. Connect
+              with our team to find the right professional development
+              opportunity — we&apos;d love to hear from you.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
-                href="/apply"
+                href="/contact"
                 className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 bg-[#E67E22] hover:bg-[#CF6D17] hover:scale-[1.03]"
               >
-                Apply Now
+                Register Interest
               </Link>
               <Link
-                href="/programs"
+                href="/workshops"
                 className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 border border-white/30 hover:border-white/55 hover:bg-white/10"
               >
-                Download Program Guide
+                View Workshops
               </Link>
             </div>
           </AnimateIn>

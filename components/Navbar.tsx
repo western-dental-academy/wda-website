@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Programs", href: "/programs" },
+  { label: "Workshops", href: "/workshops" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
@@ -119,10 +119,10 @@ export default function Navbar() {
               Book a Tour
             </Link>
             <Link
-              href="/apply"
+              href="/workshops"
               className="rounded-lg bg-[#E67E22] px-4 py-2 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] whitespace-nowrap"
             >
-              Enroll Now
+              Explore Workshops
             </Link>
           </div>
         </div>
@@ -208,11 +208,11 @@ export default function Navbar() {
               Book a Tour
             </Link>
             <Link
-              href="/apply"
+              href="/workshops"
               tabIndex={menuOpen ? 0 : -1}
               className="rounded-lg bg-[#E67E22] px-5 py-3 text-center text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17]"
             >
-              Enroll Now
+              Explore Workshops
             </Link>
           </div>
         </nav>

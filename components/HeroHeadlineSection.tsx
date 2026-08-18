@@ -143,11 +143,11 @@ export default function HeroHeadlineSection() {
       >
         <div className="flex flex-wrap gap-4">
           <Link
-            href="/programs"
+            href="/workshops"
             className="rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.05]"
             style={{ backgroundColor: "#4A9FD4" }}
           >
-            Explore Programs
+            Explore Workshops
           </Link>
 
           <Link

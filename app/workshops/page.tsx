@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
-import type { Program } from "@/types/program";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
@@ -9,103 +8,86 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 export const metadata: Metadata = {
   title: "Workshops & Professional Development",
   description:
-    "Explore professional development workshops at Western Dental Academy — hands-on clinical skills training, radiography essentials, and continuing education for dental teams in Alberta.",
+    "Explore professional development workshops at Western Dental Academy — hands-on clinical skills, dental radiography, infection control, and NDAB exam preparation for dental teams in Alberta.",
 };
 
-// ─── Sanity fetch (activate when CMS is connected) ────────────────────────────
-//
-// import { sanityFetch } from "@/sanity/lib/live";
-// import { PROGRAMS_QUERY } from "@/sanity/lib/queries";
-//
-// Replace `PLACEHOLDER_PROGRAMS` below with:
-// const { data: programs } = await sanityFetch({ query: PROGRAMS_QUERY });
+// ─── Workshop data ─────────────────────────────────────────────────────────────
 
-// ─── Placeholder data ──────────────────────────────────────────────────────────
-
-const PLACEHOLDER_PROGRAMS: Program[] = [
+const workshops = [
   {
-    _id: "placeholder-1",
-    title: "Distance Delivery Clinical Skills Workshop",
-    slug: { current: "distance-delivery-clinical-skills-workshop" },
-    description:
-      "Designed for dental support staff who need flexible professional development without compromising the quality of hands-on training.",
-    duration: "Contact for Details",
-    cost: "Contact for Pricing",
+    num: "01",
+    title: "Clinical Skills Workshop",
     badge: "Launching Soon",
+    description:
+      "Hands-on workshop covering chairside techniques, instrument handling, dental materials, infection control, and clinical protocols — delivered by practicing dental professionals in a real clinical environment.",
     highlights: [
-      "Complete theory modules online at your own pace",
-      "Continue working in your dental clinic while you learn",
-      "Attend scheduled hands-on clinical training at Western Dental Academy",
-      "Learn from highly qualified instructors with real-world experience",
-      "Benefit from small cohort sizes and tailored support",
+      "Chairside procedures and instrument handling",
+      "Infection control and sterilization best practices",
+      "Dental materials and tray setup",
+      "Patient management and communication fundamentals",
+      "Small cohort size for individualized attention",
     ],
-    closingStatement:
-      "This workshop equips participants with practical clinical skills and professional confidence — no matter where they are located.",
+    tags: ["Hands-On", "Expert-Led", "Certificate of Attendance"],
   },
   {
-    _id: "placeholder-2",
-    title: "NDAB Skills Refresher Workshop",
-    slug: { current: "ndab-skills-refresher-workshop" },
-    description:
-      "A focused skills workshop for dental assistants preparing for the National Dental Assisting Board (NDAB) exam — covering key topic areas and practical exam strategy.",
-    duration: "Contact for Details",
-    cost: "Contact for Pricing",
+    num: "02",
+    title: "Dental Radiography Essentials",
     badge: "Coming Soon",
-    note: "Workshop schedule and pricing to be confirmed.",
+    description:
+      "Practical training in digital radiography techniques, radiation safety procedures, and image handling for dental support staff and office teams across Alberta.",
+    highlights: [
+      "Digital X-ray technique and positioning",
+      "Radiation safety regulations and compliance",
+      "Image quality assessment and error identification",
+      "ALARA principles and protective protocols",
+    ],
+    tags: ["Technical Skills", "Safety Focused", "Certificate of Attendance"],
   },
   {
-    _id: "placeholder-3",
-    title: "Introduction to the Dental Office",
-    slug: { current: "introduction-to-the-dental-office" },
-    description:
-      "An introductory workshop designed to familiarize participants with the dental office environment — ideal for those exploring a future in dental support roles.",
-    duration: "Contact for Details",
-    cost: "Contact for Pricing",
+    num: "03",
+    title: "Infection Control & Sterilization",
     badge: "Coming Soon",
-    eligibility: "Applicable to ages 16 and up",
-    note: "Workshop name may be updated.",
+    description:
+      "Best practices for sterilization, disinfection, and infection prevention in dental environments — aligned with current RCDSO and Alberta Health Services guidelines.",
+    highlights: [
+      "Instrument sterilization cycles and monitoring",
+      "Surface disinfection and barrier protection",
+      "Personal protective equipment (PPE) protocols",
+      "Regulatory compliance and documentation",
+    ],
+    tags: ["Safety Focused", "Compliance", "Certificate of Attendance"],
+  },
+  {
+    num: "04",
+    title: "Office Administration & Patient Communication",
+    badge: "Coming Soon",
+    description:
+      "Professional development covering patient intake workflows, appointment management, dental software navigation, and effective communication in a modern dental office environment.",
+    highlights: [
+      "Patient intake and records management",
+      "Scheduling and appointment workflows",
+      "Dental software and electronic charting basics",
+      "Professional communication and patient interaction",
+    ],
+    tags: ["Professional Skills", "Office Ready", "Certificate of Attendance"],
+  },
+  {
+    num: "05",
+    title: "NDAB Exam Preparation",
+    badge: "Coming Soon",
+    description:
+      "A focused skills refresher and exam strategy workshop for dental assistants preparing for the National Dental Assisting Board (NDAB) exam — covering key subject areas, clinical competencies, and test-taking strategies.",
+    highlights: [
+      "Review of key NDAB subject domains",
+      "Practical clinical competency refresher",
+      "Exam strategy and question-format practice",
+      "Study planning and resource guidance",
+    ],
+    tags: ["Exam Preparation", "Self-Directed", "Certificate of Attendance"],
   },
 ];
 
 // ─── Sub-components ────────────────────────────────────────────────────────────
-
-function ClockIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden
-      className="w-4 h-4 shrink-0"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
-      />
-    </svg>
-  );
-}
-
-function CurrencyIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.75}
-      aria-hidden
-      className="w-4 h-4 shrink-0"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
-      />
-    </svg>
-  );
-}
 
 function CheckIcon() {
   return (
@@ -126,11 +108,15 @@ function CheckIcon() {
   );
 }
 
-function ProgramCard({ program, index }: { program: Program; index: number }) {
-  const num = String(index + 1).padStart(2, "0");
-
+function WorkshopCard({
+  workshop,
+  index,
+}: {
+  workshop: (typeof workshops)[number];
+  index: number;
+}) {
   return (
-    <AnimateIn delay={index * 100} className="flex flex-col">
+    <AnimateIn delay={index * 80} className="flex flex-col">
       <div
         className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         style={{ backgroundColor: "#F4F7F9" }}
@@ -139,13 +125,13 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
         <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
 
         <div className="flex flex-col flex-1 p-8">
-          {/* Number + status badge row */}
+          {/* Number + badge row */}
           <div className="flex items-center justify-between mb-5">
             <p
               className="text-xs font-bold tracking-[0.18em] uppercase"
               style={{ color: "#4A9FD4" }}
             >
-              {num}
+              {workshop.num}
             </p>
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
@@ -158,64 +144,45 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
                 className="w-1.5 h-1.5 rounded-full shrink-0"
                 style={{ backgroundColor: "#E67E22" }}
               />
-              {program.badge ?? "Launching Soon"}
+              {workshop.badge}
             </span>
           </div>
 
           {/* Title */}
           <h2
-            className="text-xl font-bold mb-2 leading-snug"
+            className="text-xl font-bold mb-3 leading-snug"
             style={{
               color: "#1E3560",
               fontFamily: "var(--font-montserrat), sans-serif",
             }}
           >
-            {program.title}
+            {workshop.title}
           </h2>
-
-          {/* Eligibility (if present) */}
-          {program.eligibility && (
-            <p
-              className="text-xs font-semibold mb-4"
-              style={{ color: "#4A9FD4" }}
-            >
-              {program.eligibility}
-            </p>
-          )}
 
           {/* Description */}
           <p
-            className="text-sm leading-relaxed mb-7"
+            className="text-sm leading-relaxed mb-6"
             style={{ color: "#2B303A" }}
           >
-            {program.description}
+            {workshop.description}
           </p>
 
-          {/* Highlights (if present) */}
-          {program.highlights && program.highlights.length > 0 && (
-            <ul className="flex flex-col gap-2.5 mb-6">
-              {program.highlights.map((h) => (
-                <li key={h} className="flex items-start gap-2.5">
-                  <span style={{ color: "#4A9FD4" }}>
-                    <CheckIcon />
-                  </span>
-                  <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
-                    {h}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {/* Closing statement (if present) */}
-          {program.closingStatement && (
-            <p
-              className="text-sm font-semibold leading-relaxed italic mb-7"
-              style={{ color: "#1E3560" }}
-            >
-              {program.closingStatement}
-            </p>
-          )}
+          {/* Highlights */}
+          <ul className="flex flex-col gap-2.5 mb-6 flex-1">
+            {workshop.highlights.map((h) => (
+              <li key={h} className="flex items-start gap-2.5">
+                <span style={{ color: "#4A9FD4" }}>
+                  <CheckIcon />
+                </span>
+                <span
+                  className="text-sm leading-relaxed"
+                  style={{ color: "#2B303A" }}
+                >
+                  {h}
+                </span>
+              </li>
+            ))}
+          </ul>
 
           {/* Divider */}
           <div
@@ -223,33 +190,21 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
             style={{ backgroundColor: "rgba(30,53,96,0.1)" }}
           />
 
-          {/* Metadata row */}
-          <div className="flex flex-wrap items-center gap-4 mb-6">
-            <div
-              className="flex items-center gap-1.5 text-xs font-semibold"
-              style={{ color: "#1E3560" }}
-            >
-              <ClockIcon />
-              {program.duration}
-            </div>
-            <div
-              className="flex items-center gap-1.5 text-xs font-semibold"
-              style={{ color: "#1E3560" }}
-            >
-              <CurrencyIcon />
-              {program.cost}
-            </div>
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {workshop.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                style={{
+                  backgroundColor: "rgba(30,53,96,0.07)",
+                  color: "#1E3560",
+                }}
+              >
+                {tag}
+              </span>
+            ))}
           </div>
-
-          {/* Note (if present) */}
-          {program.note && (
-            <p
-              className="text-[11px] italic mb-6"
-              style={{ color: "rgba(43,48,58,0.5)" }}
-            >
-              {program.note}
-            </p>
-          )}
 
           {/* CTA */}
           <Link
@@ -257,7 +212,7 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
             className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
             style={{ backgroundColor: "#E67E22" }}
           >
-            Enquire Now
+            Register Interest
             <span className="transition-transform duration-200 group-hover/link:translate-x-1">
               →
             </span>
@@ -270,10 +225,7 @@ function ProgramCard({ program, index }: { program: Program; index: number }) {
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
-export default async function ProgramsPage() {
-  // Swap this line when Sanity is connected:
-  const programs = PLACEHOLDER_PROGRAMS;
-
+export default function WorkshopsPage() {
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════
@@ -360,8 +312,8 @@ export default async function ProgramsPage() {
                 className="text-lg leading-relaxed max-w-xl"
                 style={{ color: "rgba(255,255,255,0.65)" }}
               >
-                Whether you&apos;re building new skills or refreshing your
-                clinical knowledge, WDA offers practical, expert-led workshops
+                Whether you&apos;re building new clinical skills or refreshing
+                your knowledge, WDA offers practical, expert-led workshops
                 designed around real dental office experience.
               </p>
             </div>
@@ -369,9 +321,9 @@ export default async function ProgramsPage() {
             {/* Stats aside */}
             <div className="flex flex-row lg:flex-col gap-6 lg:gap-5 lg:items-end">
               {[
-                { val: "Online", label: "Theory Delivery" },
-                { val: "100%", label: "Hands-On Clinical Training" },
-                { val: "Flexible", label: "Learn on Your Schedule" },
+                { val: "100%", label: "Hands-On Delivery" },
+                { val: "Flexible", label: "Schedule Formats" },
+                { val: "Expert", label: "Industry Instructors" },
               ].map(({ val, label }) => (
                 <div key={label} className="flex flex-col lg:items-end">
                   <span
@@ -404,7 +356,7 @@ export default async function ProgramsPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          PROGRAMS GRID
+          WORKSHOPS GRID
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -428,150 +380,21 @@ export default async function ProgramsPage() {
               </h2>
               <p className="text-sm max-w-sm" style={{ color: "#2B303A" }}>
                 Flexible delivery — complete theory online and attend hands-on
-                clinical training at our Sherwood Park facility.
+                training at our Sherwood Park facility.
               </p>
             </div>
           </AnimateIn>
 
-          {programs.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {programs.map((program, i) => (
-                <ProgramCard key={program._id} program={program} index={i} />
-              ))}
-            </div>
-          ) : (
-            /* Empty state for when Sanity returns no results */
-            <AnimateIn>
-              <div
-                className="rounded-2xl py-20 flex flex-col items-center text-center"
-                style={{ backgroundColor: "#F4F7F9" }}
-              >
-                <p
-                  className="text-lg font-semibold mb-2"
-                  style={{ color: "#1E3560" }}
-                >
-                  Programs coming soon
-                </p>
-                <p className="text-sm mb-6" style={{ color: "#2B303A" }}>
-                  Our upcoming program schedule is being finalized.
-                </p>
-                <Link
-                  href="/contact"
-                  className="rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 bg-[#E67E22] hover:bg-[#CF6D17]"
-                >
-                  Get Notified
-                </Link>
-              </div>
-            </AnimateIn>
-          )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {workshops.map((workshop, i) => (
+              <WorkshopCard key={workshop.num} workshop={workshop} index={i} />
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          PROGRAM AT A GLANCE
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
-        <div className="max-w-6xl mx-auto px-6">
-
-          <AnimateIn className="mb-12">
-            <p
-              className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
-              style={{ color: "#4A9FD4" }}
-            >
-              At a Glance
-            </p>
-            <h2
-              className="text-3xl font-bold leading-tight"
-              style={{
-                color: "#1E3560",
-                fontFamily: "var(--font-montserrat), sans-serif",
-              }}
-            >
-              Workshop Overview
-            </h2>
-          </AnimateIn>
-
-          <AnimateIn>
-            <div
-              className="rounded-2xl overflow-hidden max-w-2xl"
-              style={{ boxShadow: "0 4px 32px rgba(30,53,96,0.1), 0 1px 4px rgba(30,53,96,0.06)" }}
-            >
-              <div
-                className="px-6 py-4"
-                style={{ backgroundColor: "#1E3560", borderTop: "3px solid #4A9FD4" }}
-              >
-                <p
-                  className="text-sm font-bold text-white leading-snug"
-                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-                >
-                  Distance Delivery Clinical Skills Workshop
-                </p>
-              </div>
-              <table className="w-full border-collapse">
-                <tbody>
-                  {[
-                    { label: "Delivery Format", value: "Online theory + in-person clinical training" },
-                    { label: "Credential", value: "Certificate of Attendance" },
-                    { label: "Schedule", value: "Flexible — continue working while you learn" },
-                    { label: "Clinical Training", value: "Scheduled at Western Dental Academy" },
-                    { label: "Cohort Size", value: "Small — tailored support for every participant" },
-                    { label: "Start Dates", value: "Contact us for upcoming workshop dates" },
-                    { label: "Prerequisites", value: "Contact us for requirements" },
-                    { label: "Pricing", value: "Contact for Details" },
-                  ].map(({ label, value }, ri) => (
-                    <tr key={label} style={{ backgroundColor: ri % 2 === 0 ? "#ffffff" : "#F4F7F9" }}>
-                      <td
-                        className="px-6 py-4 text-xs font-bold uppercase tracking-[0.12em] w-44"
-                        style={{
-                          color: "#1E3560",
-                          fontFamily: "var(--font-montserrat), sans-serif",
-                          borderRight: "1px solid rgba(30,53,96,0.08)",
-                          backgroundColor: ri % 2 === 0 ? "#F4F7F9" : "#edf1f5",
-                        }}
-                      >
-                        {label}
-                      </td>
-                      <td
-                        className="px-5 py-4 text-sm font-medium"
-                        style={{ color: "#1E3560" }}
-                      >
-                        {value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr style={{ backgroundColor: "#1E3560" }}>
-                    <td
-                      className="px-6 py-5 text-xs font-bold uppercase tracking-[0.14em]"
-                      style={{
-                        color: "rgba(255,255,255,0.4)",
-                        borderRight: "1px solid rgba(255,255,255,0.08)",
-                        fontFamily: "var(--font-montserrat), sans-serif",
-                      }}
-                    >
-                      Interested?
-                    </td>
-                    <td className="px-5 py-5">
-                      <Link
-                        href="/contact"
-                        className="inline-block rounded-lg px-4 py-2 text-xs font-bold transition-colors duration-200 hover:bg-[#CF6D17]"
-                        style={{ backgroundColor: "#E67E22", color: "#ffffff" }}
-                      >
-                        Enquire Now →
-                      </Link>
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          </AnimateIn>
-
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
-          ENROLLMENT CTA
+          REGISTRATION CTA
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -602,7 +425,7 @@ export default async function ProgramsPage() {
                 style={{ color: "#2B303A" }}
               >
                 Our team can walk you through each workshop, discuss your
-                professional development goals, and help you find the right
+                professional development goals, and help you find the best
                 fit — no pressure, no commitment required.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -610,17 +433,17 @@ export default async function ProgramsPage() {
                   href="/contact"
                   className="rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 bg-[#E67E22] hover:bg-[#CF6D17] hover:scale-[1.02]"
                 >
-                  Talk to Admissions
+                  Contact Us
                 </Link>
                 <Link
-                  href="/contact"
+                  href="/book-a-tour"
                   className="rounded-lg px-7 py-3.5 text-sm font-bold transition-all duration-200 border hover:bg-white"
                   style={{
                     color: "#1E3560",
                     borderColor: "rgba(30,53,96,0.25)",
                   }}
                 >
-                  Book a Campus Tour
+                  Book a Campus Visit
                 </Link>
               </div>
             </AnimateIn>
@@ -648,12 +471,13 @@ export default async function ProgramsPage() {
                       value: "Rolling intake — register any time",
                     },
                     {
-                      label: "Prerequisites",
-                      value: "Contact us for workshop-specific requirements",
+                      label: "Credential",
+                      value: "Certificate of Attendance issued upon completion",
                     },
                     {
                       label: "Location",
-                      value: "Online theory + hands-on training in Sherwood Park, AB",
+                      value:
+                        "Online theory + hands-on training in Sherwood Park, AB",
                     },
                   ].map(({ label, value }) => (
                     <li
@@ -678,7 +502,10 @@ export default async function ProgramsPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                <div
+                  className="mt-6 pt-6"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+                >
                   <Link
                     href="mailto:info@westerndentalacademy.com"
                     className="group flex items-center gap-2 text-sm font-bold transition-colors duration-200"

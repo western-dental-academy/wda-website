@@ -576,7 +576,7 @@ export default function Home() {
 
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
-                href="/contact"
+                href="/register"
                 className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 bg-[#E67E22] hover:bg-[#CF6D17] hover:scale-[1.03]"
               >
                 Register Interest

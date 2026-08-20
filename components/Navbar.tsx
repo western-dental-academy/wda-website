@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Workshops", href: "/workshops" },
+  { label: "Professional Development", href: "/professional-development" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
@@ -113,16 +113,10 @@ export default function Navbar() {
             <div className="w-px h-5 bg-[#1E3560]/15 shrink-0" aria-hidden />
 
             <Link
-              href="/book-a-tour"
-              className="rounded-lg border border-[#1E3560]/30 px-4 py-2 text-sm font-bold text-[#1E3560] transition-colors duration-200 hover:border-[#1E3560] hover:bg-[#1E3560] hover:text-white whitespace-nowrap"
-            >
-              Book a Tour
-            </Link>
-            <Link
-              href="/workshops"
+              href="/register"
               className="rounded-lg bg-[#E67E22] px-4 py-2 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] whitespace-nowrap"
             >
-              Explore Workshops
+              Enroll
             </Link>
           </div>
         </div>
@@ -201,18 +195,11 @@ export default function Navbar() {
             </Link>
 
             <Link
-              href="/book-a-tour"
-              tabIndex={menuOpen ? 0 : -1}
-              className="mt-1 rounded-lg border border-[#1E3560]/25 px-5 py-3 text-center text-sm font-bold text-[#1E3560] transition-colors duration-200 hover:border-[#1E3560] hover:bg-[#1E3560] hover:text-white"
-            >
-              Book a Tour
-            </Link>
-            <Link
-              href="/workshops"
+              href="/register"
               tabIndex={menuOpen ? 0 : -1}
               className="rounded-lg bg-[#E67E22] px-5 py-3 text-center text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17]"
             >
-              Explore Workshops
+              Enroll
             </Link>
           </div>
         </nav>

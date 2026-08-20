@@ -14,7 +14,7 @@ import TeamCard from '@/components/TeamCard'
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Learn about Western Dental Academy — our mission, founding story, core values, and the team of dental professionals behind Edmonton's leading dental training institution.",
+    "Learn about Western Dental Academy — our mission, founding story, core values, and the team of dental professionals behind Edmonton's leading dental training facility.",
 };
 
 
@@ -47,7 +47,7 @@ const VALUES = [
     num: "02",
     name: "Accessibility",
     description:
-      "For learners across diverse backgrounds and locations — geography, work schedules, and life circumstances should never be barriers to a rewarding career in dentistry.",
+      "Removing barriers to professional development opportunities — geography, schedules, and circumstances should never limit access to high-quality dental training.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ const VALUES = [
     num: "03",
     name: "Integrity",
     description:
-      "In all educational and professional interactions — we are honest, transparent, and accountable in everything we teach, assess, and communicate.",
+      "In all professional interactions — we are honest, transparent, and accountable in everything we deliver. Training instead of education guides our approach.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -113,7 +113,7 @@ const VALUES = [
     num: "05",
     name: "Innovation",
     description:
-      "In delivery, technology, and curriculum design — we continuously evolve our programs to reflect the latest advancements in dental practice and education.",
+      "In professional development design — we continuously engage with the oral health community to ensure our offerings reflect the latest advancements in dental practice.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -297,12 +297,11 @@ export default async function AboutPage() {
             className="text-lg leading-relaxed max-w-xl"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Western Dental Academy is a modern, student-centered institution
-            dedicated to advancing dental education and strengthening the oral
-            health workforce across Alberta and beyond. We provide accessible,
-            high-quality learning experiences for new learners entering the
-            profession and for practicing dental professionals seeking to
-            expand their skills.
+            Western Dental Academy is a modern, community-focused facility
+            dedicated to delivering high-quality dental training and
+            strengthening the oral health workforce across Alberta. We provide
+            accessible professional development for practicing dental
+            professionals seeking to enhance their skills.
           </p>
         </div>
 
@@ -338,7 +337,7 @@ export default async function AboutPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                To deliver exceptional dental education that is flexible,
+                To deliver exceptional dental training that is flexible,
                 relevant, and grounded in{" "}
                 <span style={{ color: "#4A9FD4" }}>real-world practice.</span>
               </blockquote>
@@ -346,10 +345,10 @@ export default async function AboutPage() {
                 className="text-base leading-relaxed max-w-lg"
                 style={{ color: "#2B303A" }}
               >
-                That mission drives every program we design and every learning
-                pathway we create. Whether you&apos;re new to the field or a
-                working professional expanding your skills, WDA is built to
-                meet you where you are.
+                That mission drives every programme we design and every
+                pathway we create. Whether you are new to the field or a
+                working professional seeking to enhance your skills, WDA is
+                built to meet you where you are.
               </p>
             </AnimateIn>
 
@@ -428,7 +427,7 @@ export default async function AboutPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                Accessible, High-Quality Education for Everyone
+                Accessible, High-Quality Training for Everyone
               </h2>
               <p
                 className="text-sm font-semibold tracking-wide mb-6"
@@ -751,17 +750,18 @@ export default async function AboutPage() {
               className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              A Leader in Accessible
+              Dental Training Instead of Education.
               <br />
-              Dental Education
+              Relevant Professional Development.
             </h2>
             <p
               className="text-lg leading-relaxed max-w-2xl mx-auto"
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
-              To be a leader in accessible dental education, recognized for
-              innovation, student success, and meaningful contributions to the
-              dental profession and the communities we serve.
+              Helping dental professionals maintain competence through unique
+              professional development opportunities. WDA is committed to
+              delivering training that strengthens Alberta&apos;s oral health
+              workforce.
             </p>
           </AnimateIn>
         </div>
@@ -841,173 +841,6 @@ export default async function AboutPage() {
               <TeamCard key={member._id} member={member} index={i} />
             ))}
           </div>
-
-          {/* Hiring note */}
-          <AnimateIn delay={120} className="mt-10">
-            <div
-              className="rounded-2xl px-8 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-              style={{
-                backgroundColor: "rgba(30,53,96,0.05)",
-                border: "1px solid rgba(30,53,96,0.08)",
-              }}
-            >
-              <p className="text-sm" style={{ color: "#2B303A" }}>
-                <span className="font-semibold" style={{ color: "#1E3560" }}>
-                  We&apos;re growing.
-                </span>{" "}
-                WDA is always looking for passionate dental professionals
-                interested in teaching and shaping the next generation.
-              </p>
-              <Link
-                href="/contact"
-                className="shrink-0 rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
-                style={{ backgroundColor: "#1E3560" }}
-              >
-                Get in Touch
-              </Link>
-            </div>
-          </AnimateIn>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
-          ACCREDITATIONS & AFFILIATIONS
-      ═══════════════════════════════════════════════════════════ */}
-      <section
-        className="py-20"
-        style={{
-          backgroundColor: "#F4F7F9",
-          borderTop: "1px solid rgba(30,53,96,0.07)",
-        }}
-      >
-        <div className="max-w-6xl mx-auto px-6">
-
-          {/* Header */}
-          <AnimateIn className="text-center mb-12">
-            <p
-              className="text-[0.68rem] font-bold uppercase tracking-[0.22em] mb-4"
-              style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
-            >
-              Recognition &amp; Affiliations
-            </p>
-            <h2
-              className="text-2xl sm:text-3xl font-bold text-[#1E3560] mb-4 leading-tight"
-              style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-            >
-              Proud to Be Recognized
-            </h2>
-            <p
-              className="text-sm leading-relaxed max-w-xl mx-auto"
-              style={{ color: "rgba(43,48,58,0.65)" }}
-            >
-              Western Dental Academy is proud to be recognized by and affiliated
-              with leading dental and healthcare organizations — ensuring our
-              curriculum, credentials, and clinical standards meet or exceed
-              industry expectations.
-            </p>
-          </AnimateIn>
-
-          {/* Logo grid */}
-          <AnimateIn delay={80}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              {[
-                {
-                  abbr: "CADA",
-                  name: "College of Alberta Dental Assistants",
-                  category: "Regulatory Body",
-                },
-                {
-                  abbr: "ADA",
-                  name: "Alberta Dental Association",
-                  category: "Professional Association",
-                },
-                {
-                  abbr: "CDA",
-                  name: "Canadian Dental Association",
-                  category: "National Association",
-                },
-                {
-                  abbr: "CDSA",
-                  name: "College of Dental Surgeons of Alberta",
-                  category: "Regulatory Body",
-                },
-                {
-                  abbr: "CDAC",
-                  name: "Commission on Dental Accreditation of Canada",
-                  category: "Accreditation Body",
-                },
-                {
-                  abbr: "NDAEB",
-                  name: "National Dental Assisting Examining Board",
-                  category: "Examining Board",
-                },
-              ].map(({ abbr, name, category }) => (
-                <div
-                  key={abbr}
-                  className="flex flex-col items-center rounded-xl p-5 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
-                  style={{
-                    backgroundColor: "#ffffff",
-                    border: "1.5px solid rgba(30,53,96,0.09)",
-                  }}
-                >
-                  {/* Logo area — replace inner div with <Image> when logos are provided */}
-                  <div className="w-full flex items-center justify-center mb-4 rounded-lg" style={{ height: "64px" }}>
-                    <div
-                      className="flex items-center justify-center w-full h-full rounded-md"
-                      style={{
-                        border: "1.5px dashed rgba(74,159,212,0.3)",
-                        backgroundColor: "rgba(74,159,212,0.04)",
-                      }}
-                    >
-                      <span
-                        className="text-base font-bold tracking-widest select-none"
-                        style={{
-                          color: "rgba(30,53,96,0.22)",
-                          fontFamily: "var(--font-montserrat), sans-serif",
-                        }}
-                        aria-hidden
-                      >
-                        {abbr}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Category pill */}
-                  <span
-                    className="inline-block text-[9px] font-bold uppercase tracking-[0.16em] rounded-full px-2 py-0.5 mb-2"
-                    style={{
-                      backgroundColor: "rgba(74,159,212,0.1)",
-                      color: "#4A9FD4",
-                    }}
-                  >
-                    {category}
-                  </span>
-
-                  {/* Organization name */}
-                  <p
-                    className="text-[11px] font-semibold leading-snug"
-                    style={{
-                      color: "#1E3560",
-                      fontFamily: "var(--font-montserrat), sans-serif",
-                    }}
-                  >
-                    {name}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </AnimateIn>
-
-          {/* Disclaimer */}
-          <AnimateIn delay={160}>
-            <p
-              className="text-center text-xs mt-8"
-              style={{ color: "rgba(43,48,58,0.38)" }}
-            >
-              Affiliation details and accreditation status are being finalized.
-              Contact us for the latest information.
-            </p>
-          </AnimateIn>
 
         </div>
       </section>
@@ -1174,7 +1007,7 @@ export default async function AboutPage() {
                     </svg>
                   ),
                   heading: "Real Clinical Environment",
-                  body: "Our on-site clinic replicates a functioning dental practice, so students are prepared for the real workplace from their very first session.",
+                  body: "Real clinical environment: skill refresher courses mimic the workplace.",
                 },
                 {
                   icon: (
@@ -1183,7 +1016,7 @@ export default async function AboutPage() {
                     </svg>
                   ),
                   heading: "Modern Learning Spaces",
-                  body: "Classrooms and labs designed for focused, hands-on instruction — small class sizes, direct instructor access, and a professional atmosphere.",
+                  body: "Modern learning spaces: our facility includes a large classroom as well as space for various style workshops that embody a professional atmosphere.",
                 },
               ].map(({ icon, heading, body }) => (
                 <div key={heading} className="flex flex-col items-center text-center sm:items-start sm:text-left gap-4">
@@ -1213,15 +1046,71 @@ export default async function AboutPage() {
           <AnimateIn delay={180}>
             <div className="mt-12 flex justify-center">
               <Link
-                href="/apply"
+                href="/register"
                 className="inline-block rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
                 style={{ backgroundColor: "#E67E22" }}
               >
-                Start Your Application →
+                Register →
               </Link>
             </div>
           </AnimateIn>
 
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          NPE GUIDED PRACTICE WORKSHOPS
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16" style={{ backgroundColor: "#F4F7F9" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <AnimateIn>
+            <div
+              className="rounded-2xl p-8 sm:p-10"
+              style={{ backgroundColor: "#1E3560" }}
+            >
+              <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-8 items-center">
+                <div>
+                  <p
+                    className="text-xs font-bold tracking-[0.2em] uppercase mb-4"
+                    style={{ color: "#4A9FD4" }}
+                  >
+                    Coming Soon
+                  </p>
+                  <h2
+                    className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight"
+                    style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                  >
+                    National Practical Evaluation
+                    <br />
+                    Guided Practice Workshops
+                  </h2>
+                  <p
+                    className="text-base leading-relaxed mb-6"
+                    style={{ color: "rgba(255,255,255,0.65)" }}
+                  >
+                    WDA is developing structured guided practice workshops to support dental assisting certification preparation. Register your interest to be notified when details are available.
+                  </p>
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
+                    style={{ backgroundColor: "#E67E22" }}
+                  >
+                    Register Your Interest
+                  </Link>
+                </div>
+                <div className="flex items-center justify-center">
+                  <div
+                    className="w-28 h-28 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: "rgba(74,159,212,0.15)" }}
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-12 h-12">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </AnimateIn>
         </div>
       </section>
 
@@ -1251,31 +1140,30 @@ export default async function AboutPage() {
               className="text-xs font-bold tracking-[0.2em] uppercase mb-5"
               style={{ color: "#4A9FD4" }}
             >
-              Ready to Begin?
+              Get Started
             </p>
             <h2
               className="text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Your Dental Career
+              Professional Development
               <br />
-              Starts with One Step.
+              for Dental Professionals.
             </h2>
             <p
               className="text-base leading-relaxed mb-10 max-w-lg mx-auto"
               style={{ color: "rgba(255,255,255,0.6)" }}
             >
-              Explore our programs, talk to our admissions team, or come see
-              the WDA campus in person. We&apos;re here to help you figure out
-              the right path.
+              Find the right workshop, guest speaker event, or course for your
+              career. Connect with our team — we&apos;d love to help.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <Link
-                href="/workshops"
+                href="/professional-development"
                 className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
                 style={{ backgroundColor: "#4A9FD4" }}
               >
-                Explore Workshops
+                Explore
               </Link>
               <Link
                 href="/contact"

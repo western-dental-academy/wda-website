@@ -134,6 +134,14 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     answer:
       "Yes — we welcome visitors to our facility. Come see our clinic and training spaces firsthand. Book a campus tour through our contact page.",
   },
+  {
+    _id: "p-gen-4",
+    category: "General",
+    order: 4,
+    question: "What do I need to bring or prepare?",
+    answer:
+      "Requirements vary under each offering. Guest speaker events are open to everyone. Check individual workshop or course listings for specific requirements.",
+  },
 ];
 
 export const metadata: Metadata = {

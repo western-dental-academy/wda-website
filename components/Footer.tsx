@@ -5,17 +5,17 @@ import { MapPin, Phone, Mail, Clock } from "lucide-react";
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Workshops", href: "/workshops" },
+  { label: "Professional Development", href: "/professional-development" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
 
 const programLinks = [
-  { label: "Clinical Skills Workshop", href: "/workshops" },
-  { label: "Dental Radiography Essentials", href: "/workshops" },
-  { label: "Infection Control & Sterilization", href: "/workshops" },
-  { label: "NDAB Exam Preparation", href: "/workshops" },
+  { label: "Clinical Skills Workshop", href: "/professional-development" },
+  { label: "Dental Radiography Essentials", href: "/professional-development" },
+  { label: "Infection Control & Sterilization", href: "/professional-development" },
+  { label: "NDAB Exam Preparation", href: "/professional-development" },
 ];
 
 const socialLinks = [
@@ -42,7 +42,7 @@ const socialLinks = [
     href: "https://www.linkedin.com/company/western-dental-academy/",
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden>
-        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 23.227 24 22.222 0h.003z" />
       </svg>
     ),
   },
@@ -113,9 +113,9 @@ export default function Footer() {
 
             {/* Tagline */}
             <p className="text-sm leading-relaxed max-w-xs text-white/60">
-              Training the next generation of dental professionals through
-              hands-on clinical education, modern technology, and a commitment
-              to compassionate patient care.
+              Working with current dental healthcare professionals through unique
+              professional development opportunities in a modern facility with
+              commitment to oral health.
             </p>
 
             {/* Social icons */}
@@ -157,22 +157,22 @@ export default function Footer() {
                 ))}
                 <li>
                   <Link
-                    href="/workshops"
+                    href="/professional-development"
                     className="text-sm font-bold text-[#E67E22] hover:text-[#F39C52] transition-colors duration-200"
                   >
-                    Explore Workshops →
+                    Explore →
                   </Link>
                 </li>
               </ul>
             </div>
 
-            {/* Programs */}
+            {/* Professional Development */}
             <div>
               <p
                 className={HEADING}
                 style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
-                Workshops
+                Professional Development
               </p>
               <ul className="space-y-2">
                 {programLinks.map(({ label, href }) => (
@@ -209,6 +209,12 @@ export default function Footer() {
                     )}
                   </li>
                 ))}
+                <li className="flex items-start gap-2.5">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="w-4 h-4 shrink-0 mt-0.5 text-[#4A9FD4]" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                  </svg>
+                  <span className="text-sm text-white/65">Free parking available</span>
+                </li>
               </ul>
             </div>
 

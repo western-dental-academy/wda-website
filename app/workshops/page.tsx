@@ -107,7 +107,7 @@ const workshops: Workshop[] = [
     price: 35,
     duration: "1.5 hours",
     description:
-      "Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice.",
+      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice.",
     highlights: [
       "Ergonomic risk factors and posture principles for dental practice",
       "Guided breathwork techniques to reduce tension and support focus",
@@ -528,8 +528,8 @@ export default function WorkshopsPage() {
                 Now Accepting Registrations
               </h2>
               <p className="text-sm max-w-sm" style={{ color: "#2B303A" }}>
-                Flexible delivery — complete theory online and attend hands-on
-                training at our Sherwood Park facility.
+                Hands-on sessions in our Sherwood Park facility, delivered by
+                experienced dental professionals.
               </p>
             </div>
           </AnimateIn>
@@ -585,14 +585,14 @@ export default function WorkshopsPage() {
                   Contact Us
                 </Link>
                 <Link
-                  href="/book-a-tour"
+                  href="/contact"
                   className="rounded-lg px-7 py-3.5 text-sm font-bold transition-all duration-200 border hover:bg-white"
                   style={{
                     color: "#1E3560",
                     borderColor: "rgba(30,53,96,0.25)",
                   }}
                 >
-                  Book a Campus Visit
+                  Visit Our Facility
                 </Link>
               </div>
             </AnimateIn>

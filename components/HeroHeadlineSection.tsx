@@ -4,9 +4,9 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
 // ── Headline split into individual words per visual line ───────────────────────
-const LINE_1 = ["Launch", "Your"];
-const LINE_2 = ["Dental", "Career"]; // brand blue
-const LINE_3 = ["with", "Confidence."];
+const LINE_1 = ["Stay", "current."];
+const LINE_2 = ["Stay", "competent."]; // brand blue
+const LINE_3 = ["Get", "Connected."];
 
 // ── Framer Motion variants ─────────────────────────────────────────────────────
 
@@ -130,9 +130,9 @@ export default function HeroHeadlineSection() {
         initial={initial}
         animate="show"
       >
-        A modern, student-centered institution delivering flexible, high-quality
-        dental education — empowering new learners and practicing professionals
-        to strengthen Alberta&apos;s oral health workforce.
+        A modern facility offering high quality, unique professional development.
+        WDA is here to strengthen and empower dental professionals in
+        Alberta&apos;s oral health workforce.
       </motion.p>
 
       {/* CTAs — follows subheading */}
@@ -143,11 +143,11 @@ export default function HeroHeadlineSection() {
       >
         <div className="flex flex-wrap gap-4">
           <Link
-            href="/workshops"
+            href="/professional-development"
             className="rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.05]"
             style={{ backgroundColor: "#4A9FD4" }}
           >
-            Explore Workshops
+            Professional Development
           </Link>
 
           <Link

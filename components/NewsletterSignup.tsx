@@ -76,8 +76,7 @@ async function handleSubmit(e: React.FormEvent) {
               You&apos;re on the list!
             </h2>
             <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>
-              Thanks for subscribing. We&apos;ll be in touch with program updates,
-              upcoming start dates, and dental industry news.
+              Thanks for subscribing. We&apos;ll be in touch with updates on new opportunities.
             </p>
           </div>
         ) : (
@@ -96,7 +95,7 @@ async function handleSubmit(e: React.FormEvent) {
               className="text-2xl sm:text-3xl font-bold text-white mb-3 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Stay Updated on Programs &amp; News
+              Stay updated on current events
             </h2>
 
             {/* Subheading */}
@@ -104,8 +103,7 @@ async function handleSubmit(e: React.FormEvent) {
               className="text-sm leading-relaxed max-w-md mx-auto mb-8"
               style={{ color: "rgba(255,255,255,0.55)" }}
             >
-              Receive updates on new programs, upcoming start dates, and dental
-              industry news from the WDA team — straight to your inbox.
+              Receive updates on new opportunities from the WDA team — straight to your inbox.
             </p>
 
             {/* Form */}

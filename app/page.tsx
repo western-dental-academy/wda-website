@@ -10,9 +10,9 @@ import HeroHeadlineSection from "@/components/HeroHeadlineSection";
 const programs = [
   {
     num: "01",
-    title: "Clinical Skills Workshop",
+    title: "Workshops",
     description:
-      "Hands-on workshop covering chairside techniques, instrument handling, infection control, and clinical protocols — delivered by practicing dental professionals.",
+      "Hands-on professional development delivered by practicing dental professionals in a real clinical environment. Build practical, real-world skills.",
     tags: ["Hands-On", "Expert-Led"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -22,41 +22,31 @@ const programs = [
   },
   {
     num: "02",
-    title: "Dental Radiography Essentials",
+    title: "Guest Speakers",
     description:
-      "Practical training in digital radiography techniques, radiation safety procedures, and image handling for dental support staff and office teams across Alberta.",
-    tags: ["Technical Skills", "Safety Focused"],
+      "We regularly host dental specialists, industry innovators, and respected oral health leaders — giving dental professionals access to cutting-edge knowledge and emerging trends.",
+    tags: ["Industry Experts", "Open Events"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
       </svg>
     ),
   },
   {
     num: "03",
-    title: "Office Administration & Patient Communication",
+    title: "Courses",
     description:
-      "Professional development covering patient intake, appointment workflows, dental software, and effective communication in a modern dental office environment.",
-    tags: ["Professional Skills", "Office Ready"],
+      "WDA is developing non-credit online professional development courses for dental healthcare professionals — focused on building soft skills and practical, real-world competencies.",
+    tags: ["Online", "Self-Directed"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
       </svg>
     ),
   },
 ];
 
 const pillars = [
-  {
-    title: "Hands-On from Day One",
-    description:
-      "Clinical practice isn't reserved for the end of the program. Students work chairside with real equipment and real protocols from the very first weeks.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-      </svg>
-    ),
-  },
   {
     title: "Industry-Expert Instructors",
     description:
@@ -66,40 +56,6 @@ const pillars = [
         <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
       </svg>
     ),
-  },
-  {
-    title: "Career Placement Support",
-    description:
-      "Our team actively connects graduates with dental clinics across Edmonton and Alberta — with resume coaching, interview prep, and direct employer referrals.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008z" />
-      </svg>
-    ),
-  },
-];
-
-const testimonials = [
-  {
-    quote:
-      "WDA gave me the clinical confidence I needed from day one. By the time I graduated, I already felt like a professional — not a student stepping into the unknown.",
-    name: "Sarah M.",
-    program: "WDA Workshop Participant, 2024",
-    initials: "SM",
-  },
-  {
-    quote:
-      "The instructors are actual dental professionals. They don't just teach from a textbook — they teach from real experience, and you can feel the difference.",
-    name: "Jordan K.",
-    program: "WDA Workshop Participant, 2023",
-    initials: "JK",
-  },
-  {
-    quote:
-      "I had a job offer before I even crossed the stage. The career support team went above and beyond to make sure I was ready and connected.",
-    name: "Priya D.",
-    program: "WDA Workshop Participant, 2024",
-    initials: "PD",
   },
 ];
 
@@ -152,7 +108,7 @@ export default function Home() {
           {/* ── Left: copy ── */}
           <HeroHeadlineSection />
 
-          {/* ── Right: stats card ── */}
+          {/* ── Right: feature card ── */}
           <div style={heroStyle(0.48)} className="w-full lg:w-auto">
             <div
               className="rounded-2xl p-8 min-w-[260px] lg:min-w-[300px]"
@@ -166,14 +122,14 @@ export default function Home() {
                 className="text-[10px] font-bold tracking-[0.22em] uppercase mb-7"
                 style={{ color: "#4A9FD4" }}
               >
-                What to Expect
+                What We Offer
               </p>
 
               <div className="flex flex-col gap-6">
                 {[
-                  { val: "100%", label: "Hands-on workshop delivery" },
-                  { val: "Flexible", label: "Workshop schedule formats" },
-                  { val: "Expert", label: "Industry-led instruction" },
+                  { val: "Workshops", label: "Hands-on sessions in our facility" },
+                  { val: "Guest Speakers", label: "Industry expert events" },
+                  { val: "Courses", label: "Online professional development" },
                 ].map(({ val, label }) => (
                   <div key={val} className="flex items-center gap-4">
                     <span
@@ -181,7 +137,7 @@ export default function Home() {
                       style={{ backgroundColor: "#4A9FD4" }}
                     />
                     <span
-                      className="text-2xl font-bold shrink-0 w-20"
+                      className="text-lg font-bold shrink-0 w-32"
                       style={{
                         color: "#ffffff",
                         fontFamily: "var(--font-montserrat), sans-serif",
@@ -197,22 +153,6 @@ export default function Home() {
                     </span>
                   </div>
                 ))}
-              </div>
-
-              <div
-                className="mt-8 pt-6"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.1)" }}
-              >
-                <Link
-                  href="/book-a-tour"
-                  className="group flex items-center gap-2 text-sm font-semibold transition-colors duration-200"
-                  style={{ color: "#4A9FD4" }}
-                >
-                  Book a Campus Visit
-                  <span className="transition-transform duration-200 group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
               </div>
             </div>
           </div>
@@ -232,7 +172,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          PROGRAMS OVERVIEW
+          WHAT WE OFFER
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -251,12 +191,11 @@ export default function Home() {
                 fontFamily: "var(--font-montserrat), sans-serif",
               }}
             >
-              Professional Development Workshops
+              Professional Development
             </h2>
             <p style={{ color: "#2B303A" }}>
-              Every workshop at WDA is designed to build practical, real-world
-              skills — delivered by experienced dental professionals in a
-              hands-on clinical setting.
+              Every professional development opportunity and course at WDA is
+              designed to build soft skills as well as practical, real world skills.
             </p>
           </AnimateIn>
 
@@ -329,7 +268,7 @@ export default function Home() {
                     </div>
 
                     <Link
-                      href="/workshops"
+                      href="/professional-development"
                       className="group inline-flex items-center gap-1.5 text-sm font-bold transition-colors duration-200"
                       style={{ color: "#4A9FD4" }}
                     >
@@ -347,18 +286,18 @@ export default function Home() {
           {/* Bottom CTA */}
           <AnimateIn className="text-center mt-14" delay={80}>
             <Link
-              href="/workshops"
+              href="/professional-development"
               className="inline-flex items-center gap-2 rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
               style={{ backgroundColor: "#1E3560" }}
             >
-              Explore All Workshops
+              Explore All Opportunities
             </Link>
           </AnimateIn>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          WHY CHOOSE WDA
+          OUR DIFFERENCE
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -383,11 +322,10 @@ export default function Home() {
                 Dental Academy?
               </h2>
               <p className="text-base leading-relaxed mb-8" style={{ color: "#2B303A" }}>
-                We built WDA around a simple belief: that great dental
-                professionals are made through real experience, not just
-                classroom hours. Every decision we make — from hiring
-                instructors to designing the curriculum — comes back to that
-                principle.
+                We&apos;re not making dental professionals — we are helping
+                maintain competence through engagement and unique professional
+                development opportunities. From hiring instructors to planning
+                sessions, everything comes back to that principle.
               </p>
               <Link
                 href="/about"
@@ -443,94 +381,6 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          TESTIMONIALS
-      ═══════════════════════════════════════════════════════════ */}
-      <section className="py-24" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-6xl mx-auto px-6">
-          {/* Header */}
-          <AnimateIn className="text-center mb-16 max-w-xl mx-auto">
-            <p
-              className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
-              style={{ color: "#4A9FD4" }}
-            >
-              Graduate Stories
-            </p>
-            <h2
-              className="text-3xl sm:text-4xl font-bold mb-4"
-              style={{
-                color: "#1E3560",
-                fontFamily: "var(--font-montserrat), sans-serif",
-              }}
-            >
-              Real Outcomes,
-              <br />
-              Real Careers
-            </h2>
-            <p style={{ color: "#2B303A" }}>
-              Hear from WDA graduates now working in dental practices across
-              Edmonton and Alberta.
-            </p>
-          </AnimateIn>
-
-          {/* Testimonial cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, i) => (
-              <AnimateIn key={t.name} delay={i * 100} className="flex flex-col">
-                <div
-                  className="flex flex-col flex-1 rounded-2xl p-8 relative overflow-hidden"
-                  style={{ backgroundColor: "#F4F7F9" }}
-                >
-                  {/* Large quote mark */}
-                  <div
-                    className="absolute top-5 right-7 text-7xl font-serif leading-none select-none pointer-events-none"
-                    style={{ color: "rgba(74,159,212,0.15)" }}
-                    aria-hidden
-                  >
-                    &ldquo;
-                  </div>
-
-                  {/* Quote */}
-                  <p
-                    className="text-sm leading-relaxed italic flex-1 mb-8 relative"
-                    style={{ color: "#2B303A" }}
-                  >
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-
-                  {/* Divider */}
-                  <div
-                    className="mb-5 h-px"
-                    style={{ backgroundColor: "rgba(30,53,96,0.1)" }}
-                  />
-
-                  {/* Author */}
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                      style={{ backgroundColor: "#1E3560" }}
-                    >
-                      {t.initials}
-                    </div>
-                    <div>
-                      <p
-                        className="text-sm font-bold"
-                        style={{ color: "#1E3560" }}
-                      >
-                        {t.name}
-                      </p>
-                      <p className="text-xs" style={{ color: "#4A9FD4" }}>
-                        {t.program}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </AnimateIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
           FINAL CTA BANNER
       ═══════════════════════════════════════════════════════════ */}
       <section className="relative overflow-hidden py-24" style={{ backgroundColor: "#1E3560" }}>
@@ -561,17 +411,16 @@ export default function Home() {
               className="text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Ready to Advance Your
+              Registrations are not open
               <br />
-              Dental Skills?
+              for professional development.
             </h2>
             <p
               className="text-lg leading-relaxed mb-10 max-w-xl mx-auto"
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
-              Registrations are now open for our upcoming workshops. Connect
-              with our team to find the right professional development
-              opportunity — we&apos;d love to hear from you.
+              Connect with our team to find the right session. We&apos;d love
+              to hear from you.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -579,13 +428,13 @@ export default function Home() {
                 href="/register"
                 className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 bg-[#E67E22] hover:bg-[#CF6D17] hover:scale-[1.03]"
               >
-                Register Interest
+                Register
               </Link>
               <Link
-                href="/workshops"
+                href="/contact"
                 className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 border border-white/30 hover:border-white/55 hover:bg-white/10"
               >
-                View Workshops
+                Contact Us
               </Link>
             </div>
           </AnimateIn>

@@ -9,7 +9,7 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 export const metadata: Metadata = {
   title: "Contact",
   description:
-    "Contact Western Dental Academy — ask about our workshops, registration, campus tours, or schedule a call with our team. We respond within one business day.",
+    "Contact Western Dental Academy — ask about our professional development opportunities, registration, or schedule a call with our team. We respond within one business day.",
 };
 
 // ─── Contact details ───────────────────────────────────────────────────────────
@@ -176,9 +176,9 @@ export default function ContactPage() {
             className="text-lg leading-relaxed max-w-xl"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Questions about our workshops, registration, campus tours, or
-            anything else — our team is here to help. Expect a reply within
-            one business day.
+            Questions about our professional development opportunities,
+            registration, or anything else — our team is here to help.
+            Expect a reply within one business day.
           </p>
         </div>
 
@@ -524,8 +524,8 @@ export default function ContactPage() {
                   ),
                 },
                 {
-                  label: "Book a Campus Tour",
-                  description: "Come see the WDA facility in person.",
+                  label: "Visit Our Facility",
+                  description: "Come see our modern facility in person.",
                   href: "/contact",
                   icon: (
                     <svg

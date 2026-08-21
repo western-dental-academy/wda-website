@@ -6,16 +6,18 @@ import type { FaqItem, FaqCategory } from "@/types/faqItem";
 const CATEGORY_ORDER: FaqCategory[] = [
   "Registration",
   "Workshops",
-  "Cost",
-  "Career",
+  "Guest Speakers",
+  "Courses",
+  "National Board Preparation",
   "General",
 ];
 
 const CATEGORY_LABELS: Record<FaqCategory, string> = {
   Registration: "Registration",
   Workshops: "Workshops",
-  Cost: "Cost & Payment",
-  Career: "Professional Development",
+  "Guest Speakers": "Guest Speakers",
+  Courses: "Courses",
+  "National Board Preparation": "National Board Preparation",
   General: "General",
 };
 

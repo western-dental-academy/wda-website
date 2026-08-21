@@ -23,6 +23,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll(); // sync with actual scroll position on mount
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -63,9 +64,6 @@ export default function Navbar() {
         >
           <motion.div
             className="inline-flex"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
             whileHover={{ scale: 1.04, transition: { duration: 0.2, ease: "easeOut" } }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

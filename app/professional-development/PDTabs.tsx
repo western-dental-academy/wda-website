@@ -151,124 +151,118 @@ export default function PDTabs() {
         </div>
 
         {/* Workshops */}
-        {activeTab === "workshops" && (
-          <div>
-            <AnimateIn className="mb-12">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-                Current Workshops
-              </p>
-              <h2
-                className="text-3xl font-bold leading-tight"
-                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-              >
-                Hands-On Clinical Development
-              </h2>
-            </AnimateIn>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {workshops.map((w, i) => (
-                <WorkshopCard key={w.num} workshop={w} index={i} />
-              ))}
-            </div>
+        <div className={activeTab === "workshops" ? undefined : "hidden"}>
+          <div className="mb-12">
+            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+              Current Workshops
+            </p>
+            <h2
+              className="text-3xl font-bold leading-tight"
+              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              Hands-On Clinical Development
+            </h2>
           </div>
-        )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {workshops.map((w, i) => (
+              <WorkshopCard key={w.num} workshop={w} index={i} />
+            ))}
+          </div>
+        </div>
 
         {/* Guest Speakers */}
-        {activeTab === "guest-speakers" && (
-          <AnimateIn>
-            <div className="max-w-2xl mx-auto text-center py-16">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-                style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                </svg>
-              </div>
-              <h2
-                className="text-2xl font-bold mb-4"
-                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-              >
-                Guest Speaker Events
-              </h2>
-              <p className="text-base leading-relaxed mb-8" style={{ color: "#2B303A" }}>
-                Guest speaker opportunities coming soon. Sign up for our newsletter to be notified
-                when new speakers are announced.
-              </p>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
-                style={{ backgroundColor: "#E67E22" }}
-              >
-                Register Your Interest
-              </Link>
+        <div className={activeTab === "guest-speakers" ? undefined : "hidden"}>
+          <div className="max-w-2xl mx-auto text-center py-16">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-8 h-8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
             </div>
-          </AnimateIn>
-        )}
+            <h2
+              className="text-2xl font-bold mb-4"
+              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              Guest Speaker Events
+            </h2>
+            <p className="text-base leading-relaxed mb-8" style={{ color: "#2B303A" }}>
+              Guest speaker opportunities coming soon. Sign up for our newsletter to be notified
+              when new speakers are announced.
+            </p>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
+              style={{ backgroundColor: "#E67E22" }}
+            >
+              Register Your Interest
+            </Link>
+          </div>
+        </div>
 
         {/* Courses */}
-        {activeTab === "courses" && (
-          <AnimateIn>
-            <div className="mb-12">
-              <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-                Available Now
-              </p>
-              <h2
-                className="text-3xl font-bold leading-tight"
-                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-              >
-                National Board Preparation
-              </h2>
-            </div>
-            <div className="flex flex-col">
-              <div
-                className="flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl max-w-2xl"
-                style={{ backgroundColor: "#F4F7F9" }}
-              >
-                <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
-                <div className="flex flex-col p-8">
-                  <div className="flex items-center justify-between mb-5">
-                    <p className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "#4A9FD4" }}>01</p>
-                    <span
-                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
-                      style={{ backgroundColor: "rgba(230,126,34,0.12)", color: "#E67E22" }}
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#E67E22" }} />
-                      Launching Soon
-                    </span>
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 leading-snug" style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}>
-                    National Practical Evaluation Guided Practice Workshop
-                  </h3>
-                  <div className="flex items-center gap-3 mb-4 -mt-1">
-                    <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>8 hours · Hands-On</span>
-                  </div>
-                  <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
-                    Structured guided practice for dental assisting candidates preparing for the NDAEB Clinical Practice Evaluation (CPE). Covers all nine clinical skills assessed during the CPE through simulated exercises, guided practice, and mock evaluations.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {["Exam Preparation", "Hands-On", "Expert-Led", "Certificate of Attendance"].map((tag) => (
-                      <span
-                        key={tag}
-                        className="text-[11px] font-semibold px-3 py-1 rounded-full"
-                        style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  <Link
-                    href="/national-board-preparation"
-                    className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
-                    style={{ backgroundColor: "#E67E22" }}
+        <div className={activeTab === "courses" ? undefined : "hidden"}>
+          <div className="mb-12">
+            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+              Available Now
+            </p>
+            <h2
+              className="text-3xl font-bold leading-tight"
+              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              National Board Preparation
+            </h2>
+          </div>
+          <div className="flex flex-col">
+            <div
+              className="flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl max-w-2xl"
+              style={{ backgroundColor: "#F4F7F9" }}
+            >
+              <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
+              <div className="flex flex-col p-8">
+                <div className="flex items-center justify-between mb-5">
+                  <p className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "#4A9FD4" }}>01</p>
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+                    style={{ backgroundColor: "rgba(230,126,34,0.12)", color: "#E67E22" }}
                   >
-                    Learn More
-                    <span>→</span>
-                  </Link>
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#E67E22" }} />
+                    Launching Soon
+                  </span>
                 </div>
+                <h3 className="text-xl font-bold mb-3 leading-snug" style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}>
+                  National Practical Evaluation Guided Practice Workshop
+                </h3>
+                <div className="flex items-center gap-3 mb-4 -mt-1">
+                  <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>8 hours · Hands-On</span>
+                </div>
+                <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+                  Structured guided practice for dental assisting candidates preparing for the NDAEB Clinical Practice Evaluation (CPE). Covers all nine clinical skills assessed during the CPE through simulated exercises, guided practice, and mock evaluations.
+                </p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {["Exam Preparation", "Hands-On", "Expert-Led", "Certificate of Attendance"].map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                      style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <Link
+                  href="/national-board-preparation"
+                  className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
+                  style={{ backgroundColor: "#E67E22" }}
+                >
+                  Learn More
+                  <span>→</span>
+                </Link>
               </div>
             </div>
-          </AnimateIn>
-        )}
+          </div>
+        </div>
       </div>
     </section>
   );

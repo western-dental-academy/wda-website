@@ -28,7 +28,7 @@ export default function SiteShell({
         Skip to main content
       </a>
       <Navbar />
-      <AnimatePresence mode="wait">
+      <AnimatePresence mode="wait" initial={false}>
         <motion.main
           key={pathname}
           id="main-content"

@@ -112,6 +112,18 @@
   50%       { transform: translateY(-12px); }
 }
 
+/* Used by ElegantShape — CSS custom props supply the dynamic rotate values */
+@keyframes elegantShapeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-150px) rotate(var(--shape-r-from, 0deg));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--shape-r, 0deg));
+  }
+}
+
 #cs-email::placeholder {
   color: rgba(255, 255, 255, 0.32);
 }

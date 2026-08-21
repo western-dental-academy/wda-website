@@ -1,7 +1,10 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+
+const EASE = "cubic-bezier(0.23, 0.86, 0.39, 0.96)";
 
 export function ElegantShape({
   className,
@@ -19,17 +22,22 @@ export function ElegantShape({
   gradient?: string;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -150, rotate: rotate - 15 }}
-      animate={{ opacity: 1, y: 0, rotate }}
-      transition={{
-        duration: 2.4,
-        delay,
-        ease: [0.23, 0.86, 0.39, 0.96],
-        opacity: { duration: 1.2 },
-      }}
+    // Entrance: CSS animation with fill-mode:both so opacity:0 applies before
+    // JS loads — prevents the Framer Motion v12 SSR flash.
+    // Dynamic rotate values are passed via CSS custom properties.
+    <div
       className={cn("absolute pointer-events-none", className)}
+      style={{
+        "--shape-r": `${rotate}deg`,
+        "--shape-r-from": `${rotate - 15}deg`,
+        animationName: "elegantShapeIn",
+        animationDuration: "2.4s",
+        animationDelay: `${delay}s`,
+        animationTimingFunction: EASE,
+        animationFillMode: "both",
+      } as CSSProperties}
     >
+      {/* Float loop — infinite, no initial prop, safe to keep as Framer Motion */}
       <motion.div
         animate={{ y: [0, 15, 0] }}
         transition={{
@@ -45,7 +53,6 @@ export function ElegantShape({
             "absolute inset-0 rounded-full",
             "bg-gradient-to-r to-transparent",
             gradient,
-            // backdrop-blur removed — it blurs content behind the pill on mobile
             "border border-white/[0.08]",
             "shadow-[0_8px_32px_0_rgba(255,255,255,0.04)]",
             "after:absolute after:inset-0 after:rounded-full",
@@ -53,6 +60,6 @@ export function ElegantShape({
           )}
         />
       </motion.div>
-    </motion.div>
+    </div>
   );
 }

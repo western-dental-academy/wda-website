@@ -25,7 +25,7 @@ const VALUES = [
     num: "01",
     name: "Excellence",
     description:
-      "In teaching, learning, and clinical practice — we hold ourselves and our students to the highest standards of dental education and professional development.",
+      "In teaching, learning, and clinical practice — we hold ourselves and our students to the highest standards of dental training and professional development.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -91,7 +91,7 @@ const VALUES = [
     num: "04",
     name: "Community",
     description:
-      "Engagement and service — we invest in the communities we serve through outreach, oral health education, and partnerships that extend our impact beyond the classroom.",
+      "Engagement and service — we invest in the communities we serve through outreach, oral health training, and partnerships that extend our impact beyond the classroom.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -290,7 +290,7 @@ export default async function AboutPage() {
               fontFamily: "var(--font-montserrat), sans-serif",
             }}
           >
-            Excellence in Dental Education. Innovation in Delivery. Commitment to Community.
+            Excellence in Dental Training. Innovation in Delivery. Commitment to Community.
           </p>
 
           <p
@@ -367,7 +367,7 @@ export default async function AboutPage() {
                 <ul className="flex flex-col gap-5">
                   {[
                     "Hands-on clinical training from week one",
-                    "Experienced instructors in dental education",
+                    "Experienced instructors in dental training",
                     "Small class sizes for individual attention",
                     "Student support through graduation",
                     "Curriculum aligned with current Alberta standards",
@@ -467,7 +467,7 @@ export default async function AboutPage() {
                 >
                   With smaller class sizes, every student gets personable,
                   one-on-one interaction with instructors who bring both
-                  real-world clinical experience and dental education expertise
+                  real-world clinical experience and dental training expertise
                   into the classroom.
                 </p>
                 <div className="flex flex-wrap gap-3">
@@ -626,7 +626,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          CONTINUING EDUCATION, GUEST SPEAKERS & COMMUNITY
+          CONTINUING TRAINING, GUEST SPEAKERS & COMMUNITY
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -652,9 +652,9 @@ export default async function AboutPage() {
             {[
               {
                 num: "01",
-                title: "Continuing Education & Professional Development",
+                title: "Continuing Training & Professional Development",
                 body:
-                  "Western Dental Academy is a hub for lifelong learning. Our continuing education courses and professional development workshops help dental hygienists, dental assistants, dental healthcare professionals (DHC), and administrative professionals stay current with industry standards, new technologies, and evolving best practices. From radiography refreshers to advanced clinical skills, our CE offerings are built to support career growth and elevate the standard of care in dental practices across the province.",
+                  "Western Dental Academy is a hub for lifelong learning. Our continuing training courses and professional development workshops help dental hygienists, dental assistants, dental healthcare professionals (DHC), and administrative professionals stay current with industry standards, new technologies, and evolving best practices. From radiography refreshers to advanced clinical skills, our training offerings are built to support career growth and elevate the standard of care in dental practices across the province.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
@@ -674,9 +674,9 @@ export default async function AboutPage() {
               },
               {
                 num: "03",
-                title: "Community Education & Outreach",
+                title: "Community Outreach & Training",
                 body:
-                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. Through community education sessions, school presentations, and partnerships with local organizations, we help individuals and families build the knowledge they need to maintain lifelong oral health. Our outreach initiatives also support underserved and remote communities, reinforcing our belief that oral health education — and accessible pathways into dental assisting — should be available to everyone.",
+                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. Through community outreach sessions, school presentations, and partnerships with local organizations, we help individuals and families build the knowledge they need to maintain lifelong oral health. Our outreach initiatives also support underserved and remote communities, reinforcing our belief that oral health training — and accessible pathways into dental assisting — should be available to everyone.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />

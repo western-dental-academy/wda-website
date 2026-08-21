@@ -9,7 +9,7 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 export const metadata: Metadata = {
   title: "Workshops & Professional Development",
   description:
-    "Explore professional development workshops at Western Dental Academy — hands-on clinical skills training, radiography essentials, and continuing education for dental teams in Alberta.",
+    "Explore professional development workshops at Western Dental Academy — hands-on clinical skills training, radiography essentials, and continuing training for dental teams in Alberta.",
 };
 
 // ─── Sanity fetch (activate when CMS is connected) ────────────────────────────

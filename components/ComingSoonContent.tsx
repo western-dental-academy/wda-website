@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { CSSProperties } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
@@ -12,6 +13,20 @@ interface Particle {
   duration: number;
   delay: number;
   opacity: number;
+}
+
+const EASE = "cubic-bezier(0.16,1,0.3,1)";
+
+// CSS animation fill-mode:both means the `from` keyframe is applied from t=0,
+// so elements are invisible before JS ever loads — no hydration flash possible.
+function fadeUp(delay: number, duration = 0.6): CSSProperties {
+  return {
+    animationName: "heroFadeUp",
+    animationDuration: `${duration}s`,
+    animationTimingFunction: EASE,
+    animationFillMode: "both",
+    animationDelay: `${delay}s`,
+  };
 }
 
 export default function ComingSoonContent() {
@@ -46,7 +61,6 @@ export default function ComingSoonContent() {
     }
     setFieldError("");
     setEmailStatus("loading");
-    // Wire to a real endpoint (e.g. Mailchimp, ConvertKit) when ready
     await new Promise((r) => setTimeout(r, 900));
     setEmailStatus("success");
   }
@@ -56,7 +70,7 @@ export default function ComingSoonContent() {
       className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
       style={{ backgroundColor: "#1E3560" }}
     >
-      {/* Animated line paths — same as homepage hero */}
+      {/* Animated line paths */}
       <FloatingPaths position={1} />
       <FloatingPaths position={-1} />
 
@@ -71,7 +85,7 @@ export default function ComingSoonContent() {
         aria-hidden
       />
 
-      {/* Ambient radial glow — centre */}
+      {/* Ambient radial glow */}
       <div
         className="pointer-events-none absolute"
         style={{
@@ -87,7 +101,7 @@ export default function ComingSoonContent() {
         aria-hidden
       />
 
-      {/* Floating particles — generated client-side to avoid SSR mismatch */}
+      {/* Floating particles — client-side only (random values require JS) */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
         {particles.map((p) => (
           <motion.span
@@ -101,16 +115,8 @@ export default function ComingSoonContent() {
               backgroundColor: "#4A9FD4",
               opacity: p.opacity,
             }}
-            animate={{
-              y: [0, -28, 0],
-              opacity: [p.opacity, p.opacity * 0.3, p.opacity],
-            }}
-            transition={{
-              duration: p.duration,
-              delay: p.delay,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            animate={{ y: [0, -28, 0], opacity: [p.opacity, p.opacity * 0.3, p.opacity] }}
+            transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "easeInOut" }}
           />
         ))}
       </div>
@@ -118,22 +124,24 @@ export default function ComingSoonContent() {
       {/* Main content */}
       <div className="relative z-10 w-full max-w-2xl mx-auto px-6 text-center py-16">
 
-        {/* Logo — centerpiece with float animation */}
-        <motion.div
+        {/* Logo — CSS entrance (scale + opacity) avoids hydration flash */}
+        <div
           className="relative mx-auto mb-10 w-full"
-          style={{ maxWidth: 360 }}
-          initial={{ opacity: 0, scale: 0.88 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            maxWidth: 360,
+            animationName: "logoEntrance",
+            animationDuration: "0.9s",
+            animationTimingFunction: EASE,
+            animationFillMode: "both",
+          }}
         >
-          {/* Pulsing glow behind logo */}
+          {/* Pulsing glow — infinite loop, no initial prop, safe to keep as Motion */}
           <motion.span
             className="absolute inset-0 block pointer-events-none"
             style={{
               background:
                 "radial-gradient(ellipse, rgba(74,159,212,0.3) 0%, transparent 65%)",
               filter: "blur(28px)",
-              transform: "scaleY(0.6)",
             }}
             animate={{ scale: [1, 1.12, 1], opacity: [0.5, 0.9, 0.5] }}
             transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
@@ -144,54 +152,42 @@ export default function ComingSoonContent() {
           <img
             src="/Western Dental Academy Logo - Alternate - Inverted.svg"
             alt="Western Dental Academy"
-            style={{ height: '80px', width: 'auto', animation: "logoFloat 4s ease-in-out infinite" }}
+            style={{ height: "80px", width: "auto", animation: "logoFloat 4s ease-in-out infinite" }}
             className="relative z-10 mx-auto"
           />
-        </motion.div>
+        </div>
 
         {/* Eyebrow */}
-        <motion.p
+        <p
           className="text-[0.65rem] font-bold uppercase tracking-[0.28em] mb-5"
           style={{
             color: "#4A9FD4",
             fontFamily: "var(--font-montserrat), sans-serif",
+            ...fadeUp(0.3, 0.55),
           }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.3 }}
         >
           Coming Soon
-        </motion.p>
+        </p>
 
         {/* Headline */}
-        <motion.h1
+        <h1
           className="text-3xl sm:text-[2.4rem] font-bold text-white mb-4 leading-tight"
-          style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.42 }}
+          style={{ fontFamily: "var(--font-montserrat), sans-serif", ...fadeUp(0.42, 0.6) }}
         >
           Something Great Is Coming
-        </motion.h1>
+        </h1>
 
         {/* Subheading */}
-        <motion.p
+        <p
           className="text-sm sm:text-[0.95rem] leading-relaxed mb-10 max-w-sm mx-auto"
-          style={{ color: "rgba(255,255,255,0.58)" }}
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.56 }}
+          style={{ color: "rgba(255,255,255,0.58)", ...fadeUp(0.56, 0.6) }}
         >
           Western Dental Academy&apos;s new website is under construction.
           We&apos;ll be back soon.
-        </motion.p>
+        </p>
 
-        {/* Email notify form */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-        >
+        {/* Email notify form — CSS wrapper, AnimatePresence inside for form↔success swap */}
+        <div style={fadeUp(0.7, 0.6)}>
           <AnimatePresence mode="wait">
             {emailStatus === "success" ? (
               <motion.div
@@ -215,11 +211,7 @@ export default function ComingSoonContent() {
                     className="w-5 h-5"
                     aria-hidden
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4.5 12.75l6 6 9-13.5"
-                    />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                   </svg>
                 </div>
                 <p
@@ -301,36 +293,25 @@ export default function ComingSoonContent() {
               {fieldError}
             </p>
           )}
-        </motion.div>
+        </div>
 
         {/* Divider */}
-        <motion.div
+        <div
           className="my-9 border-t"
-          style={{ borderColor: "rgba(255,255,255,0.1)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
+          style={{ borderColor: "rgba(255,255,255,0.1)", ...fadeUp(0.9, 0.5) }}
           aria-hidden
         />
 
         {/* Contact info */}
-        <motion.div
+        <div
           className="flex flex-col sm:flex-row items-center justify-center gap-5 text-sm mb-8"
-          style={{ color: "rgba(255,255,255,0.55)" }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 1.0 }}
+          style={{ color: "rgba(255,255,255,0.55)", ...fadeUp(1.0, 0.55) }}
         >
           <a
             href="tel:+17800000000"
             className="flex items-center gap-2 transition-colors duration-200 hover:text-white"
           >
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 shrink-0"
-              aria-hidden
-            >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0" aria-hidden>
               <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
             </svg>
             (780) 000-0000
@@ -346,33 +327,20 @@ export default function ComingSoonContent() {
             href="mailto:info@westerndentalacademy.com"
             className="flex items-center gap-2 transition-colors duration-200 hover:text-white"
           >
-            <svg
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 shrink-0"
-              aria-hidden
-            >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0" aria-hidden>
               <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
               <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
             </svg>
             info@westerndentalacademy.com
           </a>
-        </motion.div>
+        </div>
 
         {/* Address */}
-        <motion.div
+        <div
           className="flex items-center justify-center gap-2 text-sm mb-8"
-          style={{ color: "rgba(255,255,255,0.55)" }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 1.05 }}
+          style={{ color: "rgba(255,255,255,0.55)", ...fadeUp(1.05, 0.55) }}
         >
-          <svg
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-4 h-4 shrink-0 self-start mt-0.5"
-            aria-hidden
-          >
+          <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0 self-start mt-0.5" aria-hidden>
             <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
           </svg>
           <span className="text-center leading-relaxed">
@@ -380,14 +348,12 @@ export default function ComingSoonContent() {
             <br />
             Sherwood Park, AB
           </span>
-        </motion.div>
+        </div>
 
         {/* Social icons */}
-        <motion.div
+        <div
           className="flex items-center justify-center gap-3"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 1.1 }}
+          style={fadeUp(1.1, 0.55)}
         >
           {/* Instagram */}
           <a
@@ -397,14 +363,7 @@ export default function ComingSoonContent() {
             aria-label="Western Dental Academy on Instagram – opens in new tab"
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 text-white/55 hover:text-white bg-white/[0.08] hover:bg-white/[0.14]"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={1.75}
-              className="w-[17px] h-[17px]"
-              aria-hidden
-            >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} className="w-[17px] h-[17px]" aria-hidden>
               <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
               <circle cx="12" cy="12" r="4" />
               <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
@@ -419,12 +378,7 @@ export default function ComingSoonContent() {
             aria-label="Western Dental Academy on Facebook – opens in new tab"
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 text-white/55 hover:text-white bg-white/[0.08] hover:bg-white/[0.14]"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-[17px] h-[17px]"
-              aria-hidden
-            >
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[17px] h-[17px]" aria-hidden>
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
           </a>
@@ -437,27 +391,13 @@ export default function ComingSoonContent() {
             aria-label="Western Dental Academy on LinkedIn – opens in new tab"
             className="w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 text-white/55 hover:text-white bg-white/[0.08] hover:bg-white/[0.14]"
           >
-            <svg
-              viewBox="0 0 24 24"
-              fill="currentColor"
-              className="w-[17px] h-[17px]"
-              aria-hidden
-            >
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-[17px] h-[17px]" aria-hidden>
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 23.227 24 22.222 0h.003z" />
             </svg>
           </a>
-        </motion.div>
+        </div>
 
       </div>
-
-      {/* Logo float animation + input placeholder colour */}
-      <style>{`
-        @keyframes logoFloat {
-          0%, 100% { transform: translateY(0px); }
-          50%       { transform: translateY(-12px); }
-        }
-        #cs-email::placeholder { color: rgba(255,255,255,0.32); }
-      `}</style>
     </div>
   );
 }

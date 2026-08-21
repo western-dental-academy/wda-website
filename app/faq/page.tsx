@@ -15,132 +15,158 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     _id: "p-reg-1",
     category: "Registration",
     order: 1,
-    question: "What do I need to register for a WDA workshop?",
+    question: "How do I register for a workshop or course?",
     answer:
-      "No prior dental experience is required. Our workshops are open to dental professionals at all stages, as well as individuals exploring a career in the dental field. Registration is completed online in a few simple steps.",
+      "Browse our Professional Development page to find available workshops and courses. Click Register on any offering to complete your registration and payment online.",
   },
   {
     _id: "p-reg-2",
     category: "Registration",
     order: 2,
-    question: "How do I register for a workshop?",
+    question: "What is your refund policy?",
     answer:
-      "Visit our Workshops page to browse available sessions and click Register to complete your registration online. You can also contact our team directly and we'll walk you through the process.",
+      "Refunds are available up to 48 hours before the workshop or course start date. Please contact info@westerndentalacademy.com to request a refund.",
   },
   {
     _id: "p-reg-3",
     category: "Registration",
     order: 3,
-    question: "Is there an age requirement to attend a workshop?",
-    answer: "Participants must be at least 18 years of age at the time of the workshop.",
+    question: "How many spots are available per workshop?",
+    answer:
+      "Workshop capacity varies by offering. The Ergonomics in Dentistry workshop is capped at 20 participants to ensure a quality experience. Register early to secure your spot.",
+  },
+  {
+    _id: "p-reg-4",
+    category: "Registration",
+    order: 4,
+    question: "Can I transfer my registration to another date?",
+    answer:
+      "Yes — contact us at info@westerndentalacademy.com at least 48 hours in advance and we will do our best to accommodate a date transfer.",
   },
   // Workshops
   {
     _id: "p-wsh-1",
     category: "Workshops",
     order: 1,
-    question: "How long do WDA workshops run?",
+    question: "What workshops does WDA currently offer?",
     answer:
-      "Workshop duration varies by course — from single-day intensives to multi-day sessions. Each workshop listing includes a duration overview. Contact us for current scheduling and upcoming dates.",
+      "WDA currently offers the Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer workshop. Additional workshops are in development. Sign up for our newsletter to be notified of new offerings.",
   },
   {
     _id: "p-wsh-2",
     category: "Workshops",
     order: 2,
-    question: "Are workshops hands-on or online?",
+    question: "What should I bring to a workshop?",
     answer:
-      "Western Dental Academy prioritises hands-on, practical training. Participants work in our modern on-site facility using professional-grade dental equipment alongside experienced practitioners. Some workshops may include distance delivery components — check individual workshop descriptions for details.",
+      "Requirements vary by workshop. The Ergonomics in Dentistry workshop requires a water bottle, yoga mat, and comfortable clothing. Check individual workshop listings for specific requirements.",
   },
   {
     _id: "p-wsh-3",
     category: "Workshops",
     order: 3,
-    question: "Do you offer workshops for working dental professionals?",
+    question: "Do workshops count toward my CADA CCP submission?",
     answer:
-      "Yes — our professional development workshops are designed for dental teams at all experience levels, from those new to the field to seasoned practitioners looking to sharpen specific skills or meet continuing competency requirements.",
+      "Yes — our workshops are designed to support your annual CADA Continuing Competence Program (CCP) submission. Each participant receives a certificate of attendance along with structured learning objectives to document in their CCP.",
   },
-  // Cost
   {
-    _id: "p-cst-1",
-    category: "Cost",
+    _id: "p-wsh-4",
+    category: "Workshops",
+    order: 4,
+    question: "Where are workshops held?",
+    answer:
+      "Workshops are held at our facility in Sherwood Park, Alberta. Free parking is available on site.",
+  },
+  // Guest Speakers
+  {
+    _id: "p-gs-1",
+    category: "Guest Speakers",
     order: 1,
-    question: "How much do WDA workshops cost?",
+    question: "What are guest speaker events?",
     answer:
-      "Workshop fees vary by course. Contact our team for current pricing and registration details. Payment is processed securely online at the time of registration.",
+      "WDA hosts guest speaker events featuring dental industry professionals sharing expertise on relevant topics. These events are open to all dental healthcare professionals and are a great way to earn CCP learning hours.",
   },
   {
-    _id: "p-cst-2",
-    category: "Cost",
+    _id: "p-gs-2",
+    category: "Guest Speakers",
     order: 2,
-    question: "Are payment plans available?",
+    question: "How do I find out about upcoming guest speakers?",
     answer:
-      "Yes, we offer flexible payment options to help make professional development accessible. Reach out to our team to discuss what works best for your situation.",
+      "Sign up for our newsletter at the bottom of any page to stay updated on upcoming guest speaker events and announcements.",
   },
   {
-    _id: "p-cst-3",
-    category: "Cost",
+    _id: "p-gs-3",
+    category: "Guest Speakers",
     order: 3,
-    question: "Can workshop hours be applied toward CADA CCP requirements?",
+    question: "Is there a cost for guest speaker events?",
     answer:
-      "WDA workshops provide a Certificate of Attendance that participants may submit as part of their Continuing Competency Programme (CCP) hours documentation with CADA. We encourage participants to verify current CADA requirements directly, as eligibility is determined by CADA.",
+      "Guest speaker event pricing varies. Some events may be complimentary. Check our Professional Development page for current listings and pricing.",
   },
-  // Career
+  // Courses
   {
-    _id: "p-car-1",
-    category: "Career",
+    _id: "p-crs-1",
+    category: "Courses",
     order: 1,
-    question: "How can WDA workshops support my dental career?",
+    question: "What online courses does WDA offer?",
     answer:
-      "Our workshops provide practical, skills-based training to help dental professionals expand their capabilities, stay current with modern techniques, and demonstrate continued professional development. They are designed to complement existing credentials, not replace formal registration or licensing pathways.",
+      "WDA is currently developing non-credit online professional development courses for dental healthcare professionals. Sign up for our newsletter to be notified when courses launch.",
   },
   {
-    _id: "p-car-2",
-    category: "Career",
+    _id: "p-crs-2",
+    category: "Courses",
     order: 2,
-    question: "Will I gain practical skills through WDA workshops?",
+    question: "Will online courses count toward my CADA CCP?",
     answer:
-      "Yes — WDA training is built around real-world application. You'll practise in our on-site clinic environment with modern equipment, guided by experienced dental professionals, so that new skills translate directly to your work.",
+      "Our courses are being designed to align with CADA CCP learning goals so participants can incorporate them into their annual submission.",
+  },
+  // National Board Preparation
+  {
+    _id: "p-nbp-1",
+    category: "National Board Preparation",
+    order: 1,
+    question: "What is the National Practical Evaluation Guided Practice Workshop?",
+    answer:
+      "This is an 8-hour hands-on workshop designed to prepare dental assisting candidates for the NDAEB Clinical Practice Evaluation (CPE). It covers all nine clinical skills assessed during the CPE through simulated exercises, guided practice, and mock evaluations.",
   },
   {
-    _id: "p-car-3",
-    category: "Career",
-    order: 3,
-    question: "Do WDA workshops lead to provincial registration or licensing?",
+    _id: "p-nbp-2",
+    category: "National Board Preparation",
+    order: 2,
+    question: "Who should attend the National Board Prep workshop?",
     answer:
-      "WDA workshops issue a Certificate of Attendance, not a provincial credential. Becoming a registered dental assistant in Alberta requires meeting CADA's registration requirements independently. WDA workshops can support your professional development and contribute to CCP documentation, but do not grant registration or licensing on their own.",
+      "This workshop is ideal for graduates of non-registered dental assisting programs, internationally educated dental assistants seeking NDAEB certification, and candidates seeking structured preparation before their scheduled CPE.",
+  },
+  {
+    _id: "p-nbp-3",
+    category: "National Board Preparation",
+    order: 3,
+    question: "What is the prerequisite for the National Board Prep workshop?",
+    answer:
+      "Participants must have completed dental assisting education and be eligible for the NDAEB Clinical Practice Evaluation.",
   },
   // General
   {
     _id: "p-gen-1",
     category: "General",
     order: 1,
-    question: "Where is Western Dental Academy located?",
+    question: "Where is WDA located?",
     answer:
-      "We are located at 150 Chippewa Road, Suite 258, Sherwood Park, AB (within the Edmonton metropolitan area). Book a campus tour through our contact page.",
+      "Western Dental Academy is located in Sherwood Park, Alberta (Edmonton area). Free parking is available at our facility.",
   },
   {
     _id: "p-gen-2",
     category: "General",
     order: 2,
-    question: "How do I get in touch with the WDA team?",
+    question: "How do I contact WDA?",
     answer:
-      "You can reach us through the contact form on our website, by phone, or by email. We typically respond within one business day.",
+      "You can reach us at info@westerndentalacademy.com or through the contact form on our website. We respond to all inquiries within one business day.",
   },
   {
     _id: "p-gen-3",
     category: "General",
     order: 3,
-    question: "Do you offer in-person campus tours?",
+    question: "Does WDA offer group rates for dental practices?",
     answer:
-      "Yes — we welcome visitors to our facility. Come see our clinic and training spaces firsthand. Book a campus tour through our contact page.",
-  },
-  {
-    _id: "p-gen-4",
-    category: "General",
-    order: 4,
-    question: "What do I need to bring or prepare?",
-    answer:
-      "Requirements vary under each offering. Guest speaker events are open to everyone. Check individual workshop or course listings for specific requirements.",
+      "Yes — we welcome dental practice teams. Contact us at info@westerndentalacademy.com to discuss group registration options for your clinic.",
   },
 ];
 

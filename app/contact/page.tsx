@@ -419,7 +419,7 @@ export default function ContactPage() {
                 className="text-2xl font-bold text-white"
                 style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
-                Common Questions
+                Frequently Asked Questions
               </h2>
             </div>
             <Link
@@ -435,16 +435,16 @@ export default function ContactPage() {
           <div className="flex flex-col gap-4">
             {[
               {
-                q: "Do I need prior experience to attend a workshop?",
-                a: "No prior dental experience is required. Our workshops welcome dental professionals at all stages, as well as individuals exploring the dental field. Simply register online to secure your spot.",
+                q: "How do workshops support my CADA CCP?",
+                a: "Each participant receives a certificate of attendance along with structured learning objectives. You can use these to document the workshop in your annual CADA Continuing Competence Program (CCP) submission.",
               },
               {
-                q: "How long do WDA workshops run?",
-                a: "Workshop duration varies by course — from single-day intensives to multi-day sessions. Visit our Workshops page or contact us for current scheduling and upcoming dates.",
+                q: "Where are workshops held?",
+                a: "Workshops are held at our facility in Sherwood Park, Alberta (Edmonton area). Free parking is available on site.",
               },
               {
-                q: "What do workshops cost, and are there payment options?",
-                a: "Workshop fees vary by course. We offer flexible payment options and are happy to discuss what works best for your situation. Contact our team for a full fee schedule.",
+                q: "How do I register?",
+                a: "Browse our Professional Development page to find available workshops and courses, then click Register on any offering to complete your registration and payment online.",
               },
             ].map(({ q, a }) => (
               <div

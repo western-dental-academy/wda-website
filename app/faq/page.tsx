@@ -285,8 +285,7 @@ export default async function FaqPage() {
             className="text-lg leading-relaxed max-w-xl"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Browse common questions about our workshops, registration, fees,
-            and professional development opportunities. Can&apos;t find what you&apos;re looking for?{" "}
+            Browse common questions about our professional development opportunities, registration, and fees. Can&apos;t find what you&apos;re looking for?{" "}
             <Link
               href="/contact"
               className="font-semibold underline underline-offset-2 transition-colors hover:text-white"

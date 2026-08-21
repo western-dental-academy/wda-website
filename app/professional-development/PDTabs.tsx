@@ -9,77 +9,6 @@ import AnimateIn from "@/components/AnimateIn";
 const workshops = [
   {
     num: "01",
-    title: "Clinical Skills Workshop",
-    badge: "Launching Soon",
-    description:
-      "Hands-on workshop covering chairside techniques, instrument handling, dental materials, infection control, and clinical protocols — delivered by practicing dental professionals in a real clinical environment.",
-    highlights: [
-      "Chairside procedures and instrument handling",
-      "Infection control and sterilization best practices",
-      "Dental materials and tray setup",
-      "Patient management and communication fundamentals",
-      "Small cohort size for individualized attention",
-    ],
-    tags: ["Hands-On", "Expert-Led", "Certificate of Attendance"],
-  },
-  {
-    num: "02",
-    title: "Dental Radiography Essentials",
-    badge: "Coming Soon",
-    description:
-      "Practical training in digital radiography techniques, radiation safety procedures, and image handling for dental support staff and office teams across Alberta.",
-    highlights: [
-      "Digital X-ray technique and positioning",
-      "Radiation safety regulations and compliance",
-      "Image quality assessment and error identification",
-      "ALARA principles and protective protocols",
-    ],
-    tags: ["Technical Skills", "Safety Focused", "Certificate of Attendance"],
-  },
-  {
-    num: "03",
-    title: "Infection Control & Sterilization",
-    badge: "Coming Soon",
-    description:
-      "Best practices for sterilization, disinfection, and infection prevention in dental environments — aligned with current RCDSO and Alberta Health Services guidelines.",
-    highlights: [
-      "Instrument sterilization cycles and monitoring",
-      "Surface disinfection and barrier protection",
-      "Personal protective equipment (PPE) protocols",
-      "Regulatory compliance and documentation",
-    ],
-    tags: ["Safety Focused", "Compliance", "Certificate of Attendance"],
-  },
-  {
-    num: "04",
-    title: "Office Administration & Patient Communication",
-    badge: "Coming Soon",
-    description:
-      "Professional development covering patient intake workflows, appointment management, dental software navigation, and effective communication in a modern dental office environment.",
-    highlights: [
-      "Patient intake and records management",
-      "Scheduling and appointment workflows",
-      "Dental software and electronic charting basics",
-      "Professional communication and patient interaction",
-    ],
-    tags: ["Professional Skills", "Office Ready", "Certificate of Attendance"],
-  },
-  {
-    num: "05",
-    title: "NDAB Exam Preparation",
-    badge: "Coming Soon",
-    description:
-      "A focused skills refresher and exam strategy workshop for dental assistants preparing for the National Dental Assisting Board (NDAB) exam — covering key subject areas, clinical competencies, and test-taking strategies.",
-    highlights: [
-      "Review of key NDAB subject domains",
-      "Practical clinical competency refresher",
-      "Exam strategy and question-format practice",
-      "Study planning and resource guidance",
-    ],
-    tags: ["Exam Preparation", "Self-Directed", "Certificate of Attendance"],
-  },
-  {
-    num: "06",
     title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
     badge: "Launching Soon",
     price: 35,
@@ -279,32 +208,64 @@ export default function PDTabs() {
         {/* Courses */}
         {activeTab === "courses" && (
           <AnimateIn>
-            <div className="max-w-2xl mx-auto text-center py-16">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-                style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-                </svg>
-              </div>
+            <div className="mb-12">
+              <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+                Available Now
+              </p>
               <h2
-                className="text-2xl font-bold mb-4"
+                className="text-3xl font-bold leading-tight"
                 style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
               >
-                Online Courses
+                National Board Preparation
               </h2>
-              <p className="text-base leading-relaxed mb-8" style={{ color: "#2B303A" }}>
-                Online courses coming soon. WDA is developing non-credit online professional
-                development courses for dental healthcare professionals.
-              </p>
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
-                style={{ backgroundColor: "#E67E22" }}
+            </div>
+            <div className="flex flex-col">
+              <div
+                className="flex flex-col rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl max-w-2xl"
+                style={{ backgroundColor: "#F4F7F9" }}
               >
-                Register Your Interest
-              </Link>
+                <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
+                <div className="flex flex-col p-8">
+                  <div className="flex items-center justify-between mb-5">
+                    <p className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "#4A9FD4" }}>01</p>
+                    <span
+                      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+                      style={{ backgroundColor: "rgba(230,126,34,0.12)", color: "#E67E22" }}
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#E67E22" }} />
+                      Launching Soon
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-bold mb-3 leading-snug" style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}>
+                    National Practical Evaluation Guided Practice Workshop
+                  </h3>
+                  <div className="flex items-center gap-3 mb-4 -mt-1">
+                    <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>8 hours · Hands-On</span>
+                  </div>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+                    Structured guided practice for dental assisting candidates preparing for the NDAEB Clinical Practice Evaluation (CPE). Covers all nine clinical skills assessed during the CPE through simulated exercises, guided practice, and mock evaluations.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {["Exam Preparation", "Hands-On", "Expert-Led", "Certificate of Attendance"].map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                        style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <Link
+                    href="/national-board-preparation"
+                    className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
+                    style={{ backgroundColor: "#E67E22" }}
+                  >
+                    Learn More
+                    <span>→</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </AnimateIn>
         )}

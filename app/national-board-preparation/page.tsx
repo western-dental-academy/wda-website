@@ -212,7 +212,7 @@ export default function NPEWorkshopPage() {
 
               <div className="flex flex-wrap gap-3 mt-6">
                 <Link
-                  href="/contact"
+                  href="/register"
                   className="rounded-lg px-7 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
                   style={{ backgroundColor: "#E67E22" }}
                 >
@@ -771,7 +771,7 @@ export default function NPEWorkshopPage() {
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
-                  href="/contact"
+                  href="/register"
                   className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
                   style={{ backgroundColor: "#E67E22" }}
                 >

@@ -1091,7 +1091,7 @@ export default async function AboutPage() {
                     WDA is developing structured guided practice workshops to support dental assisting certification preparation. Register your interest to be notified when details are available.
                   </p>
                   <Link
-                    href="/contact"
+                    href="/register"
                     className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
                     style={{ backgroundColor: "#E67E22" }}
                   >

@@ -4,9 +4,9 @@ import WorkshopRegisterForm from "@/components/WorkshopRegisterForm";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
 export const metadata: Metadata = {
-  title: "Register for a Workshop",
+  title: "Register for Professional Development",
   description:
-    "Register for a professional development workshop at Western Dental Academy. Secure checkout via Stripe.",
+    "Register for a professional development workshop or course at Western Dental Academy. Secure checkout via Stripe.",
 };
 
 export default function RegisterPage() {
@@ -91,8 +91,8 @@ export default function RegisterPage() {
             className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-5 max-w-2xl"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            Register for a{" "}
-            <span style={{ color: "#4A9FD4" }}>Workshop.</span>
+            Register for{" "}
+            <span style={{ color: "#4A9FD4" }}>Professional Development.</span>
           </h1>
 
           <p

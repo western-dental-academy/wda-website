@@ -192,7 +192,7 @@ export default function PDTabs() {
               when new speakers are announced.
             </p>
             <Link
-              href="/contact"
+              href="/register"
               className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
               style={{ backgroundColor: "#E67E22" }}
             >

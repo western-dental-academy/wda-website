@@ -216,7 +216,7 @@ export default function NPEWorkshopPage() {
                   className="rounded-lg px-7 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
                   style={{ backgroundColor: "#E67E22" }}
                 >
-                  Register Your Interest
+                  Register
                 </Link>
                 <a
                   href="#agenda"
@@ -775,7 +775,7 @@ export default function NPEWorkshopPage() {
                   className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
                   style={{ backgroundColor: "#E67E22" }}
                 >
-                  Register Your Interest
+                  Register
                 </Link>
                 <Link
                   href="/professional-development"

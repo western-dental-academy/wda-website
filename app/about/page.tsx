@@ -1095,7 +1095,7 @@ export default async function AboutPage() {
                     className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
                     style={{ backgroundColor: "#E67E22" }}
                   >
-                    Register Your Interest
+                    Register
                   </Link>
                 </div>
                 <div className="flex items-center justify-center">

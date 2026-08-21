@@ -1,58 +1,43 @@
-"use client";
-
+import type { CSSProperties } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
 
-// ── Headline split into individual words per visual line ───────────────────────
 const LINE_1 = ["Stay", "current."];
-const LINE_2 = ["Stay", "competent."]; // brand blue
+const LINE_2 = ["Stay", "competent."];
 const LINE_3 = ["Get", "Connected."];
 
-// ── Framer Motion variants ─────────────────────────────────────────────────────
+const EASE = "cubic-bezier(0.16,1,0.3,1)";
 
-const headlineContainer = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
-};
-
-const EASE: [number, number, number, number] = [0.16, 1, 0.3, 1];
-
-const wordItem = {
-  hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
-  show: {
-    opacity: 1,
-    y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.5, ease: EASE },
-  },
-};
-
-function delayedFade(delay: number) {
+function fadeUp(delay: number): CSSProperties {
   return {
-    hidden: { opacity: 0, y: 14 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.55, delay, ease: EASE },
-    },
+    animationName: "heroFadeUp",
+    animationDuration: "0.55s",
+    animationTimingFunction: EASE,
+    animationFillMode: "both",
+    animationDelay: `${delay}s`,
   };
 }
 
-// ── Component ──────────────────────────────────────────────────────────────────
+function wordReveal(wordIndex: number): CSSProperties {
+  return {
+    display: "inline-block",
+    marginRight: "0.28em",
+    animationName: "wordReveal",
+    animationDuration: "0.5s",
+    animationTimingFunction: EASE,
+    animationFillMode: "both",
+    animationDelay: `${0.05 + wordIndex * 0.07}s`,
+  };
+}
 
 export default function HeroHeadlineSection() {
-  const reduced = useReducedMotion();
-  // When reduced motion is preferred, skip all enter animations
-  const initial = reduced ? "show" : "hidden";
+  // Build a flat word list so each word gets a unique stagger index
+  const l1 = LINE_1.length;
+  const l2 = LINE_2.length;
 
   return (
     <div className="max-w-2xl">
       {/* Eyebrow badge */}
-      <motion.div
-        variants={delayedFade(0)}
-        initial={initial}
-        animate="show"
-      >
+      <div style={fadeUp(0)}>
         <div
           className="inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 mb-8"
           style={{
@@ -71,76 +56,53 @@ export default function HeroHeadlineSection() {
             Edmonton&apos;s Leading Dental Academy
           </span>
         </div>
-      </motion.div>
+      </div>
 
-      {/* H1 — word-by-word stagger */}
-      <motion.h1
+      {/* H1 — word-by-word stagger via CSS animation */}
+      <h1
         className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold leading-[1.15] mb-6"
-        style={{
-          color: "#ffffff",
-          fontFamily: "var(--font-montserrat), sans-serif",
-        }}
-        variants={headlineContainer}
-        initial={initial}
-        animate="show"
+        style={{ color: "#ffffff", fontFamily: "var(--font-montserrat), sans-serif" }}
       >
         {/* Line 1: white */}
         <span className="block">
-          {LINE_1.map((w) => (
-            <motion.span
-              key={w}
-              variants={wordItem}
-              className="inline-block mr-[0.28em]"
-            >
-              {w}
-            </motion.span>
+          {LINE_1.map((w, i) => (
+            <span key={w} style={wordReveal(i)}>{w}</span>
           ))}
         </span>
         {/* Line 2: brand blue */}
         <span className="block" style={{ color: "#4A9FD4" }}>
-          {LINE_2.map((w) => (
-            <motion.span
-              key={w}
-              variants={wordItem}
-              className="inline-block mr-[0.28em]"
-            >
-              {w}
-            </motion.span>
+          {LINE_2.map((w, i) => (
+            <span key={w} style={wordReveal(l1 + i)}>{w}</span>
           ))}
         </span>
         {/* Line 3: white */}
         <span className="block">
           {LINE_3.map((w, i) => (
-            <motion.span
+            <span
               key={w}
-              variants={wordItem}
-              className={`inline-block${i < LINE_3.length - 1 ? " mr-[0.28em]" : ""}`}
+              style={{
+                ...wordReveal(l1 + l2 + i),
+                marginRight: i < LINE_3.length - 1 ? "0.28em" : undefined,
+              }}
             >
               {w}
-            </motion.span>
+            </span>
           ))}
         </span>
-      </motion.h1>
+      </h1>
 
-      {/* Subheading — fades in after headline words complete */}
-      <motion.p
+      {/* Subheading */}
+      <p
         className="text-lg leading-relaxed mb-10 max-w-xl"
-        style={{ color: "rgba(255,255,255,0.68)" }}
-        variants={delayedFade(0.62)}
-        initial={initial}
-        animate="show"
+        style={{ color: "rgba(255,255,255,0.68)", ...fadeUp(0.62) }}
       >
         A modern facility offering high quality, unique professional development.
         WDA is here to strengthen and empower dental professionals in
         Alberta&apos;s oral health workforce.
-      </motion.p>
+      </p>
 
-      {/* CTAs — follows subheading */}
-      <motion.div
-        variants={delayedFade(0.78)}
-        initial={initial}
-        animate="show"
-      >
+      {/* CTAs */}
+      <div style={fadeUp(0.78)}>
         <div className="flex flex-wrap gap-4">
           <Link
             href="/professional-development"
@@ -149,7 +111,6 @@ export default function HeroHeadlineSection() {
           >
             Professional Development
           </Link>
-
           <Link
             href="/about"
             className="rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 border border-white/25 hover:border-white/50 hover:bg-white/10"
@@ -157,7 +118,7 @@ export default function HeroHeadlineSection() {
             About WDA
           </Link>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

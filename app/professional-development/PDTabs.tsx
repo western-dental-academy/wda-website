@@ -11,7 +11,7 @@ const workshops = [
     num: "01",
     title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
     badge: "Launching Soon",
-    price: 35,
+    price: 40,
     duration: "1.5 hours",
     description:
       "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice.",

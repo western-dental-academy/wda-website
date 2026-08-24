@@ -3,7 +3,7 @@ import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
 
 const WORKSHOP_PRICES: Record<string, number> = {
-  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 35,
+  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 40,
 }
 
 const client = createClient({

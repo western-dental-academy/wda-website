@@ -119,7 +119,7 @@ const CARD        = 'rounded-2xl p-8 bg-white'
 const CARD_BORDER = '1.5px solid rgba(30,53,96,0.09)'
 
 const WORKSHOP_PRICES: Record<string, number> = {
-  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 35,
+  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 40,
 }
 
 function getWorkshopPricing(workshop: string) {

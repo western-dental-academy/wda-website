@@ -46,7 +46,7 @@ const STEPS = [
 ];
 
 const WORKSHOP_OPTIONS = [
-  { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 35 },
+  { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 40 },
 ];
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────

@@ -1,111 +1,13 @@
-"use client";
-
-import { useState } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
-// ─── Accordion item ────────────────────────────────────────────────────────────
-
-function AccordionItem({
-  title,
-  duration,
-  children,
-  defaultOpen = false,
-}: {
-  title: string;
-  duration?: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
-}) {
-  const [open, setOpen] = useState(defaultOpen);
-
-  return (
-    <div
-      className="rounded-xl overflow-hidden transition-all duration-200"
-      style={{
-        border: "1.5px solid rgba(30,53,96,0.1)",
-        backgroundColor: open ? "#ffffff" : "#F4F7F9",
-      }}
-    >
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-200"
-      >
-        <div className="flex items-start gap-3 min-w-0">
-          <span
-            className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-            style={{ backgroundColor: open ? "#4A9FD4" : "rgba(30,53,96,0.12)" }}
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke={open ? "#ffffff" : "#1E3560"}
-              strokeWidth={2.5}
-              aria-hidden
-              className="w-3 h-3"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-            </svg>
-          </span>
-          <div className="min-w-0">
-            <p
-              className="text-sm font-bold leading-snug"
-              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-            >
-              {title}
-            </p>
-            {duration && (
-              <p className="text-xs mt-0.5" style={{ color: "rgba(43,48,58,0.5)" }}>
-                {duration}
-              </p>
-            )}
-          </div>
-        </div>
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#1E3560"
-          strokeWidth={2}
-          aria-hidden
-          className="w-4 h-4 shrink-0 transition-transform duration-200"
-          style={{ transform: open ? "rotate(180deg)" : "rotate(0deg)", opacity: 0.45 }}
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-        </svg>
-      </button>
-
-      {open && (
-        <div
-          className="px-6 pb-6 border-t"
-          style={{ borderColor: "rgba(30,53,96,0.07)" }}
-        >
-          <div className="pt-4">{children}</div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function BulletList({ items }: { items: string[] }) {
-  return (
-    <ul className="flex flex-col gap-2.5">
-      {items.map((item) => (
-        <li key={item} className="flex items-start gap-2.5">
-          <span
-            className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
-            style={{ backgroundColor: "#4A9FD4" }}
-          />
-          <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
-            {item}
-          </span>
-        </li>
-      ))}
-    </ul>
-  );
-}
+export const metadata: Metadata = {
+  title: "National Board Guided Practice",
+  description:
+    "An 8-hour hands-on practical workshop preparing dental assisting candidates for the NDAEB Clinical Practice Evaluation. Build confidence across all nine CPE clinical skills.",
+};
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
@@ -163,7 +65,7 @@ export default function NPEWorkshopPage() {
                 </Link>
               </li>
               <li style={{ color: "rgba(255,255,255,0.25)" }} aria-hidden>/</li>
-              <li style={{ color: "rgba(255,255,255,0.7)" }}>NPE Workshop</li>
+              <li style={{ color: "rgba(255,255,255,0.7)" }}>National Board Guided Practice</li>
             </ol>
           </nav>
 
@@ -194,7 +96,7 @@ export default function NPEWorkshopPage() {
                 className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-5 max-w-3xl"
                 style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
               >
-                National Practical Evaluation
+                National Board
                 <br />
                 <span style={{ color: "#4A9FD4" }}>Guided Practice Workshop</span>
               </h1>
@@ -218,12 +120,6 @@ export default function NPEWorkshopPage() {
                 >
                   Register
                 </Link>
-                <a
-                  href="#agenda"
-                  className="rounded-lg px-7 py-3 text-sm font-bold text-white transition-all duration-200 border border-white/25 hover:border-white/50 hover:bg-white/10"
-                >
-                  View Agenda
-                </a>
               </div>
             </div>
 
@@ -304,10 +200,10 @@ export default function NPEWorkshopPage() {
               </h2>
               <div className="flex flex-col gap-4 text-base leading-relaxed" style={{ color: "#2B303A" }}>
                 <p>
-                  This comprehensive 8-hour hands-on workshop is designed to prepare dental
+                  This comprehensive 8-hour hands-on practical workshop is designed to prepare dental
                   assisting candidates for the National Dental Assisting Examining Board (NDAEB)
                   Clinical Practice Evaluation (CPE). The workshop provides focused instruction,
-                  hands-on skill refinement, and evaluation strategies aligned with the nine
+                  practical skill refinement, and evaluation strategies aligned with the nine
                   clinical skills and professional practice standards assessed during the CPE.
                 </p>
                 <p>
@@ -460,168 +356,6 @@ export default function NPEWorkshopPage() {
               </AnimateIn>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════
-          WORKSHOP AGENDA
-      ═══════════════════════════════════════════════════════════ */}
-      <section id="agenda" className="py-24" style={{ backgroundColor: "#ffffff" }}>
-        <div className="max-w-4xl mx-auto px-6">
-          <AnimateIn className="mb-12">
-            <p
-              className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
-              style={{ color: "#4A9FD4" }}
-            >
-              Workshop Agenda
-            </p>
-            <h2
-              className="text-3xl font-bold leading-tight"
-              style={{
-                color: "#1E3560",
-                fontFamily: "var(--font-montserrat), sans-serif",
-              }}
-            >
-              What to Expect
-            </h2>
-          </AnimateIn>
-
-          <AnimateIn delay={60}>
-            <div className="flex flex-col gap-3">
-              <AccordionItem
-                title="Module 1 — CPE Overview and Exam Success Strategies"
-                duration="15 minutes"
-                defaultOpen={true}
-              >
-                <BulletList
-                  items={[
-                    "Critical criteria versus non-critical criteria",
-                    "Professional conduct and evaluator interactions",
-                    "Common reasons candidates fail skills",
-                  ]}
-                />
-              </AccordionItem>
-
-              <AccordionItem
-                title="Module 2 — Infection Prevention, Safety, and Professional Practice"
-                duration="30 minutes"
-              >
-                <BulletList
-                  items={[
-                    "PPE requirements",
-                    "Mask, glove, and eyewear protocols",
-                    "Managing asepsis breaks and contamination events",
-                    "Fulcrum requirements and safe instrumentation",
-                    "Professional practice criteria applicable to all skills",
-                  ]}
-                />
-              </AccordionItem>
-
-              <AccordionItem
-                title="Module 3 — Radiography and Impression Techniques"
-                duration="Radiography 60 min · Impressions 45 min"
-              >
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <p
-                      className="text-xs font-bold uppercase tracking-wide mb-2"
-                      style={{ color: "rgba(30,53,96,0.45)", fontSize: "10px" }}
-                    >
-                      Skill 1
-                    </p>
-                    <p className="text-sm font-semibold mb-1" style={{ color: "#1E3560" }}>
-                      Expose Digital Radiographic Images
-                    </p>
-                  </div>
-                  <div
-                    className="h-px"
-                    style={{ backgroundColor: "rgba(30,53,96,0.07)" }}
-                  />
-                  <div>
-                    <p
-                      className="text-xs font-bold uppercase tracking-wide mb-2"
-                      style={{ color: "rgba(30,53,96,0.45)", fontSize: "10px" }}
-                    >
-                      Skill 2
-                    </p>
-                    <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
-                      Obtain Impressions for Study Models
-                    </p>
-                  </div>
-                </div>
-              </AccordionItem>
-
-              <AccordionItem
-                title="Module 4 — Isolation and Restorative Assisting Procedures"
-                duration="Dental Dam 45 min · Liners 25 min · Matrix 45 min · Topical Anesthetic 20 min"
-              >
-                <div className="flex flex-col gap-4">
-                  {[
-                    { skill: "Skill 3", name: "Apply and Remove Dental Dam" },
-                    { skill: "Skill 5", name: "Apply Treatment Liner" },
-                    { skill: "Skill 6", name: "Apply and Remove Matrix Band and Wedge" },
-                    { skill: "Skill 9", name: "Apply Topical Anesthetic" },
-                  ].map(({ skill, name }, i) => (
-                    <div key={skill}>
-                      {i > 0 && (
-                        <div
-                          className="h-px mb-4"
-                          style={{ backgroundColor: "rgba(30,53,96,0.07)" }}
-                        />
-                      )}
-                      <p
-                        className="text-xs font-bold uppercase tracking-wide mb-1"
-                        style={{ color: "rgba(30,53,96,0.45)", fontSize: "10px" }}
-                      >
-                        {skill}
-                      </p>
-                      <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
-                        {name}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </AccordionItem>
-
-              <AccordionItem
-                title="Module 5 — Preventive Procedures"
-                duration="Polishing 45 min · Topical Fluoride 30 min · Sealants 45 min"
-              >
-                <div className="flex flex-col gap-4">
-                  {[
-                    { skill: "Skill 4", name: "Selective Coronal Polishing" },
-                    { skill: "Skill 7", name: "Apply Anti-Cariogenic Topical Fluoride Gel" },
-                    { skill: "Skill 8", name: "Apply Pit and Fissure Sealant" },
-                  ].map(({ skill, name }, i) => (
-                    <div key={skill}>
-                      {i > 0 && (
-                        <div
-                          className="h-px mb-4"
-                          style={{ backgroundColor: "rgba(30,53,96,0.07)" }}
-                        />
-                      )}
-                      <p
-                        className="text-xs font-bold uppercase tracking-wide mb-1"
-                        style={{ color: "rgba(30,53,96,0.45)", fontSize: "10px" }}
-                      >
-                        {skill}
-                      </p>
-                      <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
-                        {name}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </AccordionItem>
-
-              <AccordionItem title="Wrap-Up and Question Period" duration="30 minutes">
-                <p className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
-                  Open floor for participant questions, instructor review of key evaluation
-                  criteria, and individual feedback from the day&apos;s practice sessions.
-                </p>
-              </AccordionItem>
-            </div>
-          </AnimateIn>
         </div>
       </section>
 

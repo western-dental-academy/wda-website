@@ -1059,7 +1059,7 @@ export default async function AboutPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          NPE GUIDED PRACTICE WORKSHOPS
+          NATIONAL BOARD GUIDED PRACTICE WORKSHOP
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-16" style={{ backgroundColor: "#F4F7F9" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -1080,9 +1080,9 @@ export default async function AboutPage() {
                     className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight"
                     style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
                   >
-                    National Practical Evaluation
+                    National Board
                     <br />
-                    Guided Practice Workshops
+                    Guided Practice Workshop
                   </h2>
                   <p
                     className="text-base leading-relaxed mb-6"

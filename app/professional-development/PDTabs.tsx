@@ -252,7 +252,7 @@ export default function PDTabs() {
                   ))}
                 </div>
                 <Link
-                  href="/national-board-preparation"
+                  href="/national-board-guided-practice"
                   className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
                   style={{ backgroundColor: "#E67E22" }}
                 >

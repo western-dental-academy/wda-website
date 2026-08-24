@@ -23,7 +23,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/national-board-preparation`,
+      url: `${BASE_URL}/national-board-guided-practice`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,

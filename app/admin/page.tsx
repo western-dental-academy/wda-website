@@ -6,6 +6,7 @@ import Link from 'next/link'
 import AdminStudentTable from '@/components/AdminStudentTable'
 import AdminAnnouncements from '@/components/AdminAnnouncements'
 import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration } from '@/components/AdminWorkshopRegistrations'
+import AdminStaffCalendar from '@/components/AdminStaffCalendar'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -82,7 +83,7 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
 
-  const [announcements, programmes, workshopDates, workshopRegs] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, staffTimeOff] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -99,6 +100,12 @@ export default async function AdminPage() {
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
         _id, firstName, lastName, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId
+      }`
+    ),
+    client.fetch(
+      `*[_type == "timeOffRequest" && status == "approved"] | order(startDate asc){
+        _id, type, startDate, endDate,
+        staffMember->{ fullName }
       }`
     ),
   ])
@@ -269,6 +276,9 @@ export default async function AdminPage() {
     </div>
   </div>
 )}
+
+        {/* Staff calendar */}
+        <AdminStaffCalendar requests={staffTimeOff} />
 
         {/* Workshop registrations */}
         <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />

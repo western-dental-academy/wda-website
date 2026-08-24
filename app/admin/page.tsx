@@ -278,7 +278,7 @@ export default async function AdminPage() {
 )}
 
         {/* Staff calendar */}
-        <AdminStaffCalendar requests={staffTimeOff} />
+        <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
 
         {/* Workshop registrations */}
         <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />

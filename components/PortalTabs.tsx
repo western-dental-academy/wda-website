@@ -46,6 +46,13 @@ export interface SerializedCharge {
   receipt_url: string | null
 }
 
+export interface SerializedWorkshopDate {
+  _id: string
+  workshop: string
+  date: string
+  capacity: number
+}
+
 export interface ProgressStatus {
   cmid: number
   modname: string
@@ -74,6 +81,7 @@ export interface PortalTabsProps {
   isEnrolled: boolean
   moodleCourseUrl: string
   paymentHistory: SerializedCharge[] | null
+  workshopDates: SerializedWorkshopDate[]
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -128,6 +136,7 @@ export default function PortalTabs({
   courseComplete,
   moodleCourseUrl,
   paymentHistory,
+  workshopDates,
 }: PortalTabsProps) {
   // All hooks at the top — no code between them, no conditional hooks
   const [activeTab,   setActiveTab]   = useState('overview')
@@ -224,6 +233,13 @@ export default function PortalTabs({
     const key = toDateKey(new Date(a.publishedAt))
     if (!eventMap.has(key)) eventMap.set(key, { assignments: [], announcements: [] })
     eventMap.get(key)!.announcements.push(a)
+  }
+
+  const workshopMap = new Map<string, SerializedWorkshopDate[]>()
+  for (const w of workshopDates) {
+    const key = w.date.slice(0, 10)
+    if (!workshopMap.has(key)) workshopMap.set(key, [])
+    workshopMap.get(key)!.push(w)
   }
 
   // ── Calendar grid cells ───────────────────────────────────────────────────
@@ -523,8 +539,9 @@ export default function PortalTabs({
                 const key     = toDateKey(new Date(viewYear, viewMonth, day))
                 const isToday = key === todayKey
                 const isSelected = key === selectedDay
-                const events  = eventMap.get(key)
-                const hasEvents = !!events
+                const events    = eventMap.get(key)
+                const workshops = workshopMap.get(key)
+                const hasEvents = !!events || !!workshops
 
                 return (
                   <button
@@ -558,16 +575,22 @@ export default function PortalTabs({
                     {/* Event dots */}
                     {hasEvents && (
                       <div className="flex items-center gap-0.5 mt-1.5">
-                        {events!.assignments.length > 0 && (
+                        {events?.assignments.length ? (
                           <div
                             className="w-1.5 h-1.5 rounded-full"
                             style={{ backgroundColor: isToday ? 'rgba(230,126,34,0.85)' : '#E67E22' }}
                           />
-                        )}
-                        {events!.announcements.length > 0 && (
+                        ) : null}
+                        {events?.announcements.length ? (
                           <div
                             className="w-1.5 h-1.5 rounded-full"
                             style={{ backgroundColor: isToday ? 'rgba(255,255,255,0.65)' : '#378ADD' }}
+                          />
+                        ) : null}
+                        {workshops && (
+                          <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ backgroundColor: isToday ? 'rgba(22,163,74,0.85)' : '#16a34a' }}
                           />
                         )}
                       </div>
@@ -591,6 +614,10 @@ export default function PortalTabs({
                 <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Announcement</span>
               </div>
               <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#16a34a' }} />
+                <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Workshop</span>
+              </div>
+              <div className="flex items-center gap-1.5">
                 <div
                   className="w-5 h-5 rounded-md shrink-0"
                   style={{ backgroundColor: '#1E3560' }}
@@ -600,8 +627,9 @@ export default function PortalTabs({
             </div>
 
             {/* Selected-day event panel */}
-            {selectedDay && eventMap.has(selectedDay) && (() => {
-              const evts = eventMap.get(selectedDay)!
+            {selectedDay && (eventMap.has(selectedDay) || workshopMap.has(selectedDay)) && (() => {
+              const evts = eventMap.get(selectedDay)
+              const wks  = workshopMap.get(selectedDay) ?? []
               // Use noon local time to avoid off-by-one from UTC parsing
               const displayDate = new Date(selectedDay + 'T12:00:00').toLocaleDateString('en-CA', {
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -618,7 +646,7 @@ export default function PortalTabs({
                     {displayDate}
                   </p>
                   <div className="flex flex-col gap-2">
-                    {evts.assignments.map((a: any) => (
+                    {evts?.assignments.map((a: any) => (
                       <div
                         key={`a-${a.id}`}
                         className="flex items-center gap-3 rounded-lg px-4 py-3 bg-white"
@@ -631,7 +659,7 @@ export default function PortalTabs({
                         </div>
                       </div>
                     ))}
-                    {evts.announcements.map((a) => (
+                    {evts?.announcements.map((a) => (
                       <div
                         key={`n-${a._id}`}
                         className="flex items-start gap-3 rounded-lg px-4 py-3 bg-white"
@@ -644,6 +672,28 @@ export default function PortalTabs({
                             {a.message}
                           </p>
                         </div>
+                      </div>
+                    ))}
+                    {wks.map((w) => (
+                      <div
+                        key={`w-${w._id}`}
+                        className="flex items-center justify-between gap-3 rounded-lg px-4 py-3 bg-white"
+                        style={{ border: '1px solid rgba(30,53,96,0.07)' }}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#16a34a' }} />
+                          <div className="min-w-0">
+                            <span className="text-sm font-medium" style={{ color: '#1E3560' }}>{w.workshop}</span>
+                            <span className="text-xs ml-2" style={{ color: 'rgba(43,48,58,0.4)' }}>Workshop</span>
+                          </div>
+                        </div>
+                        <Link
+                          href="/register"
+                          className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold text-white"
+                          style={{ backgroundColor: '#E67E22' }}
+                        >
+                          Register
+                        </Link>
                       </div>
                     ))}
                   </div>

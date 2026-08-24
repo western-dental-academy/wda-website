@@ -12,8 +12,16 @@ interface TimeOffRequest {
   staffMember: { fullName: string }
 }
 
+interface WorkshopDate {
+  _id: string
+  workshop: string
+  date: string
+  capacity: number
+}
+
 interface Props {
   requests: TimeOffRequest[]
+  workshopDates: WorkshopDate[]
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -55,9 +63,26 @@ function buildDayMap(
   return map
 }
 
+function buildWorkshopDayMap(
+  workshopDates: WorkshopDate[],
+  year: number,
+  month: number
+): Record<number, WorkshopDate[]> {
+  const map: Record<number, WorkshopDate[]> = {}
+  const monthStr = `${year}-${pad(month)}`
+  for (const w of workshopDates) {
+    if (w.date.startsWith(monthStr)) {
+      const day = parseInt(w.date.split('-')[2], 10)
+      if (!map[day]) map[day] = []
+      map[day].push(w)
+    }
+  }
+  return map
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function AdminStaffCalendar({ requests }: Props) {
+export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
   const today = new Date()
   const [year,        setYear]        = useState(today.getFullYear())
   const [month,       setMonth]       = useState(today.getMonth() + 1) // 1-based
@@ -91,11 +116,13 @@ export default function AdminStaffCalendar({ requests }: Props) {
     ...Array(rows * 7 - totalCells).fill(null),
   ]
 
-  const dayMap = buildDayMap(requests, year, month)
+  const dayMap         = buildDayMap(requests, year, month)
+  const workshopDayMap = buildWorkshopDayMap(workshopDates, year, month)
   const isCurrentMonth = today.getFullYear() === year && today.getMonth() + 1 === month
   const todayDate      = today.getDate()
 
-  const selectedEntries = selectedDay ? (dayMap[selectedDay] ?? []) : []
+  const selectedEntries   = selectedDay ? (dayMap[selectedDay] ?? []) : []
+  const selectedWorkshops = selectedDay ? (workshopDayMap[selectedDay] ?? []) : []
 
   return (
     <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
@@ -139,6 +166,7 @@ export default function AdminStaffCalendar({ requests }: Props) {
             { label: 'Vacation', bg: '#378ADD' },
             { label: 'Sick Day', bg: '#dc2626' },
             { label: 'Day Off',  bg: '#E67E22' },
+            { label: 'Workshop', bg: '#16a34a' },
           ].map(({ label, bg }) => (
             <span key={label} className="flex items-center gap-1.5 text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: bg }} />
@@ -164,8 +192,9 @@ export default function AdminStaffCalendar({ requests }: Props) {
           {cells.map((day, i) => {
             const isToday    = isCurrentMonth && day === todayDate
             const isSelected = day !== null && day === selectedDay
-            const entries    = day ? (dayMap[day] ?? []) : []
-            const hasEntries = entries.length > 0
+            const entries         = day ? (dayMap[day] ?? []) : []
+            const workshopEntries = day ? (workshopDayMap[day] ?? []) : []
+            const hasEntries      = entries.length > 0 || workshopEntries.length > 0
 
             return (
               <div
@@ -222,6 +251,16 @@ export default function AdminStaffCalendar({ requests }: Props) {
                           +{entries.length - 3} more
                         </div>
                       )}
+                      {workshopEntries.map((w, j) => (
+                        <div
+                          key={`ws-${j}`}
+                          className="text-[10px] font-medium px-1 rounded truncate leading-[14px]"
+                          style={{ backgroundColor: '#16a34a', color: '#fff' }}
+                          title={`Workshop: ${w.workshop}`}
+                        >
+                          Workshop
+                        </div>
+                      ))}
                     </div>
                   </>
                 )}
@@ -251,8 +290,8 @@ export default function AdminStaffCalendar({ requests }: Props) {
             </button>
           </div>
 
-          {selectedEntries.length === 0 ? (
-            <p className="text-sm" style={{ color: 'rgba(43,48,58,0.4)' }}>No time off on this day.</p>
+          {selectedEntries.length === 0 && selectedWorkshops.length === 0 ? (
+            <p className="text-sm" style={{ color: 'rgba(43,48,58,0.4)' }}>Nothing on this day.</p>
           ) : (
             <div className="flex flex-col gap-2">
               {selectedEntries.map((e, i) => {
@@ -271,6 +310,19 @@ export default function AdminStaffCalendar({ requests }: Props) {
                   </div>
                 )
               })}
+              {selectedWorkshops.map((w) => (
+                <div key={w._id} className="flex items-center justify-between">
+                  <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
+                    {w.workshop}
+                  </span>
+                  <span
+                    className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                    style={{ backgroundColor: '#16a34a18', color: '#16a34a', border: '1px solid #16a34a40' }}
+                  >
+                    Workshop
+                  </span>
+                </div>
+              ))}
             </div>
           )}
         </div>

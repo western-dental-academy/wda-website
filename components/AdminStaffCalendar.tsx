@@ -76,12 +76,12 @@ function buildWorkshopDayMap(
   month: number
 ): Record<number, WorkshopDate[]> {
   const map: Record<number, WorkshopDate[]> = {}
-  const monthStr = `${year}-${pad(month)}`
   for (const w of workshopDates) {
-    if (w.date.startsWith(monthStr)) {
-      const day = parseInt(w.date.split('-')[2], 10)
-      if (!map[day]) map[day] = []
-      map[day].push(w)
+    const dateStr = w.date.slice(0, 10)
+    const [wYear, wMonth, wDay] = dateStr.split('-').map(Number)
+    if (wYear === year && wMonth === month) {
+      if (!map[wDay]) map[wDay] = []
+      map[wDay].push(w)
     }
   }
   return map

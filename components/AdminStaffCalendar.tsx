@@ -44,8 +44,8 @@ const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 function pad(n: number) { return String(n).padStart(2, '0') }
 
 function formatWorkshopDate(dateStr: string): string {
-  const [year, month, day] = dateStr.slice(0, 10).split('-').map(Number)
-  return new Date(year, month - 1, day).toLocaleDateString('en-CA', {
+  return new Date(dateStr).toLocaleDateString('en-CA', {
+    timeZone: 'America/Edmonton',
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 }
@@ -77,8 +77,13 @@ function buildWorkshopDayMap(
 ): Record<number, WorkshopDate[]> {
   const map: Record<number, WorkshopDate[]> = {}
   for (const w of workshopDates) {
-    const dateStr = w.date.slice(0, 10)
-    const [wYear, wMonth, wDay] = dateStr.split('-').map(Number)
+    const localStr = new Date(w.date).toLocaleDateString('en-CA', {
+      timeZone: 'America/Edmonton',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    const [wYear, wMonth, wDay] = localStr.split('-').map(Number)
     if (wYear === year && wMonth === month) {
       if (!map[wDay]) map[wDay] = []
       map[wDay].push(w)

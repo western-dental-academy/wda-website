@@ -136,6 +136,13 @@ function toDateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+function formatWorkshopDate(dateStr: string): string {
+  const [year, month, day] = dateStr.slice(0, 10).split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('en-CA', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  })
+}
+
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function PortalTabs({
@@ -1012,9 +1019,7 @@ export default function PortalTabs({
       {/* ── Workshop registration modal ── */}
       {workshopModal && (() => {
         const pricing     = getWorkshopPricing(workshopModal.workshop)
-        const displayDate = new Date(workshopModal.date + 'T12:00:00').toLocaleDateString('en-CA', {
-          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-        })
+        const displayDate = formatWorkshopDate(workshopModal.date)
         return (
           <>
             {/* Backdrop */}

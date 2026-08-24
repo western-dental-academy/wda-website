@@ -43,6 +43,13 @@ const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 
 function pad(n: number) { return String(n).padStart(2, '0') }
 
+function formatWorkshopDate(dateStr: string): string {
+  const [year, month, day] = dateStr.slice(0, 10).split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('en-CA', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  })
+}
+
 function buildDayMap(
   requests: TimeOffRequest[],
   year: number,
@@ -311,12 +318,17 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                 )
               })}
               {selectedWorkshops.map((w) => (
-                <div key={w._id} className="flex items-center justify-between">
-                  <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
-                    {w.workshop}
-                  </span>
+                <div key={w._id} className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="text-sm font-medium block" style={{ color: '#1E3560' }}>
+                      {w.workshop}
+                    </span>
+                    <span className="text-[11px]" style={{ color: 'rgba(43,48,58,0.45)' }}>
+                      {formatWorkshopDate(w.date)}
+                    </span>
+                  </div>
                   <span
-                    className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                    className="shrink-0 text-[11px] font-bold px-2.5 py-0.5 rounded-full"
                     style={{ backgroundColor: '#16a34a18', color: '#16a34a', border: '1px solid #16a34a40' }}
                   >
                     Workshop

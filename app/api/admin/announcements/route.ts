@@ -1,6 +1,9 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -72,13 +75,59 @@ export async function POST(req: NextRequest) {
   if (programId) doc.program = { _type: 'reference', _ref: programId }
   if (expiresAt) doc.expiresAt = new Date(expiresAt).toISOString()
 
+  let created: Awaited<ReturnType<typeof client.create>>
   try {
-    const created = await client.create(doc as { _type: string; [key: string]: unknown })
-    return NextResponse.json({ announcement: created })
+    created = await client.create(doc as { _type: string; [key: string]: unknown })
   } catch (err) {
     console.error('Sanity announcement create error:', err)
     return NextResponse.json({ error: 'Create failed' }, { status: 500 })
   }
+
+  const programFilter = programId
+    ? `&& program._ref == "${programId}"`
+    : ''
+
+  const students = await client.fetch<{ firstName: string; email: string }[]>(
+    `*[_type == "student" && (status == "accepted" || status == "enrolled") ${programFilter}]{
+      firstName, email
+    }`
+  )
+
+  const results = await Promise.allSettled(
+    students.map((student) =>
+      resend.emails.send({
+        from: 'Western Dental Academy <info@westerndentalacademy.com>',
+        to: student.email,
+        subject: `WDA Announcement: ${title!.trim()}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #1E3560; padding: 32px;">
+              <h1 style="color: white; margin: 0; font-size: 22px;">Western Dental Academy</h1>
+              <p style="color: rgba(255,255,255,0.6); margin: 8px 0 0; font-size: 14px;">Announcement</p>
+            </div>
+            <div style="padding: 32px; background-color: #ffffff; border: 1px solid #e5e7eb;">
+              <p style="color: #1E3560; font-size: 15px; font-weight: 600; margin-bottom: 8px;">Hi ${student.firstName},</p>
+              <h2 style="color: #1E3560; font-size: 18px; margin-bottom: 12px;">${title!.trim()}</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.6; margin-bottom: 24px;">${message!.trim()}</p>
+              <a href="https://westerndentalacademy.com/portal"
+                 style="background-color: #E67E22; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+                View in Student Portal
+              </a>
+            </div>
+            <div style="padding: 16px 32px; background-color: #F4F7F9; text-align: center;">
+              <p style="color: #9ca3af; font-size: 12px; margin: 0;">Western Dental Academy — westerndentalacademy.com</p>
+            </div>
+          </div>
+        `,
+      })
+    )
+  )
+
+  return NextResponse.json({
+    announcement: created,
+    emailsSent: results.filter((r) => r.status === 'fulfilled').length,
+    emailsFailed: results.filter((r) => r.status === 'rejected').length,
+  })
 }
 
 export async function PATCH(req: NextRequest) {

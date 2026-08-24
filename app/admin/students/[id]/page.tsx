@@ -11,9 +11,18 @@ import StudentActions from '@/components/StudentActions'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',
+  'tammy@westerndentalacademy.com',
+]
+
+const FINANCIAL_EMAILS = [
+  'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
   'tammy@westerndentalacademy.com',
 ]
 
@@ -129,6 +138,8 @@ export default async function StudentProfilePage({
   const adminEmail = adminUser?.emailAddresses[0]?.emailAddress ?? ''
   if (!ADMIN_EMAILS.includes(adminEmail)) redirect('/')
 
+  const canViewFinancials = FINANCIAL_EMAILS.includes(adminEmail)
+
   const { id } = await params
 
   const student = await client.fetch(
@@ -157,7 +168,7 @@ export default async function StudentProfilePage({
     receipt_url: string | null
   }[] = []
 
-  if (student.stripeCustomerId) {
+  if (canViewFinancials && student.stripeCustomerId) {
     try {
       const result = await stripe.charges.list({ customer: student.stripeCustomerId, limit: 20 })
       charges = result.data.map(c => ({
@@ -553,8 +564,8 @@ export default async function StudentProfilePage({
             </Card>
           )}
 
-          {/* Payment History */}
-          <Card title="Payment History">
+          {/* Payment History — financial staff only */}
+          {canViewFinancials && <Card title="Payment History">
             {student.tuitionAmount && (
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-xs font-semibold" style={{ color: 'rgba(43,48,58,0.5)' }}>Tuition</span>
@@ -618,7 +629,7 @@ export default async function StudentProfilePage({
             ) : (
               <p className="text-sm" style={{ color: 'rgba(43,48,58,0.4)' }}>No payments on record.</p>
             )}
-          </Card>
+          </Card>}
 
           {/* Documents */}
           <Card title="Documents">

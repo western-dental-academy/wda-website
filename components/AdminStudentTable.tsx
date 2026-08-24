@@ -59,10 +59,9 @@ const PAYMENT_COLOUR: Record<string, string> = {
   pending: '#E67E22',
 }
 
-const COLS = [
-  'Name', 'Student ID', 'Email', 'Programme', 'Cohort',
-  'Applied', 'Status', 'Payment', 'Tuition', 'Progress', 'Review', 'Actions',
-]
+const BASE_COLS   = ['Name', 'Student ID', 'Email', 'Programme', 'Cohort', 'Applied', 'Status']
+const FIN_COLS    = ['Payment', 'Tuition']
+const TAIL_COLS   = ['Progress', 'Review', 'Actions']
 
 // ── Input style helper ────────────────────────────────────────────────────────
 
@@ -328,13 +327,15 @@ function ReviewPanel({ student, onClose }: { student: Student | null; onClose: (
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function AdminStudentTable({ students }: { students: Student[] }) {
+export default function AdminStudentTable({ students, canViewFinancials }: { students: Student[]; canViewFinancials: boolean }) {
   const [search,        setSearch]        = useState('')
   const [statusFilter,  setStatusFilter]  = useState('')
   const [paymentFilter, setPaymentFilter] = useState('')
   const [cohortFilter,  setCohortFilter]  = useState('')
   const [focused,       setFocused]       = useState<string | null>(null)
   const [reviewStudent, setReviewStudent] = useState<Student | null>(null)
+
+  const COLS = [...BASE_COLS, ...(canViewFinancials ? FIN_COLS : []), ...TAIL_COLS]
 
   const focus = (id: string) => ({
     onFocus: () => setFocused(id),
@@ -410,16 +411,18 @@ export default function AdminStudentTable({ students }: { students: Student[] })
             <option value="withdrawn">Withdrawn</option>
           </select>
 
-          <select
-            value={paymentFilter}
-            onChange={(e) => setPaymentFilter(e.target.value)}
-            style={fieldStyle(focused === 'payment')}
-            {...focus('payment')}
-          >
-            <option value="">All Payments</option>
-            <option value="unpaid">Unpaid</option>
-            <option value="paid">Paid</option>
-          </select>
+          {canViewFinancials && (
+            <select
+              value={paymentFilter}
+              onChange={(e) => setPaymentFilter(e.target.value)}
+              style={fieldStyle(focused === 'payment')}
+              {...focus('payment')}
+            >
+              <option value="">All Payments</option>
+              <option value="unpaid">Unpaid</option>
+              <option value="paid">Paid</option>
+            </select>
+          )}
 
           {cohorts.length > 0 && (
             <select
@@ -534,25 +537,29 @@ export default function AdminStudentTable({ students }: { students: Student[] })
                     </span>
                   </td>
 
-                  {/* Payment */}
-                  <td className="px-4 py-3">
-                    <span
-                      className="inline-block rounded-full px-2.5 py-0.5 text-xs font-bold uppercase whitespace-nowrap"
-                      style={{
-                        backgroundColor: `${PAYMENT_COLOUR[student.paymentStatus ?? 'unpaid'] ?? '#dc2626'}20`,
-                        color: PAYMENT_COLOUR[student.paymentStatus ?? 'unpaid'] ?? '#dc2626',
-                      }}
-                    >
-                      {student.paymentStatus ?? 'unpaid'}
-                    </span>
-                  </td>
+                  {/* Payment — financial staff only */}
+                  {canViewFinancials && (
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-block rounded-full px-2.5 py-0.5 text-xs font-bold uppercase whitespace-nowrap"
+                        style={{
+                          backgroundColor: `${PAYMENT_COLOUR[student.paymentStatus ?? 'unpaid'] ?? '#dc2626'}20`,
+                          color: PAYMENT_COLOUR[student.paymentStatus ?? 'unpaid'] ?? '#dc2626',
+                        }}
+                      >
+                        {student.paymentStatus ?? 'unpaid'}
+                      </span>
+                    </td>
+                  )}
 
-                  {/* Tuition */}
-                  <td className="px-4 py-3">
-                    <p className="text-sm font-medium" style={{ color: '#1E3560' }}>
-                      {student.tuitionAmount ? `$${student.tuitionAmount.toLocaleString()}` : '—'}
-                    </p>
-                  </td>
+                  {/* Tuition — financial staff only */}
+                  {canViewFinancials && (
+                    <td className="px-4 py-3">
+                      <p className="text-sm font-medium" style={{ color: '#1E3560' }}>
+                        {student.tuitionAmount ? `$${student.tuitionAmount.toLocaleString()}` : '—'}
+                      </p>
+                    </td>
+                  )}
 
                   {/* Progress */}
                   <td className="px-4 py-3">

@@ -45,14 +45,14 @@ function fmtTime(iso: string): string {
   });
 }
 
-function downloadCSV(group: DateGroup) {
-  const headers = ["Name", "Email", "Workshop", "Date", "Payment Status", "Checked In", "Checked In At"];
+function downloadCSV(group: DateGroup, canViewFinancials: boolean) {
+  const headers = ["Name", "Email", "Workshop", "Date", ...(canViewFinancials ? ["Payment Status"] : []), "Checked In", "Checked In At"];
   const rows = group.registrations.map((r) => [
     `${r.firstName} ${r.lastName}`,
     r.email,
     r.workshop,
     fmtDate(r.registeredAt),
-    r.stripePaymentStatus,
+    ...(canViewFinancials ? [r.stripePaymentStatus] : []),
     r.checkedIn ? "Yes" : "No",
     r.checkedInAt ? fmtDate(r.checkedInAt) + " " + fmtTime(r.checkedInAt) : "",
   ]);
@@ -123,7 +123,7 @@ function CheckInButton({
 
 // ─── Group tab ─────────────────────────────────────────────────────────────────
 
-function GroupTab({ group }: { group: DateGroup }) {
+function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinancials: boolean }) {
   const [registrations, setRegistrations] = useState<WorkshopRegistration[]>(
     group.registrations
   );
@@ -161,7 +161,7 @@ function GroupTab({ group }: { group: DateGroup }) {
 
         {/* CSV button */}
         <button
-          onClick={() => downloadCSV({ ...group, registrations })}
+          onClick={() => downloadCSV({ ...group, registrations }, canViewFinancials)}
           className="ml-auto rounded-xl px-5 py-3 text-xs font-bold transition-colors hover:bg-[#1E3560] hover:text-white self-center"
           style={{
             border: "1.5px solid rgba(30,53,96,0.18)",
@@ -182,7 +182,7 @@ function GroupTab({ group }: { group: DateGroup }) {
           <table className="min-w-full text-sm">
             <thead>
               <tr style={{ backgroundColor: "#F4F7F9" }}>
-                {["Name", "Email", "Workshop", "Registered", "Payment", "Check In"].map((h) => (
+                {["Name", "Email", "Workshop", "Registered", ...(canViewFinancials ? ["Payment"] : []), "Check In"].map((h) => (
                   <th
                     key={h}
                     className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-wider"
@@ -208,21 +208,23 @@ function GroupTab({ group }: { group: DateGroup }) {
                   <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(43,48,58,0.55)" }}>
                     {fmtDate(r.registeredAt)}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    <span
-                      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold capitalize"
-                      style={{
-                        backgroundColor:
-                          r.stripePaymentStatus === "paid"
-                            ? "rgba(34,197,94,0.1)"
-                            : "rgba(230,126,34,0.1)",
-                        color:
-                          r.stripePaymentStatus === "paid" ? "#16a34a" : "#E67E22",
-                      }}
-                    >
-                      {r.stripePaymentStatus}
-                    </span>
-                  </td>
+                  {canViewFinancials && (
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold capitalize"
+                        style={{
+                          backgroundColor:
+                            r.stripePaymentStatus === "paid"
+                              ? "rgba(34,197,94,0.1)"
+                              : "rgba(230,126,34,0.1)",
+                          color:
+                            r.stripePaymentStatus === "paid" ? "#16a34a" : "#E67E22",
+                        }}
+                      >
+                        {r.stripePaymentStatus}
+                      </span>
+                    </td>
+                  )}
                   <td className="px-4 py-3">
                     {r.checkedIn ? (
                       <div className="flex items-center gap-1.5">
@@ -253,7 +255,7 @@ function GroupTab({ group }: { group: DateGroup }) {
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export default function AdminWorkshopRegistrations({ groups }: { groups: DateGroup[] }) {
+export default function AdminWorkshopRegistrations({ groups, canViewFinancials }: { groups: DateGroup[]; canViewFinancials: boolean }) {
   const [activeTab, setActiveTab] = useState(0);
 
   if (groups.length === 0) {
@@ -337,7 +339,7 @@ export default function AdminWorkshopRegistrations({ groups }: { groups: DateGro
 
       {/* Active tab content */}
       <div className="px-6 pb-6" role="tabpanel">
-        {activeGroup && <GroupTab key={activeGroup.dateId} group={activeGroup} />}
+        {activeGroup && <GroupTab key={activeGroup.dateId} group={activeGroup} canViewFinancials={canViewFinancials} />}
       </div>
     </div>
   );

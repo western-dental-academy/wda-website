@@ -10,9 +10,18 @@ import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',
+  'tammy@westerndentalacademy.com',
+]
+
+const FINANCIAL_EMAILS = [
+  'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
   'tammy@westerndentalacademy.com',
 ]
 
@@ -34,6 +43,8 @@ export default async function AdminPage() {
   if (!ADMIN_EMAILS.includes(email)) {
     redirect('/')
   }
+
+  const canViewFinancials = FINANCIAL_EMAILS.includes(email)
 
   const students = await client.fetch(
     `*[_type == "student"] | order(applicationDate desc) {
@@ -89,35 +100,41 @@ export default async function AdminPage() {
     ),
   ])
 
-  // ── Revenue metrics ────────────────────────────────────────────────────────
+  // ── Revenue metrics (financial staff only) ─────────────────────────────────
 
-  let succeededCharges: { amount: number; created: number }[] = []
-  try {
-    const charges = await stripe.charges.list({ limit: 100 })
-    succeededCharges = charges.data
-      .filter((c) => c.status === 'succeeded')
-      .map((c) => ({ amount: c.amount, created: c.created }))
-  } catch (err) {
-    console.error('Stripe revenue fetch error:', err)
+  let totalRevenue     = 0
+  let thisMonthRevenue = 0
+  let outstandingBalance = 0
+
+  if (canViewFinancials) {
+    let succeededCharges: { amount: number; created: number }[] = []
+    try {
+      const charges = await stripe.charges.list({ limit: 100 })
+      succeededCharges = charges.data
+        .filter((c) => c.status === 'succeeded')
+        .map((c) => ({ amount: c.amount, created: c.created }))
+    } catch (err) {
+      console.error('Stripe revenue fetch error:', err)
+    }
+
+    const startOfMonth = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1
+    ).getTime() / 1000
+
+    totalRevenue     = succeededCharges.reduce((sum, c) => sum + c.amount, 0) / 100
+    thisMonthRevenue = succeededCharges
+      .filter((c) => c.created >= startOfMonth)
+      .reduce((sum, c) => sum + c.amount, 0) / 100
+    outstandingBalance = students
+      .filter((s: any) =>
+        (s.status === 'accepted' || s.status === 'enrolled') &&
+        s.paymentStatus !== 'paid' &&
+        s.tuitionAmount
+      )
+      .reduce((sum: number, s: any) => sum + (s.tuitionAmount as number), 0)
   }
-
-  const startOfMonth = new Date(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    1
-  ).getTime() / 1000
-
-  const totalRevenue    = succeededCharges.reduce((sum, c) => sum + c.amount, 0) / 100
-  const thisMonthRevenue = succeededCharges
-    .filter((c) => c.created >= startOfMonth)
-    .reduce((sum, c) => sum + c.amount, 0) / 100
-  const outstandingBalance = students
-    .filter((s: any) =>
-      (s.status === 'accepted' || s.status === 'enrolled') &&
-      s.paymentStatus !== 'paid' &&
-      s.tuitionAmount
-    )
-    .reduce((sum: number, s: any) => sum + (s.tuitionAmount as number), 0)
 
   const formatCAD = (dollars: number) =>
     '$' + dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -192,28 +209,30 @@ export default async function AdminPage() {
           ))}
         </div>
 
-        {/* Revenue */}
-        <div className="mb-10">
-          <p
-            className="text-xs font-bold uppercase tracking-widest mb-3"
-            style={{ color: 'rgba(30,53,96,0.4)' }}
-          >
-            Revenue
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { label: 'Total Revenue Collected', value: formatCAD(totalRevenue),     colour: '#1E3560' },
-              { label: "This Month's Revenue",    value: formatCAD(thisMonthRevenue), colour: '#378ADD' },
-              { label: 'Outstanding Balance',     value: formatCAD(outstandingBalance), colour: '#E67E22' },
-              { label: 'Paid Students',           value: String(stats.paid),          colour: '#22c55e' },
-            ].map(({ label, value, colour }) => (
-              <div key={label} className="rounded-xl p-5 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-                <p className="text-3xl font-bold mb-1" style={{ color: colour }}>{value}</p>
-                <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
-              </div>
-            ))}
+        {/* Revenue — financial staff only */}
+        {canViewFinancials && (
+          <div className="mb-10">
+            <p
+              className="text-xs font-bold uppercase tracking-widest mb-3"
+              style={{ color: 'rgba(30,53,96,0.4)' }}
+            >
+              Revenue
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {[
+                { label: 'Total Revenue Collected', value: formatCAD(totalRevenue),       colour: '#1E3560' },
+                { label: "This Month's Revenue",    value: formatCAD(thisMonthRevenue),   colour: '#378ADD' },
+                { label: 'Outstanding Balance',     value: formatCAD(outstandingBalance), colour: '#E67E22' },
+                { label: 'Paid Students',           value: String(stats.paid),            colour: '#22c55e' },
+              ].map(({ label, value, colour }) => (
+                <div key={label} className="rounded-xl p-5 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+                  <p className="text-3xl font-bold mb-1" style={{ color: colour }}>{value}</p>
+                  <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Announcements */}
         <AdminAnnouncements initialAnnouncements={announcements} programmes={programmes} />
@@ -247,10 +266,10 @@ export default async function AdminPage() {
 )}
 
         {/* Workshop registrations */}
-        <AdminWorkshopRegistrations groups={dateGroups} />
+        <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
 
         {/* Student table */}
-        <AdminStudentTable students={students} />
+        <AdminStudentTable students={students} canViewFinancials={canViewFinancials} />
 
       </div>
     </main>

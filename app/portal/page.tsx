@@ -5,7 +5,7 @@ import { createClient } from '@sanity/client'
 import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents, getMoodleAssignments, getMoodleSubmissions } from '@/lib/moodle/client'
 import { stripe } from '@/lib/stripe/client'
 import PortalTabs from '@/components/PortalTabs'
-import type { SerializedCharge, SerializedWorkshopDate } from '@/components/PortalTabs'
+import type { SerializedCharge, SerializedWorkshopDate, SerializedWorkshopRegistration } from '@/components/PortalTabs'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -68,8 +68,8 @@ export default async function PortalPage() {
     }
   }
 
-  // Announcements and workshop dates
-  const [announcements, workshopDates] = await Promise.all([
+  // Announcements, workshop dates, and this student's paid registrations
+  const [announcements, workshopDates, myWorkshopRegistrations] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true && (!defined(expiresAt) || expiresAt > now()) && (!defined(program) || program._ref == $programId)] | order(publishedAt desc)[0...5]{
         _id, title, message, type, publishedAt
@@ -79,6 +79,10 @@ export default async function PortalPage() {
     client.fetch(
       `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity }`
     ) as Promise<SerializedWorkshopDate[]>,
+    client.fetch(
+      `*[_type == "workshopRegistration" && email == $email && stripePaymentStatus == "paid"]{ workshopDateId }`,
+      { email }
+    ) as Promise<SerializedWorkshopRegistration[]>,
   ])
 
   const moodleCourseId = student?.program?.moodleCourseId ?? Number(process.env.MOODLE_COURSE_DAC_DD)
@@ -200,6 +204,7 @@ export default async function PortalPage() {
         moodleCourseUrl={moodleCourseUrl}
         paymentHistory={paymentHistory}
         workshopDates={workshopDates ?? []}
+        myWorkshopRegistrations={myWorkshopRegistrations ?? []}
       />
 
     </main>

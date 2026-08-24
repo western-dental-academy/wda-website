@@ -53,6 +53,10 @@ export interface SerializedWorkshopDate {
   capacity: number
 }
 
+export interface SerializedWorkshopRegistration {
+  workshopDateId: string
+}
+
 export interface ProgressStatus {
   cmid: number
   modname: string
@@ -82,6 +86,7 @@ export interface PortalTabsProps {
   moodleCourseUrl: string
   paymentHistory: SerializedCharge[] | null
   workshopDates: SerializedWorkshopDate[]
+  myWorkshopRegistrations: SerializedWorkshopRegistration[]
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
@@ -113,6 +118,18 @@ const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const CARD        = 'rounded-2xl p-8 bg-white'
 const CARD_BORDER = '1.5px solid rgba(30,53,96,0.09)'
 
+const WORKSHOP_PRICES: Record<string, number> = {
+  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 35,
+}
+
+function getWorkshopPricing(workshop: string) {
+  const base = WORKSHOP_PRICES[workshop]
+  if (!base) return null
+  const baseInCents = base * 100
+  const feeInCents  = Math.round((baseInCents + 30) / (1 - 0.033) - baseInCents)
+  return { base, fee: feeInCents / 100, total: (baseInCents + feeInCents) / 100 }
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function toDateKey(d: Date): string {
@@ -137,12 +154,44 @@ export default function PortalTabs({
   moodleCourseUrl,
   paymentHistory,
   workshopDates,
+  myWorkshopRegistrations,
 }: PortalTabsProps) {
   // All hooks at the top — no code between them, no conditional hooks
   const [activeTab,   setActiveTab]   = useState('overview')
   const [viewYear,    setViewYear]    = useState(() => new Date().getFullYear())
   const [viewMonth,   setViewMonth]   = useState(() => new Date().getMonth())
-  const [selectedDay, setSelectedDay] = useState<string | null>(null)
+  const [selectedDay,   setSelectedDay]   = useState<string | null>(null)
+  const [workshopModal, setWorkshopModal] = useState<SerializedWorkshopDate | null>(null)
+  const [modalLoading,  setModalLoading]  = useState(false)
+  const [modalError,    setModalError]    = useState('')
+
+  const registeredDateIds = new Set(myWorkshopRegistrations.map(r => r.workshopDateId))
+
+  async function proceedToPayment() {
+    if (!workshopModal || !student) return
+    setModalLoading(true)
+    setModalError('')
+    try {
+      const res = await fetch('/api/workshops/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: student.firstName,
+          lastName:  student.lastName,
+          email:     userEmail,
+          phone:     student.phone ?? '',
+          workshop:  workshopModal.workshop,
+          workshopDateId: workshopModal._id,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Registration failed')
+      window.location.href = data.url
+    } catch (err: unknown) {
+      setModalError(err instanceof Error ? err.message : 'Something went wrong')
+      setModalLoading(false)
+    }
+  }
 
   // ── Non-enrolled early returns ────────────────────────────────────────────
 
@@ -687,13 +736,22 @@ export default function PortalTabs({
                             <span className="text-xs ml-2" style={{ color: 'rgba(43,48,58,0.4)' }}>Workshop</span>
                           </div>
                         </div>
-                        <Link
-                          href="/register"
-                          className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold text-white"
-                          style={{ backgroundColor: '#E67E22' }}
-                        >
-                          Register
-                        </Link>
+                        {registeredDateIds.has(w._id) ? (
+                          <span
+                            className="shrink-0 rounded-full px-3 py-1 text-xs font-bold"
+                            style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#16a34a' }}
+                          >
+                            Registered ✓
+                          </span>
+                        ) : (
+                          <button
+                            onClick={() => { setWorkshopModal(w); setModalError('') }}
+                            className="shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold text-white"
+                            style={{ backgroundColor: '#E67E22' }}
+                          >
+                            Register
+                          </button>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -950,6 +1008,137 @@ export default function PortalTabs({
         )}
 
       </div>
+
+      {/* ── Workshop registration modal ── */}
+      {workshopModal && (() => {
+        const pricing     = getWorkshopPricing(workshopModal.workshop)
+        const displayDate = new Date(workshopModal.date + 'T12:00:00').toLocaleDateString('en-CA', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        })
+        return (
+          <>
+            {/* Backdrop */}
+            <div
+              className="fixed inset-0 z-50"
+              style={{ backgroundColor: 'rgba(0,0,0,0.45)' }}
+              onClick={() => { setWorkshopModal(null); setModalError('') }}
+              aria-hidden
+            />
+            {/* Panel */}
+            <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center pointer-events-none px-4 pb-4 sm:pb-0">
+              <div
+                className="pointer-events-auto w-full sm:max-w-md rounded-2xl p-6 sm:p-8"
+                style={{ backgroundColor: '#fff', boxShadow: '0 20px 60px rgba(0,0,0,0.18)', border: '1.5px solid rgba(30,53,96,0.09)' }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="workshop-modal-title"
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <div className="min-w-0">
+                    <p className="text-xs font-bold uppercase tracking-widest mb-1" style={{ color: '#378ADD' }}>
+                      Workshop Registration
+                    </p>
+                    <h2
+                      id="workshop-modal-title"
+                      className="text-sm font-bold leading-snug"
+                      style={{ fontFamily: 'var(--font-montserrat), sans-serif', color: '#1E3560' }}
+                    >
+                      {workshopModal.workshop}
+                    </h2>
+                    <p className="text-xs mt-1" style={{ color: 'rgba(43,48,58,0.5)' }}>{displayDate}</p>
+                  </div>
+                  <button
+                    onClick={() => { setWorkshopModal(null); setModalError('') }}
+                    aria-label="Close modal"
+                    className="shrink-0 w-8 h-8 flex items-center justify-center rounded-lg transition-colors hover:bg-[#F4F7F9]"
+                    style={{ color: 'rgba(43,48,58,0.4)' }}
+                  >
+                    <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden>
+                      <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Registrant summary */}
+                <div className="rounded-xl px-4 py-3 mb-5" style={{ backgroundColor: '#F4F7F9' }}>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Name</span>
+                    <span className="text-xs font-semibold" style={{ color: '#1E3560' }}>
+                      {student?.firstName} {student?.lastName}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Email</span>
+                    <span className="text-xs font-semibold truncate ml-4" style={{ color: '#1E3560' }}>{userEmail}</span>
+                  </div>
+                </div>
+
+                {/* Pricing */}
+                {pricing ? (
+                  <div className="mb-5">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm" style={{ color: 'rgba(43,48,58,0.6)' }}>Workshop fee</span>
+                      <span className="text-sm font-semibold" style={{ color: '#1E3560' }}>
+                        ${pricing.base.toFixed(2)} CAD
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm" style={{ color: 'rgba(43,48,58,0.6)' }}>Processing fee</span>
+                      <span className="text-sm font-semibold" style={{ color: '#1E3560' }}>
+                        ${pricing.fee.toFixed(2)} CAD
+                      </span>
+                    </div>
+                    <div
+                      className="flex items-center justify-between pt-3"
+                      style={{ borderTop: '1px solid rgba(30,53,96,0.08)' }}
+                    >
+                      <span className="text-sm font-bold" style={{ color: '#1E3560' }}>Total due</span>
+                      <span className="text-base font-bold" style={{ color: '#1E3560' }}>
+                        ${pricing.total.toFixed(2)} CAD
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-sm mb-5" style={{ color: 'rgba(43,48,58,0.5)' }}>
+                    Contact us for pricing information.
+                  </p>
+                )}
+
+                {/* Error */}
+                {modalError && (
+                  <p
+                    className="text-xs font-semibold mb-4 px-3 py-2 rounded-lg"
+                    style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#dc2626' }}
+                  >
+                    {modalError}
+                  </p>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => { setWorkshopModal(null); setModalError('') }}
+                    className="flex-1 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors hover:bg-[#e8ecf0]"
+                    style={{ backgroundColor: '#F4F7F9', color: '#1E3560' }}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={proceedToPayment}
+                    disabled={modalLoading || !pricing}
+                    className="flex-1 rounded-lg px-4 py-2.5 text-sm font-bold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ backgroundColor: '#E67E22' }}
+                  >
+                    {modalLoading ? 'Redirecting…' : 'Proceed to Payment'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </>
+        )
+      })()}
+
     </div>
   )
 }

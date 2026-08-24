@@ -25,6 +25,8 @@ const FINANCIAL_EMAILS = [
   'tammy@westerndentalacademy.com',
 ]
 
+const SANITY_EMAILS = ['aiden@westerndentalacademy.com']
+
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
@@ -45,6 +47,7 @@ export default async function AdminPage() {
   }
 
   const canViewFinancials = FINANCIAL_EMAILS.includes(email)
+  const canViewSanity     = SANITY_EMAILS.includes(email)
 
   const students = await client.fetch(
     `*[_type == "student"] | order(applicationDate desc) {
@@ -172,13 +175,15 @@ export default async function AdminPage() {
             >
               Go to Moodle ↗
             </a>
-            <Link
-              href="/studio/structure/students"
-              className="rounded-lg px-4 py-2 text-sm font-semibold"
-              style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
-            >
-              Open Sanity Studio
-            </Link>
+            {canViewSanity && (
+              <Link
+                href="/studio/structure/students"
+                className="rounded-lg px-4 py-2 text-sm font-semibold"
+                style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.8)' }}
+              >
+                Open Sanity Studio
+              </Link>
+            )}
             <SignOutButton signOutOptions={{ redirectUrl: '/sign-in' }}>
               <button
                 className="rounded-lg px-4 py-2 text-sm font-semibold"

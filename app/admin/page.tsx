@@ -7,6 +7,7 @@ import AdminStudentTable from '@/components/AdminStudentTable'
 import AdminAnnouncements from '@/components/AdminAnnouncements'
 import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration } from '@/components/AdminWorkshopRegistrations'
 import AdminStaffCalendar from '@/components/AdminStaffCalendar'
+import AdminTaskManager, { type Task } from '@/components/AdminTaskManager'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -83,7 +84,7 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
 
-  const [announcements, programmes, workshopDates, workshopRegs, staffTimeOff] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, staffTimeOff, rawTasks] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -108,7 +109,14 @@ export default async function AdminPage() {
         staffMember->{ fullName }
       }`
     ),
+    client.fetch(
+      `*[_type == "task"] | order(dueDate asc, createdAt desc){
+        _id, title, description, assignedTo, assignedBy,
+        dueDate, priority, status, createdAt, completedAt
+      }`
+    ),
   ])
+  const tasks = rawTasks as Task[]
 
   // ── Revenue metrics (financial staff only) ─────────────────────────────────
 
@@ -279,6 +287,9 @@ export default async function AdminPage() {
 
         {/* Staff calendar */}
         <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
+
+        {/* Task manager */}
+        <AdminTaskManager tasks={tasks} currentUserEmail={email} />
 
         {/* Workshop registrations */}
         <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />

@@ -78,4 +78,11 @@ export const structure: StructureResolver = (S) =>
                 .child(S.documentTypeList('timeOffRequest').title('Time-Off Requests')),
             ])
         ),
+
+      S.divider(),
+
+      S.listItem()
+        .title('Tasks')
+        .schemaType('task')
+        .child(S.documentTypeList('task').title('Tasks')),
     ]);

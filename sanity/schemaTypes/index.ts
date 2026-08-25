@@ -12,7 +12,8 @@ import hoursLog from './hoursLog'
 import timeOffRequest from './timeOffRequest'
 import workshopRegistration from './workshopRegistration'
 import workshopDate from './workshopDate'
+import task from './task'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopRegistration, workshopDate],
+  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopRegistration, workshopDate, task],
 }

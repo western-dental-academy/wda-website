@@ -564,8 +564,7 @@ export default async function AboutPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                Built to Close the Gap
-                <br />Between Training and Practice
+                Built to Bridge the Gap Between Practice and Professional Growth
               </h2>
 
               <div
@@ -574,36 +573,29 @@ export default async function AboutPage() {
               >
                 <p>
                   Western Dental Academy was founded by practicing dental
-                  professionals who saw the same pattern repeating across
-                  Edmonton clinics: graduates arriving technically trained but
-                  clinically underprepared — confident on paper, uncertain
-                  chairside.
+                  professionals who recognized a challenge extending beyond
+                  graduation. Across the dental industry, opportunities for
+                  dental assistants to continue developing their clinical skills,
+                  expand their knowledge, and advance professionally can be
+                  limited, despite the profession constantly evolving with new
+                  technologies, techniques, and patient care standards.
                 </p>
                 <p>
-                  The problem wasn&apos;t the students. It was an approach that
-                  treated clinical experience as something students earned at
-                  the end, after enough theory. WDA was built on the opposite
-                  premise: real practice should come first, from the very first
-                  week.
+                  The need wasn&apos;t for more graduates. It was for stronger
+                  pathways for ongoing growth. WDA was built on the belief that
+                  professional development should not end when formal education
+                  is complete. Dental assistants deserve access to meaningful
+                  learning experiences that help them stay current, build
+                  confidence, and continue progressing throughout their careers.
                 </p>
                 <p>
-                  Today, WDA is built around that founding belief. Students work with professional-grade equipment,
-                  apply current protocols, and develop the hands-on competence
-                  that dental practices expect — not as a finishing touch, but
-                  as the foundation everything else is built on.
+                  Today, that belief remains at the heart of WDA. By creating
+                  opportunities for continuous learning and skill enhancement,
+                  the Academy supports dental professionals in keeping pace with
+                  industry advancements and strengthening the practical expertise
+                  that modern dental practices rely on.
                 </p>
               </div>
-
-              <Link
-                href="/programs"
-                className="group inline-flex items-center gap-2 mt-8 text-sm font-bold transition-colors duration-200"
-                style={{ color: "#1E3560" }}
-              >
-                Explore Offerings
-                <span className="transition-transform duration-200 group-hover:translate-x-1">
-                  →
-                </span>
-              </Link>
             </AnimateIn>
           </div>
         </div>

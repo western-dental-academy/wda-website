@@ -31,7 +31,7 @@ const STAFF_OPTIONS = [
   { label: 'Jolene',   email: 'jolene@westerndentalacademy.com' },
   { label: 'Alana',    email: 'alana@westerndentalacademy.com' },
   { label: 'Collette', email: 'collette@westerndentalacademy.com' },
-  { label: 'Tamara',   email: 'tammy@westerndentalacademy.com' },
+  { label: 'Tammy',    email: 'tammy@westerndentalacademy.com' },
 ]
 
 const STAFF_NAME: Record<string, string> = Object.fromEntries(

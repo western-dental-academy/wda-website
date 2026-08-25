@@ -482,9 +482,9 @@ export default function ContactPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {[
                 {
-                  label: "Explore Workshops",
+                  label: "Explore Professional Development",
                   description: "Browse all WDA workshops and find the right fit.",
-                  href: "/workshops",
+                  href: "/professional-development",
                   icon: (
                     <svg
                       viewBox="0 0 24 24"
@@ -524,9 +524,9 @@ export default function ContactPage() {
                   ),
                 },
                 {
-                  label: "Visit Our Facility",
+                  label: "Board Exam Prep",
                   description: "Come see our modern facility in person.",
-                  href: "/contact",
+                  href: "/national-board-guided-practice",
                   icon: (
                     <svg
                       viewBox="0 0 24 24"

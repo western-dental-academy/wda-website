@@ -411,7 +411,7 @@ export default function Home() {
               className="text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Registrations are not open
+              Registrations are now open
               <br />
               for professional development.
             </h2>
@@ -420,7 +420,7 @@ export default function Home() {
               style={{ color: "rgba(255,255,255,0.65)" }}
             >
               Connect with our team to find the right session. We&apos;d love
-              to hear from you.
+              to hear from you, or if you have any ideas for PD offerings you would like.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4">

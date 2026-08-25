@@ -217,6 +217,18 @@ export default async function AdminPage() {
         {/* Task manager */}
         <AdminTaskManager tasks={tasks} currentUserEmail={email} />
 
+        {/* Staff calendar */}
+        <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
+
+        {/* Workshop registrations */}
+        <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
+
+        {/* Workshop date manager */}
+        <AdminWorkshopDates
+          initialDates={workshopDates as WorkshopDateItem[]}
+          registrations={workshopRegs as WorkshopRegistration[]}
+        />
+
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-10">
           {[
@@ -232,6 +244,40 @@ export default async function AdminPage() {
             </div>
           ))}
         </div>
+
+        {/* Student table */}
+        <AdminStudentTable students={students} canViewFinancials={canViewFinancials} />
+
+        {/* Announcements */}
+        <AdminAnnouncements initialAnnouncements={announcements} programmes={programmes} />
+
+        {/* Referral Sources */}
+        {referralData.length > 0 && (
+          <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+            <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
+              <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Referral Sources</h2>
+            </div>
+            <div className="p-6 flex flex-col gap-3">
+              {referralData.map(([source, count]) => {
+                const pct = Math.round((count / students.length) * 100)
+                return (
+                  <div key={source}>
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm" style={{ color: '#1E3560' }}>{source}</span>
+                      <span className="text-sm font-bold" style={{ color: '#378ADD' }}>{count} ({pct}%)</span>
+                    </div>
+                    <div className="w-full rounded-full h-2" style={{ backgroundColor: 'rgba(30,53,96,0.08)' }}>
+                      <div
+                        className="h-2 rounded-full"
+                        style={{ width: `${pct}%`, backgroundColor: '#378ADD' }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Revenue — financial staff only */}
         {canViewFinancials && (
@@ -257,52 +303,6 @@ export default async function AdminPage() {
             </div>
           </div>
         )}
-
-        {/* Announcements */}
-        <AdminAnnouncements initialAnnouncements={announcements} programmes={programmes} />
-
-        {/* Referral Sources */}
-{referralData.length > 0 && (
-  <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-    <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
-      <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Referral Sources</h2>
-    </div>
-    <div className="p-6 flex flex-col gap-3">
-      {referralData.map(([source, count]) => {
-        const pct = Math.round((count / students.length) * 100)
-        return (
-          <div key={source}>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm" style={{ color: '#1E3560' }}>{source}</span>
-              <span className="text-sm font-bold" style={{ color: '#378ADD' }}>{count} ({pct}%)</span>
-            </div>
-            <div className="w-full rounded-full h-2" style={{ backgroundColor: 'rgba(30,53,96,0.08)' }}>
-              <div
-                className="h-2 rounded-full"
-                style={{ width: `${pct}%`, backgroundColor: '#378ADD' }}
-              />
-            </div>
-          </div>
-        )
-      })}
-    </div>
-  </div>
-)}
-
-        {/* Staff calendar */}
-        <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
-
-        {/* Workshop date manager */}
-        <AdminWorkshopDates
-          initialDates={workshopDates as WorkshopDateItem[]}
-          registrations={workshopRegs as WorkshopRegistration[]}
-        />
-
-        {/* Workshop registrations */}
-        <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
-
-        {/* Student table */}
-        <AdminStudentTable students={students} canViewFinancials={canViewFinancials} />
 
       </div>
     </main>

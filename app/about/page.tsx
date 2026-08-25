@@ -345,7 +345,7 @@ export default async function AboutPage() {
                 className="text-base leading-relaxed max-w-lg"
                 style={{ color: "#2B303A" }}
               >
-                That mission drives every programme we design and every
+                That mission drives every program we design and every
                 pathway we create. Whether you are new to the field or a
                 working professional seeking to enhance your skills, WDA is
                 built to meet you where you are.

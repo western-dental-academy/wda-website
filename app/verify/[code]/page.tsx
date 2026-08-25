@@ -75,7 +75,7 @@ export default async function VerifyPage({
             <div className="text-left rounded-xl p-6 flex flex-col gap-4" style={{ backgroundColor: '#F4F7F9' }}>
               {[
                 { label: 'Graduate', value: `${student.firstName} ${student.lastName}` },
-                { label: 'Programme', value: student.program?.title ?? 'Dental Assisting Certificate' },
+                { label: 'Program', value: student.program?.title ?? 'Dental Assisting Certificate' },
                 { label: 'Certificate ID', value: student.certificateId },
                 {
                   label: 'Issued',

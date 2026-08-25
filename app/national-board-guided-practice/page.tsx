@@ -234,7 +234,7 @@ export default function NPEWorkshopPage() {
                 </p>
                 <ul className="flex flex-col gap-4">
                   {[
-                    "Graduates of non-registered dental assisting programmes preparing for the NDAEB CPE",
+                    "Graduates of non-registered dental assisting programs preparing for the NDAEB CPE",
                     "Internationally educated dental assistants seeking NDAEB certification",
                     "Dental assistants requiring re-evaluation of unsuccessful CPE skills",
                     "Candidates seeking structured preparation prior to their scheduled CPE",

@@ -365,7 +365,7 @@ export default async function AboutPage() {
                 </p>
                 <ul className="flex flex-col gap-5">
                   {[
-                    "Experienced instructors in dental training",
+                    "Experienced professionals delivering engaging content",
                     "Small course/workshop sizes for individual attention",
                     "Engage with dental professionals from day one",
                     "Deliver unique, relevant professional development opportunities.",

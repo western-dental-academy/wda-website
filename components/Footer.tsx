@@ -158,23 +158,6 @@ export default function Footer() {
               </ul>
             </div>
 
-            {/* Professional Development */}
-            <div>
-              <p
-                className={HEADING}
-                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-              >
-                Professional Development
-              </p>
-              <ul className="space-y-2">
-                <li>
-                  <Link href="/professional-development" className={LINK}>
-                    Professional Development
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
             {/* Contact */}
             <div>
               <p

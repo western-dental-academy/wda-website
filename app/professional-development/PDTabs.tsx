@@ -14,12 +14,12 @@ const workshops = [
     price: 40,
     duration: "1.5 hours",
     description:
-      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice.",
+      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice. There will be 3 separate sessions available focusing on different areas of the body.",
     highlights: [
       "Ergonomic risk factors and posture principles for dental practice",
       "Guided breathwork techniques to reduce tension and support focus",
       "Yoga-inspired movement sequences adapted for dental professionals",
-      "Targeted stretches for neck, shoulders, wrists, and lower back",
+      "Targeted stretches for specific areas of the body",
       "Closing Yoga Nidra relaxation practice",
     ],
     tags: ["Interactive", "Wellness", "CADA CCP Support", "Certificate of Attendance"],

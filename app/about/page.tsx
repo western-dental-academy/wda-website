@@ -276,7 +276,7 @@ export default async function AboutPage() {
             className="text-4xl sm:text-5xl font-bold text-white leading-tight mb-4 max-w-3xl"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            Training Tomorrow&apos;s{" "}
+            Training{" "}
             <span style={{ color: "#4A9FD4" }}>
               Dental Professionals
             </span>{" "}
@@ -345,8 +345,7 @@ export default async function AboutPage() {
                 className="text-base leading-relaxed max-w-lg"
                 style={{ color: "#2B303A" }}
               >
-                That mission drives every program we design and every
-                pathway we create. Whether you are new to the field or a
+                That mission drives every pathway we create. Whether you are new to the field or a
                 working professional seeking to enhance your skills, WDA is
                 built to meet you where you are.
               </p>
@@ -366,11 +365,10 @@ export default async function AboutPage() {
                 </p>
                 <ul className="flex flex-col gap-5">
                   {[
-                    "Hands-on clinical training from week one",
                     "Experienced instructors in dental training",
-                    "Small class sizes for individual attention",
-                    "Student support through graduation",
-                    "Curriculum aligned with current Alberta standards",
+                    "Small course/workshop sizes for individual attention",
+                    "Engage with dental professionals from day one",
+                    "Deliver unique, relevant professional development opportunities.",
                   ].map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span
@@ -443,11 +441,10 @@ export default async function AboutPage() {
                 style={{ color: "#2B303A" }}
               >
                 We believe that geography, work schedules, and life circumstances
-                should never limit a person&apos;s ability to pursue a rewarding
-                career in the dental industry. That&apos;s why Western Dental Academy
-                offers flexible learning pathways — including online theory
-                delivery, hands-on clinical training, and opportunities to work in
-                a dental clinic while you study.
+                should never limit a person&apos;s ability to pursue relevant PD
+                opportunities in the dental industry including online non-credit
+                continuing education courses, hands-on clinical refreshers, unique
+                workshops and guest speakers.
               </p>
             </AnimateIn>
             <AnimateIn delay={130}>
@@ -456,7 +453,7 @@ export default async function AboutPage() {
                   className="text-base leading-relaxed mb-6"
                   style={{ color: "#2B303A" }}
                 >
-                  Our program is designed to support all learners, including
+                  Our offerings are designed to support all learners, including
                   those in remote and rural communities, working professionals,
                   and anyone seeking a more accessible route into the dental
                   field.
@@ -473,9 +470,8 @@ export default async function AboutPage() {
                 <div className="flex flex-wrap gap-3">
                   {[
                     "Online Theory Delivery",
-                    "Hands-On Clinical Training",
-                    "Work While You Study",
                     "Remote & Rural Access",
+                    "In Person Delivery",
                   ].map((tag) => (
                     <span
                       key={tag}
@@ -595,15 +591,14 @@ export default async function AboutPage() {
                   chairside.
                 </p>
                 <p>
-                  The problem wasn&apos;t the students. It was programs that
+                  The problem wasn&apos;t the students. It was an approach that
                   treated clinical experience as something students earned at
                   the end, after enough theory. WDA was built on the opposite
                   premise: real practice should come first, from the very first
                   week.
                 </p>
                 <p>
-                  Today, every WDA program is built around that founding
-                  belief. Students work with professional-grade equipment,
+                  Today, WDA is built around that founding belief. Students work with professional-grade equipment,
                   apply current protocols, and develop the hands-on competence
                   that dental practices expect — not as a finishing touch, but
                   as the foundation everything else is built on.
@@ -615,7 +610,7 @@ export default async function AboutPage() {
                 className="group inline-flex items-center gap-2 mt-8 text-sm font-bold transition-colors duration-200"
                 style={{ color: "#1E3560" }}
               >
-                See Our Programs
+                Explore Offerings
                 <span className="transition-transform duration-200 group-hover:translate-x-1">
                   →
                 </span>

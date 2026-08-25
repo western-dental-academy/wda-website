@@ -159,7 +159,8 @@ export default async function AdminPage() {
     '$' + dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
   // Build DateGroup array for workshop registrations
-  const dateGroups: DateGroup[] = (workshopDates as Array<{ _id: string; workshop: string; date: string; capacity: number }>)
+  const dateGroups: DateGroup[] = (workshopDates as Array<{ _id: string; workshop: string; date: string; capacity: number; active: boolean }>)
+    .filter((d) => d.active !== false)
     .map((d) => ({
       dateId: d._id,
       workshop: d.workshop,

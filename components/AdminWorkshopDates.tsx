@@ -312,7 +312,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
     try {
       const res = await fetch(`/api/admin/workshop-dates/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error()
-      setDates(prev => prev.map(d => d._id === id ? { ...d, active: false } : d))
+      setDates(prev => prev.filter(d => d._id !== id))
     } catch {
       alert('Failed to deactivate date. Please try again.')
     } finally {

@@ -42,7 +42,7 @@ const INITIAL: FormData = {
 
 const STEPS = [
   { n: 1, label: "Personal" },
-  { n: 2, label: "Workshop" },
+  { n: 2, label: "Offering" },
   { n: 3, label: "Payment" },
 ];
 
@@ -431,10 +431,10 @@ export default function WorkshopRegisterForm() {
             className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            Workshop Selection
+            Offering Selection
           </h2>
           <p className="text-sm mb-8" style={{ color: "rgba(43,48,58,0.55)" }}>
-            Choose your workshop and let us know if you have any questions.
+            Choose your offering and let us know if you have any questions.
           </p>
 
           <div className="flex flex-col gap-5">
@@ -488,7 +488,7 @@ export default function WorkshopRegisterForm() {
             {/* Workshop dropdown — only shown after category selected */}
             {selectedCategory && (
             <div>
-              <FieldLabel htmlFor="reg-workshop">Workshop</FieldLabel>
+              <FieldLabel htmlFor="reg-workshop">Offering</FieldLabel>
               <div className="relative">
                 <select
                   id="reg-workshop" value={data.workshop}
@@ -501,7 +501,7 @@ export default function WorkshopRegisterForm() {
                   aria-describedby={errors.workshop ? "err-workshop" : undefined}
                   className={`wda-input pr-10 cursor-pointer${errors.workshop ? " invalid" : ""}`}
                 >
-                  <option value="">Select a workshop</option>
+                  <option value="">Select an offering</option>
                   {workshopsForCategory.length > 0 ? (
                     workshopsForCategory.map((o) => (
                       <option key={o.label} value={o.label}>
@@ -509,7 +509,7 @@ export default function WorkshopRegisterForm() {
                       </option>
                     ))
                   ) : (
-                    <option disabled value="">No workshops available in this category</option>
+                    <option disabled value="">No offerings available in this category</option>
                   )}
                 </select>
                 <Chevron />
@@ -530,7 +530,7 @@ export default function WorkshopRegisterForm() {
                 </p>
               ) : hasDates ? (
                 <div>
-                  <FieldLabel htmlFor="reg-date">Workshop Date</FieldLabel>
+                  <FieldLabel htmlFor="reg-date">Offering Date</FieldLabel>
                   <div className="relative">
                     <select
                       id="reg-date"
@@ -583,7 +583,7 @@ export default function WorkshopRegisterForm() {
               </FieldLabel>
               <textarea
                 id="reg-questions" rows={4}
-                placeholder="Any questions about the workshop, accessibility needs, or other requests?"
+                placeholder="Any questions about the offering, accessibility needs, or other requests?"
                 value={data.questions}
                 onChange={(e) => set("questions", e.target.value)}
                 className="wda-input resize-none"

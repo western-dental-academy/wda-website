@@ -130,9 +130,9 @@ function FormFields({
         </select>
       </div>
 
-      {/* Workshop */}
+      {/* Offering */}
       <div>
-        <label className={labelCls} style={labelStyle}>Workshop</label>
+        <label className={labelCls} style={labelStyle}>Offering</label>
         <select
           value={workshop}
           onChange={e => onChange('workshop', e.target.value)}
@@ -328,7 +328,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
         className="px-6 py-4 border-b flex items-center justify-between gap-4"
         style={{ borderColor: 'rgba(30,53,96,0.08)' }}
       >
-        <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Workshop Dates</h2>
+        <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>PD Schedule</h2>
         <button
           onClick={() => { setShowAdd(v => !v); setEditingId(null); setAddError('') }}
           className="flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold text-white transition-colors duration-150 hover:bg-[#2563EB]"
@@ -348,7 +348,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
           style={{ borderColor: 'rgba(30,53,96,0.08)', backgroundColor: '#F4F7F9' }}
         >
           <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(30,53,96,0.45)' }}>
-            New Workshop Date
+            New Offering
           </p>
           <form onSubmit={createDate} noValidate>
             <FormFields
@@ -385,7 +385,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
       <div className="p-4 flex flex-col gap-3">
         {dates.length === 0 && (
           <p className="text-center py-10 text-sm" style={{ color: 'rgba(43,48,58,0.38)' }}>
-            No workshop dates yet — add one above.
+            No offerings yet — add one above.
           </p>
         )}
 

@@ -444,7 +444,7 @@ export default function ContactPage() {
               },
               {
                 q: "How do I register?",
-                a: "Browse our Professional Development page to find available workshops and courses, then click Register on any offering to complete your registration and payment online.",
+                a: "Browse our Professional Development page to find available workshops, courses, and guest speaker events. Click Register on any offering to complete your registration and payment online. Guest speaker events may vary in pricing — some may be complimentary.",
               },
             ].map(({ q, a }) => (
               <div

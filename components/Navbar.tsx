@@ -12,7 +12,6 @@ const navLinks = [
   { label: "Professional Development", href: "/professional-development" },
   { label: "Board Exam Prep", href: "/national-board-guided-practice" },
   { label: "Blog", href: "/blog" },
-  { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];
 

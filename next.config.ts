@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
         destination: '/national-board-guided-practice',
         permanent: true,
       },
+      {
+        source: '/faq',
+        destination: '/contact',
+        permanent: true,
+      },
     ]
   },
   images: {

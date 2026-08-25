@@ -25,6 +25,7 @@ const WORKSHOP_OPTIONS = [
   'Ergonomics in Dentistry: Hands and Spine',
   'Ergonomics in Dentistry: Hips and Hamstrings',
   'Ergonomics in Dentistry: Neck and Shoulders',
+  'National Board Guided Practice Workshop',
 ]
 
 const CATEGORY_OPTIONS = [

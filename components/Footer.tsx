@@ -6,6 +6,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Professional Development", href: "/professional-development" },
+  { label: "Board Exam Prep", href: "/national-board-guided-practice" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
   { label: "Sponsorship", href: "/sponsorship" },
@@ -147,14 +148,6 @@ export default function Footer() {
                     </Link>
                   </li>
                 ))}
-                <li>
-                  <Link
-                    href="/professional-development"
-                    className="text-sm font-bold text-[#E67E22] hover:text-[#F39C52] transition-colors duration-200"
-                  >
-                    Explore →
-                  </Link>
-                </li>
               </ul>
             </div>
 

@@ -92,6 +92,15 @@ export default async function SuccessPage({
                         <td style="padding:10px 0;color:#16a34a;font-size:13px;font-weight:600;">Confirmed ✓</td>
                       </tr>
                     </table>
+                    ${workshop.includes('Ergonomics in Dentistry') ? `
+                    <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin-top:16px;">
+                      <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 8px;">What to Bring</p>
+                      <ul style="color:#4b5563;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
+                        <li>Comfortable clothing</li>
+                        <li>Water bottle</li>
+                        <li>Yoga mat</li>
+                      </ul>
+                    </div>` : ''}
                     <p style="color:#374151;font-size:13px;line-height:1.6;margin-bottom:16px;">
                       Our team will be in touch to confirm the exact date and location for your workshop.
                       If you have any questions in the meantime, reply to this email or contact us at

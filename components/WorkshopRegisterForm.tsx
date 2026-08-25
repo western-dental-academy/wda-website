@@ -50,6 +50,7 @@ const WORKSHOP_OPTIONS = [
   { label: "Ergonomics in Dentistry: Hands and Spine", price: 40 },
   { label: "Ergonomics in Dentistry: Hips and Hamstrings", price: 40 },
   { label: "Ergonomics in Dentistry: Neck and Shoulders", price: 40 },
+  { label: "National Board Guided Practice Workshop", price: 600 },
 ];
 
 const CATEGORIES = [
@@ -155,6 +156,7 @@ export default function WorkshopRegisterForm() {
   const [checkoutError, setCheckoutError] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryError, setCategoryError] = useState("");
+  const [eligibilityConfirmed, setEligibilityConfirmed] = useState(false);
 
   // Workshop dates fetched from API
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
@@ -275,6 +277,7 @@ export default function WorkshopRegisterForm() {
     (d) => d.workshop === data.workshop && d.category === selectedCategory
   );
   const hasDates = availableDates.length > 0;
+  const isNationalBoard = data.workshop.includes('National Board');
 
   // Progress bar
   const fillWidth = `calc(${(step - 1) / 2} * (100% - 36px))`;
@@ -578,6 +581,31 @@ export default function WorkshopRegisterForm() {
               )
             )}
 
+            {/* National Board eligibility confirmation */}
+            {selectedCategory && data.workshop && isNationalBoard && (
+              <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(55,138,221,0.08)', border: '1.5px solid rgba(55,138,221,0.3)' }}>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={eligibilityConfirmed}
+                    onChange={(e) => setEligibilityConfirmed(e.target.checked)}
+                    className="mt-1 shrink-0"
+                  />
+                  <span className="text-sm" style={{ color: '#1E3560' }}>
+                    I confirm that I meet the eligibility requirements set by the NDAEB to register for the NDAEB Clinical Practice Evaluation (CPE).{" "}
+                    <a
+                      href="https://ndaeb.ca/graduates-of-non-registered-programs/eligibility-application-for-graduates-of-non-registered-programs/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#378ADD' }}
+                    >
+                      View eligibility requirements
+                    </a>.
+                  </span>
+                </label>
+              </div>
+            )}
+
             {/* Questions */}
             <div>
               <FieldLabel htmlFor="reg-questions" optional>
@@ -742,7 +770,8 @@ export default function WorkshopRegisterForm() {
           <button
             type="button"
             onClick={next}
-            className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4]"
+            disabled={step === 2 && isNationalBoard && !eligibilityConfirmed}
+            className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ backgroundColor: "#1E3560" }}
           >
             Continue →

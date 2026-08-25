@@ -135,6 +135,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
   'Ergonomics in Dentistry: Hands and Spine': 40,
   'Ergonomics in Dentistry: Hips and Hamstrings': 40,
   'Ergonomics in Dentistry: Neck and Shoulders': 40,
+  'National Board Guided Practice Workshop': 600,
 }
 
 function getWorkshopPricing(workshop: string) {

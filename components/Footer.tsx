@@ -113,9 +113,7 @@ export default function Footer() {
 
             {/* Tagline */}
             <p className="text-sm leading-relaxed max-w-xs text-white/60">
-              Working with current dental healthcare professionals through unique
-              professional development opportunities in a modern facility with
-              commitment to oral health.
+              Working with experienced dental healthcare professionals and industry experts through unique professional development opportunities in a modern learning environment committed to safe, high-quality oral healthcare.
             </p>
 
             {/* Social icons */}

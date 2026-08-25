@@ -441,7 +441,7 @@ export default async function AboutPage() {
                 style={{ color: "#2B303A" }}
               >
                 We believe that geography, work schedules, and life circumstances
-                should never limit a person&apos;s ability to pursue relevant PD
+                should never limit a person&apos;s ability to pursue relevant Professional Development
                 opportunities in the dental industry including online non-credit
                 continuing education courses, hands-on clinical refreshers, unique
                 workshops and guest speakers.

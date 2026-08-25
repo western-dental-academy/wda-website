@@ -25,7 +25,7 @@ const VALUES = [
     num: "01",
     name: "Excellence",
     description:
-      "In teaching, learning, and clinical practice — we hold ourselves and our students to the highest standards of dental training and professional development.",
+      "In all our facility — we hold ourselves and our students to the highest standards of dental training and professional development.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -47,7 +47,7 @@ const VALUES = [
     num: "02",
     name: "Accessibility",
     description:
-      "Removing barriers to professional development opportunities — geography, schedules, and circumstances should never limit access to high-quality dental training.",
+      "Removing barriers to professional development opportunities — geography, schedules, and circumstances should never limit access to unique and relevant enhancement of knowledge.",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -812,7 +812,7 @@ export default async function AboutPage() {
                 style={{ color: "#2B303A" }}
               >
                 Every WDA instructor is an active dental professional — not a
-                retired clinician, not a career academic.
+                retired clinician, not just a career academic.
               </p>
             </div>
           </AnimateIn>

@@ -422,13 +422,6 @@ export default function ContactPage() {
                 Frequently Asked Questions
               </h2>
             </div>
-            <Link
-              href="/faq"
-              className="shrink-0 text-sm font-semibold transition-colors duration-200 hover:text-white"
-              style={{ color: "#4A9FD4" }}
-            >
-              View all FAQ →
-            </Link>
           </div>
 
           {/* 3 static Q&A cards */}

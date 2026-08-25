@@ -11,12 +11,6 @@ const navLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-const programLinks = [
-  { label: "Clinical Skills Workshop", href: "/professional-development" },
-  { label: "Dental Radiography Essentials", href: "/professional-development" },
-  { label: "Infection Control & Sterilization", href: "/professional-development" },
-  { label: "NDAB Exam Preparation", href: "/professional-development" },
-];
 
 const socialLinks = [
   {
@@ -173,13 +167,11 @@ export default function Footer() {
                 Professional Development
               </p>
               <ul className="space-y-2">
-                {programLinks.map(({ label, href }) => (
-                  <li key={label}>
-                    <Link href={href} className={LINK}>
-                      {label}
-                    </Link>
-                  </li>
-                ))}
+                <li>
+                  <Link href="/professional-development" className={LINK}>
+                    Professional Development
+                  </Link>
+                </li>
               </ul>
             </div>
 

@@ -12,7 +12,7 @@ const programs = [
     num: "01",
     title: "Workshops",
     description:
-      "Hands-on professional development delivered by practicing dental professionals in a real clinical environment. Build practical, real-world skills.",
+      "Hands-on and led by practitioners, professionals, and other industry experts, bringing practical knowledge, fresh perspectives, and ongoing learning experiences.",
     tags: ["Hands-On", "Expert-Led"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -24,7 +24,7 @@ const programs = [
     num: "02",
     title: "Guest Speakers",
     description:
-      "We regularly host dental specialists, industry innovators, and respected oral health leaders — giving dental professionals access to cutting-edge knowledge and emerging trends.",
+      "WDA takes an innovative approach by offering unique sessions that expand the thinking of dental professionals. Many of these speaker sessions are open to the public as well, to enrich community involvement.",
     tags: ["Industry Experts", "Open Events"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -36,7 +36,7 @@ const programs = [
     num: "03",
     title: "Courses",
     description:
-      "WDA is developing non-credit online professional development courses for dental healthcare professionals — focused on building soft skills and practical, real-world competencies.",
+      "Focused on refreshing theoretical knowledge. We will also offer clinical refresher courses.",
     tags: ["Online", "Self-Directed"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -128,8 +128,8 @@ export default function Home() {
               <div className="flex flex-col gap-6">
                 {[
                   { val: "Workshops", label: "Hands-on sessions in our facility" },
-                  { val: "Guest Speakers", label: "Industry expert events" },
-                  { val: "Courses", label: "Online professional development" },
+                  { val: "Guest Speakers", label: "Variety of industry experts" },
+                  { val: "Courses", label: "Online and in person" },
                 ].map(({ val, label }) => (
                   <div key={val} className="flex items-center gap-4">
                     <span
@@ -194,8 +194,8 @@ export default function Home() {
               Professional Development
             </h2>
             <p style={{ color: "#2B303A" }}>
-              Every professional development opportunity and course at WDA is
-              designed to build soft skills as well as practical, real world skills.
+              Every professional development opportunity at WDA is designed to
+              enhance soft skills as well as strengthen practical, real world skills.
             </p>
           </AnimateIn>
 

@@ -96,7 +96,7 @@ export default function HeroHeadlineSection() {
         className="text-lg leading-relaxed mb-10 max-w-xl"
         style={{ color: "rgba(255,255,255,0.68)", ...fadeUp(0.62) }}
       >
-        A modern facility offering high quality, unique professional development.
+        A modern facility offering relevant yet unique professional development.
         WDA is here to strengthen and empower dental professionals in
         Alberta&apos;s oral health workforce.
       </p>

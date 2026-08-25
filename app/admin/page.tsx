@@ -220,14 +220,14 @@ export default async function AdminPage() {
         {/* Staff calendar */}
         <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
 
-        {/* Workshop registrations */}
-        <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
-
         {/* Workshop date manager */}
         <AdminWorkshopDates
           initialDates={workshopDates as WorkshopDateItem[]}
           registrations={workshopRegs as WorkshopRegistration[]}
         />
+
+        {/* Workshop registrations */}
+        <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-10">

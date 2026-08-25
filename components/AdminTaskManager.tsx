@@ -70,6 +70,7 @@ function dueDateStatus(dueDate: string | undefined, status: string) {
 
 function formatDueDate(dueDate: string) {
   return new Date(dueDate + 'T12:00:00').toLocaleDateString('en-CA', {
+    timeZone: 'America/Edmonton',
     month: 'short', day: 'numeric', year: 'numeric',
   })
 }

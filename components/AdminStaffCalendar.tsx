@@ -17,6 +17,7 @@ interface WorkshopDate {
   workshop: string
   date: string
   capacity: number
+  active?: boolean
   category?: string
 }
 
@@ -90,6 +91,7 @@ function buildWorkshopDayMap(
 ): Record<number, WorkshopDate[]> {
   const map: Record<number, WorkshopDate[]> = {}
   for (const w of workshopDates) {
+    if (w.active === false) continue
     const localStr = new Date(w.date).toLocaleDateString('en-CA', {
       timeZone: 'America/Edmonton',
       year: 'numeric',

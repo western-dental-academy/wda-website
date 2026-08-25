@@ -132,7 +132,6 @@ const CARD        = 'rounded-2xl p-8 bg-white'
 const CARD_BORDER = '1.5px solid rgba(30,53,96,0.09)'
 
 const WORKSHOP_PRICES: Record<string, number> = {
-  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': 40,
   'Ergonomics in Dentistry: Hands and Spine': 40,
   'Ergonomics in Dentistry: Hips and Hamstrings': 40,
   'Ergonomics in Dentistry: Neck and Shoulders': 40,

@@ -213,6 +213,9 @@ export default async function AdminPage() {
 
       <div className="max-w-7xl mx-auto px-6 py-10">
 
+        {/* Task manager */}
+        <AdminTaskManager tasks={tasks} currentUserEmail={email} />
+
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-10">
           {[
@@ -287,9 +290,6 @@ export default async function AdminPage() {
 
         {/* Staff calendar */}
         <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
-
-        {/* Task manager */}
-        <AdminTaskManager tasks={tasks} currentUserEmail={email} />
 
         {/* Workshop registrations */}
         <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />

@@ -450,22 +450,11 @@ export default async function AboutPage() {
             <AnimateIn delay={130}>
               <div className="lg:pt-14">
                 <p
-                  className="text-base leading-relaxed mb-6"
-                  style={{ color: "#2B303A" }}
-                >
-                  Our offerings are designed to support all learners, including
-                  those in remote and rural communities, working professionals,
-                  and anyone seeking a more accessible route into the dental
-                  field.
-                </p>
-                <p
                   className="text-base leading-relaxed mb-8"
                   style={{ color: "#2B303A" }}
                 >
-                  With smaller class sizes, every student gets personable,
-                  one-on-one interaction with instructors who bring both
-                  real-world clinical experience and dental training expertise
-                  into the classroom.
+                  WDA is designed to support the entire dental team, including
+                  those in remote and rural communities and working professionals.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   {[
@@ -745,9 +734,7 @@ export default async function AboutPage() {
               className="text-3xl sm:text-4xl font-bold text-white mb-6 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Dental Training Instead of Education.
-              <br />
-              Relevant Professional Development.
+              To be a leader in accessible and relevant Professional Development.
             </h2>
             <p
               className="text-lg leading-relaxed max-w-2xl mx-auto"

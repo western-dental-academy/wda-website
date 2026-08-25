@@ -1,8 +1,8 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 
-const LINE_1 = ["Stay", "current."];
-const LINE_2 = ["Stay", "competent."];
+const LINE_1 = ["Stay", "Current."];
+const LINE_2 = ["Stay", "Competent."];
 const LINE_3 = ["Get", "Connected."];
 
 const EASE = "cubic-bezier(0.16,1,0.3,1)";

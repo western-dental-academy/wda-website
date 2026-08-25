@@ -6,6 +6,7 @@ import Link from 'next/link'
 import AdminStudentTable from '@/components/AdminStudentTable'
 import AdminAnnouncements from '@/components/AdminAnnouncements'
 import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration } from '@/components/AdminWorkshopRegistrations'
+import AdminWorkshopDates, { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
 import AdminStaffCalendar from '@/components/AdminStaffCalendar'
 import AdminTaskManager, { type Task } from '@/components/AdminTaskManager'
 import { stripe } from '@/lib/stripe/client'
@@ -95,7 +96,7 @@ export default async function AdminPage() {
       `*[_type == "program"] | order(title asc){ _id, title }`
     ),
     client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity }`
+      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active }`
     ),
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
@@ -290,6 +291,12 @@ export default async function AdminPage() {
 
         {/* Staff calendar */}
         <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
+
+        {/* Workshop date manager */}
+        <AdminWorkshopDates
+          initialDates={workshopDates as WorkshopDateItem[]}
+          registrations={workshopRegs as WorkshopRegistration[]}
+        />
 
         {/* Workshop registrations */}
         <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />

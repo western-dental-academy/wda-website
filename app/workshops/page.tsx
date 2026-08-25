@@ -36,7 +36,7 @@ const workshops: Workshop[] = [
     price: 40,
     duration: "1.5 hours",
     description:
-      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice. There are three different workshops to choose from, each targeting different areas of the body.",
+      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice. There will be 3 separate sessions available focusing on different areas of the body. Each session targets a specific area, so you can attend one or all three.",
     highlights: [
       "Ergonomic risk factors and posture principles for dental practice",
       "Guided breathwork techniques to reduce tension and support focus",

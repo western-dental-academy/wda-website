@@ -48,6 +48,9 @@ const STEPS = [
 
 const WORKSHOP_OPTIONS = [
   { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 40 },
+  { label: "Ergonomics in Dentistry: Hands and Spine", price: 40 },
+  { label: "Ergonomics in Dentistry: Hips and Hamstrings", price: 40 },
+  { label: "Ergonomics in Dentistry: Neck and Shoulders", price: 40 },
 ];
 
 const CATEGORIES = [

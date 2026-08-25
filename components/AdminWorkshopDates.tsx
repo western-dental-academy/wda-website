@@ -23,6 +23,9 @@ interface Props {
 
 const WORKSHOP_OPTIONS = [
   'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer',
+  'Ergonomics in Dentistry: Hands and Spine',
+  'Ergonomics in Dentistry: Hips and Hamstrings',
+  'Ergonomics in Dentistry: Neck and Shoulders',
 ]
 
 const CATEGORY_OPTIONS = [

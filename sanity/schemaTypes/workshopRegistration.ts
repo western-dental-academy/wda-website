@@ -35,6 +35,9 @@ export default defineType({
       options: {
         list: [
           { title: 'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer', value: 'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer' },
+          { title: 'Ergonomics in Dentistry: Hands and Spine', value: 'Ergonomics in Dentistry: Hands and Spine' },
+          { title: 'Ergonomics in Dentistry: Hips and Hamstrings', value: 'Ergonomics in Dentistry: Hips and Hamstrings' },
+          { title: 'Ergonomics in Dentistry: Neck and Shoulders', value: 'Ergonomics in Dentistry: Neck and Shoulders' },
           { title: 'NDAB Skills Refresher Workshop', value: 'NDAB Skills Refresher Workshop' },
           { title: 'Dental Practice Software Masterclass', value: 'Dental Practice Software Masterclass' },
           { title: 'Front Office Excellence Workshop', value: 'Front Office Excellence Workshop' },

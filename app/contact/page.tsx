@@ -525,7 +525,7 @@ export default function ContactPage() {
                 },
                 {
                   label: "Board Exam Prep",
-                  description: "Come see our modern facility in person.",
+                  description: "Prepare with confidence for your NDAEB Clinical Practice Evaluation with our guided practice workshops.",
                   href: "/national-board-guided-practice",
                   icon: (
                     <svg

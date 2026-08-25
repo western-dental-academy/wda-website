@@ -56,15 +56,30 @@ const BLANK_FORM = { title: '', description: '', assignedTo: '', dueDate: '', pr
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
+function getMountainDateString(dateStr: string) {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-CA', {
+    timeZone: 'America/Edmonton',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+}
+
 function todayStr() {
-  return new Date().toISOString().slice(0, 10)
+  return new Date().toLocaleDateString('en-CA', {
+    timeZone: 'America/Edmonton',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
 }
 
 function dueDateStatus(dueDate: string | undefined, status: string) {
   if (!dueDate || status === 'Complete') return 'none'
   const t = todayStr()
-  if (dueDate < t)  return 'overdue'
-  if (dueDate === t) return 'today'
+  const d = getMountainDateString(dueDate)
+  if (d < t)  return 'overdue'
+  if (d === t) return 'today'
   return 'future'
 }
 
@@ -97,7 +112,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
       if (tab === 'mine'    && task.assignedTo !== currentUserEmail) return false
       if (tab === 'byMe'   && task.assignedBy !== currentUserEmail) return false
       if (tab === 'overdue' && (
-        !task.dueDate || task.status === 'Complete' || task.dueDate >= t
+        !task.dueDate || task.status === 'Complete' || getMountainDateString(task.dueDate) >= t
       )) return false
       if (statusFilter   !== 'all' && task.status   !== statusFilter)   return false
       if (priorityFilter !== 'all' && task.priority !== priorityFilter) return false
@@ -341,7 +356,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
               {label}
               {key === 'overdue' && (() => {
                 const t = todayStr()
-                const n = tasks.filter(task => task.dueDate && task.dueDate < t && task.status !== 'Complete').length
+                const n = tasks.filter(task => task.dueDate && getMountainDateString(task.dueDate) < t && task.status !== 'Complete').length
                 return n > 0 ? (
                   <span
                     className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-[9px] font-bold"

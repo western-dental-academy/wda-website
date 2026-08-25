@@ -11,6 +11,7 @@ export interface WorkshopDateItem {
   date: string
   capacity: number
   active: boolean
+  category: string
 }
 
 interface Props {
@@ -24,7 +25,25 @@ const WORKSHOP_OPTIONS = [
   'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer',
 ]
 
-const BLANK_ADD = { workshop: WORKSHOP_OPTIONS[0], date: '', capacity: 15 }
+const CATEGORY_OPTIONS = [
+  { value: 'workshop',      label: 'Workshop'      },
+  { value: 'course',        label: 'Course'        },
+  { value: 'guest-speaker', label: 'Guest Speaker' },
+]
+
+const CATEGORY_COLOUR: Record<string, string> = {
+  'workshop':      '#16a34a',
+  'course':        '#378ADD',
+  'guest-speaker': '#8b5cf6',
+}
+
+const CATEGORY_LABEL: Record<string, string> = {
+  'workshop':      'Workshop',
+  'course':        'Course',
+  'guest-speaker': 'Guest Speaker',
+}
+
+const BLANK_ADD = { workshop: WORKSHOP_OPTIONS[0], date: '', capacity: 15, category: 'workshop' }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -81,11 +100,11 @@ function borderColor(date: WorkshopDateItem, regCount: number): string {
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
 function FormFields({
-  workshop, date, capacity,
+  workshop, date, capacity, category,
   onChange,
   showActiveToggle, active, onActiveChange,
 }: {
-  workshop: string; date: string; capacity: number
+  workshop: string; date: string; capacity: number; category: string
   onChange: (field: string, value: string | number) => void
   showActiveToggle?: boolean; active?: boolean; onActiveChange?: (v: boolean) => void
 }) {
@@ -96,8 +115,23 @@ function FormFields({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {/* Category */}
+      <div>
+        <label className={labelCls} style={labelStyle}>Category</label>
+        <select
+          value={category}
+          onChange={e => onChange('category', e.target.value)}
+          className={inputCls + ' cursor-pointer'}
+          style={inputStyle}
+        >
+          {CATEGORY_OPTIONS.map(c => (
+            <option key={c.value} value={c.value}>{c.label}</option>
+          ))}
+        </select>
+      </div>
+
       {/* Workshop */}
-      <div className="sm:col-span-2">
+      <div>
         <label className={labelCls} style={labelStyle}>Workshop</label>
         <select
           value={workshop}
@@ -112,7 +146,7 @@ function FormFields({
       </div>
 
       {/* Date + time */}
-      <div>
+      <div className="sm:col-span-1">
         <label className={labelCls} style={labelStyle}>
           Date &amp; Time <span className="normal-case font-normal">(Mountain Time)</span>
         </label>
@@ -176,7 +210,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
   const [addBusy,    setAddBusy]    = useState(false)
   const [addError,   setAddError]   = useState('')
 
-  const [editForm,   setEditForm]   = useState({ workshop: '', date: '', capacity: 15, active: true })
+  const [editForm,   setEditForm]   = useState({ workshop: '', date: '', capacity: 15, active: true, category: 'workshop' })
   const [editBusy,   setEditBusy]   = useState(false)
   const [editError,  setEditError]  = useState('')
 
@@ -193,6 +227,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
       date:     utcToMountainLocal(d.date),
       capacity: d.capacity,
       active:   d.active,
+      category: d.category ?? 'workshop',
     })
     setEditError('')
     setShowAdd(false)
@@ -213,6 +248,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
           workshop: addForm.workshop,
           date:     mountainLocalToUTC(addForm.date),
           capacity: addForm.capacity,
+          category: addForm.category,
         }),
       })
       if (!res.ok) { const j = await res.json(); throw new Error(j.error ?? 'Error') }
@@ -242,6 +278,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
           date:     mountainLocalToUTC(editForm.date),
           capacity: editForm.capacity,
           active:   editForm.active,
+          category: editForm.category,
         }),
       })
       if (!res.ok) { const j = await res.json(); throw new Error(j.error ?? 'Error') }
@@ -255,6 +292,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
             date:     mountainLocalToUTC(editForm.date),
             capacity: editForm.capacity,
             active:   editForm.active,
+            category: editForm.category,
           } : d)
           .sort((a, b) => a.date.localeCompare(b.date))
       )
@@ -317,6 +355,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
               workshop={addForm.workshop}
               date={addForm.date}
               capacity={addForm.capacity}
+              category={addForm.category}
               onChange={(field, val) => setAddForm(f => ({ ...f, [field]: val }))}
             />
             {addError && <p className="text-xs mt-3" style={{ color: '#dc2626' }}>{addError}</p>}
@@ -372,6 +411,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
                     workshop={editForm.workshop}
                     date={editForm.date}
                     capacity={editForm.capacity}
+                    category={editForm.category}
                     onChange={(field, val) => setEditForm(f => ({ ...f, [field]: val }))}
                     showActiveToggle
                     active={editForm.active}
@@ -427,6 +467,17 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
 
                 {/* Capacity + registration count + status */}
                 <div className="flex flex-wrap items-center gap-2">
+                  {/* Category badge */}
+                  <span
+                    className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                    style={{
+                      backgroundColor: `${CATEGORY_COLOUR[d.category ?? 'workshop']}18`,
+                      color: CATEGORY_COLOUR[d.category ?? 'workshop'],
+                    }}
+                  >
+                    {CATEGORY_LABEL[d.category ?? 'workshop']}
+                  </span>
+
                   <span
                     className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
                     style={{

@@ -17,6 +17,7 @@ interface WorkshopDate {
   workshop: string
   date: string
   capacity: number
+  category?: string
 }
 
 interface Props {
@@ -31,6 +32,18 @@ const TYPE_META: Record<string, { bg: string; text: string; label: string }> = {
   sick:     { bg: '#dc2626', text: '#fff', label: 'Sick Day' },
   personal: { bg: '#E67E22', text: '#fff', label: 'Day Off'  },
   unpaid:   { bg: '#E67E22', text: '#fff', label: 'Day Off'  },
+}
+
+const CATEGORY_COLOUR: Record<string, string> = {
+  'workshop':      '#16a34a',
+  'course':        '#378ADD',
+  'guest-speaker': '#8b5cf6',
+}
+
+const CATEGORY_LABEL: Record<string, string> = {
+  'workshop':      'Workshop',
+  'course':        'Course',
+  'guest-speaker': 'Guest Speaker',
 }
 
 const MONTH_NAMES = [
@@ -175,10 +188,12 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
         {/* Legend */}
         <div className="flex flex-wrap gap-4 mt-3">
           {[
-            { label: 'Vacation', bg: '#378ADD' },
-            { label: 'Sick Day', bg: '#dc2626' },
-            { label: 'Day Off',  bg: '#E67E22' },
-            { label: 'Workshop', bg: '#16a34a' },
+            { label: 'Vacation',      bg: '#378ADD' },
+            { label: 'Sick Day',      bg: '#dc2626' },
+            { label: 'Day Off',       bg: '#E67E22' },
+            { label: 'Workshop',      bg: '#16a34a' },
+            { label: 'Course',        bg: '#378ADD' },
+            { label: 'Guest Speaker', bg: '#8b5cf6' },
           ].map(({ label, bg }) => (
             <span key={label} className="flex items-center gap-1.5 text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: bg }} />
@@ -263,16 +278,20 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                           +{entries.length - 3} more
                         </div>
                       )}
-                      {workshopEntries.map((w, j) => (
-                        <div
-                          key={`ws-${j}`}
-                          className="text-[10px] font-medium px-1 rounded truncate leading-[14px]"
-                          style={{ backgroundColor: '#16a34a', color: '#fff' }}
-                          title={`Workshop: ${w.workshop}`}
-                        >
-                          Workshop
-                        </div>
-                      ))}
+                      {workshopEntries.map((w, j) => {
+                        const col = CATEGORY_COLOUR[w.category ?? 'workshop'] ?? '#16a34a'
+                        const lbl = CATEGORY_LABEL[w.category ?? 'workshop'] ?? 'Workshop'
+                        return (
+                          <div
+                            key={`ws-${j}`}
+                            className="text-[10px] font-medium px-1 rounded truncate leading-[14px]"
+                            style={{ backgroundColor: col, color: '#fff' }}
+                            title={`${lbl}: ${w.workshop}`}
+                          >
+                            {lbl}
+                          </div>
+                        )
+                      })}
                     </div>
                   </>
                 )}
@@ -322,7 +341,10 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                   </div>
                 )
               })}
-              {selectedWorkshops.map((w) => (
+              {selectedWorkshops.map((w) => {
+                const col = CATEGORY_COLOUR[w.category ?? 'workshop'] ?? '#16a34a'
+                const lbl = CATEGORY_LABEL[w.category ?? 'workshop'] ?? 'Workshop'
+                return (
                 <div key={w._id} className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <span className="text-sm font-medium block" style={{ color: '#1E3560' }}>
@@ -334,12 +356,13 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                   </div>
                   <span
                     className="shrink-0 text-[11px] font-bold px-2.5 py-0.5 rounded-full"
-                    style={{ backgroundColor: '#16a34a18', color: '#16a34a', border: '1px solid #16a34a40' }}
+                    style={{ backgroundColor: `${col}18`, color: col, border: `1px solid ${col}40` }}
                   >
-                    Workshop
+                    {lbl}
                   </span>
                 </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>

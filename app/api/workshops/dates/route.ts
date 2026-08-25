@@ -18,9 +18,10 @@ export async function GET() {
         workshop: string
         date: string
         capacity: number
+        category: string
       }>>(
         `*[_type == "workshopDate" && active == true && date > $now] | order(date asc){
-          _id, workshop, date, capacity
+          _id, workshop, date, capacity, category
         }`,
         { now },
       ),
@@ -45,6 +46,7 @@ export async function GET() {
       workshop: d.workshop,
       date: d.date,
       capacity: d.capacity,
+      category: d.category ?? 'workshop',
       registered: countMap[d._id] ?? 0,
       isFull: (countMap[d._id] ?? 0) >= d.capacity,
     }))

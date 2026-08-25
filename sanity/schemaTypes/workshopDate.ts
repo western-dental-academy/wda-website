@@ -12,6 +12,21 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'category',
+      title: 'Category',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Workshop',      value: 'workshop' },
+          { title: 'Course',        value: 'course' },
+          { title: 'Guest Speaker', value: 'guest-speaker' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'workshop',
+      validation: Rule => Rule.required(),
+    }),
+    defineField({
       name: 'date',
       title: 'Date',
       type: 'datetime',

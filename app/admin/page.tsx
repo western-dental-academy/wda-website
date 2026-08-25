@@ -96,7 +96,7 @@ export default async function AdminPage() {
       `*[_type == "program"] | order(title asc){ _id, title }`
     ),
     client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active }`
+      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active, category }`
     ),
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){

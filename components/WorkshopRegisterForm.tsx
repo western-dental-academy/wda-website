@@ -24,6 +24,7 @@ interface WorkshopDate {
   capacity: number;
   registered: number;
   isFull: boolean;
+  category: string;
 }
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
@@ -48,6 +49,12 @@ const STEPS = [
 const WORKSHOP_OPTIONS = [
   { label: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer", price: 40 },
 ];
+
+const CATEGORIES = [
+  { value: "workshop",      label: "Workshops",      emoji: "🎓" },
+  { value: "course",        label: "Courses",         emoji: "📚" },
+  { value: "guest-speaker", label: "Guest Speakers",  emoji: "🎤" },
+] as const;
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -144,6 +151,8 @@ export default function WorkshopRegisterForm() {
   const [errors, setErrors]   = useState<Errors>({});
   const [redirecting, setRedirecting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categoryError, setCategoryError] = useState("");
 
   // Workshop dates fetched from API
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
@@ -185,10 +194,17 @@ export default function WorkshopRegisterForm() {
     }
 
     if (step === 2) {
+      if (!selectedCategory) {
+        setCategoryError("Please select a category to continue.");
+        setErrors({});
+        return false;
+      }
+      setCategoryError("");
       if (!data.workshop) e.workshop = "Please select a workshop.";
-      // Require a date selection if dates exist for the chosen workshop
       if (data.workshop) {
-        const hasDates = workshopDates.some((d) => d.workshop === data.workshop);
+        const hasDates = workshopDates.some(
+          (d) => d.workshop === data.workshop && d.category === selectedCategory
+        );
         if (hasDates && !data.workshopDateId) {
           e.workshopDateId = "Please select a date.";
         }
@@ -243,8 +259,19 @@ export default function WorkshopRegisterForm() {
   const feeCents     = amountCents > 0 ? calcFee(amountCents) : 0;
   const totalCents   = amountCents + feeCents;
 
-  // Dates available for the selected workshop
-  const availableDates = workshopDates.filter((d) => d.workshop === data.workshop);
+  // Workshops available in the selected category
+  const workshopsForCategory = selectedCategory
+    ? WORKSHOP_OPTIONS.filter((opt) =>
+        workshopDates.some(
+          (d) => d.category === selectedCategory && d.workshop === opt.label
+        )
+      )
+    : [];
+
+  // Dates available for the selected workshop + category
+  const availableDates = workshopDates.filter(
+    (d) => d.workshop === data.workshop && d.category === selectedCategory
+  );
   const hasDates = availableDates.length > 0;
 
   // Progress bar
@@ -411,7 +438,55 @@ export default function WorkshopRegisterForm() {
           </p>
 
           <div className="flex flex-col gap-5">
-            {/* Workshop dropdown */}
+            {/* Category selector */}
+            <div>
+              <p className="block text-xs font-semibold mb-3" style={{ color: "#1E3560" }}>
+                Category
+                <span className="ml-0.5" style={{ color: "#4A9FD4" }} aria-hidden>*</span>
+              </p>
+              {categoryError && (
+                <p className="text-xs font-medium mb-3" style={{ color: "#dc2626" }} role="alert">
+                  {categoryError}
+                </p>
+              )}
+              <div className="grid grid-cols-3 gap-3">
+                {CATEGORIES.map((cat) => {
+                  const isSelected = selectedCategory === cat.value;
+                  return (
+                    <button
+                      key={cat.value}
+                      type="button"
+                      onClick={() => {
+                        if (selectedCategory !== cat.value) {
+                          setSelectedCategory(cat.value);
+                          set("workshop", "");
+                          set("workshopDateId", "");
+                          set("preferredDate", "Contact us for available dates");
+                          setCategoryError("");
+                          setErrors((e) => ({ ...e, workshop: undefined, workshopDateId: undefined }));
+                        }
+                      }}
+                      className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl text-center transition-all duration-200"
+                      style={{
+                        backgroundColor: isSelected ? "rgba(30,53,96,0.06)" : "#ffffff",
+                        border: `2px solid ${isSelected ? "#1E3560" : "rgba(30,53,96,0.12)"}`,
+                      }}
+                    >
+                      <span className="text-2xl" aria-hidden>{cat.emoji}</span>
+                      <span
+                        className="text-xs font-bold leading-tight"
+                        style={{ color: isSelected ? "#1E3560" : "rgba(30,53,96,0.45)" }}
+                      >
+                        {cat.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Workshop dropdown — only shown after category selected */}
+            {selectedCategory && (
             <div>
               <FieldLabel htmlFor="reg-workshop">Workshop</FieldLabel>
               <div className="relative">
@@ -427,19 +502,24 @@ export default function WorkshopRegisterForm() {
                   className={`wda-input pr-10 cursor-pointer${errors.workshop ? " invalid" : ""}`}
                 >
                   <option value="">Select a workshop</option>
-                  {WORKSHOP_OPTIONS.map((o) => (
-                    <option key={o.label} value={o.label}>
-                      {o.label} — ${o.price} CAD
-                    </option>
-                  ))}
+                  {workshopsForCategory.length > 0 ? (
+                    workshopsForCategory.map((o) => (
+                      <option key={o.label} value={o.label}>
+                        {o.label} — ${o.price} CAD
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled value="">No workshops available in this category</option>
+                  )}
                 </select>
                 <Chevron />
               </div>
               <FieldError id="err-workshop" msg={errors.workshop} />
             </div>
+            )}
 
             {/* Date selection — dynamic based on available dates */}
-            {data.workshop && (
+            {selectedCategory && data.workshop && (
               datesLoading ? (
                 <p className="text-xs" style={{ color: "rgba(43,48,58,0.4)" }}>
                   Loading available dates…

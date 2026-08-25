@@ -45,11 +45,12 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { workshop, date, capacity, active } = body as {
+  const { workshop, date, capacity, active, category } = body as {
     workshop?: string
     date?: string
     capacity?: number
     active?: boolean
+    category?: string
   }
 
   const patch: Record<string, unknown> = {}
@@ -57,6 +58,7 @@ export async function PATCH(
   if (date     !== undefined) patch.date     = date
   if (capacity !== undefined) patch.capacity = Number(capacity)
   if (active   !== undefined) patch.active   = active
+  if (category !== undefined) patch.category = category
 
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })

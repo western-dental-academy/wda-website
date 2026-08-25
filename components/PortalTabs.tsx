@@ -51,6 +51,7 @@ export interface SerializedWorkshopDate {
   workshop: string
   date: string
   capacity: number
+  category: string
 }
 
 export interface SerializedWorkshopRegistration {
@@ -97,6 +98,18 @@ const STATUS_COLOUR: Record<string, string> = {
   enrolled: '#22c55e',
   rejected: '#dc2626',
   withdrawn: '#888888',
+}
+
+const CATEGORY_COLOUR: Record<string, string> = {
+  'workshop':      '#16a34a',
+  'course':        '#378ADD',
+  'guest-speaker': '#8b5cf6',
+}
+
+const CATEGORY_LABEL: Record<string, string> = {
+  'workshop':      'Workshop',
+  'course':        'Course',
+  'guest-speaker': 'Guest Speaker',
 }
 
 const TABS = [
@@ -648,12 +661,16 @@ export default function PortalTabs({
                             style={{ backgroundColor: isToday ? 'rgba(255,255,255,0.65)' : '#378ADD' }}
                           />
                         ) : null}
-                        {workshops && (
-                          <div
-                            className="w-1.5 h-1.5 rounded-full"
-                            style={{ backgroundColor: isToday ? 'rgba(22,163,74,0.85)' : '#16a34a' }}
-                          />
-                        )}
+                        {workshops && [...new Set(workshops.map(w => w.category ?? 'workshop'))].map(cat => {
+                          const col = CATEGORY_COLOUR[cat] ?? '#16a34a'
+                          return (
+                            <div
+                              key={cat}
+                              className="w-1.5 h-1.5 rounded-full"
+                              style={{ backgroundColor: isToday ? col + 'd9' : col }}
+                            />
+                          )
+                        })}
                       </div>
                     )}
                   </button>
@@ -677,6 +694,14 @@ export default function PortalTabs({
               <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#16a34a' }} />
                 <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Workshop</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#378ADD' }} />
+                <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Course</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#8b5cf6' }} />
+                <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Guest Speaker</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div
@@ -736,17 +761,20 @@ export default function PortalTabs({
                         </div>
                       </div>
                     ))}
-                    {wks.map((w) => (
+                    {wks.map((w) => {
+                      const catCol = CATEGORY_COLOUR[w.category ?? 'workshop'] ?? '#16a34a'
+                      const catLbl = CATEGORY_LABEL[w.category ?? 'workshop'] ?? 'Workshop'
+                      return (
                       <div
                         key={`w-${w._id}`}
                         className="flex items-center justify-between gap-3 rounded-lg px-4 py-3 bg-white"
                         style={{ border: '1px solid rgba(30,53,96,0.07)' }}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: '#16a34a' }} />
+                          <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: catCol }} />
                           <div className="min-w-0">
                             <span className="text-sm font-medium" style={{ color: '#1E3560' }}>{w.workshop}</span>
-                            <span className="text-xs ml-2" style={{ color: 'rgba(43,48,58,0.4)' }}>Workshop</span>
+                            <span className="text-xs ml-2" style={{ color: 'rgba(43,48,58,0.4)' }}>{catLbl}</span>
                           </div>
                         </div>
                         {registeredDateIds.has(w._id) ? (
@@ -766,7 +794,8 @@ export default function PortalTabs({
                           </button>
                         )}
                       </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
               )

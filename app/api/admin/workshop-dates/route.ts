@@ -35,7 +35,7 @@ export async function GET() {
 
   try {
     const dates = await client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active }`
+      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active, category }`
     )
     return NextResponse.json(dates)
   } catch (err) {
@@ -53,10 +53,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { workshop, date, capacity } = body as {
+  const { workshop, date, capacity, category } = body as {
     workshop?: string
     date?: string
     capacity?: number
+    category?: string
   }
 
   if (!workshop?.trim()) return NextResponse.json({ error: 'workshop is required' }, { status: 400 })
@@ -69,11 +70,12 @@ export async function POST(req: NextRequest) {
       workshop: workshop.trim(),
       date:     date.trim(),
       capacity: Number(capacity),
+      category: category ?? 'workshop',
       active:   true,
     })
 
     const doc = await client.fetch(
-      `*[_id == $id][0]{ _id, workshop, date, capacity, active }`,
+      `*[_id == $id][0]{ _id, workshop, date, capacity, active, category }`,
       { id: created._id }
     )
     return NextResponse.json(doc, { status: 201 })

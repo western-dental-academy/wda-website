@@ -144,6 +144,20 @@ defineField({
       type: 'text',
       description: 'Staff notes — not visible to student',
     }),
+    defineField({
+      name: 'staffNotes',
+      title: 'Staff Notes',
+      type: 'array',
+      of: [{
+        type: 'object',
+        fields: [
+          { name: 'note',     title: 'Note',      type: 'text' },
+          { name: 'addedBy',  title: 'Added By',  type: 'string' },
+          { name: 'addedAt',  title: 'Added At',  type: 'datetime' },
+        ],
+      }],
+      description: 'Internal staff notes — not visible to student',
+    }),
   ],
   preview: {
     select: {

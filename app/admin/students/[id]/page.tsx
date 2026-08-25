@@ -6,6 +6,7 @@ import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
 import { getMoodleProgress, getMoodleGrades, getMoodleCourseContents } from '@/lib/moodle/client'
 import StudentActions from '@/components/StudentActions'
+import StudentNotes, { type StaffNote } from '@/components/StudentNotes'
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -149,7 +150,8 @@ export default async function StudentProfilePage({
       moodleUserId, stripeCustomerId, stripePaymentIntentId, clerkUserId,
       certificateId, certificateIssuedDate,
       program->{ _id, title, moodleCourseId },
-      transcriptFile { asset->{ _id, url, originalFilename } }
+      transcriptFile { asset->{ _id, url, originalFilename } },
+      staffNotes[] { _key, note, addedBy, addedAt }
     }`,
     { id }
   )
@@ -424,6 +426,15 @@ export default async function StudentProfilePage({
                 </div>
               </>
             )}
+          </Card>
+
+          {/* Staff Notes */}
+          <Card title="Staff Notes">
+            <StudentNotes
+              initialNotes={(student.staffNotes ?? []) as StaffNote[]}
+              studentId={student._id}
+              currentUserEmail={adminEmail}
+            />
           </Card>
 
           {/* Timeline */}

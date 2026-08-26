@@ -5,7 +5,7 @@ import { createClient } from '@sanity/client'
 import Link from 'next/link'
 import AdminStudentTable from '@/components/AdminStudentTable'
 import AdminAnnouncements from '@/components/AdminAnnouncements'
-import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration } from '@/components/AdminWorkshopRegistrations'
+import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration, type WorkshopWaitlistEntry } from '@/components/AdminWorkshopRegistrations'
 import AdminWorkshopDates, { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
 import AdminStaffCalendar from '@/components/AdminStaffCalendar'
 import AdminTaskManager, { type Task } from '@/components/AdminTaskManager'
@@ -85,7 +85,7 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
 
-  const [announcements, programmes, workshopDates, workshopRegs, staffTimeOff, rawTasks] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -102,6 +102,11 @@ export default async function AdminPage() {
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
         _id, firstName, lastName, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId
+      }`
+    ),
+    client.fetch(
+      `*[_type == "workshopWaitlist"] | order(joinedAt asc){
+        _id, firstName, lastName, email, phone, workshopDateId, joinedAt, notified, notifiedAt
       }`
     ),
     client.fetch(
@@ -167,6 +172,7 @@ export default async function AdminPage() {
       date: d.date,
       capacity: d.capacity,
       registrations: (workshopRegs as WorkshopRegistration[]).filter((r) => r.workshopDateId === d._id),
+      waitlist: (workshopWaitlist as WorkshopWaitlistEntry[]).filter((w) => w.workshopDateId === d._id),
     }))
 
   return (
@@ -225,6 +231,7 @@ export default async function AdminPage() {
         <AdminWorkshopDates
           initialDates={workshopDates as WorkshopDateItem[]}
           registrations={workshopRegs as WorkshopRegistration[]}
+          waitlist={workshopWaitlist as WorkshopWaitlistEntry[]}
         />
 
         {/* Workshop registrations */}

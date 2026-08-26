@@ -77,7 +77,10 @@ export default async function PortalPage() {
       { programId: student?.program?._id ?? '' }
     ),
     client.fetch(
-      `*[_type == "workshopDate" && active == true] | order(date asc){ _id, workshop, date, capacity, category }`
+      `*[_type == "workshopDate" && active == true] | order(date asc){
+        _id, workshop, date, capacity, category,
+        "registered": count(*[_type == "workshopRegistration" && workshopDateId == ^._id && stripePaymentStatus == "paid"])
+      }`
     ) as Promise<SerializedWorkshopDate[]>,
     client.fetch(
       `*[_type == "workshopRegistration" && email == $email && stripePaymentStatus == "paid"]{ workshopDateId }`,

@@ -17,12 +17,25 @@ export interface WorkshopRegistration {
   workshopDateId?: string;
 }
 
+export interface WorkshopWaitlistEntry {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  workshopDateId: string;
+  joinedAt: string;
+  notified: boolean;
+  notifiedAt?: string;
+}
+
 export interface DateGroup {
   dateId: string;
   workshop: string;
   date: string;
   capacity: number;
   registrations: WorkshopRegistration[];
+  waitlist: WorkshopWaitlistEntry[];
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -121,12 +134,68 @@ function CheckInButton({
   );
 }
 
+// ─── Notify waitlist button ────────────────────────────────────────────────────
+
+function NotifyButton({ entry, workshop, workshopDate, onNotified }: {
+  entry: WorkshopWaitlistEntry;
+  workshop: string;
+  workshopDate: string;
+  onNotified: (id: string) => void;
+}) {
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState('');
+
+  async function handle() {
+    setLoading(true);
+    setError('');
+    try {
+      const res = await fetch('/api/admin/workshop-waitlist-notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          waitlistId:     entry._id,
+          firstName:      entry.firstName,
+          lastName:       entry.lastName,
+          recipientEmail: entry.email,
+          workshop,
+          workshopDate,
+        }),
+      });
+      if (!res.ok) {
+        const j = await res.json();
+        throw new Error(j.error ?? 'Failed to notify');
+      }
+      onNotified(entry._id);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-start gap-1">
+      <button
+        onClick={handle}
+        disabled={loading}
+        className="rounded-lg px-3 py-1.5 text-xs font-bold text-white transition-colors duration-150 hover:bg-[#CF6D17] disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ backgroundColor: '#E67E22' }}
+      >
+        {loading ? '…' : 'Notify'}
+      </button>
+      {error && <p className="text-[11px]" style={{ color: '#dc2626' }}>{error}</p>}
+    </div>
+  );
+}
+
 // ─── Group tab ─────────────────────────────────────────────────────────────────
 
 function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinancials: boolean }) {
   const [registrations, setRegistrations] = useState<WorkshopRegistration[]>(
     group.registrations
   );
+  const [waitlist, setWaitlist] = useState<WorkshopWaitlistEntry[]>(group.waitlist);
+  const [subTab, setSubTab] = useState<'registrations' | 'waitlist'>('registrations');
 
   const paidCount     = registrations.filter((r) => r.stripePaymentStatus === "paid").length;
   const checkedInCount = registrations.filter((r) => r.checkedIn).length;
@@ -139,6 +208,14 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
     );
   }
 
+  function handleNotified(id: string) {
+    setWaitlist(prev =>
+      prev.map(e => e._id === id ? { ...e, notified: true, notifiedAt: new Date().toISOString() } : e)
+    );
+  }
+
+  const workshopDateDisplay = fmtDate(group.date);
+
   return (
     <div>
       {/* Stats strip */}
@@ -148,6 +225,7 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
           { label: "Registered", value: paidCount, colour: "#378ADD" },
           { label: "Checked In", value: checkedInCount, colour: "#22c55e" },
           { label: "Open Spots", value: Math.max(0, group.capacity - paidCount), colour: "#E67E22" },
+          { label: "Waitlisted", value: waitlist.length, colour: "#8b5cf6" },
         ].map(({ label, value, colour }) => (
           <div
             key={label}
@@ -160,20 +238,36 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
         ))}
 
         {/* CSV button */}
-        <button
-          onClick={() => downloadCSV({ ...group, registrations }, canViewFinancials)}
-          className="ml-auto rounded-xl px-5 py-3 text-xs font-bold transition-colors hover:bg-[#1E3560] hover:text-white self-center"
-          style={{
-            border: "1.5px solid rgba(30,53,96,0.18)",
-            color: "#1E3560",
-          }}
-        >
-          ↓ Download CSV
-        </button>
+        {subTab === 'registrations' && (
+          <button
+            onClick={() => downloadCSV({ ...group, registrations }, canViewFinancials)}
+            className="ml-auto rounded-xl px-5 py-3 text-xs font-bold transition-colors hover:bg-[#1E3560] hover:text-white self-center"
+            style={{ border: "1.5px solid rgba(30,53,96,0.18)", color: "#1E3560" }}
+          >
+            ↓ Download CSV
+          </button>
+        )}
       </div>
 
-      {/* Table */}
-      {registrations.length === 0 ? (
+      {/* Sub-tab selector */}
+      <div className="flex gap-1 mb-5">
+        {(['registrations', 'waitlist'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setSubTab(tab)}
+            className="rounded-lg px-4 py-1.5 text-xs font-bold transition-all duration-150 capitalize"
+            style={{
+              backgroundColor: subTab === tab ? '#1E3560' : 'rgba(30,53,96,0.06)',
+              color: subTab === tab ? '#ffffff' : 'rgba(30,53,96,0.6)',
+            }}
+          >
+            {tab === 'registrations' ? `Registrations (${registrations.length})` : `Waitlist (${waitlist.length})`}
+          </button>
+        ))}
+      </div>
+
+      {/* Registrations table */}
+      {subTab === 'registrations' && (registrations.length === 0 ? (
         <p className="text-sm py-6 text-center" style={{ color: "rgba(43,48,58,0.4)" }}>
           No registrations for this date yet.
         </p>
@@ -248,7 +342,79 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
             </tbody>
           </table>
         </div>
-      )}
+      ))}
+
+      {/* Waitlist table */}
+      {subTab === 'waitlist' && (waitlist.length === 0 ? (
+        <p className="text-sm py-6 text-center" style={{ color: "rgba(43,48,58,0.4)" }}>
+          No one on the waitlist for this date.
+        </p>
+      ) : (
+        <div className="overflow-x-auto rounded-xl" style={{ border: "1.5px solid rgba(30,53,96,0.09)" }}>
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr style={{ backgroundColor: "#F4F7F9" }}>
+                {["Name", "Email", "Phone", "Joined", "Status", "Notify"].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-4 py-3 text-[11px] font-bold uppercase tracking-wider"
+                    style={{ color: "rgba(30,53,96,0.45)" }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y bg-white">
+              {waitlist.map((e) => (
+                <tr key={e._id} style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}>
+                  <td className="px-4 py-3 font-semibold whitespace-nowrap" style={{ color: "#1E3560" }}>
+                    {e.firstName} {e.lastName}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(43,48,58,0.65)" }}>
+                    {e.email}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(43,48,58,0.55)" }}>
+                    {e.phone ?? '—'}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(43,48,58,0.55)" }}>
+                    {fmtDate(e.joinedAt)}
+                  </td>
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    {e.notified ? (
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold"
+                        style={{ backgroundColor: "rgba(34,197,94,0.1)", color: "#16a34a" }}
+                      >
+                        Notified {e.notifiedAt ? fmtDate(e.notifiedAt) : ''}
+                      </span>
+                    ) : (
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold"
+                        style={{ backgroundColor: "rgba(139,92,246,0.1)", color: "#8b5cf6" }}
+                      >
+                        Waiting
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    {e.notified ? (
+                      <span className="text-[11px]" style={{ color: "rgba(43,48,58,0.35)" }}>Sent</span>
+                    ) : (
+                      <NotifyButton
+                        entry={e}
+                        workshop={group.workshop}
+                        workshopDate={workshopDateDisplay}
+                        onNotified={handleNotified}
+                      />
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ))}
     </div>
   );
 }

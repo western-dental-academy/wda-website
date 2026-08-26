@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import type { WorkshopRegistration } from './AdminWorkshopRegistrations'
+import type { WorkshopRegistration, WorkshopWaitlistEntry } from './AdminWorkshopRegistrations'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -17,6 +17,7 @@ export interface WorkshopDateItem {
 interface Props {
   initialDates: WorkshopDateItem[]
   registrations: WorkshopRegistration[]
+  waitlist: WorkshopWaitlistEntry[]
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
@@ -92,6 +93,10 @@ function mountainLocalToUTC(localDT: string): string {
 
 function registeredCount(dateId: string, regs: WorkshopRegistration[]): number {
   return regs.filter(r => r.workshopDateId === dateId).length
+}
+
+function waitlistCount(dateId: string, wl: WorkshopWaitlistEntry[]): number {
+  return wl.filter(e => e.workshopDateId === dateId).length
 }
 
 function borderColor(date: WorkshopDateItem, regCount: number): string {
@@ -203,7 +208,7 @@ function FormFields({
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
-export default function AdminWorkshopDates({ initialDates, registrations }: Props) {
+export default function AdminWorkshopDates({ initialDates, registrations, waitlist }: Props) {
   const [dates,      setDates]      = useState<WorkshopDateItem[]>(initialDates)
   const [showAdd,    setShowAdd]    = useState(false)
   const [editingId,  setEditingId]  = useState<string | null>(null)
@@ -394,6 +399,7 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
 
         {dates.map(d => {
           const regCount  = registeredCount(d._id, registrations)
+          const wlCount   = waitlistCount(d._id, waitlist)
           const past      = isPast(d.date)
           const inactive  = !d.active || past
           const isBusy    = busyIds.has(d._id)
@@ -491,6 +497,15 @@ export default function AdminWorkshopDates({ initialDates, registrations }: Prop
                   >
                     {regCount}/{d.capacity} registered
                   </span>
+
+                  {wlCount > 0 && (
+                    <span
+                      className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: 'rgba(139,92,246,0.1)', color: '#8b5cf6' }}
+                    >
+                      {wlCount} on waitlist
+                    </span>
+                  )}
 
                   {/* Status badge */}
                   {past ? (

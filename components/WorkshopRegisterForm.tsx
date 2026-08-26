@@ -155,6 +155,9 @@ export default function WorkshopRegisterForm() {
   const [errors, setErrors]   = useState<Errors>({});
   const [redirecting, setRedirecting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
+  const [waitlistSuccess,    setWaitlistSuccess]    = useState(false);
+  const [waitlistError,      setWaitlistError]      = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryError, setCategoryError] = useState("");
   const [eligibilityConfirmed, setEligibilityConfirmed] = useState(false);
@@ -258,7 +261,35 @@ export default function WorkshopRegisterForm() {
     }
   }
 
+  async function handleWaitlist() {
+    setWaitlistSubmitting(true);
+    setWaitlistError("");
+    try {
+      const res = await fetch("/api/workshops/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName:      data.firstName,
+          lastName:       data.lastName,
+          email:          data.email,
+          phone:          data.phone,
+          workshop:       data.workshop,
+          workshopDateId: data.workshopDateId,
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error ?? "Something went wrong.");
+      setWaitlistSuccess(true);
+    } catch (err: unknown) {
+      setWaitlistError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+    } finally {
+      setWaitlistSubmitting(false);
+    }
+  }
+
   // Derived price values for step 3
+  const selectedDate     = workshopDates.find((d) => d.id === data.workshopDateId);
+  const isDateFull       = selectedDate?.isFull ?? false;
   const selectedWorkshop = WORKSHOP_OPTIONS.find((w) => w.label === data.workshop);
   const amountCents  = (selectedWorkshop?.price ?? 0) * 100;
   const feeCents     = amountCents > 0 ? calcFee(amountCents) : 0;
@@ -563,9 +594,9 @@ export default function WorkshopRegisterForm() {
                     >
                       <option value="">Select a date</option>
                       {availableDates.map((d) => (
-                        <option key={d.id} value={d.id} disabled={d.isFull}>
+                        <option key={d.id} value={d.id}>
                           {d.isFull
-                            ? `Full — ${formatWorkshopDate(d.date)}`
+                            ? `${formatWorkshopDate(d.date)} — Full (Join Waitlist)`
                             : `${formatWorkshopDate(d.date)} (${d.registered}/${d.capacity} registered)`}
                         </option>
                       ))}
@@ -631,7 +662,7 @@ export default function WorkshopRegisterForm() {
         </div>
       )}
 
-      {/* ── Step 3: Payment ── */}
+      {/* ── Step 3: Payment / Waitlist ── */}
       {step === 3 && (
         <div>
           <h2
@@ -639,10 +670,12 @@ export default function WorkshopRegisterForm() {
             className="text-xl font-bold text-[#1E3560] mb-1 focus:outline-none"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            Payment
+            {isDateFull ? "Join the Waitlist" : "Payment"}
           </h2>
           <p className="text-sm mb-8" style={{ color: "rgba(43,48,58,0.55)" }}>
-            Review your order and proceed to secure checkout. Payment is processed by Stripe.
+            {isDateFull
+              ? "This date is currently full. We'll contact you if a spot becomes available."
+              : "Review your order and proceed to secure checkout. Payment is processed by Stripe."}
           </p>
 
           {/* Order summary card */}
@@ -690,50 +723,68 @@ export default function WorkshopRegisterForm() {
               </div>
             )}
 
-            {/* Line items */}
-            <div className="bg-white">
-              <div
-                className="flex items-center justify-between px-6 py-4"
-                style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}
-              >
-                <div>
-                  <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
-                    {data.workshop}
-                  </p>
-                  <p className="text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
-                    Western Dental Academy — Workshop Registration
+            {/* Line items — payment only */}
+            {!isDateFull && (
+              <div className="bg-white">
+                <div
+                  className="flex items-center justify-between px-6 py-4"
+                  style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}
+                >
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
+                      {data.workshop}
+                    </p>
+                    <p className="text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+                      Western Dental Academy — Workshop Registration
+                    </p>
+                  </div>
+                  <p className="text-sm font-bold shrink-0 ml-4" style={{ color: "#1E3560" }}>
+                    {fmtCAD(amountCents)}
                   </p>
                 </div>
-                <p className="text-sm font-bold shrink-0 ml-4" style={{ color: "#1E3560" }}>
-                  {fmtCAD(amountCents)}
-                </p>
-              </div>
-              <div
-                className="flex items-center justify-between px-6 py-3"
-                style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}
-              >
-                <p className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
-                  Payment processing fee (3.3% + $0.30)
-                </p>
-                <p className="text-xs shrink-0 ml-4" style={{ color: "rgba(43,48,58,0.5)" }}>
-                  {fmtCAD(feeCents)}
-                </p>
-              </div>
-              <div className="flex items-center justify-between px-6 py-4">
-                <p
-                  className="text-sm font-bold uppercase tracking-wide"
-                  style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                <div
+                  className="flex items-center justify-between px-6 py-3"
+                  style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}
                 >
-                  Total
-                </p>
-                <p className="text-lg font-bold" style={{ color: "#1E3560" }}>
-                  {fmtCAD(totalCents)} CAD
-                </p>
+                  <p className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                    Payment processing fee (3.3% + $0.30)
+                  </p>
+                  <p className="text-xs shrink-0 ml-4" style={{ color: "rgba(43,48,58,0.5)" }}>
+                    {fmtCAD(feeCents)}
+                  </p>
+                </div>
+                <div className="flex items-center justify-between px-6 py-4">
+                  <p
+                    className="text-sm font-bold uppercase tracking-wide"
+                    style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                  >
+                    Total
+                  </p>
+                  <p className="text-lg font-bold" style={{ color: "#1E3560" }}>
+                    {fmtCAD(totalCents)} CAD
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
-          {checkoutError && (
+          {/* Waitlist error */}
+          {isDateFull && waitlistError && (
+            <div
+              className="mb-5 rounded-lg px-4 py-3 text-sm"
+              style={{
+                backgroundColor: "rgba(220,38,38,0.06)",
+                border: "1px solid rgba(220,38,38,0.2)",
+                color: "#dc2626",
+              }}
+              role="alert"
+            >
+              {waitlistError}
+            </div>
+          )}
+
+          {/* Checkout error */}
+          {!isDateFull && checkoutError && (
             <div
               className="mb-5 rounded-lg px-4 py-3 text-sm"
               style={{
@@ -747,72 +798,117 @@ export default function WorkshopRegisterForm() {
             </div>
           )}
 
-          <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.45)" }}>
-            You will be redirected to Stripe&apos;s secure checkout. After payment, you&apos;ll
-            receive a confirmation email at{" "}
-            <span className="font-semibold text-[#1E3560]">{data.email}</span>.
-          </p>
+          {!isDateFull && (
+            <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.45)" }}>
+              You will be redirected to Stripe&apos;s secure checkout. After payment, you&apos;ll
+              receive a confirmation email at{" "}
+              <span className="font-semibold text-[#1E3560]">{data.email}</span>.
+            </p>
+          )}
         </div>
       )}
 
       {/* ── Navigation ── */}
-      <div
-        className="flex items-center justify-between mt-8 pt-6"
-        style={{ borderTop: "1px solid rgba(30,53,96,0.08)" }}
-      >
-        {step > 1 ? (
-          <button
-            type="button"
-            onClick={back}
-            disabled={redirecting}
-            className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border transition-colors duration-200 hover:border-[#1E3560] hover:text-[#1E3560] disabled:opacity-40 disabled:cursor-not-allowed"
-            style={{ borderColor: "rgba(30,53,96,0.2)", color: "rgba(30,53,96,0.55)" }}
-          >
-            ← Back
-          </button>
-        ) : (
-          <div />
-        )}
+      {/* Hide nav entirely on waitlist success */}
+      {!(step === 3 && isDateFull && waitlistSuccess) && (
+        <div
+          className="flex items-center justify-between mt-8 pt-6"
+          style={{ borderTop: "1px solid rgba(30,53,96,0.08)" }}
+        >
+          {step > 1 ? (
+            <button
+              type="button"
+              onClick={back}
+              disabled={redirecting || waitlistSubmitting}
+              className="flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold border transition-colors duration-200 hover:border-[#1E3560] hover:text-[#1E3560] disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ borderColor: "rgba(30,53,96,0.2)", color: "rgba(30,53,96,0.55)" }}
+            >
+              ← Back
+            </button>
+          ) : (
+            <div />
+          )}
 
-        {step < 3 ? (
-          <button
-            type="button"
-            onClick={next}
-            disabled={step === 2 && isNationalBoard && !eligibilityConfirmed}
-            className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4] disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "#1E3560" }}
-          >
-            Continue →
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleCheckout}
-            disabled={redirecting}
-            className="flex items-center gap-2 rounded-lg px-7 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] disabled:opacity-70 disabled:cursor-not-allowed"
-            style={{ backgroundColor: "#E67E22" }}
-            aria-busy={redirecting}
-          >
-            {redirecting ? (
-              <>
-                <span
-                  className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white shrink-0"
-                  style={{ animation: "spin 0.75s linear infinite" }}
-                  aria-hidden
-                />
-                Redirecting…
-              </>
-            ) : (
-              <>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 shrink-0" aria-hidden>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                </svg>
-                Proceed to Checkout →
-              </>
-            )}
-          </button>
-        )}
-      </div>
+          {step < 3 ? (
+            <button
+              type="button"
+              onClick={next}
+              disabled={step === 2 && isNationalBoard && !eligibilityConfirmed}
+              className="flex items-center gap-2 rounded-lg px-6 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#4A9FD4] disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ backgroundColor: "#1E3560" }}
+            >
+              Continue →
+            </button>
+          ) : isDateFull ? (
+            <button
+              type="button"
+              onClick={handleWaitlist}
+              disabled={waitlistSubmitting}
+              className="flex items-center gap-2 rounded-lg px-7 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] disabled:opacity-70 disabled:cursor-not-allowed"
+              style={{ backgroundColor: "#E67E22" }}
+            >
+              {waitlistSubmitting ? (
+                <>
+                  <span
+                    className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white shrink-0"
+                    style={{ animation: "spin 0.75s linear infinite" }}
+                    aria-hidden
+                  />
+                  Submitting…
+                </>
+              ) : (
+                "Add to Waitlist"
+              )}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleCheckout}
+              disabled={redirecting}
+              className="flex items-center gap-2 rounded-lg px-7 py-2.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] disabled:opacity-70 disabled:cursor-not-allowed"
+              style={{ backgroundColor: "#E67E22" }}
+              aria-busy={redirecting}
+            >
+              {redirecting ? (
+                <>
+                  <span
+                    className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white shrink-0"
+                    style={{ animation: "spin 0.75s linear infinite" }}
+                    aria-hidden
+                  />
+                  Redirecting…
+                </>
+              ) : (
+                <>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 shrink-0" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                  </svg>
+                  Proceed to Checkout →
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Waitlist success */}
+      {step === 3 && isDateFull && waitlistSuccess && (
+        <div
+          className="mt-8 rounded-xl px-6 py-5 flex items-start gap-4"
+          style={{ backgroundColor: 'rgba(34,197,94,0.07)', border: '1.5px solid rgba(34,197,94,0.25)' }}
+          role="status"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} className="w-6 h-6 shrink-0 mt-0.5" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p className="text-sm font-bold mb-1" style={{ color: '#15803d' }}>You&apos;re on the waitlist!</p>
+            <p className="text-sm" style={{ color: 'rgba(21,128,61,0.8)' }}>
+              We&apos;ll reach out to <span className="font-semibold">{data.email}</span> if a spot opens up.
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

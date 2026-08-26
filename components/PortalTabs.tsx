@@ -52,6 +52,7 @@ export interface SerializedWorkshopDate {
   date: string
   capacity: number
   category: string
+  registered?: number
 }
 
 export interface SerializedWorkshopRegistration {
@@ -188,7 +189,41 @@ export default function PortalTabs({
   const [modalLoading,  setModalLoading]  = useState(false)
   const [modalError,    setModalError]    = useState('')
 
+  const [waitlistLoadingIds, setWaitlistLoadingIds] = useState<Set<string>>(new Set())
+  const [waitlistJoinedIds,  setWaitlistJoinedIds]  = useState<Set<string>>(new Set())
+  const [waitlistErrors,     setWaitlistErrors]     = useState<Record<string, string>>({})
+
   const registeredDateIds = new Set(myWorkshopRegistrations.map(r => r.workshopDateId))
+
+  async function joinWaitlist(w: SerializedWorkshopDate) {
+    if (!student) return
+    setWaitlistLoadingIds(prev => new Set(prev).add(w._id))
+    setWaitlistErrors(prev => ({ ...prev, [w._id]: '' }))
+    try {
+      const res = await fetch('/api/workshops/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName:      student.firstName,
+          lastName:       student.lastName,
+          email:          userEmail,
+          phone:          student.phone ?? '',
+          workshop:       w.workshop,
+          workshopDateId: w._id,
+        }),
+      })
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error ?? 'Failed to join waitlist')
+      setWaitlistJoinedIds(prev => new Set(prev).add(w._id))
+    } catch (err: unknown) {
+      setWaitlistErrors(prev => ({
+        ...prev,
+        [w._id]: err instanceof Error ? err.message : 'Something went wrong',
+      }))
+    } finally {
+      setWaitlistLoadingIds(prev => { const n = new Set(prev); n.delete(w._id); return n })
+    }
+  }
 
   async function proceedToPayment() {
     if (!workshopModal || !student) return
@@ -787,6 +822,27 @@ export default function PortalTabs({
                           >
                             Registered ✓
                           </span>
+                        ) : waitlistJoinedIds.has(w._id) ? (
+                          <span
+                            className="shrink-0 rounded-full px-3 py-1 text-xs font-bold"
+                            style={{ backgroundColor: 'rgba(139,92,246,0.1)', color: '#8b5cf6' }}
+                          >
+                            On Waitlist ✓
+                          </span>
+                        ) : (w.registered ?? 0) >= w.capacity ? (
+                          <div className="flex flex-col items-end gap-1 shrink-0">
+                            <button
+                              onClick={() => joinWaitlist(w)}
+                              disabled={waitlistLoadingIds.has(w._id)}
+                              className="rounded-lg px-3 py-1.5 text-xs font-bold text-white disabled:opacity-50"
+                              style={{ backgroundColor: '#E67E22' }}
+                            >
+                              {waitlistLoadingIds.has(w._id) ? '…' : 'Join Waitlist'}
+                            </button>
+                            {waitlistErrors[w._id] && (
+                              <p className="text-[10px]" style={{ color: '#dc2626' }}>{waitlistErrors[w._id]}</p>
+                            )}
+                          </div>
                         ) : (
                           <button
                             onClick={() => { setWorkshopModal(w); setModalError('') }}

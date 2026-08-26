@@ -432,7 +432,7 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
       >
         <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
           <h2 className="text-sm font-bold" style={{ color: "#1E3560" }}>
-            Workshop Registrations
+            PD Registrations
           </h2>
         </div>
         <p className="px-6 py-8 text-sm text-center" style={{ color: "rgba(43,48,58,0.4)" }}>
@@ -452,7 +452,7 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
       {/* Header */}
       <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
         <h2 className="text-sm font-bold" style={{ color: "#1E3560" }}>
-          Workshop Registrations
+          PD Registrations
         </h2>
       </div>
 

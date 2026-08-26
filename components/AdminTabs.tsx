@@ -41,7 +41,7 @@ interface AdminTabsProps {
   outstandingBalance: number
 }
 
-type TabId = 'Overview' | 'Students' | 'Workshops' | 'Revenue'
+type TabId = 'Overview' | 'Students' | 'Professional Development' | 'Revenue'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -70,8 +70,8 @@ export default function AdminTabs({
   outstandingBalance,
 }: AdminTabsProps) {
   const tabs: TabId[] = canViewFinancials
-    ? ['Overview', 'Students', 'Workshops', 'Revenue']
-    : ['Overview', 'Students', 'Workshops']
+    ? ['Overview', 'Students', 'Professional Development', 'Revenue']
+    : ['Overview', 'Students', 'Professional Development']
 
   const [activeTab, setActiveTab] = useState<TabId>('Overview')
 
@@ -162,7 +162,7 @@ export default function AdminTabs({
       )}
 
       {/* ── Workshops ── */}
-      {activeTab === 'Workshops' && (
+      {activeTab === 'Professional Development' && (
         <div>
           <AdminWorkshopDates
             initialDates={workshopDates as WorkshopDateItem[]}

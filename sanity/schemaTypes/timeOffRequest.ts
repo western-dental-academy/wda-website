@@ -22,6 +22,7 @@ export default defineType({
           { title: 'Sick', value: 'sick' },
           { title: 'Personal', value: 'personal' },
           { title: 'Unpaid', value: 'unpaid' },
+          { title: 'Appointment', value: 'appointment' },
         ],
         layout: 'radio',
       },
@@ -44,6 +45,18 @@ export default defineType({
       title: 'Half Day',
       type: 'boolean',
       initialValue: false,
+    }),
+    defineField({
+      name: 'startTime',
+      title: 'Start Time',
+      type: 'string',
+      description: 'For appointments only — e.g. 10:00 AM',
+    }),
+    defineField({
+      name: 'endTime',
+      title: 'End Time',
+      type: 'string',
+      description: 'For appointments only — e.g. 12:00 PM',
     }),
     defineField({
       name: 'reason',

@@ -27,6 +27,7 @@ const TYPE_LABELS: Record<string, string> = {
   sick: 'Sick',
   personal: 'Personal',
   unpaid: 'Unpaid',
+  appointment: 'Appointment',
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
@@ -48,6 +49,8 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
   const [endDate, setEndDate] = useState('')
   const [halfDay, setHalfDay] = useState(false)
   const [reason, setReason] = useState('')
+  const [startTime, setStartTime] = useState('')
+  const [endTime, setEndTime] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -59,6 +62,10 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
       setError('End date must be on or after start date')
       return
     }
+    if (type === 'appointment' && (!startTime || !endTime)) {
+      setError('Please enter appointment start and end times')
+      return
+    }
 
     setSubmitting(true)
     setError(null)
@@ -67,7 +74,7 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
       const res = await fetch('/api/time/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, startDate, endDate, halfDay, reason }),
+        body: JSON.stringify({ type, startDate, endDate, halfDay, reason, ...(type === 'appointment' ? { startTime, endTime } : {}) }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed to submit')
@@ -89,6 +96,8 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
       setEndDate('')
       setHalfDay(false)
       setReason('')
+      setStartTime('')
+      setEndTime('')
       setType('vacation')
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to submit request')
@@ -161,6 +170,7 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
                   <option value="sick">Sick</option>
                   <option value="personal">Personal</option>
                   <option value="unpaid">Unpaid</option>
+                  <option value="appointment">Appointment</option>
                 </select>
               </div>
 
@@ -190,16 +200,45 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
                 </div>
               </div>
 
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={halfDay}
-                  onChange={e => setHalfDay(e.target.checked)}
-                  className="w-4 h-4 rounded"
-                  style={{ accentColor: '#0D3B6E' }}
-                />
-                <span className="text-sm" style={{ color: '#2B303A' }}>Half day</span>
-              </label>
+              {type === 'appointment' && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>Start Time</label>
+                    <input
+                      type="time"
+                      value={startTime}
+                      onChange={e => setStartTime(e.target.value)}
+                      required
+                      className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      style={inputStyle}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>End Time</label>
+                    <input
+                      type="time"
+                      value={endTime}
+                      onChange={e => setEndTime(e.target.value)}
+                      required
+                      className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-300"
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {type !== 'appointment' && (
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={halfDay}
+                    onChange={e => setHalfDay(e.target.checked)}
+                    className="w-4 h-4 rounded"
+                    style={{ accentColor: '#0D3B6E' }}
+                  />
+                  <span className="text-sm" style={{ color: '#2B303A' }}>Half day</span>
+                </label>
+              )}
 
               <div>
                 <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>

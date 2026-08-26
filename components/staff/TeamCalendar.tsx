@@ -15,10 +15,11 @@ interface Props {
 }
 
 const TYPE_COLORS: Record<string, { bg: string; text: string }> = {
-  vacation: { bg: '#378ADD', text: '#fff' },
-  sick:     { bg: '#f59e0b', text: '#fff' },
-  personal: { bg: '#8b5cf6', text: '#fff' },
-  unpaid:   { bg: '#6b7280', text: '#fff' },
+  vacation:    { bg: '#378ADD', text: '#fff' },
+  sick:        { bg: '#f59e0b', text: '#fff' },
+  personal:    { bg: '#8b5cf6', text: '#fff' },
+  unpaid:      { bg: '#6b7280', text: '#fff' },
+  appointment: { bg: '#E67E22', text: '#fff' },
 }
 
 const MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December']

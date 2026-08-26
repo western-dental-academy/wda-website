@@ -28,6 +28,7 @@ const TYPE_LABELS: Record<string, string> = {
   sick: 'Sick',
   personal: 'Personal',
   unpaid: 'Unpaid',
+  appointment: 'Appointment',
 }
 
 function formatDate(d: string): string {

@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
   if (!staff) return Response.json({ error: 'Staff member not found' }, { status: 404 })
 
   const body = await req.json()
-  const { type, startDate, endDate, halfDay = false, reason = '' } = body
+  const { type, startDate, endDate, halfDay = false, reason = '', startTime, endTime } = body
 
   if (!type || !startDate || !endDate) {
     return Response.json({ error: 'Missing required fields' }, { status: 400 })
@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
     reason: reason || undefined,
     status: 'pending',
     submittedAt: new Date().toISOString(),
+    ...(type === 'appointment' && startTime && endTime ? { startTime, endTime } : {}),
   })
 
   // Notify all active owners
@@ -102,7 +103,7 @@ export async function POST(req: NextRequest) {
       {}
     )
 
-    const typeLabel = ({ vacation: 'Vacation', sick: 'Sick', personal: 'Personal', unpaid: 'Unpaid' } as Record<string, string>)[type] ?? type
+    const typeLabel = ({ vacation: 'Vacation', sick: 'Sick', personal: 'Personal', unpaid: 'Unpaid', appointment: 'Appointment' } as Record<string, string>)[type] ?? type
     const dateRange = startDate === endDate ? startDate : `${startDate} to ${endDate}`
     const dayCount = countDays(startDate, endDate, halfDay)
     const dayLabel = halfDay ? 'half day' : `${dayCount} day${dayCount !== 1 ? 's' : ''}`
@@ -123,6 +124,7 @@ export async function POST(req: NextRequest) {
               <table style="width: 100%; border-collapse: collapse; font-size: 14px; color: #374151;">
                 <tr><td style="padding: 6px 0; color: #6b7280; width: 120px;">Type</td><td style="padding: 6px 0; font-weight: 600;">${typeLabel}</td></tr>
                 <tr><td style="padding: 6px 0; color: #6b7280;">Date</td><td style="padding: 6px 0; font-weight: 600;">${dateRange} (${dayLabel})</td></tr>
+                ${type === 'appointment' && startTime && endTime ? `<tr><td style="padding: 6px 0; color: #6b7280; width: 120px;">Time</td><td style="padding: 6px 0; font-weight: 600;">${startTime} – ${endTime}</td></tr>` : ''}
                 ${reason ? `<tr><td style="padding: 6px 0; color: #6b7280; vertical-align: top;">Reason</td><td style="padding: 6px 0;">${reason}</td></tr>` : ''}
               </table>
               <div style="margin-top: 24px;">

@@ -106,7 +106,7 @@ export default async function AdminPage() {
     ),
     client.fetch(
       `*[_type == "timeOffRequest" && status == "approved"] | order(startDate asc){
-        _id, type, startDate, endDate,
+        _id, type, startDate, endDate, startTime, endTime,
         staffMember->{ fullName }
       }`
     ),

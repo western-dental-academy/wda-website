@@ -9,6 +9,8 @@ interface TimeOffRequest {
   type: string
   startDate: string
   endDate: string
+  startTime?: string
+  endTime?: string
   staffMember: { fullName: string }
 }
 
@@ -29,10 +31,11 @@ interface Props {
 // ── Constants ──────────────────────────────────────────────────────────────────
 
 const TYPE_META: Record<string, { bg: string; text: string; label: string }> = {
-  vacation: { bg: '#378ADD', text: '#fff', label: 'Vacation' },
-  sick:     { bg: '#dc2626', text: '#fff', label: 'Sick Day' },
-  personal: { bg: '#E67E22', text: '#fff', label: 'Day Off'  },
-  unpaid:   { bg: '#E67E22', text: '#fff', label: 'Day Off'  },
+  vacation:    { bg: '#378ADD', text: '#fff', label: 'Vacation'    },
+  sick:        { bg: '#dc2626', text: '#fff', label: 'Sick Day'    },
+  personal:    { bg: '#E67E22', text: '#fff', label: 'Day Off'     },
+  unpaid:      { bg: '#E67E22', text: '#fff', label: 'Day Off'     },
+  appointment: { bg: '#E67E22', text: '#fff', label: 'Appointment' },
 }
 
 const CATEGORY_COLOUR: Record<string, string> = {
@@ -68,15 +71,15 @@ function buildDayMap(
   requests: TimeOffRequest[],
   year: number,
   month: number
-): Record<number, Array<{ fullName: string; type: string }>> {
+): Record<number, Array<{ fullName: string; type: string; startTime?: string; endTime?: string }>> {
   const daysInMonth = new Date(year, month, 0).getDate()
-  const map: Record<number, Array<{ fullName: string; type: string }>> = {}
+  const map: Record<number, Array<{ fullName: string; type: string; startTime?: string; endTime?: string }>> = {}
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${pad(month)}-${pad(d)}`
-    const entries: Array<{ fullName: string; type: string }> = []
+    const entries: Array<{ fullName: string; type: string; startTime?: string; endTime?: string }> = []
     for (const r of requests) {
       if (r.startDate <= dateStr && r.endDate >= dateStr) {
-        entries.push({ fullName: r.staffMember.fullName, type: r.type })
+        entries.push({ fullName: r.staffMember.fullName, type: r.type, startTime: r.startTime, endTime: r.endTime })
       }
     }
     if (entries.length) map[d] = entries
@@ -193,6 +196,7 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
             { label: 'Vacation',      bg: '#378ADD' },
             { label: 'Sick Day',      bg: '#dc2626' },
             { label: 'Day Off',       bg: '#E67E22' },
+            { label: 'Appointment',   bg: '#E67E22' },
             { label: 'Workshop',      bg: '#16a34a' },
             { label: 'Course',        bg: '#378ADD' },
             { label: 'Guest Speaker', bg: '#8b5cf6' },
@@ -264,14 +268,17 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                       {entries.slice(0, 3).map((e, j) => {
                         const meta = TYPE_META[e.type] ?? { bg: '#6b7280', text: '#fff', label: e.type }
                         const first = e.fullName.split(' ')[0]
+                        const pillText = e.type === 'appointment' && e.startTime && e.endTime
+                          ? `${first} — Appt ${e.startTime}–${e.endTime}`
+                          : first
                         return (
                           <div
                             key={j}
                             className="text-[10px] font-medium px-1 rounded truncate leading-[14px]"
                             style={{ backgroundColor: meta.bg, color: meta.text }}
-                            title={`${e.fullName} — ${meta.label}`}
+                            title={`${e.fullName} — ${meta.label}${e.type === 'appointment' && e.startTime ? ` (${e.startTime}–${e.endTime})` : ''}`}
                           >
-                            {first}
+                            {pillText}
                           </div>
                         )
                       })}
@@ -330,12 +337,19 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
               {selectedEntries.map((e, i) => {
                 const meta = TYPE_META[e.type] ?? { bg: '#6b7280', text: '#fff', label: e.type }
                 return (
-                  <div key={i} className="flex items-center justify-between">
-                    <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
-                      {e.fullName}
-                    </span>
+                  <div key={i} className="flex items-center justify-between gap-2">
+                    <div>
+                      <span className="text-sm font-medium block" style={{ color: '#1E3560' }}>
+                        {e.fullName}
+                      </span>
+                      {e.type === 'appointment' && e.startTime && e.endTime && (
+                        <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>
+                          {e.startTime} – {e.endTime}
+                        </span>
+                      )}
+                    </div>
                     <span
-                      className="text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                      className="text-[11px] font-bold px-2.5 py-0.5 rounded-full shrink-0"
                       style={{ backgroundColor: `${meta.bg}18`, color: meta.bg, border: `1px solid ${meta.bg}40` }}
                     >
                       {meta.label}

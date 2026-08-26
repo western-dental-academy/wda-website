@@ -15,6 +15,7 @@ export interface WorkshopRegistration {
   checkedIn: boolean;
   checkedInAt?: string;
   workshopDateId?: string;
+  certificateSent?: boolean;
 }
 
 export interface WorkshopWaitlistEntry {
@@ -227,7 +228,12 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
     setRegistrations((prev) =>
       prev.map((r) =>
         r._id === id
-          ? { ...r, checkedIn: newValue, checkedInAt: newValue ? new Date().toISOString() : undefined }
+          ? {
+              ...r,
+              checkedIn: newValue,
+              checkedInAt: newValue ? new Date().toISOString() : undefined,
+              certificateSent: newValue ? r.certificateSent : false,
+            }
           : r
       )
     );
@@ -345,12 +351,17 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     </td>
                   )}
                   <td className="px-4 py-3">
-                    <CheckInButton
-                      registrationId={r._id}
-                      checkedIn={r.checkedIn}
-                      checkedInAt={r.checkedInAt}
-                      onToggle={handleToggleCheckIn}
-                    />
+                    <div className="flex items-center gap-2">
+                      <CheckInButton
+                        registrationId={r._id}
+                        checkedIn={r.checkedIn}
+                        checkedInAt={r.checkedInAt}
+                        onToggle={handleToggleCheckIn}
+                      />
+                      {r.certificateSent && (
+                        <span title="Certificate sent" className="text-base leading-none">🎓</span>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

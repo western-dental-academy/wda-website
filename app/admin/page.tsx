@@ -101,7 +101,7 @@ export default async function AdminPage() {
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
         _id, firstName, lastName, email, workshop, registeredAt,
-        stripePaymentStatus, checkedIn, checkedInAt, workshopDateId
+        stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent
       }`
     ),
     client.fetch(

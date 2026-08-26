@@ -49,6 +49,19 @@ export async function PATCH(req: NextRequest) {
       .set({ checkedIn, checkedInAt: checkedIn ? new Date().toISOString() : null })
       .commit()
 
+    // Fire-and-forget certificate generation when checking someone in
+    if (checkedIn) {
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
+      fetch(`${siteUrl}/api/workshops/certificate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${process.env.CRON_SECRET}`,
+        },
+        body: JSON.stringify({ registrationId }),
+      }).catch((err) => console.error('Certificate send error:', err))
+    }
+
     return Response.json({ ok: true })
   } catch (err) {
     console.error('Workshop check-in error:', err)

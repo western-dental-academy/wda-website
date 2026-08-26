@@ -85,6 +85,12 @@ export default defineType({
       initialValue: () => new Date().toISOString(),
     }),
     defineField({
+      name: 'cadaNumber',
+      title: 'CADA Membership Number',
+      type: 'string',
+      description: 'Optional — entered by registrant during registration',
+    }),
+    defineField({
       name: 'workshopDateId',
       title: 'Workshop Date',
       type: 'string',
@@ -99,6 +105,13 @@ export default defineType({
       name: 'checkedInAt',
       title: 'Checked In At',
       type: 'datetime',
+    }),
+    defineField({
+      name: 'certificateSent',
+      title: 'Certificate Sent',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Set to true after the certificate of attendance email is successfully sent',
     }),
   ],
   preview: {

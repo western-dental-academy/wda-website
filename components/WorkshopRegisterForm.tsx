@@ -9,6 +9,7 @@ interface FormData {
   lastName: string;
   email: string;
   phone: string;
+  cadaNumber: string;
   workshop: string;
   preferredDate: string;
   workshopDateId: string;
@@ -34,6 +35,7 @@ const INITIAL: FormData = {
   lastName: "",
   email: "",
   phone: "",
+  cadaNumber: "",
   workshop: "",
   preferredDate: "Contact us for available dates",
   workshopDateId: "",
@@ -245,6 +247,7 @@ export default function WorkshopRegisterForm() {
           lastName: data.lastName,
           email: data.email,
           phone: data.phone,
+          cadaNumber: data.cadaNumber.trim() || undefined,
           workshop: data.workshop,
           preferredDate: data.preferredDate,
           workshopDateId: data.workshopDateId || undefined,
@@ -462,6 +465,20 @@ export default function WorkshopRegisterForm() {
                 className={`wda-input${errors.phone ? " invalid" : ""}`}
               />
               <FieldError id="err-phone" msg={errors.phone} />
+            </div>
+
+            <div>
+              <FieldLabel htmlFor="reg-cadaNumber" optional>
+                CADA Membership Number
+              </FieldLabel>
+              <input
+                id="reg-cadaNumber" type="text" placeholder="e.g. RDA12345"
+                value={data.cadaNumber} onChange={(e) => set("cadaNumber", e.target.value)}
+                className="wda-input"
+              />
+              <p className="mt-1.5 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+                If you are a CADA member, enter your membership number to have it included on your certificate of attendance.
+              </p>
             </div>
           </div>
         </div>

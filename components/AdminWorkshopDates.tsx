@@ -391,13 +391,13 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
 
       {/* ── Date list ── */}
       <div className="p-4 flex flex-col gap-3">
-        {dates.length === 0 && (
+        {dates.filter(d => !isPast(d.date)).length === 0 && (
           <p className="text-center py-10 text-sm" style={{ color: 'rgba(43,48,58,0.38)' }}>
-            No offerings yet — add one above.
+            No upcoming offerings — add one above.
           </p>
         )}
 
-        {dates.map(d => {
+        {dates.filter(d => !isPast(d.date)).map(d => {
           const regCount  = registeredCount(d._id, registrations)
           const wlCount   = waitlistCount(d._id, waitlist)
           const past      = isPast(d.date)

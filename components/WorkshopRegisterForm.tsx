@@ -54,9 +54,10 @@ const WORKSHOP_OPTIONS = [
 ];
 
 const CATEGORIES = [
-  { value: "workshop",      label: "Workshops",      emoji: "🎓" },
-  { value: "course",        label: "Courses",         emoji: "📚" },
-  { value: "guest-speaker", label: "Guest Speakers",  emoji: "🎤" },
+  { value: "workshop",       label: "Workshops",      emoji: "🎓" },
+  { value: "course",         label: "Courses",         emoji: "📚" },
+  { value: "guest-speaker",  label: "Guest Speakers",  emoji: "🎤" },
+  { value: "board-exam-prep", label: "Board Exam Prep", emoji: "📋" },
 ] as const;
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -265,16 +266,23 @@ export default function WorkshopRegisterForm() {
 
   // Workshops available in the selected category
   const workshopsForCategory = selectedCategory
-    ? WORKSHOP_OPTIONS.filter((opt) =>
-        workshopDates.some(
-          (d) => d.category === selectedCategory && d.workshop === opt.label
+    ? selectedCategory === 'board-exam-prep'
+      ? WORKSHOP_OPTIONS.filter((opt) =>
+          opt.label === 'National Board Guided Practice Workshop' &&
+          workshopDates.some((d) => d.workshop === opt.label)
         )
-      )
+      : WORKSHOP_OPTIONS.filter((opt) =>
+          workshopDates.some(
+            (d) => d.category === selectedCategory && d.workshop === opt.label
+          )
+        )
     : [];
 
   // Dates available for the selected workshop + category
   const availableDates = workshopDates.filter(
-    (d) => d.workshop === data.workshop && d.category === selectedCategory
+    selectedCategory === 'board-exam-prep'
+      ? (d) => d.workshop === data.workshop
+      : (d) => d.workshop === data.workshop && d.category === selectedCategory
   );
   const hasDates = availableDates.length > 0;
   const isNationalBoard = data.workshop.includes('National Board');
@@ -454,7 +462,7 @@ export default function WorkshopRegisterForm() {
                   {categoryError}
                 </p>
               )}
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {CATEGORIES.map((cat) => {
                   const isSelected = selectedCategory === cat.value;
                   return (

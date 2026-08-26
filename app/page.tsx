@@ -12,7 +12,7 @@ const programs = [
     num: "01",
     title: "Workshops",
     description:
-      "Hands-on and led by practitioners, professionals, and other industry experts, bringing practical knowledge, fresh perspectives, and ongoing learning experiences.",
+      "Hands-on and led by practitioners, professionals, and other industry experts, bringing practical knowledge, fresh perspectives, and ongoing learning experiences. Continue to check back for new offerings.",
     tags: ["Hands-On", "Expert-Led"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -24,7 +24,7 @@ const programs = [
     num: "02",
     title: "Guest Speakers",
     description:
-      "WDA takes an innovative approach by offering unique sessions that expand the thinking of dental professionals. Many of these speaker sessions are open to the public as well, to enrich community involvement.",
+      "WDA takes an innovative approach by offering unique sessions that expand the thinking of dental professionals. Many of these speaker sessions are open to the public as well, to enrich community involvement. Continue to check back for new offerings.",
     tags: ["Industry Experts", "Open Events"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">

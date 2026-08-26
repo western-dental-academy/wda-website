@@ -168,7 +168,7 @@ export default function AdminTabs({
 
       {/* ── Staff ── */}
       {activeTab === 'Staff' && (
-        <AdminStaffPanel clockEntries={clockEntries} pendingTimeOff={pendingTimeOff} />
+        <AdminStaffPanel clockEntries={clockEntries} pendingTimeOff={pendingTimeOff} currentUserEmail={currentUserEmail} />
       )}
 
       {/* ── Professional Development ── */}

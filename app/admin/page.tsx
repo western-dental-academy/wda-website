@@ -3,12 +3,10 @@ import { SignOutButton } from '@clerk/nextjs'
 import { redirect } from 'next/navigation'
 import { createClient } from '@sanity/client'
 import Link from 'next/link'
-import AdminStudentTable from '@/components/AdminStudentTable'
-import AdminAnnouncements from '@/components/AdminAnnouncements'
-import AdminWorkshopRegistrations, { type DateGroup, type WorkshopRegistration, type WorkshopWaitlistEntry } from '@/components/AdminWorkshopRegistrations'
-import AdminWorkshopDates, { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
-import AdminStaffCalendar from '@/components/AdminStaffCalendar'
-import AdminTaskManager, { type Task } from '@/components/AdminTaskManager'
+import { type DateGroup, type WorkshopRegistration, type WorkshopWaitlistEntry } from '@/components/AdminWorkshopRegistrations'
+import { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
+import { type Task } from '@/components/AdminTaskManager'
+import AdminTabs from '@/components/AdminTabs'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -160,9 +158,6 @@ export default async function AdminPage() {
       .reduce((sum: number, s: any) => sum + (s.tuitionAmount as number), 0)
   }
 
-  const formatCAD = (dollars: number) =>
-    '$' + dollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-
   // Build DateGroup array for workshop registrations
   const dateGroups: DateGroup[] = (workshopDates as Array<{ _id: string; workshop: string; date: string; capacity: number; active: boolean }>)
     .filter((d) => d.active !== false)
@@ -219,100 +214,24 @@ export default async function AdminPage() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-10">
-
-        {/* Task manager */}
-        <AdminTaskManager tasks={tasks} currentUserEmail={email} />
-
-        {/* Staff calendar */}
-        <AdminStaffCalendar requests={staffTimeOff} workshopDates={workshopDates} />
-
-        {/* Workshop date manager */}
-        <AdminWorkshopDates
-          initialDates={workshopDates as WorkshopDateItem[]}
-          registrations={workshopRegs as WorkshopRegistration[]}
-          waitlist={workshopWaitlist as WorkshopWaitlistEntry[]}
-        />
-
-        {/* Workshop registrations */}
-        <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
-
-        {/* Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-10">
-          {[
-            { label: 'Total Applications', value: stats.total, colour: '#1E3560' },
-            { label: 'Pending Review', value: stats.pending, colour: '#E67E22' },
-            { label: 'Accepted', value: stats.accepted, colour: '#378ADD' },
-            { label: 'Enrolled', value: stats.enrolled, colour: '#22c55e' },
-            { label: 'Payments Received', value: stats.paid, colour: '#16a34a' },
-          ].map(({ label, value, colour }) => (
-            <div key={label} className="rounded-xl p-5 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-              <p className="text-3xl font-bold mb-1" style={{ color: colour }}>{value}</p>
-              <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
-            </div>
-          ))}
-        </div>
-
-        {/* Student table */}
-        <AdminStudentTable students={students} canViewFinancials={canViewFinancials} />
-
-        {/* Announcements */}
-        <AdminAnnouncements initialAnnouncements={announcements} programmes={programmes} />
-
-        {/* Referral Sources */}
-        {referralData.length > 0 && (
-          <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-            <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
-              <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Referral Sources</h2>
-            </div>
-            <div className="p-6 flex flex-col gap-3">
-              {referralData.map(([source, count]) => {
-                const pct = Math.round((count / students.length) * 100)
-                return (
-                  <div key={source}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm" style={{ color: '#1E3560' }}>{source}</span>
-                      <span className="text-sm font-bold" style={{ color: '#378ADD' }}>{count} ({pct}%)</span>
-                    </div>
-                    <div className="w-full rounded-full h-2" style={{ backgroundColor: 'rgba(30,53,96,0.08)' }}>
-                      <div
-                        className="h-2 rounded-full"
-                        style={{ width: `${pct}%`, backgroundColor: '#378ADD' }}
-                      />
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Revenue — financial staff only */}
-        {canViewFinancials && (
-          <div className="mb-10">
-            <p
-              className="text-xs font-bold uppercase tracking-widest mb-3"
-              style={{ color: 'rgba(30,53,96,0.4)' }}
-            >
-              Revenue
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[
-                { label: 'Total Revenue Collected', value: formatCAD(totalRevenue),       colour: '#1E3560' },
-                { label: "This Month's Revenue",    value: formatCAD(thisMonthRevenue),   colour: '#378ADD' },
-                { label: 'Outstanding Balance',     value: formatCAD(outstandingBalance), colour: '#E67E22' },
-                { label: 'Paid Students',           value: String(stats.paid),            colour: '#22c55e' },
-              ].map(({ label, value, colour }) => (
-                <div key={label} className="rounded-xl p-5 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-                  <p className="text-3xl font-bold mb-1" style={{ color: colour }}>{value}</p>
-                  <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-      </div>
+      <AdminTabs
+        stats={stats}
+        tasks={tasks}
+        currentUserEmail={email}
+        staffTimeOff={staffTimeOff}
+        workshopDates={workshopDates}
+        students={students}
+        announcements={announcements}
+        programmes={programmes}
+        referralData={referralData}
+        canViewFinancials={canViewFinancials}
+        workshopRegs={workshopRegs as WorkshopRegistration[]}
+        workshopWaitlist={workshopWaitlist as WorkshopWaitlistEntry[]}
+        dateGroups={dateGroups}
+        totalRevenue={totalRevenue}
+        thisMonthRevenue={thisMonthRevenue}
+        outstandingBalance={outstandingBalance}
+      />
     </main>
   )
 }

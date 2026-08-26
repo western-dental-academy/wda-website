@@ -35,15 +35,18 @@ export async function PATCH(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { registrationId } = body as { registrationId?: string }
+  const { registrationId, checkedIn } = body as { registrationId?: string; checkedIn?: boolean }
   if (!registrationId?.trim()) {
     return Response.json({ error: 'registrationId is required' }, { status: 400 })
+  }
+  if (typeof checkedIn !== 'boolean') {
+    return Response.json({ error: 'checkedIn must be a boolean' }, { status: 400 })
   }
 
   try {
     await client
       .patch(registrationId)
-      .set({ checkedIn: true, checkedInAt: new Date().toISOString() })
+      .set({ checkedIn, checkedInAt: checkedIn ? new Date().toISOString() : null })
       .commit()
 
     return Response.json({ ok: true })

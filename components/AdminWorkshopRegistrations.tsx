@@ -90,28 +90,33 @@ function downloadCSV(group: DateGroup, canViewFinancials: boolean) {
 
 function CheckInButton({
   registrationId,
-  onCheckIn,
+  checkedIn,
+  checkedInAt,
+  onToggle,
 }: {
   registrationId: string;
-  onCheckIn: (id: string) => void;
+  checkedIn: boolean;
+  checkedInAt?: string;
+  onToggle: (id: string, newValue: boolean) => void;
 }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   async function handle() {
+    const newValue = !checkedIn;
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/admin/workshop-checkin", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ registrationId }),
+        body: JSON.stringify({ registrationId, checkedIn: newValue }),
       });
       if (!res.ok) {
         const j = await res.json();
-        throw new Error(j.error ?? "Failed to check in");
+        throw new Error(j.error ?? "Failed to update check-in");
       }
-      onCheckIn(registrationId);
+      onToggle(registrationId, newValue);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error");
     } finally {
@@ -121,14 +126,32 @@ function CheckInButton({
 
   return (
     <div className="flex flex-col items-start gap-1">
-      <button
-        onClick={handle}
-        disabled={loading}
-        className="rounded-lg px-3 py-1.5 text-xs font-bold text-white transition-colors duration-150 hover:bg-[#4A9FD4] disabled:opacity-50 disabled:cursor-not-allowed"
-        style={{ backgroundColor: "#1E3560" }}
-      >
-        {loading ? "…" : "Check In"}
-      </button>
+      {checkedIn ? (
+        <div className="flex items-center gap-1.5">
+          {checkedInAt && (
+            <span className="text-[11px]" style={{ color: "rgba(43,48,58,0.4)" }}>
+              {fmtTime(checkedInAt)}
+            </span>
+          )}
+          <button
+            onClick={handle}
+            disabled={loading}
+            className="rounded-lg px-3 py-1.5 text-xs font-bold transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ backgroundColor: "rgba(43,48,58,0.08)", color: "rgba(43,48,58,0.55)" }}
+          >
+            {loading ? "…" : "✕ Undo Check In"}
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={handle}
+          disabled={loading}
+          className="rounded-lg px-3 py-1.5 text-xs font-bold text-white transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ backgroundColor: "#22c55e" }}
+        >
+          {loading ? "…" : "Check In"}
+        </button>
+      )}
       {error && <p className="text-[11px]" style={{ color: "#dc2626" }}>{error}</p>}
     </div>
   );
@@ -200,10 +223,12 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
   const paidCount     = registrations.filter((r) => r.stripePaymentStatus === "paid").length;
   const checkedInCount = registrations.filter((r) => r.checkedIn).length;
 
-  function handleCheckIn(id: string) {
+  function handleToggleCheckIn(id: string, newValue: boolean) {
     setRegistrations((prev) =>
       prev.map((r) =>
-        r._id === id ? { ...r, checkedIn: true, checkedInAt: new Date().toISOString() } : r
+        r._id === id
+          ? { ...r, checkedIn: newValue, checkedInAt: newValue ? new Date().toISOString() : undefined }
+          : r
       )
     );
   }
@@ -320,22 +345,12 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     </td>
                   )}
                   <td className="px-4 py-3">
-                    {r.checkedIn ? (
-                      <div className="flex items-center gap-1.5">
-                        <span style={{ color: "#22c55e" }} title="Checked in">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                          </svg>
-                        </span>
-                        {r.checkedInAt && (
-                          <span className="text-[11px]" style={{ color: "rgba(43,48,58,0.4)" }}>
-                            {fmtTime(r.checkedInAt)}
-                          </span>
-                        )}
-                      </div>
-                    ) : (
-                      <CheckInButton registrationId={r._id} onCheckIn={handleCheckIn} />
-                    )}
+                    <CheckInButton
+                      registrationId={r._id}
+                      checkedIn={r.checkedIn}
+                      checkedInAt={r.checkedInAt}
+                      onToggle={handleToggleCheckIn}
+                    />
                   </td>
                 </tr>
               ))}

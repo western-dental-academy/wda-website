@@ -48,19 +48,19 @@ const recognition = [
     emoji: "🏆",
     title: "Wall of Sponsors",
     description:
-      "Your name or logo displayed permanently in our facility, seen by every student, instructor, and visitor who walks through our doors.",
+      "Your name or logo displayed in our facility, seen by every student, instructor, and visitor who walks through our doors.",
   },
   {
     emoji: "📱",
     title: "Social Media Recognition",
     description:
-      "Featured across WDA's social media platforms including Instagram, Facebook, and LinkedIn, reaching our growing community of dental professionals.",
+      "Featured across WDA's social media platforms including Instagram, Facebook, and LinkedIn, reaching our growing community of dental professionals, patients and community members.",
   },
   {
     emoji: "🌐",
     title: "Website Recognition",
     description:
-      "Acknowledged on our website as a valued WDA partner and supporter of dental professional development.",
+      "Acknowledged on our website as a valued WDA sponsor and supporter of the dental profession and community.",
   },
 ];
 
@@ -105,21 +105,11 @@ export default function SponsorshipPage() {
         />
 
         <div className="relative max-w-6xl mx-auto px-6 text-center">
-          <div
-            className="inline-flex items-center gap-2.5 rounded-full px-4 py-1.5 mb-8"
-            style={{ backgroundColor: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.13)" }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#4A9FD4" }} />
-            <span className="text-xs font-semibold tracking-[0.18em] uppercase" style={{ color: "rgba(255,255,255,0.7)" }}>
-              Sponsorship &amp; Partnership
-            </span>
-          </div>
-
           <h1
             className="text-4xl sm:text-5xl font-bold text-white mb-5 leading-tight"
             style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            Partner With Us
+            Industry Investment
           </h1>
           <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: "rgba(255,255,255,0.68)" }}>
             Support dental professional development in Alberta and get recognized for it.
@@ -141,7 +131,7 @@ export default function SponsorshipPage() {
         <div className="max-w-6xl mx-auto px-6">
           <AnimateIn className="max-w-3xl mx-auto text-center">
             <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-              Why Partner With Us
+              Invest in the Future of the Dental Profession
             </p>
             <h2
               className="text-3xl sm:text-4xl font-bold mb-6"
@@ -151,9 +141,18 @@ export default function SponsorshipPage() {
             </h2>
             <p className="text-base leading-relaxed" style={{ color: "#2B303A" }}>
               Western Dental Academy is committed to strengthening Alberta&apos;s dental community through unique
-              professional development opportunities. By partnering with WDA, your business or organization directly
+              professional development opportunities. By sponsoring WDA, your business or organization directly
               supports the ongoing education and growth of dental professionals across the province — while gaining
               meaningful visibility within the dental industry.
+            </p>
+            <p className="text-base leading-relaxed mt-4" style={{ color: "#2B303A" }}>
+              WDA would gratefully accept donations of equipment, dental products, professional services (such as printing), sponsored lunches for full-day workshops, or any other contributions that help advance our facility and support our mission.
+            </p>
+            <p className="text-base leading-relaxed mt-4" style={{ color: "#2B303A" }}>
+              Sponsorships also have a meaningful impact on the patient community. Through sponsored educational opportunities, patients may benefit from select professional development initiatives, while dental professionals gain enhanced skills, confidence, and knowledge. These improvements in clinical expertise create a positive trickle-down effect, contributing to higher-quality patient care, stronger patient experiences, and better overall oral health outcomes for the communities we serve.
+            </p>
+            <p className="text-base leading-relaxed mt-4" style={{ color: "#2B303A" }}>
+              By supporting WDA, sponsors are investing not only in the development of dental professionals but also in the long-term health and well-being of the patients and communities they serve. Together, we can build a stronger, more connected dental community across Alberta.
             </p>
           </AnimateIn>
         </div>
@@ -372,7 +371,7 @@ export default function SponsorshipPage() {
               className="text-3xl sm:text-4xl font-bold text-white mb-5 leading-tight"
               style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Interested in Partnering With WDA?
+              Interested in Sponsoring WDA?
             </h2>
             <p className="text-lg leading-relaxed mb-10 max-w-xl mx-auto" style={{ color: "rgba(255,255,255,0.65)" }}>
               We&apos;d love to connect and find the right sponsorship opportunity for your business or organization.

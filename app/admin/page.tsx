@@ -83,7 +83,9 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8)
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks] = await Promise.all([
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -117,6 +119,19 @@ export default async function AdminPage() {
       `*[_type == "task"] | order(dueDate asc, createdAt desc){
         _id, title, description, assignedTo, assignedBy,
         dueDate, priority, status, createdAt, completedAt
+      }`
+    ),
+    client.fetch(
+      `*[_type == "hoursLog" && (clockIn >= $since || !defined(clockOut))] | order(clockIn desc)[0...100]{
+        _id, clockIn, clockOut, notes,
+        staffMember->{ _id, fullName }
+      }`,
+      { since: sevenDaysAgo }
+    ),
+    client.fetch(
+      `*[_type == "timeOffRequest" && status == "pending"] | order(submittedAt asc){
+        _id, type, startDate, endDate, halfDay, reason, submittedAt,
+        staffMember->{ _id, fullName, email }
       }`
     ),
   ])
@@ -231,6 +246,8 @@ export default async function AdminPage() {
         totalRevenue={totalRevenue}
         thisMonthRevenue={thisMonthRevenue}
         outstandingBalance={outstandingBalance}
+        clockEntries={clockEntries}
+        pendingTimeOff={pendingTimeOff}
       />
     </main>
   )

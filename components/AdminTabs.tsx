@@ -11,6 +11,7 @@ import AdminWorkshopRegistrations, {
   type WorkshopRegistration,
   type WorkshopWaitlistEntry,
 } from '@/components/AdminWorkshopRegistrations'
+import AdminStaffPanel, { type ClockEntry, type PendingTimeOff } from '@/components/AdminStaffPanel'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -39,9 +40,11 @@ interface AdminTabsProps {
   totalRevenue: number
   thisMonthRevenue: number
   outstandingBalance: number
+  clockEntries: ClockEntry[]
+  pendingTimeOff: PendingTimeOff[]
 }
 
-type TabId = 'Overview' | 'Students' | 'Professional Development' | 'Revenue'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -68,10 +71,12 @@ export default function AdminTabs({
   totalRevenue,
   thisMonthRevenue,
   outstandingBalance,
+  clockEntries,
+  pendingTimeOff,
 }: AdminTabsProps) {
   const tabs: TabId[] = canViewFinancials
-    ? ['Overview', 'Students', 'Professional Development', 'Revenue']
-    : ['Overview', 'Students', 'Professional Development']
+    ? ['Overview', 'Students', 'Staff', 'Professional Development', 'Revenue']
+    : ['Overview', 'Students', 'Staff', 'Professional Development']
 
   const [activeTab, setActiveTab] = useState<TabId>('Overview')
 
@@ -161,7 +166,12 @@ export default function AdminTabs({
         </div>
       )}
 
-      {/* ── Workshops ── */}
+      {/* ── Staff ── */}
+      {activeTab === 'Staff' && (
+        <AdminStaffPanel clockEntries={clockEntries} pendingTimeOff={pendingTimeOff} />
+      )}
+
+      {/* ── Professional Development ── */}
       {activeTab === 'Professional Development' && (
         <div>
           <AdminWorkshopDates

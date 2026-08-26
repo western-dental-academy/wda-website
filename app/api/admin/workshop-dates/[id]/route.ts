@@ -73,7 +73,7 @@ export async function PATCH(
   }
 }
 
-// DELETE — soft delete: set active: false
+// DELETE — hard delete: permanently removes the document from Sanity
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -85,10 +85,10 @@ export async function DELETE(
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
 
   try {
-    await client.patch(id).set({ active: false }).commit()
+    await client.delete(id)
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('Workshop date deactivate error:', err)
-    return NextResponse.json({ error: 'Failed to deactivate workshop date' }, { status: 500 })
+    console.error('Workshop date delete error:', err)
+    return NextResponse.json({ error: 'Failed to delete workshop date' }, { status: 500 })
   }
 }

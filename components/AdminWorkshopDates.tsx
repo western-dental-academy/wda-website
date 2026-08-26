@@ -444,6 +444,28 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
                     >
                       Cancel
                     </button>
+                    <button
+                      type="button"
+                      disabled={editBusy}
+                      onClick={async () => {
+                        if (!confirm('Are you sure you want to delete this date? This cannot be undone.')) return
+                        setBusy(d._id, true)
+                        try {
+                          const res = await fetch(`/api/admin/workshop-dates/${d._id}`, { method: 'DELETE' })
+                          if (!res.ok) throw new Error()
+                          setDates(prev => prev.filter(x => x._id !== d._id))
+                          setEditingId(null)
+                        } catch {
+                          setEditError('Failed to delete. Please try again.')
+                        } finally {
+                          setBusy(d._id, false)
+                        }
+                      }}
+                      className="ml-auto rounded-lg px-4 py-2 text-xs font-bold text-white disabled:opacity-50 transition-colors duration-150 hover:bg-red-700"
+                      style={{ backgroundColor: '#dc2626' }}
+                    >
+                      Delete
+                    </button>
                   </div>
                 </form>
               </div>

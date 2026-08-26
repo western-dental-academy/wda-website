@@ -38,9 +38,10 @@ export default async function SuccessPage({
         firstName: string;
         email: string;
         workshop: string;
+        workshopDateId: string | null;
         stripePaymentStatus: string;
       } | null>(
-        `*[_id == $id][0]{ firstName, email, workshop, stripePaymentStatus }`,
+        `*[_id == $id][0]{ firstName, email, workshop, workshopDateId, stripePaymentStatus }`,
         { id: registrationId }
       );
 
@@ -63,11 +64,34 @@ export default async function SuccessPage({
               .commit();
             confirmed = true;
 
+            // Fetch workshop date for email
+            let formattedDate = '';
+            if (existing.workshopDateId) {
+              const dateDoc = await sanity.fetch<{ date: string } | null>(
+                `*[_id == $id][0]{ date }`,
+                { id: existing.workshopDateId }
+              );
+              if (dateDoc?.date) {
+                formattedDate = new Date(dateDoc.date).toLocaleString('en-CA', {
+                  timeZone: 'America/Edmonton',
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  timeZoneName: 'short',
+                });
+              }
+            }
+
+            const isErgonomics = workshop.includes('Ergonomics in Dentistry');
+
             // Send confirmation email to registrant
             await resend.emails.send({
               from: "Western Dental Academy <info@westerndentalacademy.com>",
               to: email,
-              subject: `Workshop Registration Confirmed — ${workshop}`,
+              subject: `Registration Confirmed — ${workshop}`,
               html: `
                 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
                   <div style="background-color:#1E3560;padding:28px 32px;">
@@ -75,25 +99,17 @@ export default async function SuccessPage({
                     <p style="color:rgba(255,255,255,0.5);margin:8px 0 0;font-size:13px;">Western Dental Academy</p>
                   </div>
                   <div style="padding:32px;background:#ffffff;border:1px solid #e5e7eb;">
-                    <p style="color:#1E3560;font-size:15px;margin-bottom:20px;">
-                      Hi ${firstName}, your registration is confirmed and payment received. We look forward to seeing you!
+                    <p style="color:#1E3560;font-size:15px;margin:0 0 16px;">Hi ${firstName},</p>
+                    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 20px;">
+                      You're registered! We look forward to seeing you at the event.
                     </p>
-                    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
-                      <tr>
-                        <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;color:#6b7280;font-size:13px;width:130px;">Workshop</td>
-                        <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;color:#1E3560;font-size:13px;font-weight:600;">${workshop}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;color:#6b7280;font-size:13px;">Email</td>
-                        <td style="padding:10px 0;border-bottom:1px solid #f3f4f6;color:#1E3560;font-size:13px;">${email}</td>
-                      </tr>
-                      <tr>
-                        <td style="padding:10px 0;color:#6b7280;font-size:13px;">Payment</td>
-                        <td style="padding:10px 0;color:#16a34a;font-size:13px;font-weight:600;">Confirmed ✓</td>
-                      </tr>
-                    </table>
-                    ${workshop.includes('Ergonomics in Dentistry') ? `
-                    <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin-top:16px;">
+                    <p style="color:#1E3560;font-size:16px;font-weight:700;margin:0 0 8px;">${workshop}</p>
+                    ${formattedDate ? `<p style="color:#374151;font-size:14px;margin:0 0 20px;">${formattedDate}</p>` : ''}
+                    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
+                      Our team will be in touch if there are any changes.
+                    </p>
+                    ${isErgonomics ? `
+                    <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin-top:16px;margin-bottom:16px;">
                       <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 8px;">What to Bring</p>
                       <ul style="color:#4b5563;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
                         <li>Comfortable clothing</li>
@@ -101,17 +117,12 @@ export default async function SuccessPage({
                         <li>Yoga mat</li>
                       </ul>
                     </div>` : ''}
-                    <p style="color:#374151;font-size:13px;line-height:1.6;margin-bottom:16px;">
-                      Our team will be in touch to confirm the exact date and location for your workshop.
-                      If you have any questions in the meantime, reply to this email or contact us at
+                    <p style="color:#374151;font-size:14px;line-height:1.6;margin-top:16px;">
+                      If you have any questions,
+                      <a href="https://westerndentalacademy.com/contact" style="color:#378ADD;">contact us here</a>
+                      or email us at
                       <a href="mailto:info@westerndentalacademy.com" style="color:#378ADD;">info@westerndentalacademy.com</a>.
                     </p>
-                    <div style="background-color:rgba(230,126,34,0.08);border:1px solid rgba(230,126,34,0.2);border-radius:8px;padding:12px 16px;margin-top:20px;">
-                      <p style="color:#1E3560;font-size:13px;margin:0;">
-                        <strong>📬 Check your junk/spam folder</strong> — our emails sometimes end up there.
-                        Add <strong>info@westerndentalacademy.com</strong> to your contacts.
-                      </p>
-                    </div>
                   </div>
                   <div style="padding:16px 32px;background-color:#F4F7F9;text-align:center;">
                     <p style="color:#9ca3af;font-size:11px;margin:0;">Western Dental Academy — westerndentalacademy.com</p>

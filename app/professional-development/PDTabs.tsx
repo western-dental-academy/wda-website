@@ -10,7 +10,7 @@ const workshops = [
   {
     num: "01",
     title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
-    badge: "Launching Soon",
+    badge: "Registration Open",
     price: 40,
     duration: "1.5 hours",
     description:

@@ -334,7 +334,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
 
       {/* ── Filters ── */}
       <div
-        className="px-6 pt-4 pb-3 border-b flex flex-wrap gap-3 items-center justify-between"
+        className="px-4 sm:px-6 pt-4 pb-3 border-b flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 items-start sm:items-center sm:justify-between"
         style={{ borderColor: 'rgba(30,53,96,0.08)' }}
       >
         {/* Tab pills */}
@@ -397,7 +397,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
       </div>
 
       {/* ── Task List ── */}
-      <div className="p-4 flex flex-col gap-2.5">
+      <div className="p-3 sm:p-4 flex flex-col gap-2.5">
         {filtered.length === 0 && (
           <p className="text-center py-10 text-sm" style={{ color: 'rgba(43,48,58,0.38)' }}>
             {tasks.length === 0 ? 'No tasks yet — create one above.' : 'No tasks match these filters.'}

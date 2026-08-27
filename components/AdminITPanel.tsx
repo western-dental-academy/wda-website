@@ -322,7 +322,7 @@ export default function AdminITPanel() {
       </div>
 
       {/* Service grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 sm:mb-10">
         {SERVICES.map(svc => {
           const check = checks.find(c => c.key === svc.key)!
           const cfg = STATUS_CFG[check.status]

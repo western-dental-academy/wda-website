@@ -233,7 +233,7 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
               <div
                 key={i}
                 onClick={day && hasEntries ? () => toggleDay(day) : undefined}
-                className="bg-white min-h-[70px] p-1.5"
+                className="bg-white min-h-[48px] sm:min-h-[70px] p-1.5"
                 style={{
                   backgroundColor: isSelected
                     ? 'rgba(30,53,96,0.05)'

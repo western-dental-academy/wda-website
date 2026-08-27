@@ -75,7 +75,6 @@ function fieldStyle(active: boolean): React.CSSProperties {
     padding: '8px 12px',
     outline: 'none',
     transition: 'border-color 150ms',
-    width: 'auto',
   }
 }
 
@@ -384,7 +383,7 @@ export default function AdminStudentTable({ students, canViewFinancials }: { stu
 
         {/* Filter bar */}
         <div
-          className="px-6 py-4 flex flex-wrap gap-3 items-center"
+          className="px-4 sm:px-6 py-4 flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 items-stretch sm:items-center"
           style={{ borderBottom: '1px solid rgba(30,53,96,0.07)', backgroundColor: 'rgba(244,247,249,0.65)' }}
         >
           <input
@@ -392,7 +391,7 @@ export default function AdminStudentTable({ students, canViewFinancials }: { stu
             placeholder="Search name or email…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 min-w-[200px]"
+            className="w-full sm:flex-1 sm:min-w-[200px]"
             style={fieldStyle(focused === 'search')}
             {...focus('search')}
           />
@@ -400,6 +399,7 @@ export default function AdminStudentTable({ students, canViewFinancials }: { stu
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full sm:w-auto"
             style={fieldStyle(focused === 'status')}
             {...focus('status')}
           >
@@ -415,6 +415,7 @@ export default function AdminStudentTable({ students, canViewFinancials }: { stu
             <select
               value={paymentFilter}
               onChange={(e) => setPaymentFilter(e.target.value)}
+              className="w-full sm:w-auto"
               style={fieldStyle(focused === 'payment')}
               {...focus('payment')}
             >
@@ -428,6 +429,7 @@ export default function AdminStudentTable({ students, canViewFinancials }: { stu
             <select
               value={cohortFilter}
               onChange={(e) => setCohortFilter(e.target.value)}
+              className="w-full sm:w-auto"
               style={fieldStyle(focused === 'cohort')}
               {...focus('cohort')}
             >

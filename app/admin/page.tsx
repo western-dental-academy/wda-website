@@ -188,17 +188,17 @@ export default async function AdminPage() {
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F4F7F9' }}>
       {/* Header */}
-      <div style={{ backgroundColor: '#1E3560' }} className="px-6 py-10">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div style={{ backgroundColor: '#1E3560' }} className="px-4 sm:px-6 py-6 sm:py-10">
+        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
               Admin Dashboard
             </p>
-            <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
+            <h1 className="text-xl sm:text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
               WDA Hub
             </h1>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <a
               href="https://learn.westerndentalacademy.com"
               target="_blank"

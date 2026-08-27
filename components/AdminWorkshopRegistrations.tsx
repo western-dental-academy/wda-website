@@ -520,7 +520,7 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
       </div>
 
       {/* Workshop name */}
-      <div className="px-6 pt-4 pb-2">
+      <div className="px-4 sm:px-6 pt-4 pb-2">
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(30,53,96,0.4)" }}>
           Workshop
         </p>

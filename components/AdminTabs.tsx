@@ -89,7 +89,7 @@ export default function AdminTabs({
   const [activeTab, setActiveTab] = useState<TabId>('Overview')
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 overflow-x-hidden">
 
       {/* ── Tab bar ── */}
       <div

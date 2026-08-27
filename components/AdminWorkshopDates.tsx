@@ -352,7 +352,7 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
       {/* ── Add form ── */}
       {showAdd && (
         <div
-          className="px-6 py-5 border-b"
+          className="px-4 sm:px-6 py-4 sm:py-5 border-b"
           style={{ borderColor: 'rgba(30,53,96,0.08)', backgroundColor: '#F4F7F9' }}
         >
           <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(30,53,96,0.45)' }}>

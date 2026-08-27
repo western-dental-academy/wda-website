@@ -41,6 +41,8 @@ interface AdminTabsProps {
   totalRevenue: number
   thisMonthRevenue: number
   outstandingBalance: number
+  totalRefunded: number
+  thisMonthRefunded: number
   clockEntries: ClockEntry[]
   pendingTimeOff: PendingTimeOff[]
 }
@@ -72,6 +74,8 @@ export default function AdminTabs({
   totalRevenue,
   thisMonthRevenue,
   outstandingBalance,
+  totalRefunded,
+  thisMonthRefunded,
   clockEntries,
   pendingTimeOff,
 }: AdminTabsProps) {
@@ -196,14 +200,19 @@ export default function AdminTabs({
         <div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
             {[
-              { label: 'Total Revenue Collected', value: formatCAD(totalRevenue),       colour: '#1E3560' },
-              { label: "This Month's Revenue",    value: formatCAD(thisMonthRevenue),   colour: '#378ADD' },
-              { label: 'Outstanding Balance',     value: formatCAD(outstandingBalance), colour: '#E67E22' },
-              { label: 'Paid Students',           value: String(stats.paid),            colour: '#22c55e' },
-            ].map(({ label, value, colour }) => (
+              { label: 'Total Revenue Collected', value: formatCAD(totalRevenue),       colour: '#1E3560', refunded: totalRefunded },
+              { label: "This Month's Revenue",    value: formatCAD(thisMonthRevenue),   colour: '#378ADD', refunded: thisMonthRefunded },
+              { label: 'Outstanding Balance',     value: formatCAD(outstandingBalance), colour: '#E67E22', refunded: 0 },
+              { label: 'Paid Students',           value: String(stats.paid),            colour: '#22c55e', refunded: 0 },
+            ].map(({ label, value, colour, refunded }) => (
               <div key={label} className="rounded-xl p-5 bg-white" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
                 <p className="text-3xl font-bold mb-1" style={{ color: colour }}>{value}</p>
                 <p className="text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>{label}</p>
+                {refunded > 0 && (
+                  <p className="text-[11px] mt-1.5" style={{ color: 'rgba(220,38,38,0.7)' }}>
+                    Includes {formatCAD(refunded)} in refunds
+                  </p>
+                )}
               </div>
             ))}
           </div>

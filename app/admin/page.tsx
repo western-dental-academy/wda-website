@@ -142,14 +142,16 @@ export default async function AdminPage() {
   let totalRevenue     = 0
   let thisMonthRevenue = 0
   let outstandingBalance = 0
+  let totalRefunded    = 0
+  let thisMonthRefunded = 0
 
   if (canViewFinancials) {
-    let succeededCharges: { amount: number; created: number }[] = []
+    let succeededCharges: { amount: number; amount_refunded: number; created: number }[] = []
     try {
       const charges = await stripe.charges.list({ limit: 100 })
       succeededCharges = charges.data
         .filter((c) => c.status === 'succeeded')
-        .map((c) => ({ amount: c.amount, created: c.created }))
+        .map((c) => ({ amount: c.amount, amount_refunded: c.amount_refunded ?? 0, created: c.created }))
     } catch (err) {
       console.error('Stripe revenue fetch error:', err)
     }
@@ -160,10 +162,14 @@ export default async function AdminPage() {
       1
     ).getTime() / 1000
 
-    totalRevenue     = succeededCharges.reduce((sum, c) => sum + c.amount, 0) / 100
+    totalRevenue     = succeededCharges.reduce((sum, c) => sum + (c.amount - c.amount_refunded), 0) / 100
     thisMonthRevenue = succeededCharges
       .filter((c) => c.created >= startOfMonth)
-      .reduce((sum, c) => sum + c.amount, 0) / 100
+      .reduce((sum, c) => sum + (c.amount - c.amount_refunded), 0) / 100
+    totalRefunded    = succeededCharges.reduce((sum, c) => sum + c.amount_refunded, 0) / 100
+    thisMonthRefunded = succeededCharges
+      .filter((c) => c.created >= startOfMonth)
+      .reduce((sum, c) => sum + c.amount_refunded, 0) / 100
     outstandingBalance = students
       .filter((s: any) =>
         (s.status === 'accepted' || s.status === 'enrolled') &&
@@ -246,6 +252,8 @@ export default async function AdminPage() {
         totalRevenue={totalRevenue}
         thisMonthRevenue={thisMonthRevenue}
         outstandingBalance={outstandingBalance}
+        totalRefunded={totalRefunded}
+        thisMonthRefunded={thisMonthRefunded}
         clockEntries={clockEntries}
         pendingTimeOff={pendingTimeOff}
       />

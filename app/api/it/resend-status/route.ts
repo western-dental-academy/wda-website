@@ -19,8 +19,8 @@ export async function GET() {
       },
     })
     const ms = Math.round(performance.now() - t0)
-    const isUp = response.status === 200 || response.status === 405 || response.status === 400
-    if (isUp) return Response.json({ ok: true, ms, detail: 'API reachable' })
+    const isUp = [200, 400, 401, 405].includes(response.status)
+    if (isUp) return Response.json({ ok: true, ms, detail: 'Send-only key — operational' })
     return Response.json({ ok: false, ms, detail: `HTTP ${response.status}` })
   } catch (err: unknown) {
     const ms = Math.round(performance.now() - t0)

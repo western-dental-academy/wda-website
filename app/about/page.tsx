@@ -581,12 +581,7 @@ export default async function AboutPage() {
                   technologies, techniques, and patient care standards.
                 </p>
                 <p>
-                  The need wasn&apos;t for more graduates. It was for stronger
-                  pathways for ongoing growth. WDA was built on the belief that
-                  professional development should not end when formal education
-                  is complete. Dental assistants deserve access to meaningful
-                  learning experiences that help them stay current, build
-                  confidence, and continue progressing throughout their careers.
+                  The team at WDA identified a need for stronger pathways for ongoing growth and professional development. WDA was built on the belief that learning should not end when formal education is complete. Dental professionals deserve access to meaningful educational opportunities that help them stay current, build confidence, expand their skills, and continue advancing throughout their careers.
                 </p>
                 <p>
                   Today, that belief remains at the heart of WDA. By creating

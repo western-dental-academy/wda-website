@@ -70,8 +70,8 @@ const tiers = [
     description: "Show your support for dental professional development in Alberta.",
   },
   {
-    title: "Industry Partner",
-    description: "Gain meaningful visibility within Alberta's dental community.",
+    title: "Industry Champion",
+    description: "Strengthen your presence and gain meaningful exposure across Alberta's dental community and the broader public audience.",
     featured: true,
   },
   {
@@ -343,7 +343,7 @@ export default function SponsorshipPage() {
                       className="block text-center rounded-lg px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
                       style={{ backgroundColor: "#E67E22" }}
                     >
-                      Contact Us to Learn More
+                      Contact Us to Get Involved
                     </Link>
                   </div>
                 </div>

@@ -36,7 +36,7 @@ const programs = [
     num: "03",
     title: "Courses",
     description:
-      "Focused on refreshing theoretical knowledge. We will also offer clinical refresher courses. WDA is consistently developing online courses. Check back weekly for updates.",
+      "Focused on refreshing theoretical knowledge. We will also offer clinical refresher courses. WDA is consistently developing online courses. Continue to check back for new offerings.",
     tags: ["Online", "In Person"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">

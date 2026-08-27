@@ -195,7 +195,7 @@ export default async function AdminPage() {
               Admin Dashboard
             </p>
             <h1 className="text-2xl font-bold text-white" style={{ fontFamily: 'var(--font-montserrat), sans-serif' }}>
-              Student Management
+              WDA Hub
             </h1>
           </div>
           <div className="flex items-center gap-3">

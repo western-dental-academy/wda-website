@@ -12,6 +12,7 @@ import AdminWorkshopRegistrations, {
   type WorkshopWaitlistEntry,
 } from '@/components/AdminWorkshopRegistrations'
 import AdminStaffPanel, { type ClockEntry, type PendingTimeOff } from '@/components/AdminStaffPanel'
+import AdminITPanel from '@/components/AdminITPanel'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -44,7 +45,7 @@ interface AdminTabsProps {
   pendingTimeOff: PendingTimeOff[]
 }
 
-type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue' | 'IT'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -74,9 +75,16 @@ export default function AdminTabs({
   clockEntries,
   pendingTimeOff,
 }: AdminTabsProps) {
-  const tabs: TabId[] = canViewFinancials
-    ? ['Overview', 'Students', 'Staff', 'Professional Development', 'Revenue']
-    : ['Overview', 'Students', 'Staff', 'Professional Development']
+  const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
+
+  const tabs: TabId[] = [
+    'Overview',
+    'Students',
+    'Staff',
+    'Professional Development',
+    ...(canViewFinancials ? ['Revenue' as TabId] : []),
+    ...(isIT ? ['IT' as TabId] : []),
+  ]
 
   const [activeTab, setActiveTab] = useState<TabId>('Overview')
 
@@ -201,6 +209,9 @@ export default function AdminTabs({
           </div>
         </div>
       )}
+
+      {/* ── IT ── */}
+      {activeTab === 'IT' && isIT && <AdminITPanel />}
 
     </div>
   )

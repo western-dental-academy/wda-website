@@ -1,8 +1,6 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
-import { Resend } from 'resend'
 
 const IT_EMAIL = 'aiden@westerndentalacademy.com'
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function GET() {
   const { userId } = await auth()
@@ -14,12 +12,16 @@ export async function GET() {
 
   const t0 = performance.now()
   try {
-    const { data, error } = await resend.domains.list()
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      },
+    })
     const ms = Math.round(performance.now() - t0)
-    if (error) return Response.json({ ok: false, ms, detail: error.message })
-    const verified = (data?.data ?? []).filter((d: { status: string }) => d.status === 'verified').length
-    const total    = (data?.data ?? []).length
-    return Response.json({ ok: true, ms, detail: `${verified}/${total} domain(s) verified` })
+    const isUp = response.status === 200 || response.status === 405 || response.status === 400
+    if (isUp) return Response.json({ ok: true, ms, detail: 'API reachable' })
+    return Response.json({ ok: false, ms, detail: `HTTP ${response.status}` })
   } catch (err: unknown) {
     const ms = Math.round(performance.now() - t0)
     const message = err instanceof Error ? err.message : 'Request failed'

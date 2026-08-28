@@ -259,7 +259,7 @@ export default function PDTabs() {
                   <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>8 hours · Hands-On</span>
                 </div>
                 <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
-                  Structured guided practice for dental assisting candidates preparing for the NDAEB Clinical Practice Evaluation (CPE). Covers all nine clinical skills assessed during the CPE through simulated exercises, guided practice, and mock evaluations.
+                  Structured guided practice for dental assisting candidates preparing for the NDAEB Clinical Practice Evaluation (CPE). Covers all nine clinical skills assessed during the CPE with focused instruction, hands-on practice, and skill reinforcement.
                 </p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   {["Exam Preparation", "Hands-On", "Expert-Led", "Certificate of Attendance"].map((tag) => (

@@ -26,12 +26,13 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { firstName, lastName, email, phone, cadaNumber, workshop, preferredDate, workshopDateId, questions } = body as {
+    const { firstName, lastName, email, phone, cadaNumber, dentalBackground, workshop, preferredDate, workshopDateId, questions } = body as {
       firstName?: string
       lastName?: string
       email?: string
       phone?: string
       cadaNumber?: string
+      dentalBackground?: string
       workshop?: string
       preferredDate?: string
       workshopDateId?: string
@@ -76,6 +77,7 @@ export async function POST(req: NextRequest) {
       preferredDate: preferredDate ?? 'Contact us for available dates',
       workshopDateId: workshopDateId || undefined,
       cadaNumber: cadaNumber?.trim() || undefined,
+      dentalBackground: dentalBackground?.trim() || undefined,
       questions: questions?.trim() || undefined,
       stripePaymentStatus: 'unpaid',
       registeredAt: new Date().toISOString(),

@@ -91,6 +91,13 @@ export default defineType({
       description: 'Optional — entered by registrant during registration',
     }),
     defineField({
+      name: 'dentalBackground',
+      title: 'Dental Background / Education',
+      type: 'text',
+      rows: 3,
+      description: 'Entered by registrant during registration',
+    }),
+    defineField({
       name: 'workshopDateId',
       title: 'Workshop Date',
       type: 'string',

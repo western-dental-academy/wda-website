@@ -9,6 +9,7 @@ interface FormData {
   lastName: string;
   email: string;
   phone: string;
+  dentalBackground: string;
   cadaNumber: string;
   workshop: string;
   preferredDate: string;
@@ -35,6 +36,7 @@ const INITIAL: FormData = {
   lastName: "",
   email: "",
   phone: "",
+  dentalBackground: "",
   cadaNumber: "",
   workshop: "",
   preferredDate: "Contact us for available dates",
@@ -201,6 +203,7 @@ export default function WorkshopRegisterForm() {
       else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email))
         e.email = "Enter a valid email address.";
       if (!data.phone.trim()) e.phone = "Phone number is required.";
+      if (!data.dentalBackground.trim()) e.dentalBackground = "Please briefly describe your dental background.";
     }
 
     if (step === 2) {
@@ -248,6 +251,7 @@ export default function WorkshopRegisterForm() {
           email: data.email,
           phone: data.phone,
           cadaNumber: data.cadaNumber.trim() || undefined,
+          dentalBackground: data.dentalBackground,
           workshop: data.workshop,
           preferredDate: data.preferredDate,
           workshopDateId: data.workshopDateId || undefined,
@@ -468,8 +472,29 @@ export default function WorkshopRegisterForm() {
             </div>
 
             <div>
+              <FieldLabel htmlFor="reg-dentalBackground">
+                Previous Dental Background / Education
+              </FieldLabel>
+              <textarea
+                id="reg-dentalBackground"
+                rows={3}
+                placeholder="Please briefly describe your dental background or education (e.g. dental assisting graduate, RDA, dental hygienist, etc.)"
+                value={data.dentalBackground}
+                onChange={(e) => set("dentalBackground", e.target.value)}
+                aria-required="true"
+                aria-invalid={!!errors.dentalBackground || undefined}
+                aria-describedby={errors.dentalBackground ? "err-dentalBackground" : undefined}
+                className={`wda-input resize-none${errors.dentalBackground ? " invalid" : ""}`}
+              />
+              <FieldError id="err-dentalBackground" msg={errors.dentalBackground} />
+            </div>
+
+            <div>
               <FieldLabel htmlFor="reg-cadaNumber" optional>
-                CADA Membership Number
+                CADA Membership Number{" "}
+                <span className="font-normal" style={{ color: "rgba(43,48,58,0.38)", fontSize: "0.65rem" }}>
+                  (not needed for National Board Guided Practice Workshop)
+                </span>
               </FieldLabel>
               <input
                 id="reg-cadaNumber" type="text" placeholder="e.g. RDA12345"

@@ -101,7 +101,7 @@ export default function RegisterPage() {
           >
             Complete the three-step form below to secure your spot. Payment is
             processed securely via Stripe — you&apos;ll receive a confirmation
-            email after checkout.
+            email with any directives for the session after checkout.
           </p>
 
           {/* Quick stats */}

@@ -475,7 +475,7 @@ export default function NPEWorkshopPage() {
         <div className="max-w-4xl mx-auto px-6">
           <AnimateIn>
             <div
-              className="rounded-2xl p-10 sm:p-14 text-center"
+              className="rounded-2xl p-7 sm:p-14 text-center"
               style={{ backgroundColor: "#ffffff", boxShadow: "0 4px 32px rgba(30,53,96,0.08)" }}
             >
               <p

@@ -4,8 +4,10 @@ import { useState } from 'react'
 
 export default function InlineNewsletterForm({
   successMessage = "You're subscribed! We'll notify you when sessions are announced.",
+  dark = false,
 }: {
   successMessage?: string
+  dark?: boolean
 }) {
   const [email, setEmail]   = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success'>('idle')
@@ -36,11 +38,23 @@ export default function InlineNewsletterForm({
 
   if (status === 'success') {
     return (
-      <p className="text-sm font-semibold" style={{ color: '#4A9FD4' }}>
+      <p className="text-sm font-semibold" style={{ color: dark ? '#4A9FD4' : '#1E3560' }}>
         {successMessage}
       </p>
     )
   }
+
+  const inputStyle = dark
+    ? {
+        backgroundColor: 'rgba(255,255,255,0.1)',
+        border: error ? '1.5px solid rgba(255,130,130,0.7)' : '1.5px solid rgba(255,255,255,0.2)',
+        outline: 'none',
+      }
+    : {
+        backgroundColor: '#F4F7F9',
+        border: error ? '1.5px solid rgba(220,38,38,0.4)' : '1.5px solid rgba(30,53,96,0.15)',
+        outline: 'none',
+      }
 
   return (
     <div>
@@ -56,12 +70,8 @@ export default function InlineNewsletterForm({
           disabled={status === 'loading'}
           aria-required="true"
           aria-invalid={!!error || undefined}
-          className="flex-1 rounded-lg px-4 py-2.5 text-sm text-white"
-          style={{
-            backgroundColor: 'rgba(255,255,255,0.1)',
-            border: error ? '1.5px solid rgba(255,130,130,0.7)' : '1.5px solid rgba(255,255,255,0.2)',
-            outline: 'none',
-          }}
+          className={`flex-1 rounded-lg px-4 py-2.5 text-sm ${dark ? 'text-white placeholder:text-white/50' : 'text-[#2B303A] placeholder:text-[#2B303A]/40'}`}
+          style={inputStyle}
         />
         <button
           type="submit"
@@ -73,7 +83,11 @@ export default function InlineNewsletterForm({
         </button>
       </form>
       {error && (
-        <p className="mt-2 text-xs" style={{ color: 'rgba(255,160,160,0.9)' }} role="alert">
+        <p
+          className="mt-2 text-xs"
+          style={{ color: dark ? 'rgba(255,160,160,0.9)' : '#dc2626' }}
+          role="alert"
+        >
           {error}
         </p>
       )}

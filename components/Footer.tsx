@@ -174,7 +174,7 @@ export default function Footer() {
           <p className="text-xs text-white/40">
             © {year} Western Dental Academy. All rights reserved.
           </p>
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             {[
               { label: "Privacy Policy", href: "/privacy-policy" },
               { label: "Terms of Use", href: "/terms-of-use" },

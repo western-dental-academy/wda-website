@@ -43,7 +43,7 @@ function WorkshopCard({ workshop, index }: { workshop: typeof workshops[number];
         style={{ backgroundColor: "#F4F7F9" }}
       >
         <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
-        <div className="flex flex-col flex-1 p-8">
+        <div className="flex flex-col flex-1 p-6 sm:p-8">
           <div className="flex items-center justify-between mb-5">
             <p className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "#4A9FD4" }}>{workshop.num}</p>
             <span
@@ -129,7 +129,7 @@ export default function PDTabs() {
       <div className="max-w-6xl mx-auto px-6">
         {/* Tab bar */}
         <div
-          className="flex flex-wrap items-center gap-1 mb-14 rounded-xl p-1.5 w-fit"
+          className="flex flex-wrap items-center gap-1 mb-14 rounded-xl p-1.5 w-full sm:w-fit"
           style={{ backgroundColor: "#F4F7F9" }}
           role="tablist"
           aria-label="Professional development categories"
@@ -140,7 +140,7 @@ export default function PDTabs() {
               role="tab"
               aria-selected={activeTab === id}
               onClick={() => setActiveTab(id)}
-              className="rounded-lg px-5 py-2.5 text-sm font-bold transition-all duration-200"
+              className="rounded-lg px-5 py-2.5 text-sm font-bold transition-all duration-200 min-h-[44px]"
               style={
                 activeTab === id
                   ? { backgroundColor: "#E67E22", color: "#ffffff" }

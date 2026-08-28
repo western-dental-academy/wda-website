@@ -772,8 +772,8 @@ export default function WorkshopRegisterForm() {
                   className="flex items-center justify-between px-6 py-4"
                   style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}
                 >
-                  <div>
-                    <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold break-words" style={{ color: "#1E3560" }}>
                       {data.workshop}
                     </p>
                     <p className="text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>

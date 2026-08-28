@@ -259,36 +259,38 @@ export default function PrivacyPolicyPage() {
                 below. No analytics cookies are loaded until you explicitly
                 consent via the cookie banner shown on your first visit.
               </p>
-              <div
-                className="rounded-xl overflow-hidden mb-5"
-                style={{ border: "1px solid rgba(30,53,96,0.08)" }}
-              >
-                {/* Table header */}
+              <div className="overflow-x-auto mb-5">
                 <div
-                  className="grid grid-cols-[1fr_1.6fr_auto] gap-4 px-5 py-3 text-[0.68rem] font-bold uppercase tracking-[0.14em]"
-                  style={{ backgroundColor: "#1E3560", color: "rgba(255,255,255,0.55)" }}
+                  className="rounded-xl overflow-hidden min-w-[460px]"
+                  style={{ border: "1px solid rgba(30,53,96,0.08)" }}
                 >
-                  <span>Cookie</span>
-                  <span>Purpose</span>
-                  <span>Duration</span>
-                </div>
-                {cookieTypes.map(({ name, purpose, duration, provider }, i) => (
+                  {/* Table header */}
                   <div
-                    key={name}
-                    className="grid grid-cols-[1fr_1.6fr_auto] gap-4 px-5 py-4 text-xs leading-relaxed text-[#2B303A]/70 items-start"
-                    style={{
-                      backgroundColor: i % 2 === 0 ? "#F4F7F9" : "#FFFFFF",
-                      borderBottom: i < cookieTypes.length - 1 ? "1px solid rgba(30,53,96,0.06)" : undefined,
-                    }}
+                    className="grid grid-cols-[1fr_1.6fr_auto] gap-4 px-5 py-3 text-[0.68rem] font-bold uppercase tracking-[0.14em]"
+                    style={{ backgroundColor: "#1E3560", color: "rgba(255,255,255,0.55)" }}
                   >
-                    <div>
-                      <p className="font-bold text-[#1E3560]">{name}</p>
-                      <p className="mt-0.5 opacity-60">{provider}</p>
-                    </div>
-                    <p>{purpose}</p>
-                    <p className="whitespace-nowrap">{duration.split(" (")[0]}</p>
+                    <span>Cookie</span>
+                    <span>Purpose</span>
+                    <span>Duration</span>
                   </div>
-                ))}
+                  {cookieTypes.map(({ name, purpose, duration, provider }, i) => (
+                    <div
+                      key={name}
+                      className="grid grid-cols-[1fr_1.6fr_auto] gap-4 px-5 py-4 text-xs leading-relaxed text-[#2B303A]/70 items-start"
+                      style={{
+                        backgroundColor: i % 2 === 0 ? "#F4F7F9" : "#FFFFFF",
+                        borderBottom: i < cookieTypes.length - 1 ? "1px solid rgba(30,53,96,0.06)" : undefined,
+                      }}
+                    >
+                      <div>
+                        <p className="font-bold text-[#1E3560]">{name}</p>
+                        <p className="mt-0.5 opacity-60">{provider}</p>
+                      </div>
+                      <p>{purpose}</p>
+                      <p className="whitespace-nowrap">{duration.split(" (")[0]}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
               <p className={P}>
                 You can withdraw your consent at any time by clearing your
@@ -351,29 +353,31 @@ export default function PrivacyPolicyPage() {
                 fulfil the purpose for which it was collected, or as required by
                 applicable law.
               </p>
-              <div
-                className="rounded-xl overflow-hidden"
-                style={{ border: "1px solid rgba(30,53,96,0.08)" }}
-              >
-                {[
-                  { category: "Contact & enquiry records", retention: "2 years from last contact" },
-                  { category: "Program application data", retention: "5 years from last interaction" },
-                  { category: "Newsletter subscriber data", retention: "Until you unsubscribe" },
-                  { category: "Analytics data (Google Analytics)", retention: "26 months (Google default)" },
-                  { category: "Tour booking records", retention: "1 year from tour date" },
-                ].map(({ category, retention }, i) => (
-                  <div
-                    key={category}
-                    className="flex items-center justify-between gap-6 px-5 py-3.5 text-sm"
-                    style={{
-                      backgroundColor: i % 2 === 0 ? "#F4F7F9" : "#FFFFFF",
-                      borderBottom: i < 4 ? "1px solid rgba(30,53,96,0.06)" : undefined,
-                    }}
-                  >
-                    <span className="text-[#2B303A]/70">{category}</span>
-                    <span className="font-semibold text-[#1E3560] shrink-0">{retention}</span>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <div
+                  className="rounded-xl overflow-hidden min-w-[380px]"
+                  style={{ border: "1px solid rgba(30,53,96,0.08)" }}
+                >
+                  {[
+                    { category: "Contact & enquiry records", retention: "2 years from last contact" },
+                    { category: "Program application data", retention: "5 years from last interaction" },
+                    { category: "Newsletter subscriber data", retention: "Until you unsubscribe" },
+                    { category: "Analytics data (Google Analytics)", retention: "26 months (Google default)" },
+                    { category: "Tour booking records", retention: "1 year from tour date" },
+                  ].map(({ category, retention }, i) => (
+                    <div
+                      key={category}
+                      className="flex items-center justify-between gap-6 px-5 py-3.5 text-sm"
+                      style={{
+                        backgroundColor: i % 2 === 0 ? "#F4F7F9" : "#FFFFFF",
+                        borderBottom: i < 4 ? "1px solid rgba(30,53,96,0.06)" : undefined,
+                      }}
+                    >
+                      <span className="text-[#2B303A]/70">{category}</span>
+                      <span className="font-semibold text-[#1E3560] shrink-0">{retention}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 

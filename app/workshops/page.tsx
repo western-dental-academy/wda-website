@@ -99,7 +99,7 @@ function WorkshopCard({
         {/* Blue top accent */}
         <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
 
-        <div className="flex flex-col flex-1 p-8">
+        <div className="flex flex-col flex-1 p-6 sm:p-8">
           {/* Number + badge row */}
           <div className="flex items-center justify-between mb-5">
             <p

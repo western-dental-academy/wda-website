@@ -842,7 +842,7 @@ export default async function AboutPage() {
                   >
                     WDA is developing structured guided practice workshops to support dental assisting certification preparation. Sign up for our newsletter to be notified when sessions are announced.
                   </p>
-                  <InlineNewsletterForm />
+                  <InlineNewsletterForm dark />
                 </div>
                 <div className="flex items-center justify-center">
                   <div

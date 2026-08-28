@@ -58,7 +58,7 @@ const dataUses = [
   {
     purpose: "Booking Campus Tours",
     detail:
-      "Tour booking information is used solely to confirm and coordinate your campus visit and to follow up with relevant program information.",
+      "Tour booking information is used solely to confirm and coordinate your facility visit and to follow up with relevant program information.",
   },
   {
     purpose: "Improving the Website",

@@ -51,7 +51,7 @@ export default async function BlogPage() {
           </h1>
           <p className="mt-4 text-white/60 text-base max-w-xl mx-auto leading-relaxed">
             Industry news, career tips, and behind-the-scenes stories from our
-            instructors and graduates.
+            team and participants.
           </p>
         </div>
       </section>
@@ -144,32 +144,7 @@ export default async function BlogPage() {
         </div>
       </section>
 
-      {/* ── CTA banner ───────────────────────────────── */}
-      <section className="relative overflow-hidden py-16" style={{ backgroundColor: "#1E3560" }}>
-        {/* Streaming lines background */}
-        <FloatingPaths position={1} />
-        <FloatingPaths position={-1} />
-        <div className="max-w-6xl mx-auto px-6 text-center">
-          <h2
-            className="text-2xl font-bold text-white mb-3"
-            style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-          >
-            Ready to start your dental career?
-          </h2>
-          <p className="text-white/60 mb-7 max-w-md mx-auto">
-            Explore our programs and take the first step toward becoming a
-            certified dental professional.
-          </p>
-          <Link
-            href="/programs"
-            className="inline-block rounded-lg bg-[#E67E22] px-8 py-3.5 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17]"
-          >
-            View Programs
-          </Link>
-        </div>
-      </section>
-
-      <NewsletterSignup />
+<NewsletterSignup />
     </>
   );
 }

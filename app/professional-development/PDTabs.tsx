@@ -112,13 +112,12 @@ function WorkshopCard({ workshop, index }: { workshop: typeof workshops[number];
   );
 }
 
-type Tab = "workshops" | "guest-speakers" | "courses" | "board-exam-prep" | "practical-exam-prep";
+type Tab = "workshops" | "guest-speakers" | "courses" | "practical-exam-prep";
 
 const TABS: { id: Tab; label: string }[] = [
   { id: "workshops",          label: "Workshops" },
   { id: "guest-speakers",     label: "Guest Speakers" },
   { id: "courses",            label: "Courses" },
-  { id: "board-exam-prep",    label: "Board Exam Prep" },
   { id: "practical-exam-prep", label: "Practical Exam Prep" },
 ];
 
@@ -220,32 +219,6 @@ export default function PDTabs() {
               Sign up to be notified when new courses are available.
             </p>
             <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when new courses are available." />
-          </div>
-        </div>
-
-        {/* Board Exam Prep */}
-        <div className={activeTab === "board-exam-prep" ? undefined : "hidden"}>
-          <div className="max-w-2xl mx-auto text-center py-16">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-              style={{ backgroundColor: "rgba(230,126,34,0.1)" }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth={1.5} aria-hidden className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
-              </svg>
-            </div>
-            <h2
-              className="text-2xl font-bold mb-4"
-              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-            >
-              Board Exam Prep
-            </h2>
-            <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
-              Board exam preparation resources coming soon. Sign up to be notified when offerings are available.
-            </p>
-            <div className="flex justify-center">
-              <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when board exam prep resources are available." />
-            </div>
           </div>
         </div>
 

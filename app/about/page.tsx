@@ -8,6 +8,7 @@ import { TEAM_MEMBERS_QUERY } from "@/sanity/lib/queries";
 import Image from 'next/image'
 import { urlFor } from '@/lib/sanity/image'
 import TeamCard from '@/components/TeamCard'
+import InlineNewsletterForm from '@/components/InlineNewsletterForm'
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -572,13 +573,7 @@ export default async function AboutPage() {
                 style={{ color: "#2B303A" }}
               >
                 <p>
-                  Western Dental Academy was founded by practicing dental
-                  professionals who recognized a challenge extending beyond
-                  graduation. Across the dental industry, opportunities for
-                  dental assistants to continue developing their clinical skills,
-                  expand their knowledge, and advance professionally can be
-                  limited, despite the profession constantly evolving with new
-                  technologies, techniques, and patient care standards.
+                  Western Dental Academy was founded by dental professionals who recognized the need to support learners beyond graduation, bridging the gap between education, real-world practice, and lifelong learning. Across the dental industry, opportunities for dental assistants to continue developing their clinical skills, expand their knowledge, and advance professionally can be limited, despite the profession constantly evolving with new technologies, techniques, and patient care standards.
                 </p>
                 <p>
                   The team at WDA identified a need for stronger pathways for ongoing growth and professional development. WDA was built on the belief that learning should not end when formal education is complete. Dental professionals deserve access to meaningful educational opportunities that help them stay current, build confidence, expand their skills, and continue advancing throughout their careers.
@@ -647,7 +642,7 @@ export default async function AboutPage() {
                 num: "03",
                 title: "Community Outreach & Training",
                 body:
-                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. One of our goals is to plan community outreach sessions, school presentations, and create partnerships with local organizations; we want to help individuals and families build the knowledge they need to maintain lifelong oral health. We want our outreach initiatives to support underserved and remote communities, reinforcing our belief that oral health training should be available to everyone.",
+                  "Western Dental Academy is committed to improving oral health literacy in the communities we serve. One of our goals is to plan community outreach sessions, school presentations, and create partnerships with local organizations; help individuals and families build the knowledge they need to maintain lifelong oral health. We want our outreach initiatives to support underserved and remote communities, reinforcing our belief that oral health training should be available to everyone.",
                 icon: (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
@@ -845,15 +840,9 @@ export default async function AboutPage() {
                     className="text-base leading-relaxed mb-6"
                     style={{ color: "rgba(255,255,255,0.65)" }}
                   >
-                    WDA is developing structured guided practice workshops to support dental assisting certification preparation. Register your interest to be notified when details are available.
+                    WDA is developing structured guided practice workshops to support dental assisting certification preparation. Sign up for our newsletter to be notified when sessions are announced.
                   </p>
-                  <Link
-                    href="/register"
-                    className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
-                    style={{ backgroundColor: "#E67E22" }}
-                  >
-                    Register
-                  </Link>
+                  <InlineNewsletterForm />
                 </div>
                 <div className="flex items-center justify-center">
                   <div
@@ -866,6 +855,46 @@ export default async function AboutPage() {
                   </div>
                 </div>
               </div>
+            </div>
+          </AnimateIn>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
+          SPONSORSHIP BANNER
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16" style={{ backgroundColor: "#F4F7F9" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <AnimateIn>
+            <div
+              className="rounded-2xl px-8 sm:px-14 py-12 text-center"
+              style={{ backgroundColor: "#1E3560" }}
+            >
+              <p
+                className="text-[0.68rem] font-bold uppercase tracking-[0.22em] mb-4"
+                style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Industry Partnership
+              </p>
+              <h2
+                className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight"
+                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Support Dental Professional Development in Alberta
+              </h2>
+              <p
+                className="text-base leading-relaxed max-w-xl mx-auto mb-8"
+                style={{ color: "rgba(255,255,255,0.65)" }}
+              >
+                Partner with WDA and be recognized as a valued supporter of our community.
+              </p>
+              <Link
+                href="/contact"
+                className="inline-flex items-center rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] hover:bg-[#CF6D17]"
+                style={{ backgroundColor: "#E67E22" }}
+              >
+                Contact Us to Get Involved
+              </Link>
             </div>
           </AnimateIn>
         </div>

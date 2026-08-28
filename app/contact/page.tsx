@@ -371,6 +371,46 @@ export default function ContactPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          SPONSORSHIP BANNER
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16" style={{ backgroundColor: "#ffffff" }}>
+        <div className="max-w-6xl mx-auto px-6">
+          <AnimateIn>
+            <div
+              className="rounded-2xl px-8 sm:px-14 py-12 text-center"
+              style={{ backgroundColor: "#1E3560" }}
+            >
+              <p
+                className="text-[0.68rem] font-bold uppercase tracking-[0.22em] mb-4"
+                style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Industry Partnership
+              </p>
+              <h2
+                className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight"
+                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Support Dental Professional Development in Alberta
+              </h2>
+              <p
+                className="text-base leading-relaxed max-w-xl mx-auto mb-8"
+                style={{ color: "rgba(255,255,255,0.65)" }}
+              >
+                Partner with WDA and be recognized as a valued supporter of our community.
+              </p>
+              <Link
+                href="/sponsorship"
+                className="inline-flex items-center rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] hover:bg-[#CF6D17]"
+                style={{ backgroundColor: "#E67E22" }}
+              >
+                Contact Us to Get Involved
+              </Link>
+            </div>
+          </AnimateIn>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
           QUICK LINKS STRIP
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-16" style={{ backgroundColor: "#F4F7F9" }}>

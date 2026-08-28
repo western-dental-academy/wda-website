@@ -493,7 +493,7 @@ export default function NPEWorkshopPage() {
               >
                 Sign up for our newsletter to be notified when sessions are announced.
               </h2>
-              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row items-center gap-4 justify-center mx-auto w-full max-w-lg">
                 <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when sessions are announced." />
                 <Link
                   href="/professional-development"

@@ -203,16 +203,19 @@ export default function PDTabs() {
         <div className={activeTab === "courses" ? undefined : "hidden"}>
           <div className="mb-12">
             <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-              Available Now
+              Coming Soon
             </p>
             <h2
               className="text-3xl font-bold leading-tight"
               style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Practical Exam Prep
+              Courses
             </h2>
+            <p className="mt-4 text-base leading-relaxed" style={{ color: "#2B303A" }}>
+              Courses are coming soon.
+            </p>
           </div>
-          <div className="mt-12 pt-10 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+          <div className="pt-10 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
             <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
               Sign up to be notified when new courses are available.
             </p>

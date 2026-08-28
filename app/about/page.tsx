@@ -874,7 +874,7 @@ export default async function AboutPage() {
                 className="text-[0.68rem] font-bold uppercase tracking-[0.22em] mb-4"
                 style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
               >
-                Industry Partnership
+                Industry Sponsors
               </p>
               <h2
                 className="text-2xl sm:text-3xl font-bold text-white mb-4 leading-tight"
@@ -886,7 +886,7 @@ export default async function AboutPage() {
                 className="text-base leading-relaxed max-w-xl mx-auto mb-8"
                 style={{ color: "rgba(255,255,255,0.65)" }}
               >
-                Partner with WDA and be recognized as a valued supporter of our community.
+                Sponsor WDA and be recognized as a valued supporter of our community.
               </p>
               <Link
                 href="/contact"

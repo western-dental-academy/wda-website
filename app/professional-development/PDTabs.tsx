@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
+import InlineNewsletterForm from "@/components/InlineNewsletterForm";
 
 // ─── Workshop data ─────────────────────────────────────────────────────────────
 
@@ -14,7 +15,7 @@ const workshops = [
     price: 40,
     duration: "1.5 hours",
     description:
-      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice. There will be 3 separate sessions available focusing on different areas of the body.",
+      "Developed by a Registered Dental Assistant (RDA) and Registered Yoga Teacher 200 (RYT200). Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice. There will be 3 separate sessions available focusing on different areas of the body.",
     highlights: [
       "Ergonomic risk factors and posture principles for dental practice",
       "Guided breathwork techniques to reduce tension and support focus",
@@ -111,12 +112,14 @@ function WorkshopCard({ workshop, index }: { workshop: typeof workshops[number];
   );
 }
 
-type Tab = "workshops" | "guest-speakers" | "courses";
+type Tab = "workshops" | "guest-speakers" | "courses" | "board-exam-prep" | "practical-exam-prep";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "workshops", label: "Workshops" },
-  { id: "guest-speakers", label: "Guest Speakers" },
-  { id: "courses", label: "Courses" },
+  { id: "workshops",          label: "Workshops" },
+  { id: "guest-speakers",     label: "Guest Speakers" },
+  { id: "courses",            label: "Courses" },
+  { id: "board-exam-prep",    label: "Board Exam Prep" },
+  { id: "practical-exam-prep", label: "Practical Exam Prep" },
 ];
 
 export default function PDTabs() {
@@ -127,7 +130,7 @@ export default function PDTabs() {
       <div className="max-w-6xl mx-auto px-6">
         {/* Tab bar */}
         <div
-          className="flex items-center gap-1 mb-14 rounded-xl p-1.5 w-fit"
+          className="flex flex-wrap items-center gap-1 mb-14 rounded-xl p-1.5 w-fit"
           style={{ backgroundColor: "#F4F7F9" }}
           role="tablist"
           aria-label="Professional development categories"
@@ -141,8 +144,8 @@ export default function PDTabs() {
               className="rounded-lg px-5 py-2.5 text-sm font-bold transition-all duration-200"
               style={
                 activeTab === id
-                  ? { backgroundColor: "#1E3560", color: "#ffffff" }
-                  : { backgroundColor: "transparent", color: "rgba(30,53,96,0.55)" }
+                  ? { backgroundColor: "#E67E22", color: "#ffffff" }
+                  : { backgroundColor: "transparent", color: "rgba(230,126,34,0.7)" }
               }
             >
               {label}
@@ -187,17 +190,12 @@ export default function PDTabs() {
             >
               Guest Speaker Events
             </h2>
-            <p className="text-base leading-relaxed mb-8" style={{ color: "#2B303A" }}>
-              Guest speaker opportunities coming soon. Sign up for our newsletter to be notified
-              when new speakers are announced.
+            <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+              Guest speaker opportunities coming soon. Sign up to be notified when guest speaker events are announced.
             </p>
-            <Link
-              href="/register"
-              className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
-              style={{ backgroundColor: "#E67E22" }}
-            >
-              Register
-            </Link>
+            <div className="flex justify-center">
+              <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when guest speaker events are announced." />
+            </div>
           </div>
         </div>
 
@@ -211,7 +209,7 @@ export default function PDTabs() {
               className="text-3xl font-bold leading-tight"
               style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              National Board Preparation
+              Practical Exam Prep
             </h2>
           </div>
           <div className="flex flex-col">
@@ -262,7 +260,76 @@ export default function PDTabs() {
               </div>
             </div>
           </div>
+
+          <div className="mt-12 pt-10 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+            <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
+              Sign up to be notified when new courses are available.
+            </p>
+            <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when new courses are available." />
+          </div>
         </div>
+
+        {/* Board Exam Prep */}
+        <div className={activeTab === "board-exam-prep" ? undefined : "hidden"}>
+          <div className="max-w-2xl mx-auto text-center py-16">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              style={{ backgroundColor: "rgba(230,126,34,0.1)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth={1.5} aria-hidden className="w-8 h-8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+              </svg>
+            </div>
+            <h2
+              className="text-2xl font-bold mb-4"
+              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              Board Exam Prep
+            </h2>
+            <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+              Board exam preparation resources coming soon. Sign up to be notified when offerings are available.
+            </p>
+            <div className="flex justify-center">
+              <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when board exam prep resources are available." />
+            </div>
+          </div>
+        </div>
+
+        {/* Practical Exam Prep */}
+        <div className={activeTab === "practical-exam-prep" ? undefined : "hidden"}>
+          <div className="max-w-2xl mx-auto text-center py-16">
+            <div
+              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+              style={{ backgroundColor: "rgba(230,126,34,0.1)" }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="#E67E22" strokeWidth={1.5} aria-hidden className="w-8 h-8">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75" />
+              </svg>
+            </div>
+            <h2
+              className="text-2xl font-bold mb-4"
+              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              Practical Exam Prep
+            </h2>
+            <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+              Structured practice for the NDAEB Clinical Practice Evaluation. Sign up to be notified when sessions are announced, or learn more about our guided practice workshop.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href="/national-board-guided-practice"
+                className="inline-flex items-center gap-2 rounded-lg px-6 py-3 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] hover:bg-[#CF6D17]"
+                style={{ backgroundColor: "#E67E22" }}
+              >
+                Learn More →
+              </Link>
+            </div>
+            <div className="mt-8 flex justify-center">
+              <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when practical exam prep sessions are announced." />
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );

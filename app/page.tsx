@@ -12,7 +12,7 @@ const programs = [
     num: "01",
     title: "Workshops",
     description:
-      "Hands-on and led by practitioners, professionals, and other industry experts, bringing practical knowledge, fresh perspectives, and ongoing learning experiences. Continue to check back for new offerings.",
+      "Hands-on and led by practitioners, professionals, and other industry experts, bringing practical knowledge, fresh perspectives, and ongoing learning experiences. We're continually expanding our offerings, so be sure to check back often.",
     tags: ["Hands-On", "Expert-Led"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -24,7 +24,7 @@ const programs = [
     num: "02",
     title: "Guest Speakers",
     description:
-      "WDA takes an innovative approach by offering unique sessions that expand the thinking of dental professionals. Many of these speaker sessions are open to the public as well, to enrich community involvement. Continue to check back for new offerings.",
+      "WDA takes an innovative approach by offering unique sessions that expand the thinking of dental professionals. Many of these speaker sessions are open to the public as well, to enrich community involvement. We're continually expanding our offerings, so be sure to check back often.",
     tags: ["Industry Experts", "Open Events"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -36,7 +36,7 @@ const programs = [
     num: "03",
     title: "Courses",
     description:
-      "Focused on refreshing theoretical knowledge. We will also offer clinical refresher courses. WDA is consistently developing online courses. Continue to check back for new offerings.",
+      "Focused on refreshing theoretical knowledge. We will also offer clinical refresher courses. WDA is consistently developing online courses. We're continually expanding our offerings, so be sure to check back often.",
     tags: ["Online", "In Person"],
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden className="w-5 h-5">
@@ -194,8 +194,7 @@ export default function Home() {
               Professional Development
             </h2>
             <p style={{ color: "#2B303A" }}>
-              Every professional development opportunity at WDA is designed to
-              enhance soft skills as well as strengthen practical, real world skills.
+              Professional Development opportunities at WDA are designed to enhance soft skills as well as strengthen practical, real-world skills.
             </p>
           </AnimateIn>
 
@@ -322,9 +321,7 @@ export default function Home() {
                 Dental Academy?
               </h2>
               <p className="text-base leading-relaxed mb-8" style={{ color: "#2B303A" }}>
-                We&apos;re not making dental professionals — we are helping
-                maintain competence through engagement and unique professional
-                development opportunities. From hiring instructors to planning
+                WDA is proactively responding to Alberta&apos;s needs and helping fill gaps across the dental industry and maintain competence through engagement and unique professional development opportunities. From hiring instructors to planning
                 sessions, everything comes back to that principle.
               </p>
               <Link

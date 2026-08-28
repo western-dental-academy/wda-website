@@ -98,7 +98,9 @@ export default function HeroHeadlineSection() {
       >
         A modern facility offering relevant yet unique professional development.
         WDA is here to strengthen and empower dental professionals in
-        Alberta&apos;s oral health workforce.
+        Alberta&apos;s oral health workforce. Looking ahead, WDA is committed to
+        helping fill gaps in the dental industry and supporting the future of
+        oral healthcare in Alberta.
       </p>
 
       {/* CTAs */}

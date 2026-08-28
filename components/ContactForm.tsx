@@ -18,10 +18,9 @@ interface FormData {
 
 const TOPICS = [
   "General Inquiry",
-  "Program Information",
-  "Admissions & Enrollment",
-  "Book a Campus Tour",
-  "Continuing Education",
+  "Professional Development",
+  "Board Exam Prep",
+  "Sponsorships",
   "Other",
 ];
 

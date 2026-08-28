@@ -332,16 +332,16 @@ export default function ContactPage() {
           <div className="flex flex-col gap-4">
             {[
               {
-                q: "How do workshops support my CADA CCP?",
-                a: "Each participant receives a certificate of attendance along with structured learning objectives. You can use these to document the workshop in your annual CADA Continuing Competence Program (CCP) submission.",
+                q: "How does WDA support my CADA CPP?",
+                a: "Each participant receives a certificate of attendance. You can use these to document the workshop in your annual CADA Continuing Competence Program (CCP) submission.",
               },
               {
-                q: "Where are workshops held?",
-                a: "Workshops are held at our facility in Sherwood Park, Alberta (Edmonton area). Free parking is available on site.",
+                q: "Where are all events held?",
+                a: "Events are held at our facility in Sherwood Park, Alberta (Edmonton area). Free parking is available on site.",
               },
               {
                 q: "How do I register?",
-                a: "Browse our Professional Development page to find available workshops, courses, and guest speaker events. Click Register on any offering to complete your registration and payment online. Guest speaker events may vary in pricing — some may be complimentary.",
+                a: "Browse our Professional Development page to find available workshops, courses, and guest speaker events. Click Register on any offering to complete your registration and payment online.",
               },
             ].map(({ q, a }) => (
               <div

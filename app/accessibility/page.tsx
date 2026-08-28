@@ -98,9 +98,7 @@ export default function AccessibilityPage() {
                 Our Commitment
               </h2>
               <p className={`${BODY_TEXT} mb-4`}>
-                Western Dental Academy believes that access to information about dental
-                education and professional training should not be limited by disability
-                or assistive technology. We are committed to providing a website
+                Western Dental Academy is committed to providing a website
                 experience that is perceivable, operable, understandable, and robust
                 for all users — the four principles that underpin the Web Content
                 Accessibility Guidelines.

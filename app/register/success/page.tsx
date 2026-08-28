@@ -86,6 +86,7 @@ export default async function SuccessPage({
             }
 
             const isErgonomics = workshop.includes('Ergonomics in Dentistry');
+                    const isNationalBoard = workshop.includes('National Board');
 
             // Send confirmation email to registrant
             await resend.emails.send({
@@ -115,6 +116,17 @@ export default async function SuccessPage({
                         <li>Comfortable clothing</li>
                         <li>Water bottle</li>
                         <li>Yoga mat</li>
+                      </ul>
+                    </div>` : ''}
+                    ${isNationalBoard ? `
+                    <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin-top:16px;">
+                      <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 8px;">What to Bring — Clinical Attire Required</p>
+                      <ul style="color:#4b5563;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
+                        <li>Scrubs</li>
+                        <li>Safety glasses (loops are an option)</li>
+                        <li>Indoor shoes with closed toe and heel</li>
+                        <li>Scrub cap or cultural headcover</li>
+                        <li>Candidate handbook (can be downloaded from the NDAEB website)</li>
                       </ul>
                     </div>` : ''}
                     <p style="color:#374151;font-size:14px;line-height:1.6;margin-top:16px;">

@@ -6,7 +6,7 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 export const metadata: Metadata = {
   title: "National Board Guided Practice",
   description:
-    "An 8-hour hands-on practical workshop preparing dental assisting candidates for the NDAEB Clinical Practice Evaluation. Build confidence across all nine CPE clinical skills.",
+    "An 8-hour hands-on practical workshop preparing dental professional candidates for the NDAEB Clinical Practice Evaluation. Build confidence across all nine CPE clinical skills.",
 };
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
@@ -108,19 +108,9 @@ export default function NPEWorkshopPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                8-Hour Workshop — Prepare with Confidence for Your NDAEB Clinical Practice
+                8-Hour Workshop — Prepare with confidence for your NDAEB Clinical Practice
                 Evaluation
               </p>
-
-              <div className="flex flex-wrap gap-3 mt-6">
-                <Link
-                  href="/register"
-                  className="rounded-lg px-7 py-3 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
-                  style={{ backgroundColor: "#E67E22" }}
-                >
-                  Register
-                </Link>
-              </div>
             </div>
 
             {/* Stats card */}
@@ -176,7 +166,7 @@ export default function NPEWorkshopPage() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
-          OVERVIEW + WHO THIS IS FOR
+          OVERVIEW + IDEAL FOR
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#ffffff" }}>
         <div className="max-w-6xl mx-auto px-6">
@@ -201,26 +191,39 @@ export default function NPEWorkshopPage() {
               <div className="flex flex-col gap-4 text-base leading-relaxed" style={{ color: "#2B303A" }}>
                 <p>
                   This comprehensive 8-hour hands-on practical workshop is designed to prepare dental
-                  assisting candidates for the National Dental Assisting Examining Board (NDAEB)
+                  professional candidates for the National Dental Assisting Examining Board (NDAEB)
                   Clinical Practice Evaluation (CPE). The workshop provides focused instruction,
                   practical skill refinement, and evaluation strategies aligned with the nine
                   clinical skills and professional practice standards assessed during the CPE.
                 </p>
                 <p>
                   Candidates will strengthen their understanding of critical evaluation criteria,
-                  infection prevention and control requirements, and time management techniques
-                  used by NDAEB evaluators. Through simulated clinical exercises, guided practice,
-                  case-based prescriptions, and mock evaluations, participants will gain confidence
-                  performing procedures on manikins to prepare for the CPE.
+                  infection prevention and control requirements, and time management techniques.
+                  Through simulated clinical exercises, guided practice, and case-based prescriptions,
+                  participants will gain confidence performing procedures on manikins to prepare for
+                  the CPE.
                 </p>
                 <p>
-                  Emphasis is placed on identifying and avoiding common critical errors that result
-                  in unsuccessful outcomes.
+                  Emphasis is placed on helping candidates identify and avoid common critical errors
+                  that result in unsuccessful outcomes.
                 </p>
+                <div
+                  className="rounded-xl p-4 text-sm leading-relaxed"
+                  style={{
+                    backgroundColor: "rgba(74,159,212,0.08)",
+                    border: "1px solid rgba(74,159,212,0.18)",
+                    color: "#2B303A",
+                  }}
+                >
+                  <span style={{ color: "#1E3560", fontWeight: 600 }}>Please note: </span>
+                  While attendance at the preparation workshop does not guarantee board examination
+                  success, it provides participants with valuable preparation and resources to support
+                  their readiness.
+                </div>
               </div>
             </AnimateIn>
 
-            {/* Right: who this is for */}
+            {/* Right: ideal for */}
             <AnimateIn delay={130}>
               <div
                 className="rounded-2xl p-8"
@@ -230,13 +233,13 @@ export default function NPEWorkshopPage() {
                   className="text-xs font-bold tracking-[0.2em] uppercase mb-5"
                   style={{ color: "#4A9FD4" }}
                 >
-                  Who This Is For
+                  Ideal For
                 </p>
                 <ul className="flex flex-col gap-4">
                   {[
-                    "Graduates of non-registered dental assisting programs preparing for the NDAEB CPE",
-                    "Internationally educated dental assistants seeking NDAEB certification",
-                    "Dental assistants requiring re-evaluation of unsuccessful CPE skills",
+                    "Graduates of non-registered/non-accredited dental assisting programs preparing for the NDAEB CPE",
+                    "Internationally educated dental professionals seeking NDAEB certification",
+                    "Dental professionals requiring re-evaluation of unsuccessful CPE skills",
                     "Candidates seeking structured preparation prior to their scheduled CPE",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3">
@@ -315,7 +318,7 @@ export default function NPEWorkshopPage() {
               },
               {
                 num: "05",
-                text: "Utilise appropriate fulcrum techniques, safety practices, and professional behaviours throughout clinical procedures",
+                text: "Utilise appropriate safety practices and professional behaviours throughout clinical procedures",
               },
             ].map(({ num, text }, i) => (
               <AnimateIn key={num} delay={i * 80}>
@@ -388,33 +391,19 @@ export default function NPEWorkshopPage() {
                   ),
                 },
                 {
-                  label: "Prerequisite",
+                  label: "Clinical Attire Needed",
                   value: (
-                    <>
-                      For eligibility requirements to complete the NDAEB CPE, please visit the{" "}
-                      <a
-                        href="https://ndaeb.ca/graduates-of-non-registered-programs/eligibility-application-for-graduates-of-non-registered-programs/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ color: "#4A9FD4", textDecoration: "underline" }}
-                      >
-                        NDAEB website
-                      </a>.
-                      <div style={{ marginTop: "8px", display: "flex", flexDirection: "column", gap: "6px" }}>
-                        <div style={{ display: "flex", gap: "6px" }}>
-                          <span style={{ flexShrink: 0 }}>•</span>
-                          <span>Complete both theoretical and clinical formal education in all essential National Core Skills from an education program recognized by the NDAEB.</span>
-                        </div>
-                        <div style={{ display: "flex", gap: "6px" }}>
-                          <span style={{ flexShrink: 0 }}>•</span>
-                          <span>Achieve and demonstrate a passing mark on the NDAEB Theory Exam.</span>
-                        </div>
-                      </div>
-                    </>
+                    <ul style={{ margin: 0, paddingLeft: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                      <li>Scrubs</li>
+                      <li>Safety glasses (loops are an option)</li>
+                      <li>Indoor shoes with closed toe and heel</li>
+                      <li>Scrub cap or cultural headcover</li>
+                      <li>Candidate handbook (can be downloaded from the NDAEB website)</li>
+                    </ul>
                   ),
                   icon: (
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} aria-hidden className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.627 48.627 0 0 1 12 20.904a48.627 48.627 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 0 2-2h2a2 2 0 0 0 2 2m-6 9 2 2 4-4" />
                     </svg>
                   ),
                 },
@@ -514,11 +503,11 @@ export default function NPEWorkshopPage() {
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
-                  href="/register"
+                  href="/contact"
                   className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
                   style={{ backgroundColor: "#E67E22" }}
                 >
-                  Register
+                  Contact Us
                 </Link>
                 <Link
                   href="/professional-development"

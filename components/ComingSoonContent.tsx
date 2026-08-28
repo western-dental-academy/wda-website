@@ -308,22 +308,6 @@ export default function ComingSoonContent() {
           style={{ color: "rgba(255,255,255,0.55)", ...fadeUp(1.0, 0.55) }}
         >
           <a
-            href="tel:+17800000000"
-            className="flex items-center gap-2 transition-colors duration-200 hover:text-white"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0" aria-hidden>
-              <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-            </svg>
-            (780) 000-0000
-          </a>
-
-          <span
-            className="hidden sm:block w-px h-3.5 self-center"
-            style={{ backgroundColor: "rgba(255,255,255,0.18)" }}
-            aria-hidden
-          />
-
-          <a
             href="mailto:info@westerndentalacademy.com"
             className="flex items-center gap-2 transition-colors duration-200 hover:text-white"
           >

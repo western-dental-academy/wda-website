@@ -42,27 +42,6 @@ const CONTACT_DETAILS = [
     ),
   },
   {
-    label: "Phone",
-    value: "(780) 000-0000",
-    href: "tel:+17800000000",
-    icon: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={1.75}
-        aria-hidden
-        className="w-4 h-4 shrink-0 mt-0.5"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25z"
-        />
-      </svg>
-    ),
-  },
-  {
     label: "Email",
     value: "info@westerndentalacademy.com",
     href: "mailto:info@westerndentalacademy.com",
@@ -85,11 +64,6 @@ const CONTACT_DETAILS = [
   },
 ];
 
-const HOURS = [
-  { day: "Monday – Friday", hours: "8:00 am – 5:00 pm", open: true },
-  { day: "Saturday", hours: "By appointment", open: true },
-  { day: "Sunday", hours: "Closed", open: false },
-];
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
@@ -287,76 +261,6 @@ export default function ContactPage() {
                 </div>
               </AnimateIn>
 
-              {/* Hours card */}
-              <AnimateIn delay={180}>
-                <div
-                  className="rounded-2xl p-8"
-                  style={{ backgroundColor: "#F4F7F9" }}
-                >
-                  <p
-                    className="text-[10px] font-bold tracking-[0.2em] uppercase mb-6"
-                    style={{ color: "#4A9FD4" }}
-                  >
-                    Business Hours
-                  </p>
-                  <ul className="flex flex-col gap-0">
-                    {HOURS.map(({ day, hours, open }, i) => (
-                      <li
-                        key={day}
-                        className={`flex items-center justify-between py-3.5 ${
-                          i < HOURS.length - 1 ? "border-b" : ""
-                        }`}
-                        style={
-                          i < HOURS.length - 1
-                            ? { borderColor: "rgba(30,53,96,0.08)" }
-                            : {}
-                        }
-                      >
-                        <span
-                          className="text-sm font-medium"
-                          style={{ color: "#1E3560" }}
-                        >
-                          {day}
-                        </span>
-                        <span
-                          className="text-sm font-semibold"
-                          style={{ color: open ? "#2B303A" : "rgba(43,48,58,0.4)" }}
-                        >
-                          {hours}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div
-                    className="mt-6 pt-5 flex items-start gap-2.5"
-                    style={{ borderTop: "1px solid rgba(30,53,96,0.08)" }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#4A9FD4"
-                      strokeWidth={1.75}
-                      aria-hidden
-                      className="w-4 h-4 shrink-0 mt-0.5"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9-3.75h.008v.008H12V8.25z"
-                      />
-                    </svg>
-                    <p
-                      className="text-xs leading-relaxed"
-                      style={{ color: "rgba(43,48,58,0.55)" }}
-                    >
-                      Responses to online inquiries are sent during business
-                      hours, Monday through Friday.
-                    </p>
-                  </div>
-                </div>
-              </AnimateIn>
-
               {/* Google Maps embed */}
               <AnimateIn delay={240}>
                 <div
@@ -517,7 +421,7 @@ export default function ContactPage() {
                   ),
                 },
                 {
-                  label: "Board Exam Prep",
+                  label: "Practical Exam Prep",
                   description: "Prepare with confidence for your NDAEB Clinical Practice Evaluation with our guided practice workshops.",
                   href: "/national-board-guided-practice",
                   icon: (

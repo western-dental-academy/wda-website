@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { MapPin, Phone, Mail, Clock, CheckCircle2 } from "lucide-react";
+import { MapPin, Mail, CheckCircle2 } from "lucide-react";
 import BookATourForm from "@/components/BookATourForm";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
@@ -17,22 +17,10 @@ const contactInfo = [
     href: undefined,
   },
   {
-    icon: Phone,
-    label: "Phone",
-    value: "(780) 000-0000",
-    href: "tel:+17800000000",
-  },
-  {
     icon: Mail,
     label: "Email",
     value: "info@westerndentalacademy.com",
     href: "mailto:info@westerndentalacademy.com",
-  },
-  {
-    icon: Clock,
-    label: "Hours",
-    value: "Mon – Fri, 8:00 am – 5:00 pm",
-    href: undefined,
   },
 ];
 

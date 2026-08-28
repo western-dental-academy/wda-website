@@ -59,7 +59,7 @@ const CATEGORIES = [
   { value: "workshop",       label: "Workshops",      emoji: "🎓" },
   { value: "course",         label: "Courses",         emoji: "📚" },
   { value: "guest-speaker",  label: "Guest Speakers",  emoji: "🎤" },
-  { value: "board-exam-prep", label: "Board Exam Prep", emoji: "📋" },
+  { value: "board-exam-prep", label: "Practical Exam Prep", emoji: "📋" },
 ] as const;
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────

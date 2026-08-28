@@ -10,7 +10,7 @@ const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Professional Development", href: "/professional-development" },
-  { label: "Board Exam Prep", href: "/national-board-guided-practice" },
+  { label: "Practical Exam Prep", href: "/national-board-guided-practice" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];

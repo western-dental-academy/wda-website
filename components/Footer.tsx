@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Mail } from "lucide-react";
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Professional Development", href: "/professional-development" },
-  { label: "Board Exam Prep", href: "/national-board-guided-practice" },
+  { label: "Practical Exam Prep", href: "/national-board-guided-practice" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
   { label: "Sponsorship", href: "/sponsorship" },
@@ -60,22 +60,10 @@ const contactItems = [
     href: undefined,
   },
   {
-    icon: Phone,
-    label: "Phone",
-    value: "(780) 000-0000",
-    href: "tel:+17800000000",
-  },
-  {
     icon: Mail,
     label: "Email",
     value: "info@westerndentalacademy.com",
     href: "mailto:info@westerndentalacademy.com",
-  },
-  {
-    icon: Clock,
-    label: "Hours",
-    value: "Mon – Fri, 8:00 am – 5:00 pm",
-    href: undefined,
   },
 ];
 
@@ -93,7 +81,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
           {/* ── Brand column ───────────────────────────── */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
 
             {/* Logo lockup */}
             <Link href="/" className="self-start" aria-label="Western Dental Academy – Home">
@@ -209,12 +197,6 @@ export default function Footer() {
                 {label}
               </Link>
             ))}
-            <Link
-              href="/sign-in"
-              className="text-xs text-white/25 hover:text-white/50 transition-colors duration-200"
-            >
-              Staff Login
-            </Link>
           </div>
         </div>
       </div>

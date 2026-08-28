@@ -25,7 +25,7 @@ const openSans = Open_Sans({
 
 export const metadata: Metadata = {
   title: {
-    default: "Western Dental Academy | Dental Assistant Training Edmonton",
+    default: "Western Dental Academy | Dental Professional Development Edmonton",
     template: "%s | Western Dental Academy",
   },
   description:
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Western Dental Academy",
-    description: "Dental assistant training in Edmonton, Alberta.",
+    description: "Dental professional development in Edmonton, Alberta.",
     url: "https://westerndentalacademy.com",
     siteName: "Western Dental Academy",
     images: [

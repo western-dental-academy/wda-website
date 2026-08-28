@@ -86,7 +86,7 @@ export default function Footer() {
             </Link>
 
             {/* Tagline */}
-            <p className="text-sm leading-relaxed max-w-xs text-white/60 my-3">
+            <p className="text-sm leading-relaxed max-w-xs text-white/60 mt-1 mb-4">
               Working with experienced dental healthcare professionals and industry experts through unique professional development opportunities in a modern learning environment committed to safe, high-quality oral healthcare.
             </p>
 

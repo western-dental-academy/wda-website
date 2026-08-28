@@ -41,15 +41,6 @@ const socialLinks = [
       </svg>
     ),
   },
-  {
-    label: "X (Twitter)",
-    href: "#",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4" aria-hidden>
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-      </svg>
-    ),
-  },
 ];
 
 const contactItems = [
@@ -81,7 +72,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
 
           {/* ── Brand column ───────────────────────────── */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
 
             {/* Logo lockup */}
             <Link href="/" className="self-start" aria-label="Western Dental Academy – Home">

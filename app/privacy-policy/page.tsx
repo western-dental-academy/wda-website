@@ -26,7 +26,7 @@ const infoCollected = [
       "Contact and enquiry forms: name, email address, phone number, and the content of your message",
       "Program application forms: name, email, phone number, date of birth, educational background, and program preferences",
       "Newsletter sign-up: email address",
-      "Campus tour booking: name, email, phone number, preferred date and time, and number of attendees",
+      "Facility tour booking: name, email, phone number, preferred date and time, and number of attendees",
     ],
   },
   {
@@ -56,7 +56,7 @@ const dataUses = [
       "If you subscribe to our newsletter, we use your email address to send program updates, upcoming start dates, and industry news. You may unsubscribe at any time using the link included in every email.",
   },
   {
-    purpose: "Booking Campus Tours",
+    purpose: "Booking Facility Tours",
     detail:
       "Tour booking information is used solely to confirm and coordinate your facility visit and to follow up with relevant program information.",
   },

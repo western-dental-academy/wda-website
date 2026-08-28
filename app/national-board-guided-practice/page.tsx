@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import InlineNewsletterForm from "@/components/InlineNewsletterForm";
 
 export const metadata: Metadata = {
   title: "National Board Guided Practice",
@@ -193,7 +194,7 @@ export default function NPEWorkshopPage() {
                   This comprehensive 8-hour hands-on practical workshop is designed to prepare dental
                   professional candidates for the National Dental Assisting Examining Board (NDAEB)
                   Clinical Practice Evaluation (CPE). The workshop provides focused instruction,
-                  practical skill refinement, and evaluation strategies aligned with the nine
+                  practical skill refinement, and evaluation practice aligned with the nine
                   clinical skills and professional practice standards assessed during the CPE.
                 </p>
                 <p>
@@ -490,25 +491,12 @@ export default function NPEWorkshopPage() {
                   fontFamily: "var(--font-montserrat), sans-serif",
                 }}
               >
-                Connect with Our Team to Find
-                <br />
-                the Next Available Date.
+                Sign up for our newsletter to be notified when sessions are announced.
               </h2>
-              <p
-                className="text-base leading-relaxed mb-10 max-w-lg mx-auto"
-                style={{ color: "#2B303A" }}
-              >
-                Workshop dates are offered on a rolling basis. Reach out and we&apos;ll let you
-                know when the next session is scheduled.
-              </p>
+              <div className="flex justify-center mb-6">
+                <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when sessions are announced." />
+              </div>
               <div className="flex flex-wrap items-center justify-center gap-4">
-                <Link
-                  href="/contact"
-                  className="rounded-lg px-8 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:bg-[#CF6D17] hover:scale-[1.02]"
-                  style={{ backgroundColor: "#E67E22" }}
-                >
-                  Contact Us
-                </Link>
                 <Link
                   href="/professional-development"
                   className="rounded-lg px-8 py-3.5 text-sm font-bold transition-all duration-200 border hover:bg-[#F4F7F9]"

@@ -21,8 +21,9 @@ const styles = StyleSheet.create({
     height: 52,
   },
   logo: {
-    width: 88,
-    height: 36,
+    width: 100,
+    height: 24,
+    objectFit: 'contain',
   },
   staffLabel: {
     fontSize: 10,

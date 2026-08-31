@@ -33,7 +33,7 @@ export async function GET() {
     )
   }
 
-  const logoRes = await fetch('https://westerndentalacademy.com/WesternDentalAcademyLogo-Inverted.png')
+  const logoRes = await fetch('https://westerndentalacademy.com/Inverted.png')
   console.log('Logo fetch status:', logoRes.status)
   console.log('Logo fetch ok:', logoRes.ok)
   const logoBuffer = await logoRes.arrayBuffer()

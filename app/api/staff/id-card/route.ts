@@ -50,7 +50,7 @@ export async function GET() {
     }) as React.ReactElement<import('@react-pdf/renderer').DocumentProps>
   )
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       'Content-Type': 'application/pdf',
       'Content-Disposition': `attachment; filename="WDA-Staff-ID-${staff.staffId}.pdf"`,

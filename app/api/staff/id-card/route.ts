@@ -33,7 +33,9 @@ export async function GET() {
     )
   }
 
-  const logoUrl = 'https://westerndentalacademy.com/WesternDentalAcademyLogo-Inverted.png'
+  const logoRes = await fetch('https://westerndentalacademy.com/WesternDentalAcademyLogo-Inverted.png')
+  const logoBuffer = await logoRes.arrayBuffer()
+  const logoBase64 = `data:image/png;base64,${Buffer.from(logoBuffer).toString('base64')}`
 
   const buffer = await renderToBuffer(
     React.createElement(StaffIdCardDocument, {
@@ -41,7 +43,7 @@ export async function GET() {
       role: staff.jobTitle ?? '',
       department: staff.department ?? '',
       staffId: staff.staffId,
-      logoUrl,
+      logoUrl: logoBase64,
     }) as React.ReactElement<import('@react-pdf/renderer').DocumentProps>
   )
 

@@ -306,6 +306,37 @@ function WorkshopCard({
 export default function WorkshopsPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Event",
+          "name": "Ergonomics in Dentistry Workshop",
+          "description": "A hands-on workshop for dental professionals covering ergonomics, intentional movement, and breathwork to prevent burnout and support career longevity.",
+          "organizer": {
+            "@type": "Organization",
+            "name": "Western Dental Academy",
+            "url": "https://westerndentalacademy.com"
+          },
+          "location": {
+            "@type": "Place",
+            "name": "Western Dental Academy",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "150 Chippewa Road, Suite 258",
+              "addressLocality": "Sherwood Park",
+              "addressRegion": "AB",
+              "addressCountry": "CA"
+            }
+          },
+          "offers": {
+            "@type": "Offer",
+            "price": "40",
+            "priceCurrency": "CAD",
+            "url": "https://westerndentalacademy.com/register"
+          }
+        }) }}
+      />
       {/* ═══════════════════════════════════════════════════════════
           PAGE HERO
       ═══════════════════════════════════════════════════════════ */}

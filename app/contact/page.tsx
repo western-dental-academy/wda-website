@@ -70,6 +70,39 @@ const CONTACT_DETAILS = [
 export default function ContactPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How does WDA support my CADA CPP?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our workshops are designed to support your annual CADA Continuing Competence Program (CCP) submission. Each participant receives a certificate of attendance to document in their CCP."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Where are all events held?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Events are held at our facility in Sherwood Park, Alberta (Edmonton Area). Free parking is available."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I register?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Browse our Professional Development page to find available workshops, courses, and guest speaker events. Click Register on any offering to complete your registration and payment online."
+              }
+            }
+          ]
+        }) }}
+      />
       {/* ═══════════════════════════════════════════════════════════
           PAGE HERO
       ═══════════════════════════════════════════════════════════ */}

@@ -76,6 +76,56 @@ export default function RootLayout({
       className={`${montserrat.variable} ${openSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "Western Dental Academy",
+            "url": "https://westerndentalacademy.com",
+            "logo": "https://westerndentalacademy.com/Western Dental Academy Logo - Alternate.svg",
+            "description": "Western Dental Academy offers professional development opportunities for dental professionals in Edmonton, Alberta including workshops, guest speakers, and courses.",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "150 Chippewa Road, Suite 258",
+              "addressLocality": "Sherwood Park",
+              "addressRegion": "AB",
+              "addressCountry": "CA"
+            },
+            "email": "info@westerndentalacademy.com",
+            "sameAs": [
+              "https://www.instagram.com/westerndentalacademy/",
+              "https://www.facebook.com/profile.php?id=61591275340547",
+              "https://www.linkedin.com/company/western-dental-academy/"
+            ]
+          }) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": "Western Dental Academy",
+            "url": "https://westerndentalacademy.com",
+            "description": "Professional development for dental professionals in Edmonton Area, Alberta. Workshops, courses, guest speakers, and practical exam preparation.",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "150 Chippewa Road, Suite 258",
+              "addressLocality": "Sherwood Park",
+              "addressRegion": "AB",
+              "postalCode": "T8H 0P6",
+              "addressCountry": "CA"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 53.5355,
+              "longitude": -113.3048
+            },
+            "email": "info@westerndentalacademy.com",
+            "priceRange": "$$",
+            "areaServed": "Edmonton Area, Alberta"
+          }) }}
+        />
         <NextTopLoader color="#E67E22" height={3} showSpinner={false} />
         <RecaptchaProvider>
           <ClerkProvider>

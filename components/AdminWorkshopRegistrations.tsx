@@ -8,6 +8,7 @@ export interface WorkshopRegistration {
   _id: string;
   firstName: string;
   lastName: string;
+  pronouns?: string;
   email: string;
   workshop: string;
   registeredAt: string;
@@ -323,6 +324,11 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                 <tr key={r._id} style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}>
                   <td className="px-4 py-3 font-semibold whitespace-nowrap" style={{ color: "#1E3560" }}>
                     {r.firstName} {r.lastName}
+                    {r.pronouns && (
+                      <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.45)" }}>
+                        {r.pronouns}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap" style={{ color: "rgba(43,48,58,0.65)" }}>
                     {r.email}

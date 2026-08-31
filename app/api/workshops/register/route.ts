@@ -26,9 +26,10 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { firstName, lastName, email, phone, cadaNumber, dentalBackground, workshop, preferredDate, workshopDateId, questions } = body as {
+    const { firstName, lastName, pronouns, email, phone, cadaNumber, dentalBackground, workshop, preferredDate, workshopDateId, questions } = body as {
       firstName?: string
       lastName?: string
+      pronouns?: string
       email?: string
       phone?: string
       cadaNumber?: string
@@ -71,6 +72,7 @@ export async function POST(req: NextRequest) {
       _type: 'workshopRegistration',
       firstName: firstName.trim(),
       lastName: lastName.trim(),
+      pronouns: pronouns?.trim() || undefined,
       email: email.trim(),
       phone: phone.trim(),
       workshop,

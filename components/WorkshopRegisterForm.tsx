@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 interface FormData {
   firstName: string;
   lastName: string;
+  pronouns: string;
   email: string;
   phone: string;
   dentalBackground: string;
@@ -31,9 +32,20 @@ interface WorkshopDate {
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
+const PRONOUNS_OPTIONS = [
+  "She/Her",
+  "He/Him",
+  "They/Them",
+  "She/They",
+  "He/They",
+  "Prefer not to say",
+  "Prefer to self-describe",
+] as const;
+
 const INITIAL: FormData = {
   firstName: "",
   lastName: "",
+  pronouns: "",
   email: "",
   phone: "",
   dentalBackground: "",
@@ -157,6 +169,7 @@ export default function WorkshopRegisterForm() {
   const [step, setStep]       = useState(1);
   const [data, setData]       = useState<FormData>(INITIAL);
   const [errors, setErrors]   = useState<Errors>({});
+  const [customPronouns, setCustomPronouns] = useState("");
   const [redirecting, setRedirecting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
   const [waitlistSubmitting, setWaitlistSubmitting] = useState(false);
@@ -242,12 +255,17 @@ export default function WorkshopRegisterForm() {
     setRedirecting(true);
     setCheckoutError("");
     try {
+      const resolvedPronouns = data.pronouns === "Prefer to self-describe"
+        ? customPronouns.trim()
+        : data.pronouns;
+
       const res = await fetch("/api/workshops/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           firstName: data.firstName,
           lastName: data.lastName,
+          pronouns: resolvedPronouns || undefined,
           email: data.email,
           phone: data.phone,
           cadaNumber: data.cadaNumber.trim() || undefined,
@@ -445,6 +463,34 @@ export default function WorkshopRegisterForm() {
                 />
                 <FieldError id="err-lastName" msg={errors.lastName} />
               </div>
+            </div>
+
+            <div>
+              <FieldLabel htmlFor="reg-pronouns" optional>Pronouns</FieldLabel>
+              <div className="relative">
+                <select
+                  id="reg-pronouns"
+                  value={data.pronouns}
+                  onChange={(e) => { set("pronouns", e.target.value); setCustomPronouns(""); }}
+                  className="wda-input pr-10 cursor-pointer"
+                >
+                  <option value="">Pronouns (optional)</option>
+                  {PRONOUNS_OPTIONS.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+                <Chevron />
+              </div>
+              {data.pronouns === "Prefer to self-describe" && (
+                <input
+                  type="text"
+                  placeholder="Enter your pronouns"
+                  value={customPronouns}
+                  onChange={(e) => setCustomPronouns(e.target.value)}
+                  className="wda-input mt-2"
+                  autoFocus
+                />
+              )}
             </div>
 
             <div>

@@ -18,6 +18,11 @@ export default defineType({
       validation: Rule => Rule.required(),
     }),
     defineField({
+      name: 'pronouns',
+      title: 'Pronouns',
+      type: 'string',
+    }),
+    defineField({
       name: 'email',
       title: 'Email',
       type: 'string',

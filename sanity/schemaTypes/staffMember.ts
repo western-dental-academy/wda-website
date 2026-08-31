@@ -60,6 +60,32 @@ export default defineType({
       type: 'boolean',
       initialValue: true,
     }),
+    defineField({
+      name: 'staffId',
+      title: 'Staff ID',
+      type: 'string',
+      description: 'Format: WDA-S-10001. Assign manually in Studio.',
+    }),
+    defineField({
+      name: 'jobTitle',
+      title: 'Job Title',
+      type: 'string',
+      description: 'e.g. Instructor, Program Director, COO',
+    }),
+    defineField({
+      name: 'department',
+      title: 'Department',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Academic', value: 'Academic' },
+          { title: 'Operations', value: 'Operations' },
+          { title: 'Administration', value: 'Administration' },
+          { title: 'Technology', value: 'Technology' },
+        ],
+        layout: 'radio',
+      },
+    }),
   ],
   preview: {
     select: {

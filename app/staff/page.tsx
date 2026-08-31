@@ -4,6 +4,7 @@ import { SignOutButton } from '@clerk/nextjs'
 import { createClient } from '@sanity/client'
 import ClockWidget from '@/components/staff/ClockWidget'
 import TimeOffForm from '@/components/staff/TimeOffForm'
+import DownloadIdCardButton from '@/components/staff/DownloadIdCardButton'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -134,6 +135,22 @@ export default async function StaffPage() {
 
       {/* Content */}
       <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
+        {/* Staff ID Card */}
+        <div
+          className="rounded-2xl px-5 py-4 flex items-center justify-between gap-4"
+          style={{ backgroundColor: '#ffffff', boxShadow: '0 1px 4px rgba(13,59,110,0.07)' }}
+        >
+          <div>
+            <p
+              className="text-xs font-bold uppercase tracking-widest mb-0.5"
+              style={{ color: 'rgba(13,59,110,0.4)', fontFamily: 'var(--font-montserrat), sans-serif' }}
+            >
+              Documents
+            </p>
+            <p className="text-sm font-semibold" style={{ color: '#0D3B6E' }}>Staff ID Card</p>
+          </div>
+          <DownloadIdCardButton />
+        </div>
         <ClockWidget
           initialActive={active ?? null}
           initialWeekHours={weekHours}

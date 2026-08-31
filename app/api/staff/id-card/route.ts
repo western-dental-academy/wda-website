@@ -47,7 +47,7 @@ export async function GET() {
       department: staff.department ?? '',
       staffId: staff.staffId,
       logoUrl,
-    })
+    }) as React.ReactElement<import('@react-pdf/renderer').DocumentProps>
   )
 
   return new NextResponse(buffer, {

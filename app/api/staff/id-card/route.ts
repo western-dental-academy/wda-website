@@ -34,8 +34,12 @@ export async function GET() {
   }
 
   const logoRes = await fetch('https://westerndentalacademy.com/WesternDentalAcademyLogo-Inverted.png')
+  console.log('Logo fetch status:', logoRes.status)
+  console.log('Logo fetch ok:', logoRes.ok)
   const logoBuffer = await logoRes.arrayBuffer()
+  console.log('Logo buffer size:', logoBuffer.byteLength)
   const logoBase64 = `data:image/png;base64,${Buffer.from(logoBuffer).toString('base64')}`
+  console.log('Logo base64 length:', logoBase64.length)
 
   const buffer = await renderToBuffer(
     React.createElement(StaffIdCardDocument, {

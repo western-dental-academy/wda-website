@@ -100,7 +100,7 @@ export default async function AdminPage() {
     ),
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
-        _id, firstName, lastName, pronouns, email, workshop, registeredAt,
+        _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent
       }`
     ),

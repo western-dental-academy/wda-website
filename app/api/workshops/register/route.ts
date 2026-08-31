@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { firstName, lastName, pronouns, email, phone, cadaNumber, dentalBackground, workshop, preferredDate, workshopDateId, questions } = body as {
+    const { firstName, lastName, pronouns, email, phone, cadaNumber, dentalBackground, mediaConsent, workshop, preferredDate, workshopDateId, questions } = body as {
       firstName?: string
       lastName?: string
       pronouns?: string
@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
       phone?: string
       cadaNumber?: string
       dentalBackground?: string
+      mediaConsent?: boolean
       workshop?: string
       preferredDate?: string
       workshopDateId?: string
@@ -80,6 +81,7 @@ export async function POST(req: NextRequest) {
       workshopDateId: workshopDateId || undefined,
       cadaNumber: cadaNumber?.trim() || undefined,
       dentalBackground: dentalBackground?.trim() || undefined,
+      mediaConsent: mediaConsent === true,
       questions: questions?.trim() || undefined,
       stripePaymentStatus: 'unpaid',
       registeredAt: new Date().toISOString(),

@@ -9,6 +9,7 @@ export interface WorkshopRegistration {
   firstName: string;
   lastName: string;
   pronouns?: string;
+  mediaConsent?: boolean;
   email: string;
   workshop: string;
   registeredAt: string;
@@ -327,6 +328,11 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     {r.pronouns && (
                       <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.45)" }}>
                         {r.pronouns}
+                      </span>
+                    )}
+                    {r.mediaConsent && (
+                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>
+                        Media OK
                       </span>
                     )}
                   </td>

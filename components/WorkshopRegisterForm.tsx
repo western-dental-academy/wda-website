@@ -12,6 +12,7 @@ interface FormData {
   phone: string;
   dentalBackground: string;
   cadaNumber: string;
+  mediaConsent: boolean;
   workshop: string;
   preferredDate: string;
   workshopDateId: string;
@@ -50,6 +51,7 @@ const INITIAL: FormData = {
   phone: "",
   dentalBackground: "",
   cadaNumber: "",
+  mediaConsent: false,
   workshop: "",
   preferredDate: "Contact us for available dates",
   workshopDateId: "",
@@ -270,6 +272,7 @@ export default function WorkshopRegisterForm() {
           phone: data.phone,
           cadaNumber: data.cadaNumber.trim() || undefined,
           dentalBackground: data.dentalBackground,
+          mediaConsent: data.mediaConsent,
           workshop: data.workshop,
           preferredDate: data.preferredDate,
           workshopDateId: data.workshopDateId || undefined,
@@ -551,6 +554,21 @@ export default function WorkshopRegisterForm() {
                 If you are a CADA member, enter your membership number to have it included on your certificate of attendance.
               </p>
             </div>
+
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={data.mediaConsent}
+                onChange={(e) => setData((d) => ({ ...d, mediaConsent: e.target.checked }))}
+                className="mt-1 h-4 w-4 rounded border-gray-300 accent-[#E67E22] cursor-pointer"
+              />
+              <span className="text-sm" style={{ color: "rgba(43,48,58,0.65)" }}>
+                I consent to Western Dental Academy collecting and using photographs or video
+                recordings of me taken during this event for promotional, educational, and social
+                media purposes. I understand I may withdraw consent at any time by contacting WDA.{" "}
+                <span style={{ color: "rgba(43,48,58,0.45)" }}>(Optional)</span>
+              </span>
+            </label>
           </div>
         </div>
       )}

@@ -108,6 +108,12 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'mediaConsent',
+      title: 'Media Consent',
+      type: 'boolean',
+      description: 'Whether the registrant consented to being photographed/recorded at the event.',
+    }),
+    defineField({
       name: 'checkedIn',
       title: 'Checked In',
       type: 'boolean',

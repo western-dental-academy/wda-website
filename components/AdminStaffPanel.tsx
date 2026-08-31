@@ -503,6 +503,7 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
   const isOwner = OWNER_EMAILS.includes(currentUserEmail)
   const now = Date.now()
   const sevenDaysAgo = now - 7 * 24 * 3_600_000
+  const [showRecentEntries, setShowRecentEntries] = useState(false)
 
   const clockedIn = clockEntries.filter(e => !e.clockOut)
   const recentEntries = clockEntries.filter(e => new Date(e.clockIn).getTime() >= sevenDaysAgo)
@@ -571,56 +572,71 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
 
           {/* Recent Time Entries */}
           <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-            <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
+            <button
+              onClick={() => setShowRecentEntries(v => !v)}
+              className="w-full px-6 py-4 flex items-center justify-between gap-2 text-left"
+              style={{ borderBottom: showRecentEntries ? '1px solid rgba(30,53,96,0.08)' : 'none' }}
+            >
               <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>
                 Recent Time Entries{' '}
                 <span className="text-xs font-normal" style={{ color: 'rgba(43,48,58,0.4)' }}>past 7 days</span>
               </h2>
-            </div>
-            {recentEntries.length === 0 ? (
-              <p className="px-6 py-6 text-sm text-center" style={{ color: 'rgba(43,48,58,0.4)' }}>
-                No entries in the past 7 days
-              </p>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr style={{ borderBottom: '1px solid rgba(30,53,96,0.07)' }}>
-                      {['Staff', 'Clock In', 'Clock Out', 'Hours'].map(h => (
-                        <th
-                          key={h}
-                          className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wide"
-                          style={{ color: 'rgba(30,53,96,0.4)' }}
-                        >
-                          {h}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentEntries.map(e => {
-                      const hours = e.clockOut ? entryHours(e) : null
-                      return (
-                        <tr key={e._id} style={{ borderBottom: '1px solid rgba(30,53,96,0.05)' }}>
-                          <td className="px-6 py-3 font-medium" style={{ color: '#1E3560' }}>{e.staffMember.fullName}</td>
-                          <td className="px-6 py-3" style={{ color: '#2B303A' }}>{fmtDt(e.clockIn)}</td>
-                          <td className="px-6 py-3" style={{ color: '#2B303A' }}>
-                            {e.clockOut ? fmtDt(e.clockOut) : (
-                              <span className="flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block animate-pulse" />
-                                <span style={{ color: '#15803d' }}>Active</span>
-                              </span>
-                            )}
-                          </td>
-                          <td className="px-6 py-3 tabular-nums" style={{ color: '#2B303A' }}>
-                            {hours !== null ? fmtH(hours) : <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
+              <svg
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className={`w-4 h-4 shrink-0 transition-transform duration-200 ${showRecentEntries ? 'rotate-180' : 'rotate-0'}`}
+                style={{ color: 'rgba(30,53,96,0.35)' }}
+                aria-hidden
+              >
+                <path fillRule="evenodd" clipRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+              </svg>
+            </button>
+            {showRecentEntries && (
+              recentEntries.length === 0 ? (
+                <p className="px-6 py-6 text-sm text-center" style={{ color: 'rgba(43,48,58,0.4)' }}>
+                  No entries in the past 7 days
+                </p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr style={{ borderBottom: '1px solid rgba(30,53,96,0.07)' }}>
+                        {['Staff', 'Clock In', 'Clock Out', 'Hours'].map(h => (
+                          <th
+                            key={h}
+                            className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wide"
+                            style={{ color: 'rgba(30,53,96,0.4)' }}
+                          >
+                            {h}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentEntries.map(e => {
+                        const hours = e.clockOut ? entryHours(e) : null
+                        return (
+                          <tr key={e._id} style={{ borderBottom: '1px solid rgba(30,53,96,0.05)' }}>
+                            <td className="px-6 py-3 font-medium" style={{ color: '#1E3560' }}>{e.staffMember.fullName}</td>
+                            <td className="px-6 py-3" style={{ color: '#2B303A' }}>{fmtDt(e.clockIn)}</td>
+                            <td className="px-6 py-3" style={{ color: '#2B303A' }}>
+                              {e.clockOut ? fmtDt(e.clockOut) : (
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block animate-pulse" />
+                                  <span style={{ color: '#15803d' }}>Active</span>
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-6 py-3 tabular-nums" style={{ color: '#2B303A' }}>
+                              {hours !== null ? fmtH(hours) : <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )
             )}
           </div>
         </>

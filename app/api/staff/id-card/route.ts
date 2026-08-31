@@ -3,8 +3,6 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { StaffIdCardDocument } from '@/lib/staff/idCard'
-import fs from 'fs'
-import path from 'path'
 import React from 'react'
 
 const sanity = createClient({
@@ -35,10 +33,7 @@ export async function GET() {
     )
   }
 
-  const logoBuffer = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'WesternDentalAcademyLogo-Inverted.png')
-  )
-  const logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+  const logoUrl = 'https://westerndentalacademy.com/WesternDentalAcademyLogo-Inverted.png'
 
   const buffer = await renderToBuffer(
     React.createElement(StaffIdCardDocument, {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import PendingApprovals from '@/components/staff/PendingApprovals'
+import DownloadIdCardButton from '@/components/staff/DownloadIdCardButton'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -513,6 +514,20 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
         <MyClock />
         <MyTimeOff />
+      </div>
+
+      {/* ── My Documents — visible to everyone ── */}
+      <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+        <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
+          <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>My Documents</h2>
+        </div>
+        <div className="px-6 py-5 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-semibold" style={{ color: '#1E3560' }}>Staff ID Card</p>
+            <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.45)' }}>Download your WDA staff ID card as a PDF</p>
+          </div>
+          <DownloadIdCardButton />
+        </div>
       </div>
 
       {/* ── Owner-only: team overview ── */}

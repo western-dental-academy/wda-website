@@ -20,7 +20,7 @@ export default function MicrosoftClarity() {
   }, []);
 
   useEffect(() => {
-    const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID;
+    const clarityId = "ybgoq5pp4m";
     if (!consented || !clarityId) return;
     if (document.getElementById(SCRIPT_ID)) return;
 

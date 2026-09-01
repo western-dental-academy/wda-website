@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     feedbackSubmittedAt?: string
   } | null>(
     `*[_type == "workshopRegistration" && feedbackToken == $token][0]{ _id, feedbackSubmittedAt }`,
-    { token }
+    { token: token }
   )
 
   if (!registration) {

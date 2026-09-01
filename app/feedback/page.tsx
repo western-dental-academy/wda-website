@@ -27,15 +27,10 @@ export default async function FeedbackPage({ searchParams }: PageProps) {
   let workshop = ''
 
   if (token?.trim()) {
-    const reg = await client.fetch<{
-      firstName: string
-      workshop: string
-      feedbackSubmittedAt?: string
-    } | null>(
-      `*[_type == "workshopRegistration" && feedbackToken == $token][0]{
+    const reg = await client.fetch<{ firstName: string; workshop: string; feedbackSubmittedAt?: string } | null>(
+      `*[_type == "workshopRegistration" && feedbackToken == "${token}"][0]{
         firstName, workshop, feedbackSubmittedAt
-      }`,
-      { token }
+      }`
     )
 
     if (reg) {

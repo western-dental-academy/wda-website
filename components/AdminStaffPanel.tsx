@@ -512,7 +512,7 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
     <div className="flex flex-col gap-6">
 
       {/* ── Personal sections — visible to everyone ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
+      <div className="flex flex-col gap-6">
         <MyClock />
         <MyTimeOff />
       </div>

@@ -32,12 +32,8 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Rating must be between 1 and 5' }, { status: 400 })
   }
 
-  const registration = await client.fetch<{
-    _id: string
-    feedbackSubmittedAt?: string
-  } | null>(
-    `*[_type == "workshopRegistration" && feedbackToken == $token][0]{ _id, feedbackSubmittedAt }`,
-    { token: token }
+  const registration = await client.fetch<{ _id: string; feedbackSubmittedAt?: string } | null>(
+    `*[_type == "workshopRegistration" && feedbackToken == "${token}"][0]{ _id, feedbackSubmittedAt }`
   )
 
   if (!registration) {

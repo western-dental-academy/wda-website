@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { type DateGroup, type WorkshopRegistration, type WorkshopWaitlistEntry } from '@/components/AdminWorkshopRegistrations'
 import { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
 import { type Task } from '@/components/AdminTaskManager'
-import { type FeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
+import { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminTabs from '@/components/AdminTabs'
 import { stripe } from '@/lib/stripe/client'
 
@@ -86,7 +86,7 @@ export default async function AdminPage() {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -142,6 +142,12 @@ export default async function AdminPage() {
         _id, firstName, lastName, workshop,
         feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
         feedbackWouldRecommend, feedbackSubmittedAt
+      }`
+    ),
+    client.fetch(
+      `*[_type == "workshopFeedback"] | order(submittedAt desc){
+        _id, workshopDateId, workshopName, rating,
+        enjoyedMost, improvement, wouldRecommend, submittedAt
       }`
     ),
   ])
@@ -267,6 +273,7 @@ export default async function AdminPage() {
         clockEntries={clockEntries}
         pendingTimeOff={pendingTimeOff}
         workshopFeedback={workshopFeedback as FeedbackEntry[]}
+        qrFeedback={qrFeedback as QRFeedbackEntry[]}
       />
     </main>
   )

@@ -4,6 +4,17 @@ import { useState } from 'react'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
+export interface QRFeedbackEntry {
+  _id: string
+  workshopDateId?: string
+  workshopName: string
+  rating: number
+  enjoyedMost?: string
+  improvement?: string
+  wouldRecommend?: boolean
+  submittedAt: string
+}
+
 export interface FeedbackEntry {
   _id: string
   firstName: string
@@ -65,10 +76,16 @@ function groupByWorkshop(entries: FeedbackEntry[]): WorkshopGroup[] {
 
 // ── Component ──────────────────────────────────────────────────────────────────
 
-export default function AdminWorkshopFeedback({ entries }: { entries: FeedbackEntry[] }) {
+export default function AdminWorkshopFeedback({ entries, qrEntries }: { entries: FeedbackEntry[]; qrEntries: QRFeedbackEntry[] }) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
+  const [qrExpanded, setQrExpanded] = useState<Set<string>>(new Set())
 
-  if (entries.length === 0) {
+  const groups   = groupByWorkshop(entries)
+  const qrGroups = groupByWorkshop(
+    qrEntries.map(e => ({ ...e, firstName: '', lastName: '', feedbackRating: e.rating, feedbackEnjoyedMost: e.enjoyedMost, feedbackImprovement: e.improvement, feedbackWouldRecommend: e.wouldRecommend, feedbackSubmittedAt: e.submittedAt, workshop: e.workshopName }))
+  )
+
+  if (entries.length === 0 && qrEntries.length === 0) {
     return (
       <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
         <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
@@ -81,8 +98,6 @@ export default function AdminWorkshopFeedback({ entries }: { entries: FeedbackEn
     )
   }
 
-  const groups = groupByWorkshop(entries)
-
   function toggle(workshop: string) {
     setExpanded((prev) => {
       const next = new Set(prev)
@@ -91,7 +106,16 @@ export default function AdminWorkshopFeedback({ entries }: { entries: FeedbackEn
     })
   }
 
+  function toggleQr(workshop: string) {
+    setQrExpanded((prev) => {
+      const next = new Set(prev)
+      next.has(workshop) ? next.delete(workshop) : next.add(workshop)
+      return next
+    })
+  }
+
   return (
+    <>
     <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
       <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
         <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>PD Feedback</h2>
@@ -205,5 +229,94 @@ export default function AdminWorkshopFeedback({ entries }: { entries: FeedbackEn
         })}
       </div>
     </div>
+
+    {/* ── QR Feedback Panel ── */}
+    {qrEntries.length > 0 && (
+      <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+        <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
+          <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>QR Feedback</h2>
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(230,126,34,0.1)', color: '#E67E22' }}>
+            {qrEntries.length} {qrEntries.length === 1 ? 'response' : 'responses'}
+          </span>
+        </div>
+        <div className="divide-y" style={{ borderColor: 'rgba(30,53,96,0.06)' }}>
+          {qrGroups.map(({ workshop, entries: groupEntries, avgRating }) => {
+            const isOpen = qrExpanded.has(workshop)
+            const recommendCount = groupEntries.filter((e) => e.feedbackWouldRecommend === true).length
+            const recommendPct = Math.round((recommendCount / groupEntries.length) * 100)
+            return (
+              <div key={workshop}>
+                <button
+                  onClick={() => toggleQr(workshop)}
+                  className="w-full px-6 py-4 flex items-start sm:items-center justify-between gap-4 text-left"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold truncate" style={{ color: '#1E3560' }}>{workshop}</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-1.5">
+                      <Stars rating={Math.round(avgRating)} />
+                      <span className="text-xs font-semibold" style={{ color: '#E67E22' }}>★ {avgRating.toFixed(1)} / 5</span>
+                      <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>
+                        {groupEntries.length} {groupEntries.length === 1 ? 'response' : 'responses'}
+                      </span>
+                      {groupEntries.some((e) => e.feedbackWouldRecommend !== undefined) && (
+                        <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>
+                          {recommendPct}% would recommend
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(30,53,96,0.4)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    className="shrink-0 transition-transform duration-200"
+                    style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
+                {isOpen && (
+                  <div className="px-6 pb-4 flex flex-col gap-4">
+                    {groupEntries.map((entry) => (
+                      <div key={entry._id} className="rounded-xl p-4" style={{ backgroundColor: '#F4F7F9', border: '1px solid rgba(30,53,96,0.07)' }}>
+                        <div className="flex items-start justify-between gap-3 mb-2">
+                          <div>
+                            <p className="text-sm font-semibold" style={{ color: '#1E3560' }}>Anonymous</p>
+                            <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.45)' }}>{fmtDate(entry.feedbackSubmittedAt)}</p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Stars rating={entry.feedbackRating} size={13} />
+                            {entry.feedbackWouldRecommend !== undefined && (
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                style={entry.feedbackWouldRecommend
+                                  ? { backgroundColor: '#dcfce7', color: '#15803d' }
+                                  : { backgroundColor: '#fee2e2', color: '#b91c1c' }
+                                }
+                              >
+                                {entry.feedbackWouldRecommend ? 'Recommends' : 'Does not recommend'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        {entry.feedbackEnjoyedMost && (
+                          <div className="mb-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'rgba(43,48,58,0.4)' }}>Enjoyed most</p>
+                            <p className="text-xs" style={{ color: '#2B303A' }}>{entry.feedbackEnjoyedMost}</p>
+                          </div>
+                        )}
+                        {entry.feedbackImprovement && (
+                          <div>
+                            <p className="text-[10px] font-semibold uppercase tracking-wide mb-0.5" style={{ color: 'rgba(43,48,58,0.4)' }}>Could improve</p>
+                            <p className="text-xs" style={{ color: '#2B303A' }}>{entry.feedbackImprovement}</p>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )}
+    </>
   )
 }

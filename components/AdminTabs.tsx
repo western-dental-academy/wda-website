@@ -14,7 +14,7 @@ import AdminWorkshopRegistrations, {
 import AdminStaffPanel, { type ClockEntry, type PendingTimeOff } from '@/components/AdminStaffPanel'
 import AdminITPanel from '@/components/AdminITPanel'
 import AdminMarketing from '@/components/admin/AdminMarketing'
-import AdminWorkshopFeedback, { type FeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
+import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -48,6 +48,7 @@ interface AdminTabsProps {
   clockEntries: ClockEntry[]
   pendingTimeOff: PendingTimeOff[]
   workshopFeedback: FeedbackEntry[]
+  qrFeedback: QRFeedbackEntry[]
 }
 
 type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue' | 'Marketing' | 'IT'
@@ -82,6 +83,7 @@ export default function AdminTabs({
   clockEntries,
   pendingTimeOff,
   workshopFeedback,
+  qrFeedback,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -197,7 +199,7 @@ export default function AdminTabs({
             waitlist={workshopWaitlist}
           />
           <AdminWorkshopRegistrations groups={dateGroups} canViewFinancials={canViewFinancials} />
-          <AdminWorkshopFeedback entries={workshopFeedback} />
+          <AdminWorkshopFeedback entries={workshopFeedback} qrEntries={qrFeedback} />
         </div>
       )}
 

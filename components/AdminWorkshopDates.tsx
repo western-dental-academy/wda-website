@@ -213,6 +213,8 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
   const [showAdd,    setShowAdd]    = useState(false)
   const [editingId,  setEditingId]  = useState<string | null>(null)
   const [busyIds,    setBusyIds]    = useState<Set<string>>(new Set())
+  const [qrModalId,  setQrModalId]  = useState<string | null>(null)
+  const [copied,     setCopied]     = useState(false)
 
   const [addForm,    setAddForm]    = useState(BLANK_ADD)
   const [addBusy,    setAddBusy]    = useState(false)
@@ -388,6 +390,94 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
           </form>
         </div>
       )}
+
+      {/* ── QR Modal ── */}
+      {qrModalId && (() => {
+        const qrDate   = dates.find(d => d._id === qrModalId)
+        const qrUrl    = `https://westerndentalacademy.com/feedback/workshop/${qrModalId}`
+        const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(qrUrl)}&color=0D3B6E&bgcolor=ffffff`
+        return (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
+            onClick={() => setQrModalId(null)}
+          >
+            <div
+              className="bg-white rounded-2xl p-7 max-w-xs w-full text-center shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="text-left">
+                  <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#E67E22' }}>Feedback QR</p>
+                  <p className="text-sm font-bold mt-0.5 leading-tight" style={{ color: '#1E3560' }}>
+                    {qrDate?.workshop ?? 'Workshop'}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setQrModalId(null)}
+                  className="rounded-full p-1 transition-colors hover:bg-gray-100"
+                  style={{ color: 'rgba(43,48,58,0.4)' }}
+                  aria-label="Close"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* QR image */}
+              <div className="flex justify-center mb-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={qrImgUrl}
+                  alt="Feedback QR code"
+                  width={220}
+                  height={220}
+                  className="rounded-xl"
+                  style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}
+                />
+              </div>
+
+              {/* URL */}
+              <p className="text-[10px] break-all mb-5" style={{ color: 'rgba(43,48,58,0.45)' }}>
+                {qrUrl}
+              </p>
+
+              {/* Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const win = window.open('', '_blank')
+                    if (!win) return
+                    win.document.write(`<!DOCTYPE html><html><head><title>WDA Feedback QR</title><style>body{margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif;background:#fff}img{width:280px;height:280px}p{font-size:12px;color:#555;margin-top:12px}</style></head><body><img src="${qrImgUrl}" /><p>${qrUrl}</p></body></html>`)
+                    win.document.close()
+                    win.print()
+                  }}
+                  className="flex-1 rounded-lg py-2 text-xs font-bold transition-colors duration-150 hover:bg-[#15294a] text-white"
+                  style={{ backgroundColor: '#0D3B6E' }}
+                >
+                  Print
+                </button>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(qrUrl).then(() => {
+                      setCopied(true)
+                      setTimeout(() => setCopied(false), 2000)
+                    })
+                  }}
+                  className="flex-1 rounded-lg py-2 text-xs font-bold border transition-colors duration-150"
+                  style={{
+                    borderColor: copied ? '#22c55e' : 'rgba(30,53,96,0.15)',
+                    color: copied ? '#16a34a' : 'rgba(30,53,96,0.7)',
+                  }}
+                >
+                  {copied ? 'Copied!' : 'Copy Link'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      })()}
 
       {/* ── Date list ── */}
       <div className="p-4 flex flex-col gap-3">
@@ -566,6 +656,15 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
 
               {/* Right: actions */}
               <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+                <button
+                  onClick={() => { setQrModalId(d._id); setCopied(false) }}
+                  disabled={isBusy}
+                  title="Show QR Code"
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold border transition-colors duration-150 hover:border-[#E67E22] hover:text-[#E67E22] disabled:opacity-40"
+                  style={{ borderColor: 'rgba(30,53,96,0.15)', color: 'rgba(43,48,58,0.5)' }}
+                >
+                  QR
+                </button>
                 <button
                   onClick={() => startEdit(d)}
                   disabled={isBusy}

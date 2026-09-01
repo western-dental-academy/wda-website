@@ -44,6 +44,13 @@ export default defineType({
       type: 'boolean',
       initialValue: true,
     }),
+    defineField({
+      name: 'feedbackEnabled',
+      title: 'Feedback QR Enabled',
+      type: 'boolean',
+      description: 'Enable the feedback QR code for this workshop date',
+      initialValue: true,
+    }),
   ],
   preview: {
     select: {

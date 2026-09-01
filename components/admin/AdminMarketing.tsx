@@ -22,6 +22,27 @@ const QUICK_LINKS: QuickLink[] = [
 
 // ── Icons ──────────────────────────────────────────────────────────────────────
 
+function CalendarIcon() {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#E67E22"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+    </svg>
+  )
+}
+
 function ExternalLinkIcon() {
   return (
     <svg
@@ -51,32 +72,42 @@ export default function AdminMarketing() {
 
       {/* ── Content Calendar ── */}
       <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
-        <div className="px-6 py-4 border-b flex items-center justify-between gap-4" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
-          <div>
-            <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Content Calendar</h2>
-            <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.45)' }}>Powered by Canva</p>
-          </div>
+        <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
+          <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Content Calendar</h2>
+          <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.45)' }}>Powered by Canva</p>
+        </div>
+        <div className="p-6">
           <a
             href="https://www.canva.com/brand/content-planner"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-bold text-white transition-colors duration-150 hover:opacity-90 shrink-0"
-            style={{ backgroundColor: '#0D3B6E' }}
+            className="flex items-center gap-5 rounded-xl p-5 transition-opacity duration-150 hover:opacity-90"
+            style={{
+              borderLeft: '4px solid #E67E22',
+              backgroundColor: 'rgba(230,126,34,0.05)',
+              border: '1.5px solid rgba(230,126,34,0.2)',
+              borderLeftWidth: '4px',
+            }}
           >
-            Open in Canva
-            <ExternalLinkIcon />
+            <div
+              className="flex items-center justify-center rounded-xl shrink-0"
+              style={{ width: 52, height: 52, backgroundColor: 'rgba(230,126,34,0.12)' }}
+            >
+              <CalendarIcon />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-bold" style={{ color: '#1E3560' }}>Canva Content Planner</p>
+              <p className="text-sm mt-0.5" style={{ color: 'rgba(43,48,58,0.55)' }}>
+                View and manage your scheduled posts in Canva
+              </p>
+            </div>
+            <span
+              className="shrink-0 rounded-lg px-4 py-2 text-sm font-bold text-white"
+              style={{ backgroundColor: '#E67E22' }}
+            >
+              Open Content Planner →
+            </span>
           </a>
-        </div>
-        <div className="p-4">
-          <iframe
-            src="https://www.canva.com/brand/content-planner"
-            className="w-full rounded-lg border border-gray-200"
-            style={{ height: '600px' }}
-            title="Canva Content Calendar"
-          />
-          <p className="mt-3 text-xs text-center" style={{ color: 'rgba(43,48,58,0.45)' }}>
-            Sign in to Canva to view your scheduled posts.
-          </p>
         </div>
       </div>
 

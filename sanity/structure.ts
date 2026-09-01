@@ -57,6 +57,12 @@ export const structure: StructureResolver = (S) =>
                 .title('Workshop Waitlist')
                 .schemaType('workshopWaitlist')
                 .child(S.documentTypeList('workshopWaitlist').title('Workshop Waitlist')),
+              S.listItem()
+                .title('Workshop QR Feedback')
+                .child(
+                  S.documentTypeList('workshopFeedback')
+                    .title('Workshop QR Feedback')
+                ),
             ])
         ),
 

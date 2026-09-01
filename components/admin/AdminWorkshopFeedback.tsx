@@ -72,7 +72,7 @@ export default function AdminWorkshopFeedback({ entries }: { entries: FeedbackEn
     return (
       <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
         <div className="px-6 py-4 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
-          <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Workshop Feedback</h2>
+          <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>PD Feedback</h2>
         </div>
         <p className="px-6 py-8 text-sm text-center" style={{ color: 'rgba(43,48,58,0.4)' }}>
           No feedback received yet.
@@ -94,7 +94,7 @@ export default function AdminWorkshopFeedback({ entries }: { entries: FeedbackEn
   return (
     <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
       <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
-        <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Workshop Feedback</h2>
+        <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>PD Feedback</h2>
         <span
           className="text-xs font-bold px-2 py-0.5 rounded-full"
           style={{ backgroundColor: 'rgba(55,138,221,0.1)', color: '#378ADD' }}

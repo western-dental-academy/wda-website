@@ -37,10 +37,11 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       {
-        url: "/Western Dental Academy Logo- Inverted-Icon Only-Updated.svg",
-        type: "image/svg+xml",
+        url: "/WDA_ProfileIcon-Inverted.png",
+        type: "image/png",
       },
     ],
+    apple: "/WDA_ProfileIcon-Inverted.png",
   },
   openGraph: {
     title: "Western Dental Academy",

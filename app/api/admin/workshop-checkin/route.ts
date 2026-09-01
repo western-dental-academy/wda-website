@@ -44,10 +44,14 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    await client
-      .patch(registrationId)
-      .set({ checkedIn, checkedInAt: checkedIn ? new Date().toISOString() : null })
-      .commit()
+    const feedbackToken = checkedIn ? crypto.randomUUID() : undefined
+    const patch: Record<string, unknown> = {
+      checkedIn,
+      checkedInAt: checkedIn ? new Date().toISOString() : null,
+    }
+    if (feedbackToken) patch.feedbackToken = feedbackToken
+
+    await client.patch(registrationId).set(patch).commit()
 
     // Fire-and-forget certificate generation when checking someone in
     if (checkedIn) {
@@ -58,7 +62,7 @@ export async function PATCH(req: NextRequest) {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${process.env.CRON_SECRET}`,
         },
-        body: JSON.stringify({ registrationId }),
+        body: JSON.stringify({ registrationId, feedbackToken }),
       }).catch((err) => console.error('Certificate send error:', err))
     }
 

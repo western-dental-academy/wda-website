@@ -114,6 +114,38 @@ export default defineType({
       description: 'Whether the registrant consented to being photographed/recorded at the event.',
     }),
     defineField({
+      name: 'feedbackToken',
+      title: 'Feedback Token',
+      type: 'string',
+      description: 'Unique token used to authenticate the feedback form URL',
+    }),
+    defineField({
+      name: 'feedbackRating',
+      title: 'Feedback Rating',
+      type: 'number',
+      description: '1–5 star rating submitted by the registrant',
+    }),
+    defineField({
+      name: 'feedbackEnjoyedMost',
+      title: 'What They Enjoyed Most',
+      type: 'text',
+    }),
+    defineField({
+      name: 'feedbackImprovement',
+      title: 'What Could Be Improved',
+      type: 'text',
+    }),
+    defineField({
+      name: 'feedbackWouldRecommend',
+      title: 'Would Recommend WDA',
+      type: 'boolean',
+    }),
+    defineField({
+      name: 'feedbackSubmittedAt',
+      title: 'Feedback Submitted At',
+      type: 'datetime',
+    }),
+    defineField({
       name: 'checkedIn',
       title: 'Checked In',
       type: 'boolean',

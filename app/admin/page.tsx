@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { type DateGroup, type WorkshopRegistration, type WorkshopWaitlistEntry } from '@/components/AdminWorkshopRegistrations'
 import { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
 import { type Task } from '@/components/AdminTaskManager'
+import { type FeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminTabs from '@/components/AdminTabs'
 import { stripe } from '@/lib/stripe/client'
 
@@ -85,7 +86,7 @@ export default async function AdminPage() {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -101,7 +102,9 @@ export default async function AdminPage() {
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
         _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
-        stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent
+        stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
+        feedbackToken, feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
+        feedbackWouldRecommend, feedbackSubmittedAt
       }`
     ),
     client.fetch(
@@ -132,6 +135,13 @@ export default async function AdminPage() {
       `*[_type == "timeOffRequest" && status == "pending"] | order(submittedAt asc){
         _id, type, startDate, endDate, halfDay, reason, submittedAt,
         staffMember->{ _id, fullName, email }
+      }`
+    ),
+    client.fetch(
+      `*[_type == "workshopRegistration" && defined(feedbackSubmittedAt)] | order(feedbackSubmittedAt desc){
+        _id, firstName, lastName, workshop,
+        feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
+        feedbackWouldRecommend, feedbackSubmittedAt
       }`
     ),
   ])
@@ -256,6 +266,7 @@ export default async function AdminPage() {
         thisMonthRefunded={thisMonthRefunded}
         clockEntries={clockEntries}
         pendingTimeOff={pendingTimeOff}
+        workshopFeedback={workshopFeedback as FeedbackEntry[]}
       />
     </main>
   )

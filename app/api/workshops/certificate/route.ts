@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { registrationId } = body as { registrationId?: string }
+  const { registrationId, feedbackToken } = body as { registrationId?: string; feedbackToken?: string }
   if (!registrationId?.trim()) {
     return Response.json({ error: 'registrationId is required' }, { status: 400 })
   }
@@ -109,6 +109,13 @@ export async function POST(req: NextRequest) {
               or email us at <a href="mailto:info@westerndentalacademy.com" style="color:#378ADD;">info@westerndentalacademy.com</a>.
             </p>
           </div>
+          ${feedbackToken ? `
+          <div style="padding:24px 32px;border-top:1px solid #e5e7eb;background:#ffffff;text-align:center;">
+            <p style="font-size:16px;font-weight:bold;color:#0D3B6E;margin:0 0 6px;">How did we do?</p>
+            <p style="font-size:14px;color:#6b7280;margin:0 0 16px;">We'd love your feedback — it only takes 30 seconds.</p>
+            <a href="https://westerndentalacademy.com/feedback?token=${feedbackToken}" style="display:inline-block;background-color:#E67E22;color:#ffffff;padding:12px 24px;border-radius:6px;font-size:14px;font-weight:bold;text-decoration:none;">Leave Feedback →</a>
+          </div>
+          ` : ''}
           <div style="padding:16px 32px;background-color:#F4F7F9;text-align:center;">
             <p style="color:#9ca3af;font-size:11px;margin:0;">Western Dental Academy — westerndentalacademy.com</p>
           </div>

@@ -78,7 +78,7 @@ export default function AdminMarketing() {
         </div>
         <div className="p-6">
           <a
-            href="https://www.canva.com/brand/content-planner"
+            href="https://www.canva.com/planner"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-5 rounded-xl p-5 transition-opacity duration-150 hover:opacity-90"

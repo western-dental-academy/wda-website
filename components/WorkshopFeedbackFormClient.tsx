@@ -61,7 +61,7 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, workshopNam
           Thank you for your feedback!
         </h2>
         <p className="text-sm" style={{ color: 'rgba(43,48,58,0.55)' }}>
-          Your input helps us improve our programmes.
+          Your input helps us continue delivering high-quality professional development.
         </p>
       </div>
     )

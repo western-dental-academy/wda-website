@@ -13,6 +13,7 @@ import AdminWorkshopRegistrations, {
 } from '@/components/AdminWorkshopRegistrations'
 import AdminStaffPanel, { type ClockEntry, type PendingTimeOff } from '@/components/AdminStaffPanel'
 import AdminITPanel from '@/components/AdminITPanel'
+import AdminMarketing from '@/components/admin/AdminMarketing'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -47,7 +48,7 @@ interface AdminTabsProps {
   pendingTimeOff: PendingTimeOff[]
 }
 
-type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue' | 'IT'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue' | 'Marketing' | 'IT'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -87,6 +88,7 @@ export default function AdminTabs({
     'Staff',
     'Professional Development',
     ...(canViewFinancials ? ['Revenue' as TabId] : []),
+    'Marketing',
     ...(isIT ? ['IT' as TabId] : []),
   ]
 
@@ -218,6 +220,9 @@ export default function AdminTabs({
           </div>
         </div>
       )}
+
+      {/* ── Marketing ── */}
+      {activeTab === 'Marketing' && <AdminMarketing />}
 
       {/* ── IT ── */}
       {activeTab === 'IT' && isIT && <AdminITPanel />}

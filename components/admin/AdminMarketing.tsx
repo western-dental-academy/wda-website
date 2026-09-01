@@ -17,7 +17,7 @@ const QUICK_LINKS: QuickLink[] = [
   { label: 'LinkedIn',                 url: 'https://www.linkedin.com/company/western-dental-academy' },
   { label: 'Google Business Profile',  url: 'https://business.google.com' },
   { label: 'Google Analytics',         url: 'https://analytics.google.com/analytics/web/#/a395405849p538480450/reports/intelligenthome' },
-  { label: 'Microsoft Clarity',        url: 'https://clarity.microsoft.com' },
+  { label: 'Microsoft Clarity',        url: 'https://clarity.microsoft.com/projects/view/ybgoq5pp4m/dashboard' },
 ]
 
 // ── Icons ──────────────────────────────────────────────────────────────────────

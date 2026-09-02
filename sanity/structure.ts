@@ -48,41 +48,65 @@ export const structure: StructureResolver = (S) =>
               S.listItem()
                 .title('Workshops')
                 .child(
-                  S.documentTypeList('workshopOffering')
+                  S.list()
                     .title('Workshops')
-                    .filter('_type == "workshopOffering" && category == "workshop"')
+                    .items([
+                      S.listItem()
+                        .title('Offerings')
+                        .child(
+                          S.documentTypeList('workshopOffering')
+                            .title('Offerings')
+                            .filter('_type == "workshopOffering" && category == "workshop"')
+                        ),
+                      S.listItem()
+                        .title('Workshop Dates')
+                        .schemaType('workshopDate')
+                        .child(S.documentTypeList('workshopDate').title('Workshop Dates')),
+                      S.listItem()
+                        .title('Workshop Registrations')
+                        .schemaType('workshopRegistration')
+                        .child(S.documentTypeList('workshopRegistration').title('Workshop Registrations')),
+                      S.listItem()
+                        .title('Workshop Waitlist')
+                        .schemaType('workshopWaitlist')
+                        .child(S.documentTypeList('workshopWaitlist').title('Workshop Waitlist')),
+                      S.listItem()
+                        .title('Workshop QR Feedback')
+                        .child(
+                          S.documentTypeList('workshopFeedback')
+                            .title('Workshop QR Feedback')
+                        ),
+                    ])
                 ),
               S.listItem()
                 .title('Guest Speakers')
                 .child(
-                  S.documentTypeList('workshopOffering')
+                  S.list()
                     .title('Guest Speakers')
-                    .filter('_type == "workshopOffering" && category == "guest-speaker"')
+                    .items([
+                      S.listItem()
+                        .title('Offerings')
+                        .child(
+                          S.documentTypeList('workshopOffering')
+                            .title('Offerings')
+                            .filter('_type == "workshopOffering" && category == "guest-speaker"')
+                        ),
+                    ])
                 ),
               S.listItem()
                 .title('Courses')
                 .child(
-                  S.documentTypeList('workshopOffering')
+                  S.list()
                     .title('Courses')
-                    .filter('_type == "workshopOffering" && category == "course"')
-                ),
-              S.listItem()
-                .title('Workshop Dates')
-                .schemaType('workshopDate')
-                .child(S.documentTypeList('workshopDate').title('Workshop Dates')),
-              S.listItem()
-                .title('Workshop Registrations')
-                .schemaType('workshopRegistration')
-                .child(S.documentTypeList('workshopRegistration').title('Workshop Registrations')),
-              S.listItem()
-                .title('Workshop Waitlist')
-                .schemaType('workshopWaitlist')
-                .child(S.documentTypeList('workshopWaitlist').title('Workshop Waitlist')),
-              S.listItem()
-                .title('Workshop QR Feedback')
-                .child(
-                  S.documentTypeList('workshopFeedback')
-                    .title('Workshop QR Feedback')
+                    .items([
+                      S.listItem()
+                        .title('Offerings')
+                        .child(
+                          S.documentTypeList('workshopOffering')
+                            .title('Offerings')
+                            .filter('_type == "workshopOffering" && category == "course"')
+                        ),
+                    ])
                 ),
             ])
         ),

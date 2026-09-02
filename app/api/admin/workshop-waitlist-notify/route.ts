@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
               A spot has become available in <strong>${workshop}</strong>${workshopDate ? ` on ${workshopDate}` : ''}.
             </p>
             <p style="color: #374151; font-size: 14px; margin: 0 0 24px;">
-              Please visit <a href="${process.env.NEXT_PUBLIC_SITE_URL}/workshops" style="color: #378ADD;">westerndentalacademy.com/workshops</a> to register before the spot fills up.
+              Please visit <a href="${process.env.NEXT_PUBLIC_SITE_URL}/professional-development" style="color: #378ADD;">westerndentalacademy.com/professional-development</a> to register before the spot fills up.
             </p>
             <p style="color: #6b7280; font-size: 13px; margin: 0;">
               Questions? Reply to this email or contact us at

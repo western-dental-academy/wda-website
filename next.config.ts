@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         destination: '/contact',
         permanent: true,
       },
+      {
+        source: '/workshops',
+        destination: '/professional-development',
+        permanent: true,
+      },
     ]
   },
   images: {

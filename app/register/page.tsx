@@ -55,11 +55,11 @@ export default function RegisterPage() {
               <li style={{ color: "rgba(255,255,255,0.25)" }} aria-hidden>/</li>
               <li>
                 <Link
-                  href="/workshops"
+                  href="/professional-development"
                   className="transition-colors duration-200 hover:text-white"
                   style={{ color: "rgba(255,255,255,0.45)" }}
                 >
-                  Workshops
+                  Professional Development
                 </Link>
               </li>
               <li style={{ color: "rgba(255,255,255,0.25)" }} aria-hidden>/</li>
@@ -141,7 +141,7 @@ export default function RegisterPage() {
           >
             Questions before registering?{" "}
             <Link
-              href="/workshops"
+              href="/professional-development"
               className="font-semibold hover:text-[#1E3560] transition-colors"
               style={{ color: "#4A9FD4" }}
             >

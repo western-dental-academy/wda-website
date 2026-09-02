@@ -532,6 +532,8 @@ export default async function WorkshopsPage() {
     // silently fall back to static data
   }
 
+  console.log('Offerings from Sanity:', JSON.stringify(offerings, null, 2))
+
   // Separate ergonomics offerings from others
   const ergonomicsOfferings = offerings.filter((o) =>
     o.title.startsWith("Ergonomics in Dentistry")
@@ -557,6 +559,8 @@ export default async function WorkshopsPage() {
   for (const o of otherOfferings) {
     cards.push({ type: "offering", offering: o, index: idx++ });
   }
+
+  console.log('Non-ergonomics offerings:', JSON.stringify(otherOfferings, null, 2))
 
   return (
     <>

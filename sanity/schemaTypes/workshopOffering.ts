@@ -69,6 +69,13 @@ export default defineType({
       type: 'string',
       description: 'Zoom URL sent to virtual registrants. Leave blank to send a placeholder.',
     }),
+    defineField({
+      name: 'includesFood',
+      title: 'Includes Food (Beverages/Snacks/Lunch)',
+      type: 'boolean',
+      description: 'Enable to show dietary restrictions field on the registration form for in-person attendees',
+      initialValue: false,
+    }),
   ],
   preview: {
     select: { title: 'title', subtitle: 'category' },

@@ -22,6 +22,7 @@ export interface CartItem {
   mediaConsent?: boolean;
   isPrimary: boolean;
   deliveryMethod: 'in-person' | 'virtual';
+  dietaryRestrictions?: string;
 }
 
 interface RegistrantForm {
@@ -36,6 +37,7 @@ interface RegistrantForm {
   mediaConsent: boolean;
   workshop: string;
   workshopDateId: string;
+  dietaryRestrictions: string;
 }
 
 interface WorkshopDate {
@@ -48,6 +50,7 @@ interface WorkshopDate {
   category: string;
   hasVirtualOption?: boolean;
   virtualPrice?: number;
+  includesFood?: boolean;
 }
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
@@ -81,7 +84,7 @@ const INITIAL_FORM: RegistrantForm = {
   firstName: "", lastName: "", email: "", phone: "",
   dentalBackground: "", cadaNumber: "",
   pronouns: "", customPronouns: "", mediaConsent: false,
-  workshop: "", workshopDateId: "",
+  workshop: "", workshopDateId: "", dietaryRestrictions: "",
 };
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -423,6 +426,9 @@ export default function WorkshopRegisterForm() {
       mediaConsent: isPrimary ? form.mediaConsent : undefined,
       isPrimary,
       deliveryMethod,
+      dietaryRestrictions: (deliveryMethod === 'in-person' && selectedDateObj?.includesFood && form.dietaryRestrictions.trim())
+        ? form.dietaryRestrictions.trim()
+        : undefined,
     };
 
     setCart(c => [...c, item]);
@@ -818,6 +824,23 @@ export default function WorkshopRegisterForm() {
                       A Zoom link will be emailed to you after registration is confirmed.
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* Dietary restrictions — in-person only, when offering includes food */}
+              {form.workshopDateId && selectedDateObj?.includesFood && deliveryMethod === 'in-person' && (
+                <div className="mt-5">
+                  <FieldLabel htmlFor="reg-dietaryRestrictions" optional>
+                    Dietary Restrictions or Food Allergies
+                  </FieldLabel>
+                  <textarea
+                    id="reg-dietaryRestrictions"
+                    rows={2}
+                    placeholder="e.g. vegetarian, gluten-free, nut allergy (optional)"
+                    value={form.dietaryRestrictions}
+                    onChange={e => setField("dietaryRestrictions", e.target.value)}
+                    className="wda-input resize-none"
+                  />
                 </div>
               )}
 

@@ -23,11 +23,12 @@ export async function GET() {
           hasVirtualOption?: boolean
           virtualPrice?: number
           price?: number
+          includesFood?: boolean
         } | null
       }>>(
         `*[_type == "workshopDate" && active == true && date > $now] | order(date asc){
           _id, date,
-          offering->{ title, category, capacity, hasVirtualOption, virtualPrice, price }
+          offering->{ title, category, capacity, hasVirtualOption, virtualPrice, price, includesFood }
         }`,
         { now },
       ),
@@ -61,6 +62,7 @@ export async function GET() {
         isFull: registered >= cap,
         hasVirtualOption: d.offering?.hasVirtualOption ?? false,
         virtualPrice: d.offering?.virtualPrice ?? null,
+        includesFood: d.offering?.includesFood ?? false,
       }
     })
 

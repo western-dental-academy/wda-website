@@ -65,6 +65,11 @@ export default defineType({
       type: 'text',
     }),
     defineField({
+      name: 'dietaryRestrictions',
+      title: 'Dietary Restrictions',
+      type: 'string',
+    }),
+    defineField({
       name: 'stripePaymentStatus',
       title: 'Payment Status',
       type: 'string',

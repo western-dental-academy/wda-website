@@ -103,8 +103,8 @@ export default async function AdminPage() {
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
         _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
-        deliveryMethod, feedbackToken, feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
-        feedbackWouldRecommend, feedbackSubmittedAt
+        deliveryMethod, dietaryRestrictions, feedbackToken, feedbackRating, feedbackEnjoyedMost,
+        feedbackImprovement, feedbackWouldRecommend, feedbackSubmittedAt
       }`
     ),
     client.fetch(

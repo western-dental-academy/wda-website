@@ -20,6 +20,7 @@ interface CartItemPayload {
   mediaConsent?: boolean
   isPrimary: boolean
   deliveryMethod: 'in-person' | 'virtual'
+  dietaryRestrictions?: string
 }
 
 const client = createClient({
@@ -104,6 +105,7 @@ export async function POST(req: NextRequest) {
         dentalBackground: item.dentalBackground?.trim() || undefined,
         mediaConsent: item.mediaConsent === true,
         deliveryMethod: item.deliveryMethod,
+        dietaryRestrictions: item.dietaryRestrictions?.trim() || undefined,
         stripePaymentStatus: 'unpaid',
         registeredAt: now,
       } as { _type: string; [key: string]: unknown })

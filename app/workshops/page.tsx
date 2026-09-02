@@ -49,7 +49,7 @@ interface OfferingStaticContent {
 }
 
 const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
-  "Renewal Wellness Workshop": {
+  "Renewal Wellness": {
     highlights: [
       "Registration Renewal Unraveled — Jolene Moore",
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
@@ -142,7 +142,7 @@ function WorkshopOfferingCard({
   return (
     <AnimateIn delay={index * 80} className="flex flex-col">
       <div
-        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border-4 border-red-500"
         style={{ backgroundColor: "#F4F7F9" }}
       >
         {/* Blue top accent */}

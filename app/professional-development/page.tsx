@@ -3,6 +3,10 @@ import Link from "next/link";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import AnimateIn from "@/components/AnimateIn";
 import PDTabs from "./PDTabs";
+import { client } from "@/sanity/lib/client";
+
+// Force SSR — prevents Vercel from caching a stale page after new offerings are added.
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: "Professional Development",
@@ -10,7 +14,32 @@ export const metadata: Metadata = {
     "WDA offers hands-on workshops, guest speaker events, and professional development courses for dental healthcare professionals in Alberta.",
 };
 
-export default function ProfessionalDevelopmentPage() {
+interface WorkshopDate { _id: string; date: string; active: boolean; }
+interface WorkshopOffering {
+  _id: string; title: string; category: string; description?: string;
+  price?: number; hasVirtualOption?: boolean; virtualPrice?: number;
+  capacity?: number; hours?: number; cadaCppCodes?: string[];
+  dates: WorkshopDate[];
+}
+
+export default async function ProfessionalDevelopmentPage() {
+  let offerings: WorkshopOffering[] = [];
+  try {
+    offerings = await client.fetch<WorkshopOffering[]>(
+      `*[_type == "workshopOffering"] | order(title asc) {
+        _id, title, category, description, price, hasVirtualOption, virtualPrice,
+        capacity, hours, cadaCppCodes,
+        "dates": *[_type == "workshopDate" && references(^._id)] | order(date asc) {
+          _id, date, active
+        }
+      }`,
+      {},
+      { cache: 'no-store' }
+    );
+  } catch {
+    // fall back to empty — PDTabs handles the empty state
+  }
+
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════
@@ -91,7 +120,7 @@ export default function ProfessionalDevelopmentPage() {
       {/* ═══════════════════════════════════════════════════════════
           TABS + CONTENT (client component)
       ═══════════════════════════════════════════════════════════ */}
-      <PDTabs />
+      <PDTabs offerings={offerings} />
 
       {/* ═══════════════════════════════════════════════════════════
           CTA

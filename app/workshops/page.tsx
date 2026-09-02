@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { client } from "@/sanity/lib/client";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -11,7 +12,29 @@ export const metadata: Metadata = {
     "Explore professional development workshops at Western Dental Academy — hands-on clinical skills, dental radiography, infection control, and NDAB exam preparation for dental teams in Alberta.",
 };
 
-// ─── Workshop data ─────────────────────────────────────────────────────────────
+// ─── Types ─────────────────────────────────────────────────────────────────────
+
+interface WorkshopDate {
+  _id: string;
+  date: string;
+  active: boolean;
+}
+
+interface WorkshopOffering {
+  _id: string;
+  title: string;
+  category: string;
+  description?: string;
+  price?: number;
+  hasVirtualOption?: boolean;
+  virtualPrice?: number;
+  capacity?: number;
+  hours?: number;
+  cadaCppCodes?: string[];
+  dates: WorkshopDate[];
+}
+
+// ─── Fallback static data ──────────────────────────────────────────────────────
 
 interface Workshop {
   num: string;
@@ -28,7 +51,7 @@ interface Workshop {
   learningOutcomes?: string[];
 }
 
-const workshops: Workshop[] = [
+const fallbackWorkshops: Workshop[] = [
   {
     num: "01",
     title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
@@ -62,6 +85,35 @@ const workshops: Workshop[] = [
   },
 ];
 
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+
+function getNextUpcomingDate(dates: WorkshopDate[]): WorkshopDate | null {
+  const now = new Date();
+  const upcoming = dates
+    .filter((d) => d.active && new Date(d.date) > now)
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  return upcoming[0] ?? null;
+}
+
+function formatWorkshopDate(isoDate: string): string {
+  const d = new Date(isoDate);
+  const datePart = d.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "America/Edmonton",
+  });
+  const timePart = d.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "America/Edmonton",
+    timeZoneName: "short",
+  });
+  return `${datePart} · ${timePart}`;
+}
+
 // ─── Sub-components ────────────────────────────────────────────────────────────
 
 function CheckIcon() {
@@ -83,7 +135,318 @@ function CheckIcon() {
   );
 }
 
-function WorkshopCard({
+function DateBadge({ nextDate }: { nextDate: WorkshopDate | null }) {
+  if (!nextDate) {
+    return (
+      <span
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+        style={{
+          backgroundColor: "rgba(230,126,34,0.12)",
+          color: "#E67E22",
+        }}
+      >
+        <span
+          className="w-1.5 h-1.5 rounded-full shrink-0"
+          style={{ backgroundColor: "#E67E22" }}
+        />
+        Coming Soon
+      </span>
+    );
+  }
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold tracking-[0.12em]"
+      style={{
+        backgroundColor: "rgba(13,59,110,0.08)",
+        color: "#0D3B6E",
+      }}
+    >
+      <span
+        className="w-1.5 h-1.5 rounded-full shrink-0"
+        style={{ backgroundColor: "#378ADD" }}
+      />
+      {formatWorkshopDate(nextDate.date)}
+    </span>
+  );
+}
+
+function DeliveryBadge({ hasVirtual }: { hasVirtual?: boolean }) {
+  return (
+    <span
+      className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+      style={{
+        backgroundColor: hasVirtual
+          ? "rgba(55,138,221,0.10)"
+          : "rgba(13,59,110,0.07)",
+        color: hasVirtual ? "#378ADD" : "#0D3B6E",
+      }}
+    >
+      {hasVirtual ? "In Person / Virtual" : "In Person"}
+    </span>
+  );
+}
+
+// ─── Dynamic offering card ─────────────────────────────────────────────────────
+
+function WorkshopOfferingCard({
+  offering,
+  index,
+}: {
+  offering: WorkshopOffering;
+  index: number;
+}) {
+  const nextDate = getNextUpcomingDate(offering.dates);
+  const hasUpcoming = nextDate !== null;
+
+  return (
+    <AnimateIn delay={index * 80} className="flex flex-col">
+      <div
+        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        style={{ backgroundColor: "#F4F7F9" }}
+      >
+        {/* Blue top accent */}
+        <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+
+        <div className="flex flex-col flex-1 p-6 sm:p-8">
+          {/* Date badge */}
+          <div className="mb-5">
+            <DateBadge nextDate={nextDate} />
+          </div>
+
+          {/* Title */}
+          <h2
+            className="text-xl font-bold mb-3 leading-snug"
+            style={{
+              color: "#0D3B6E",
+              fontFamily: "var(--font-montserrat), sans-serif",
+            }}
+          >
+            {offering.title}
+          </h2>
+
+          {/* Price row */}
+          {(offering.price !== undefined || offering.hasVirtualOption) && (
+            <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mb-4 -mt-1">
+              {offering.price !== undefined && (
+                <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
+                  ${offering.price} CAD
+                  {offering.hasVirtualOption && offering.virtualPrice !== undefined && (
+                    <span className="font-normal text-xs ml-1.5" style={{ color: "rgba(43,48,58,0.5)" }}>
+                      · Virtual ${offering.virtualPrice}
+                    </span>
+                  )}
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Description */}
+          {offering.description && (
+            <p
+              className="text-sm leading-relaxed mb-5 line-clamp-3"
+              style={{ color: "#2B303A" }}
+            >
+              {offering.description}
+            </p>
+          )}
+
+          {/* Metadata row */}
+          <div className="flex flex-wrap items-center gap-2 mb-5">
+            <DeliveryBadge hasVirtual={offering.hasVirtualOption} />
+            {offering.hours !== undefined && (
+              <span
+                className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+                style={{
+                  backgroundColor: "rgba(230,126,34,0.10)",
+                  color: "#E67E22",
+                }}
+              >
+                {offering.hours} CADA CPP hrs
+              </span>
+            )}
+            {offering.cadaCppCodes && offering.cadaCppCodes.length > 0 && (
+              <span
+                className="text-[10px] font-medium"
+                style={{ color: "rgba(43,48,58,0.45)" }}
+              >
+                {offering.cadaCppCodes.join(" · ")}
+              </span>
+            )}
+          </div>
+
+          {/* Spacer to push button down */}
+          <div className="flex-1" />
+
+          {/* CTA */}
+          {hasUpcoming ? (
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] mt-4"
+              style={{ backgroundColor: "#E67E22" }}
+            >
+              Register Now
+              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+            </Link>
+          ) : (
+            <button
+              disabled
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold cursor-not-allowed mt-4"
+              style={{
+                backgroundColor: "rgba(43,48,58,0.08)",
+                color: "rgba(43,48,58,0.35)",
+              }}
+            >
+              Dates Coming Soon
+            </button>
+          )}
+        </div>
+      </div>
+    </AnimateIn>
+  );
+}
+
+// ─── Ergonomics grouped card ───────────────────────────────────────────────────
+
+function ErgonomicsGroupCard({
+  offerings,
+  index,
+}: {
+  offerings: WorkshopOffering[];
+  index: number;
+}) {
+  // Find nearest upcoming date across all ergonomics offerings
+  const allDates = offerings.flatMap((o) => o.dates);
+  const nextDate = getNextUpcomingDate(allDates);
+  const hasUpcoming = nextDate !== null;
+
+  // Session sub-labels: extract subtitle after "Ergonomics in Dentistry: "
+  const sessions = offerings.map((o) => {
+    const prefix = "Ergonomics in Dentistry: ";
+    return o.title.startsWith(prefix) ? o.title.slice(prefix.length) : o.title;
+  });
+
+  return (
+    <AnimateIn delay={index * 80} className="flex flex-col">
+      <div
+        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        style={{ backgroundColor: "#F4F7F9" }}
+      >
+        {/* Blue top accent */}
+        <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+
+        <div className="flex flex-col flex-1 p-6 sm:p-8">
+          {/* Date badge */}
+          <div className="mb-5">
+            <DateBadge nextDate={nextDate} />
+          </div>
+
+          {/* Title */}
+          <h2
+            className="text-xl font-bold mb-3 leading-snug"
+            style={{
+              color: "#0D3B6E",
+              fontFamily: "var(--font-montserrat), sans-serif",
+            }}
+          >
+            Ergonomics in Dentistry
+          </h2>
+
+          {/* Price */}
+          <div className="flex items-center gap-3 mb-4 -mt-1">
+            <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
+              $40 CAD
+              <span
+                className="font-normal text-xs ml-1"
+                style={{ color: "rgba(43,48,58,0.5)" }}
+              >
+                /session
+              </span>
+            </span>
+          </div>
+
+          {/* Description */}
+          <p
+            className="text-sm leading-relaxed mb-5"
+            style={{ color: "#2B303A" }}
+          >
+            Developed by a Registered Dental Assistant (RDA) and RYT 200, this
+            interactive workshop series combines ergonomics principles, guided
+            breathwork, and yoga-inspired movement — designed specifically for
+            dental professionals. Attend one session or all three.
+          </p>
+
+          {/* Session pills */}
+          {sessions.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-5">
+              {sessions.map((session) => (
+                <span
+                  key={session}
+                  className="text-[11px] font-semibold px-3 py-1.5 rounded-lg"
+                  style={{
+                    backgroundColor: "rgba(13,59,110,0.07)",
+                    color: "#0D3B6E",
+                  }}
+                >
+                  {session}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Metadata row */}
+          <div className="flex flex-wrap items-center gap-2 mb-5">
+            <DeliveryBadge hasVirtual={false} />
+            <span
+              className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
+              style={{
+                backgroundColor: "rgba(230,126,34,0.10)",
+                color: "#E67E22",
+              }}
+            >
+              1.5 CADA CPP hrs/session
+            </span>
+            <span
+              className="text-[10px] font-medium"
+              style={{ color: "rgba(43,48,58,0.45)" }}
+            >
+              B-4-2 · I-5-3 · I-5-4
+            </span>
+          </div>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* CTA */}
+          {hasUpcoming ? (
+            <Link
+              href="/register"
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] mt-4"
+              style={{ backgroundColor: "#E67E22" }}
+            >
+              Register Now
+              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+            </Link>
+          ) : (
+            <button
+              disabled
+              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold cursor-not-allowed mt-4"
+              style={{
+                backgroundColor: "rgba(43,48,58,0.08)",
+                color: "rgba(43,48,58,0.35)",
+              }}
+            >
+              Dates Coming Soon
+            </button>
+          )}
+        </div>
+      </div>
+    </AnimateIn>
+  );
+}
+
+// ─── Fallback card (static) ────────────────────────────────────────────────────
+
+function FallbackWorkshopCard({
   workshop,
   index,
 }: {
@@ -96,45 +459,26 @@ function WorkshopCard({
         className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         style={{ backgroundColor: "#F4F7F9" }}
       >
-        {/* Blue top accent */}
         <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
-
         <div className="flex flex-col flex-1 p-6 sm:p-8">
-          {/* Number + badge row */}
           <div className="flex items-center justify-between mb-5">
-            <p
-              className="text-xs font-bold tracking-[0.18em] uppercase"
-              style={{ color: "#4A9FD4" }}
-            >
+            <p className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "#4A9FD4" }}>
               {workshop.num}
             </p>
             <span
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
-              style={{
-                backgroundColor: "rgba(230,126,34,0.12)",
-                color: "#E67E22",
-              }}
+              style={{ backgroundColor: "rgba(230,126,34,0.12)", color: "#E67E22" }}
             >
-              <span
-                className="w-1.5 h-1.5 rounded-full shrink-0"
-                style={{ backgroundColor: "#E67E22" }}
-              />
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#E67E22" }} />
               {workshop.badge}
             </span>
           </div>
-
-          {/* Title */}
           <h2
             className="text-xl font-bold mb-3 leading-snug"
-            style={{
-              color: "#1E3560",
-              fontFamily: "var(--font-montserrat), sans-serif",
-            }}
+            style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             {workshop.title}
           </h2>
-
-          {/* Price + duration (shown when set) */}
           {(workshop.price !== undefined || workshop.duration) && (
             <div className="flex items-center gap-3 mb-4 -mt-1">
               {workshop.price !== undefined && (
@@ -146,154 +490,20 @@ function WorkshopCard({
                 <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
               )}
               {workshop.duration && (
-                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
-                  {workshop.duration}
-                </span>
+                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>{workshop.duration}</span>
               )}
             </div>
           )}
-
-          {/* Description */}
-          <p
-            className="text-sm leading-relaxed mb-6"
-            style={{ color: "#2B303A" }}
-          >
+          <p className="text-sm leading-relaxed mb-6 flex-1" style={{ color: "#2B303A" }}>
             {workshop.description}
           </p>
-
-          {/* Highlights */}
-          <ul className="flex flex-col gap-2.5 mb-6 flex-1">
-            {workshop.highlights.map((h) => (
-              <li key={h} className="flex items-start gap-2.5">
-                <span style={{ color: "#4A9FD4" }}>
-                  <CheckIcon />
-                </span>
-                <span
-                  className="text-sm leading-relaxed"
-                  style={{ color: "#2B303A" }}
-                >
-                  {h}
-                </span>
-              </li>
-            ))}
-          </ul>
-
-          {/* Divider */}
-          <div
-            className="mb-5 h-px"
-            style={{ backgroundColor: "rgba(30,53,96,0.1)" }}
-          />
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-2 mb-6">
-            {workshop.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-[11px] font-semibold px-3 py-1 rounded-full"
-                style={{
-                  backgroundColor: "rgba(30,53,96,0.07)",
-                  color: "#1E3560",
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-
-          {/* What to bring / Ideal for */}
-          {(workshop.whatToBring || workshop.idealFor) && (
-            <div className="mb-5 flex flex-col gap-2">
-              {workshop.whatToBring && (
-                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-                  <span
-                    className="font-bold uppercase tracking-wide"
-                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
-                  >
-                    What to bring:{" "}
-                  </span>
-                  {workshop.whatToBring}
-                </p>
-              )}
-              {workshop.idealFor && (
-                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-                  <span
-                    className="font-bold uppercase tracking-wide"
-                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
-                  >
-                    Ideal for:{" "}
-                  </span>
-                  {workshop.idealFor}
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* CADA note */}
-          {workshop.cadaNote && (
-            <div
-              className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
-              style={{
-                backgroundColor: "rgba(230,126,34,0.08)",
-                border: "1px solid rgba(230,126,34,0.18)",
-              }}
-            >
-              <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
-              <span style={{ color: "#2B303A" }}>{workshop.cadaNote}</span>
-            </div>
-          )}
-
-          {/* Learning outcomes — native collapsible */}
-          {workshop.learningOutcomes && workshop.learningOutcomes.length > 0 && (
-            <details
-              className="mb-6 rounded-lg overflow-hidden"
-              style={{ border: "1px solid rgba(30,53,96,0.09)" }}
-            >
-              <summary
-                className="list-none flex items-center justify-between gap-3 px-4 py-3 cursor-pointer select-none"
-                style={{ backgroundColor: "rgba(30,53,96,0.04)", color: "#1E3560" }}
-              >
-                <span
-                  className="text-[11px] font-bold uppercase tracking-wide"
-                  style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-                >
-                  Learning Outcomes ({workshop.learningOutcomes.length})
-                </span>
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                  className="w-3.5 h-3.5 shrink-0"
-                  aria-hidden
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                </svg>
-              </summary>
-              <ul className="px-4 py-4 flex flex-col gap-2.5">
-                {workshop.learningOutcomes.map((lo, i) => (
-                  <li key={i} className="flex items-start gap-2.5">
-                    <span style={{ color: "#4A9FD4" }}>
-                      <CheckIcon />
-                    </span>
-                    <span className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-                      {lo}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </details>
-          )}
-
-          {/* CTA */}
           <Link
             href="/contact"
-            className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02] mt-auto"
             style={{ backgroundColor: "#E67E22" }}
           >
             Learn More
-            <span className="transition-transform duration-200 group-hover/link:translate-x-1">
-              →
-            </span>
+            <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
           </Link>
         </div>
       </div>
@@ -303,54 +513,98 @@ function WorkshopCard({
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
-export default function WorkshopsPage() {
+export default async function WorkshopsPage() {
+  // Fetch all offerings with their scheduled dates
+  let offerings: WorkshopOffering[] = [];
+  try {
+    offerings = await client.fetch<WorkshopOffering[]>(
+      `*[_type == "workshopOffering"] | order(title asc) {
+        _id, title, category, description, price, hasVirtualOption, virtualPrice,
+        capacity, hours, cadaCppCodes,
+        "dates": *[_type == "workshopDate" && references(^._id)] | order(date asc) {
+          _id, date, active
+        }
+      }`,
+      {},
+      { next: { revalidate: 60 } }
+    );
+  } catch {
+    // silently fall back to static data
+  }
+
+  // Separate ergonomics offerings from others
+  const ergonomicsOfferings = offerings.filter((o) =>
+    o.title.startsWith("Ergonomics in Dentistry")
+  );
+  const otherOfferings = offerings.filter(
+    (o) => !o.title.startsWith("Ergonomics in Dentistry")
+  );
+
+  // Build the card list: ergonomics as one grouped card + rest individually
+  // If nothing in Sanity, fall back to static
+  const hasDynamicContent = offerings.length > 0;
+
+  // Assemble rendered cards with correct index for stagger
+  type CardEntry =
+    | { type: "ergonomics"; offerings: WorkshopOffering[]; index: number }
+    | { type: "offering"; offering: WorkshopOffering; index: number };
+
+  const cards: CardEntry[] = [];
+  let idx = 0;
+  if (ergonomicsOfferings.length > 0) {
+    cards.push({ type: "ergonomics", offerings: ergonomicsOfferings, index: idx++ });
+  }
+  for (const o of otherOfferings) {
+    cards.push({ type: "offering", offering: o, index: idx++ });
+  }
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Event",
-          "name": "Ergonomics in Dentistry Workshop",
-          "description": "A hands-on workshop for dental professionals covering ergonomics, intentional movement, and breathwork to prevent burnout and support career longevity.",
-          "organizer": {
-            "@type": "Organization",
-            "name": "Western Dental Academy",
-            "url": "https://westerndentalacademy.com"
-          },
-          "location": {
-            "@type": "Place",
-            "name": "Western Dental Academy",
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "150 Chippewa Road, Suite 258",
-              "addressLocality": "Sherwood Park",
-              "addressRegion": "AB",
-              "addressCountry": "CA"
-            }
-          },
-          "offers": {
-            "@type": "Offer",
-            "price": "40",
-            "priceCurrency": "CAD",
-            "url": "https://westerndentalacademy.com/register"
-          }
-        }) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Event",
+            name: "Ergonomics in Dentistry Workshop",
+            description:
+              "A hands-on workshop for dental professionals covering ergonomics, intentional movement, and breathwork to prevent burnout and support career longevity.",
+            organizer: {
+              "@type": "Organization",
+              name: "Western Dental Academy",
+              url: "https://westerndentalacademy.com",
+            },
+            location: {
+              "@type": "Place",
+              name: "Western Dental Academy",
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: "150 Chippewa Road, Suite 258",
+                addressLocality: "Sherwood Park",
+                addressRegion: "AB",
+                addressCountry: "CA",
+              },
+            },
+            offers: {
+              "@type": "Offer",
+              price: "40",
+              priceCurrency: "CAD",
+              url: "https://westerndentalacademy.com/register",
+            },
+          }),
+        }}
       />
+
       {/* ═══════════════════════════════════════════════════════════
           PAGE HERO
       ═══════════════════════════════════════════════════════════ */}
-      <section
-        className="relative overflow-hidden"
-        style={{ backgroundColor: "#1E3560" }}
-      >
+      <section className="relative overflow-hidden" style={{ backgroundColor: "#1E3560" }}>
         {/* Dot-grid texture */}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.035]"
           style={{
-            backgroundImage:
-              "radial-gradient(circle, #4A9FD4 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, #4A9FD4 1px, transparent 1px)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -359,8 +613,7 @@ export default function WorkshopsPage() {
           aria-hidden
           className="pointer-events-none absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full"
           style={{
-            background:
-              "radial-gradient(circle, rgba(74,159,212,0.15) 0%, transparent 70%)",
+            background: "radial-gradient(circle, rgba(74,159,212,0.15) 0%, transparent 70%)",
           }}
         />
         <FloatingPaths position={1} />
@@ -379,9 +632,7 @@ export default function WorkshopsPage() {
                   Home
                 </Link>
               </li>
-              <li style={{ color: "rgba(255,255,255,0.25)" }} aria-hidden>
-                /
-              </li>
+              <li style={{ color: "rgba(255,255,255,0.25)" }} aria-hidden>/</li>
               <li style={{ color: "rgba(255,255,255,0.7)" }}>Workshops</li>
             </ol>
           </nav>
@@ -396,10 +647,7 @@ export default function WorkshopsPage() {
                   border: "1px solid rgba(255,255,255,0.13)",
                 }}
               >
-                <span
-                  className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ backgroundColor: "#4A9FD4" }}
-                />
+                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#4A9FD4" }} />
                 <span
                   className="text-xs font-semibold tracking-[0.18em] uppercase"
                   style={{ color: "rgba(255,255,255,0.7)" }}
@@ -444,10 +692,7 @@ export default function WorkshopsPage() {
                   >
                     {val}
                   </span>
-                  <span
-                    className="text-xs mt-1"
-                    style={{ color: "rgba(255,255,255,0.45)" }}
-                  >
+                  <span className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>
                     {label}
                   </span>
                 </div>
@@ -471,19 +716,13 @@ export default function WorkshopsPage() {
         <div className="max-w-6xl mx-auto px-6">
           {/* Section intro */}
           <AnimateIn className="mb-14">
-            <p
-              className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
-              style={{ color: "#4A9FD4" }}
-            >
+            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
               Current Workshops
             </p>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <h2
                 className="text-3xl font-bold leading-tight"
-                style={{
-                  color: "#1E3560",
-                  fontFamily: "var(--font-montserrat), sans-serif",
-                }}
+                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
               >
                 Now Accepting Registrations
               </h2>
@@ -494,11 +733,31 @@ export default function WorkshopsPage() {
             </div>
           </AnimateIn>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {workshops.map((workshop, i) => (
-              <WorkshopCard key={workshop.num} workshop={workshop} index={i} />
-            ))}
-          </div>
+          {hasDynamicContent ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
+              {cards.map((card) =>
+                card.type === "ergonomics" ? (
+                  <ErgonomicsGroupCard
+                    key="ergonomics-group"
+                    offerings={card.offerings}
+                    index={card.index}
+                  />
+                ) : (
+                  <WorkshopOfferingCard
+                    key={card.offering._id}
+                    offering={card.offering}
+                    index={card.index}
+                  />
+                )
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {fallbackWorkshops.map((workshop, i) => (
+                <FallbackWorkshopCard key={workshop.num} workshop={workshop} index={i} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -518,10 +777,7 @@ export default function WorkshopsPage() {
               </p>
               <h2
                 className="text-3xl sm:text-4xl font-bold mb-5 leading-tight"
-                style={{
-                  color: "#1E3560",
-                  fontFamily: "var(--font-montserrat), sans-serif",
-                }}
+                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
               >
                 Not sure which
                 <br />
@@ -547,10 +803,7 @@ export default function WorkshopsPage() {
                 <Link
                   href="/contact"
                   className="rounded-lg px-7 py-3.5 text-sm font-bold transition-all duration-200 border hover:bg-white"
-                  style={{
-                    color: "#1E3560",
-                    borderColor: "rgba(30,53,96,0.25)",
-                  }}
+                  style={{ color: "#1E3560", borderColor: "rgba(30,53,96,0.25)" }}
                 >
                   Visit Our Facility
                 </Link>
@@ -559,10 +812,7 @@ export default function WorkshopsPage() {
 
             {/* Info card */}
             <AnimateIn delay={120}>
-              <div
-                className="rounded-2xl p-8"
-                style={{ backgroundColor: "#1E3560" }}
-              >
+              <div className="rounded-2xl p-8" style={{ backgroundColor: "#1E3560" }}>
                 <p
                   className="text-xs font-bold tracking-[0.18em] uppercase mb-6"
                   style={{ color: "#4A9FD4" }}
@@ -571,30 +821,15 @@ export default function WorkshopsPage() {
                 </p>
                 <ul className="flex flex-col gap-6">
                   {[
-                    {
-                      label: "Next Workshop",
-                      value: "Contact us for current workshop dates",
-                    },
-                    {
-                      label: "Registration",
-                      value: "Rolling intake — register any time",
-                    },
-                    {
-                      label: "Credential",
-                      value: "Certificate of Attendance issued upon completion",
-                    },
-                    {
-                      label: "Location",
-                      value:
-                        "Online theory + hands-on training in Sherwood Park, AB",
-                    },
+                    { label: "Next Workshop", value: "See current dates above or contact us" },
+                    { label: "Registration", value: "Rolling intake — register any time" },
+                    { label: "Credential", value: "Certificate of Attendance issued upon completion" },
+                    { label: "Location", value: "Online theory + hands-on training in Sherwood Park, AB" },
                   ].map(({ label, value }) => (
                     <li
                       key={label}
                       className="pb-6 last:pb-0"
-                      style={{
-                        borderBottom: "1px solid rgba(255,255,255,0.08)",
-                      }}
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
                     >
                       <p
                         className="text-xs font-bold tracking-wide uppercase mb-1"
@@ -602,28 +837,20 @@ export default function WorkshopsPage() {
                       >
                         {label}
                       </p>
-                      <p
-                        className="text-sm font-medium"
-                        style={{ color: "rgba(255,255,255,0.85)" }}
-                      >
+                      <p className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.85)" }}>
                         {value}
                       </p>
                     </li>
                   ))}
                 </ul>
-                <div
-                  className="mt-6 pt-6"
-                  style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
-                >
+                <div className="mt-6 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                   <Link
                     href="mailto:info@westerndentalacademy.com"
                     className="group flex items-center gap-2 text-sm font-bold transition-colors duration-200"
                     style={{ color: "#4A9FD4" }}
                   >
                     info@westerndentalacademy.com
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">
-                      →
-                    </span>
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
                   </Link>
                 </div>
               </div>

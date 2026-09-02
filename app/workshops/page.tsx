@@ -4,6 +4,10 @@ import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import { client } from "@/sanity/lib/client";
 
+// Force SSR on every request — prevents Vercel from serving a stale cached
+// page after new workshop offerings are added to Sanity.
+export const dynamic = 'force-dynamic'
+
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
 export const metadata: Metadata = {
@@ -479,7 +483,7 @@ export default async function WorkshopsPage() {
         }
       }`,
       {},
-      { next: { revalidate: 60 } }
+      { cache: 'no-store' }
     );
   } catch {
     // silently fall back to static data

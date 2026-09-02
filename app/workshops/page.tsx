@@ -34,56 +34,28 @@ interface WorkshopOffering {
   dates: WorkshopDate[];
 }
 
-// ─── Fallback static data ──────────────────────────────────────────────────────
+// ─── Per-offering static content not stored in Sanity ─────────────────────────
 
-interface Workshop {
-  num: string;
-  title: string;
-  badge: string;
-  description: string;
+interface OfferingStaticContent {
   highlights: string[];
   tags: string[];
-  price?: number;
-  duration?: string;
   whatToBring?: string;
   idealFor?: string;
   cadaNote?: string;
-  learningOutcomes?: string[];
 }
 
-const fallbackWorkshops: Workshop[] = [
-  {
-    num: "01",
-    title: "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer",
-    badge: "Launching Soon",
-    price: 40,
-    duration: "1.5 hours",
-    description:
-      "Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals spend countless hours caring for others, often in sustained postures that place significant demands on the body. This interactive workshop is designed specifically for dental health care professionals who want to understand the impact of ergonomics and develop practical strategies to prevent pain, injury, and burnout. Includes guided breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation practice. There will be 3 separate sessions available focusing on different areas of the body. Each session targets a specific area, so you can attend one or all three.",
+const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
+  "Renewal Wellness Workshop": {
     highlights: [
-      "Ergonomic risk factors and posture principles for dental practice",
-      "Guided breathwork techniques to reduce tension and support focus",
-      "Yoga-inspired movement sequences adapted for dental professionals",
-      "Targeted stretches for specific areas of the body",
-      "Closing Yoga Nidra relaxation practice",
+      "Registration Renewal Unraveled — Jolene Moore",
+      "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
+      "Dementia and Oral Health Care — Naomi Klassen",
+      "Financial Health for the DHCP — Josie McKenzie",
+      "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
-    tags: ["Interactive", "Wellness", "CADA CCP Support", "Certificate of Attendance"],
-    whatToBring: "Water bottle, yoga mat, and comfortable clothes",
-    idealFor: "Dentists, dental hygienists, dental assistants, treatment coordinators, and all dental team members",
-    cadaNote:
-      "Meets CADA Competency Profile #s B-4-2, I-5-3, or I-5-4. Provides a certificate of attendance to support your annual CCP submission.",
-    learningOutcomes: [
-      "Identify common ergonomic risk factors and injury patterns associated with dental practice",
-      "Apply key principles of neutral posture and body mechanics during clinical procedures",
-      "Recognise the relationship between sustained posture, musculoskeletal health, and career longevity",
-      "Perform guided breathwork exercises to reduce physical tension and support mental focus during the workday",
-      "Demonstrate yoga-inspired movement sequences designed to counteract the demands of chairside work",
-      "Practise targeted stretches to relieve common areas of strain in the neck, shoulders, wrists, and lower back",
-      "Develop a personalised ergonomic self-care plan to integrate into daily practice routines",
-      "Experience a Yoga Nidra relaxation practice as a tool for recovery, stress reduction, and burnout prevention",
-    ],
+    tags: ["Full Day", "In-Person & Virtual", "CADA CPP Support", "Certificate of Attendance"],
   },
-];
+};
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -95,26 +67,7 @@ function getNextUpcomingDate(dates: WorkshopDate[]): WorkshopDate | null {
   return upcoming[0] ?? null;
 }
 
-function formatWorkshopDate(isoDate: string): string {
-  const d = new Date(isoDate);
-  const datePart = d.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "America/Edmonton",
-  });
-  const timePart = d.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "America/Edmonton",
-    timeZoneName: "short",
-  });
-  return `${datePart} · ${timePart}`;
-}
-
-// ─── Sub-components ────────────────────────────────────────────────────────────
+// ─── Shared card sub-components ────────────────────────────────────────────────
 
 function CheckIcon() {
   return (
@@ -126,67 +79,32 @@ function CheckIcon() {
       aria-hidden
       className="w-3.5 h-3.5 shrink-0 mt-0.5"
     >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="m4.5 12.75 6 6 9-13.5"
-      />
+      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
     </svg>
   );
 }
 
-function DateBadge({ nextDate }: { nextDate: WorkshopDate | null }) {
-  if (!nextDate) {
-    return (
-      <span
-        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
-        style={{
-          backgroundColor: "rgba(230,126,34,0.12)",
-          color: "#E67E22",
-        }}
-      >
-        <span
-          className="w-1.5 h-1.5 rounded-full shrink-0"
-          style={{ backgroundColor: "#E67E22" }}
-        />
-        Coming Soon
-      </span>
-    );
-  }
-  return (
+function StatusBadge({ hasUpcoming }: { hasUpcoming: boolean }) {
+  return hasUpcoming ? (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold tracking-[0.12em]"
-      style={{
-        backgroundColor: "rgba(13,59,110,0.08)",
-        color: "#0D3B6E",
-      }}
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+      style={{ backgroundColor: "rgba(22,163,74,0.12)", color: "#16A34A" }}
     >
-      <span
-        className="w-1.5 h-1.5 rounded-full shrink-0"
-        style={{ backgroundColor: "#378ADD" }}
-      />
-      {formatWorkshopDate(nextDate.date)}
+      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#16A34A" }} />
+      Registration Open
+    </span>
+  ) : (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+      style={{ backgroundColor: "rgba(230,126,34,0.12)", color: "#E67E22" }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#E67E22" }} />
+      Coming Soon
     </span>
   );
 }
 
-function DeliveryBadge({ hasVirtual }: { hasVirtual?: boolean }) {
-  return (
-    <span
-      className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
-      style={{
-        backgroundColor: hasVirtual
-          ? "rgba(55,138,221,0.10)"
-          : "rgba(13,59,110,0.07)",
-        color: hasVirtual ? "#378ADD" : "#0D3B6E",
-      }}
-    >
-      {hasVirtual ? "In Person / Virtual" : "In Person"}
-    </span>
-  );
-}
-
-// ─── Dynamic offering card ─────────────────────────────────────────────────────
+// ─── Dynamic offering card (old card style) ────────────────────────────────────
 
 function WorkshopOfferingCard({
   offering,
@@ -197,6 +115,25 @@ function WorkshopOfferingCard({
 }) {
   const nextDate = getNextUpcomingDate(offering.dates);
   const hasUpcoming = nextDate !== null;
+  const staticContent = OFFERING_STATIC[offering.title];
+
+  // Build price display line
+  let priceDisplay: string | null = null;
+  if (offering.hasVirtualOption && offering.virtualPrice != null && offering.price != null) {
+    priceDisplay = `$${offering.price} in-person · $${offering.virtualPrice} virtual`;
+  } else if (offering.price != null) {
+    priceDisplay = `$${offering.price} CAD`;
+  }
+
+  // Build duration/hours display
+  const durationDisplay = offering.hours != null ? `${offering.hours} CADA CPP Hours` : null;
+
+  // Build CADA note from Sanity fields if not in static content
+  const cadaNote =
+    staticContent?.cadaNote ??
+    (offering.cadaCppCodes && offering.cadaCppCodes.length > 0
+      ? `Meets CADA Competency Profile #s ${offering.cadaCppCodes.join(", ")}. Provides a certificate of attendance to support your annual CCP submission.`
+      : null);
 
   return (
     <AnimateIn delay={index * 80} className="flex flex-col">
@@ -205,36 +142,36 @@ function WorkshopOfferingCard({
         style={{ backgroundColor: "#F4F7F9" }}
       >
         {/* Blue top accent */}
-        <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+        <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
 
         <div className="flex flex-col flex-1 p-6 sm:p-8">
-          {/* Date badge */}
-          <div className="mb-5">
-            <DateBadge nextDate={nextDate} />
+          {/* Badge row */}
+          <div className="flex items-center justify-between mb-5">
+            <StatusBadge hasUpcoming={hasUpcoming} />
           </div>
 
           {/* Title */}
           <h2
             className="text-xl font-bold mb-3 leading-snug"
-            style={{
-              color: "#0D3B6E",
-              fontFamily: "var(--font-montserrat), sans-serif",
-            }}
+            style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             {offering.title}
           </h2>
 
-          {/* Price row */}
-          {(offering.price !== undefined || offering.hasVirtualOption) && (
-            <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mb-4 -mt-1">
-              {offering.price !== undefined && (
+          {/* Price · Hours */}
+          {(priceDisplay || durationDisplay) && (
+            <div className="flex items-center gap-3 mb-4 -mt-1">
+              {priceDisplay && (
                 <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
-                  ${offering.price} CAD
-                  {offering.hasVirtualOption && offering.virtualPrice !== undefined && (
-                    <span className="font-normal text-xs ml-1.5" style={{ color: "rgba(43,48,58,0.5)" }}>
-                      · Virtual ${offering.virtualPrice}
-                    </span>
-                  )}
+                  {priceDisplay}
+                </span>
+              )}
+              {priceDisplay && durationDisplay && (
+                <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
+              )}
+              {durationDisplay && (
+                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                  {durationDisplay}
                 </span>
               )}
             </div>
@@ -242,61 +179,104 @@ function WorkshopOfferingCard({
 
           {/* Description */}
           {offering.description && (
-            <p
-              className="text-sm leading-relaxed mb-5 line-clamp-3"
-              style={{ color: "#2B303A" }}
-            >
+            <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
               {offering.description}
             </p>
           )}
 
-          {/* Metadata row */}
-          <div className="flex flex-wrap items-center gap-2 mb-5">
-            <DeliveryBadge hasVirtual={offering.hasVirtualOption} />
-            {offering.hours !== undefined && (
-              <span
-                className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
-                style={{
-                  backgroundColor: "rgba(230,126,34,0.10)",
-                  color: "#E67E22",
-                }}
-              >
-                {offering.hours} CADA CPP hrs
-              </span>
-            )}
-            {offering.cadaCppCodes && offering.cadaCppCodes.length > 0 && (
-              <span
-                className="text-[10px] font-medium"
-                style={{ color: "rgba(43,48,58,0.45)" }}
-              >
-                {offering.cadaCppCodes.join(" · ")}
-              </span>
-            )}
-          </div>
+          {/* Highlights */}
+          {staticContent?.highlights && staticContent.highlights.length > 0 && (
+            <ul className="flex flex-col gap-2.5 mb-6 flex-1">
+              {staticContent.highlights.map((h) => (
+                <li key={h} className="flex items-start gap-2.5">
+                  <span style={{ color: "#4A9FD4" }}>
+                    <CheckIcon />
+                  </span>
+                  <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
+                    {h}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
 
-          {/* Spacer to push button down */}
-          <div className="flex-1" />
+          {/* Divider */}
+          <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
+
+          {/* Tags */}
+          {staticContent?.tags && staticContent.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {staticContent.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                  style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* What to bring / Ideal for */}
+          {(staticContent?.whatToBring || staticContent?.idealFor) && (
+            <div className="mb-5 flex flex-col gap-2">
+              {staticContent.whatToBring && (
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    What to bring:{" "}
+                  </span>
+                  {staticContent.whatToBring}
+                </p>
+              )}
+              {staticContent.idealFor && (
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    Ideal for:{" "}
+                  </span>
+                  {staticContent.idealFor}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* CADA note */}
+          {cadaNote && (
+            <div
+              className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
+              style={{
+                backgroundColor: "rgba(230,126,34,0.08)",
+                border: "1px solid rgba(230,126,34,0.18)",
+              }}
+            >
+              <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
+              <span style={{ color: "#2B303A" }}>{cadaNote}</span>
+            </div>
+          )}
 
           {/* CTA */}
           {hasUpcoming ? (
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] mt-4"
+              className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
               style={{ backgroundColor: "#E67E22" }}
             >
               Register Now
-              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+              <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
             </Link>
           ) : (
             <button
               disabled
-              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold cursor-not-allowed mt-4"
-              style={{
-                backgroundColor: "rgba(43,48,58,0.08)",
-                color: "rgba(43,48,58,0.35)",
-              }}
+              className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold self-start cursor-not-allowed"
+              style={{ backgroundColor: "rgba(43,48,58,0.08)", color: "rgba(43,48,58,0.35)" }}
             >
-              Dates Coming Soon
+              Coming Soon
             </button>
           )}
         </div>
@@ -305,7 +285,7 @@ function WorkshopOfferingCard({
   );
 }
 
-// ─── Ergonomics grouped card ───────────────────────────────────────────────────
+// ─── Ergonomics grouped card (old card style, hardcoded content) ───────────────
 
 function ErgonomicsGroupCard({
   offerings,
@@ -314,16 +294,15 @@ function ErgonomicsGroupCard({
   offerings: WorkshopOffering[];
   index: number;
 }) {
-  // Find nearest upcoming date across all ergonomics offerings
   const allDates = offerings.flatMap((o) => o.dates);
   const nextDate = getNextUpcomingDate(allDates);
   const hasUpcoming = nextDate !== null;
 
-  // Session sub-labels: extract subtitle after "Ergonomics in Dentistry: "
-  const sessions = offerings.map((o) => {
-    const prefix = "Ergonomics in Dentistry: ";
-    return o.title.startsWith(prefix) ? o.title.slice(prefix.length) : o.title;
-  });
+  // Session sub-labels (subtitle after "Ergonomics in Dentistry: ")
+  const prefix = "Ergonomics in Dentistry: ";
+  const sessions = offerings
+    .map((o) => (o.title.startsWith(prefix) ? o.title.slice(prefix.length) : o.title))
+    .filter(Boolean);
 
   return (
     <AnimateIn delay={index * 80} className="flex flex-col">
@@ -332,47 +311,43 @@ function ErgonomicsGroupCard({
         style={{ backgroundColor: "#F4F7F9" }}
       >
         {/* Blue top accent */}
-        <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+        <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
 
         <div className="flex flex-col flex-1 p-6 sm:p-8">
-          {/* Date badge */}
-          <div className="mb-5">
-            <DateBadge nextDate={nextDate} />
+          {/* Badge row */}
+          <div className="flex items-center justify-between mb-5">
+            <StatusBadge hasUpcoming={hasUpcoming} />
           </div>
 
           {/* Title */}
           <h2
             className="text-xl font-bold mb-3 leading-snug"
-            style={{
-              color: "#0D3B6E",
-              fontFamily: "var(--font-montserrat), sans-serif",
-            }}
+            style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
           >
             Ergonomics in Dentistry
           </h2>
 
-          {/* Price */}
+          {/* Price · Duration */}
           <div className="flex items-center gap-3 mb-4 -mt-1">
             <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
               $40 CAD
-              <span
-                className="font-normal text-xs ml-1"
-                style={{ color: "rgba(43,48,58,0.5)" }}
-              >
-                /session
-              </span>
+            </span>
+            <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
+            <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+              1.5 hours/session
             </span>
           </div>
 
           {/* Description */}
-          <p
-            className="text-sm leading-relaxed mb-5"
-            style={{ color: "#2B303A" }}
-          >
-            Developed by a Registered Dental Assistant (RDA) and RYT 200, this
-            interactive workshop series combines ergonomics principles, guided
-            breathwork, and yoga-inspired movement — designed specifically for
-            dental professionals. Attend one session or all three.
+          <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
+            Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals
+            spend countless hours caring for others, often in sustained postures that place
+            significant demands on the body. This interactive workshop is designed specifically for
+            dental health care professionals who want to understand the impact of ergonomics and
+            develop practical strategies to prevent pain, injury, and burnout. Includes guided
+            breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation
+            practice. There will be 3 separate sessions available focusing on different areas of the
+            body. Each session targets a specific area, so you can attend one or all three.
           </p>
 
           {/* Session pills */}
@@ -382,10 +357,7 @@ function ErgonomicsGroupCard({
                 <span
                   key={session}
                   className="text-[11px] font-semibold px-3 py-1.5 rounded-lg"
-                  style={{
-                    backgroundColor: "rgba(13,59,110,0.07)",
-                    color: "#0D3B6E",
-                  }}
+                  style={{ backgroundColor: "rgba(74,159,212,0.10)", color: "#1E3560" }}
                 >
                   {session}
                 </span>
@@ -393,118 +365,99 @@ function ErgonomicsGroupCard({
             </div>
           )}
 
-          {/* Metadata row */}
-          <div className="flex flex-wrap items-center gap-2 mb-5">
-            <DeliveryBadge hasVirtual={false} />
-            <span
-              className="text-[10px] font-semibold px-2.5 py-1 rounded-full"
-              style={{
-                backgroundColor: "rgba(230,126,34,0.10)",
-                color: "#E67E22",
-              }}
-            >
-              1.5 CADA CPP hrs/session
-            </span>
-            <span
-              className="text-[10px] font-medium"
-              style={{ color: "rgba(43,48,58,0.45)" }}
-            >
-              B-4-2 · I-5-3 · I-5-4
-            </span>
+          {/* Highlights */}
+          <ul className="flex flex-col gap-2.5 mb-6 flex-1">
+            {[
+              "Ergonomic risk factors and posture principles for dental practice",
+              "Guided breathwork techniques to reduce tension and support focus",
+              "Yoga-inspired movement sequences adapted for dental professionals",
+              "Targeted stretches for specific areas of the body",
+              "Closing Yoga Nidra relaxation practice",
+            ].map((h) => (
+              <li key={h} className="flex items-start gap-2.5">
+                <span style={{ color: "#4A9FD4" }}>
+                  <CheckIcon />
+                </span>
+                <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
+                  {h}
+                </span>
+              </li>
+            ))}
+          </ul>
+
+          {/* Divider */}
+          <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {["Interactive", "Wellness", "CADA CCP Support", "Certificate of Attendance"].map((tag) => (
+              <span
+                key={tag}
+                className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+              >
+                {tag}
+              </span>
+            ))}
           </div>
 
-          {/* Spacer */}
-          <div className="flex-1" />
+          {/* What to bring / Ideal for */}
+          <div className="mb-5 flex flex-col gap-2">
+            <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+              <span
+                className="font-bold uppercase tracking-wide"
+                style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+              >
+                What to bring:{" "}
+              </span>
+              Water bottle, yoga mat, and comfortable clothes
+            </p>
+            <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+              <span
+                className="font-bold uppercase tracking-wide"
+                style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+              >
+                Ideal for:{" "}
+              </span>
+              Dentists, dental hygienists, dental assistants, treatment coordinators, and all dental
+              team members
+            </p>
+          </div>
+
+          {/* CADA note */}
+          <div
+            className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
+            style={{
+              backgroundColor: "rgba(230,126,34,0.08)",
+              border: "1px solid rgba(230,126,34,0.18)",
+            }}
+          >
+            <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
+            <span style={{ color: "#2B303A" }}>
+              Meets CADA Competency Profile #s B-4-2, I-5-3, or I-5-4. Provides a certificate of
+              attendance to support your annual CCP submission.
+            </span>
+          </div>
 
           {/* CTA */}
           {hasUpcoming ? (
             <Link
               href="/register"
-              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] mt-4"
+              className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
               style={{ backgroundColor: "#E67E22" }}
             >
               Register Now
-              <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+              <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
             </Link>
           ) : (
             <button
               disabled
-              className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold cursor-not-allowed mt-4"
-              style={{
-                backgroundColor: "rgba(43,48,58,0.08)",
-                color: "rgba(43,48,58,0.35)",
-              }}
+              className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold self-start cursor-not-allowed"
+              style={{ backgroundColor: "rgba(43,48,58,0.08)", color: "rgba(43,48,58,0.35)" }}
             >
-              Dates Coming Soon
+              Coming Soon
             </button>
           )}
-        </div>
-      </div>
-    </AnimateIn>
-  );
-}
-
-// ─── Fallback card (static) ────────────────────────────────────────────────────
-
-function FallbackWorkshopCard({
-  workshop,
-  index,
-}: {
-  workshop: Workshop;
-  index: number;
-}) {
-  return (
-    <AnimateIn delay={index * 80} className="flex flex-col">
-      <div
-        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-        style={{ backgroundColor: "#F4F7F9" }}
-      >
-        <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
-        <div className="flex flex-col flex-1 p-6 sm:p-8">
-          <div className="flex items-center justify-between mb-5">
-            <p className="text-xs font-bold tracking-[0.18em] uppercase" style={{ color: "#4A9FD4" }}>
-              {workshop.num}
-            </p>
-            <span
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
-              style={{ backgroundColor: "rgba(230,126,34,0.12)", color: "#E67E22" }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#E67E22" }} />
-              {workshop.badge}
-            </span>
-          </div>
-          <h2
-            className="text-xl font-bold mb-3 leading-snug"
-            style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-          >
-            {workshop.title}
-          </h2>
-          {(workshop.price !== undefined || workshop.duration) && (
-            <div className="flex items-center gap-3 mb-4 -mt-1">
-              {workshop.price !== undefined && (
-                <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
-                  ${workshop.price} CAD
-                </span>
-              )}
-              {workshop.price !== undefined && workshop.duration && (
-                <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
-              )}
-              {workshop.duration && (
-                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>{workshop.duration}</span>
-              )}
-            </div>
-          )}
-          <p className="text-sm leading-relaxed mb-6 flex-1" style={{ color: "#2B303A" }}>
-            {workshop.description}
-          </p>
-          <Link
-            href="/contact"
-            className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02] mt-auto"
-            style={{ backgroundColor: "#E67E22" }}
-          >
-            Learn More
-            <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
-          </Link>
         </div>
       </div>
     </AnimateIn>
@@ -532,35 +485,13 @@ export default async function WorkshopsPage() {
     // silently fall back to static data
   }
 
-  console.log('Offerings from Sanity:', JSON.stringify(offerings, null, 2))
-
-  // Separate ergonomics offerings from others
+  // Separate ergonomics offerings (grouped into one card) from all others
   const ergonomicsOfferings = offerings.filter((o) =>
     o.title.startsWith("Ergonomics in Dentistry")
   );
   const otherOfferings = offerings.filter(
     (o) => !o.title.startsWith("Ergonomics in Dentistry")
   );
-
-  // Build the card list: ergonomics as one grouped card + rest individually
-  // If nothing in Sanity, fall back to static
-  const hasDynamicContent = offerings.length > 0;
-
-  // Assemble rendered cards with correct index for stagger
-  type CardEntry =
-    | { type: "ergonomics"; offerings: WorkshopOffering[]; index: number }
-    | { type: "offering"; offering: WorkshopOffering; index: number };
-
-  const cards: CardEntry[] = [];
-  let idx = 0;
-  if (ergonomicsOfferings.length > 0) {
-    cards.push({ type: "ergonomics", offerings: ergonomicsOfferings, index: idx++ });
-  }
-  for (const o of otherOfferings) {
-    cards.push({ type: "offering", offering: o, index: idx++ });
-  }
-
-  console.log('Non-ergonomics offerings:', JSON.stringify(otherOfferings, null, 2))
 
   return (
     <>
@@ -651,7 +582,10 @@ export default async function WorkshopsPage() {
                   border: "1px solid rgba(255,255,255,0.13)",
                 }}
               >
-                <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#4A9FD4" }} />
+                <span
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{ backgroundColor: "#4A9FD4" }}
+                />
                 <span
                   className="text-xs font-semibold tracking-[0.18em] uppercase"
                   style={{ color: "rgba(255,255,255,0.7)" }}
@@ -673,9 +607,8 @@ export default async function WorkshopsPage() {
                 className="text-lg leading-relaxed max-w-xl"
                 style={{ color: "rgba(255,255,255,0.65)" }}
               >
-                Whether you&apos;re building new clinical skills or refreshing
-                your knowledge, WDA offers practical, expert-led workshops
-                designed around real dental office experience.
+                Whether you&apos;re building new clinical skills or refreshing your knowledge, WDA
+                offers practical, expert-led workshops designed around real dental office experience.
               </p>
             </div>
 
@@ -689,10 +622,7 @@ export default async function WorkshopsPage() {
                 <div key={label} className="flex flex-col lg:items-end">
                   <span
                     className="text-2xl font-bold leading-none"
-                    style={{
-                      color: "#4A9FD4",
-                      fontFamily: "var(--font-montserrat), sans-serif",
-                    }}
+                    style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}
                   >
                     {val}
                   </span>
@@ -720,7 +650,10 @@ export default async function WorkshopsPage() {
         <div className="max-w-6xl mx-auto px-6">
           {/* Section intro */}
           <AnimateIn className="mb-14">
-            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+            <p
+              className="text-xs font-bold tracking-[0.2em] uppercase mb-3"
+              style={{ color: "#4A9FD4" }}
+            >
               Current Workshops
             </p>
             <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -731,37 +664,28 @@ export default async function WorkshopsPage() {
                 Now Accepting Registrations
               </h2>
               <p className="text-sm max-w-sm" style={{ color: "#2B303A" }}>
-                Hands-on sessions in our Sherwood Park facility, delivered by
-                experienced dental professionals.
+                Hands-on sessions in our Sherwood Park facility, delivered by experienced dental
+                professionals.
               </p>
             </div>
           </AnimateIn>
 
-          {hasDynamicContent ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-stretch">
-              {cards.map((card) =>
-                card.type === "ergonomics" ? (
-                  <ErgonomicsGroupCard
-                    key="ergonomics-group"
-                    offerings={card.offerings}
-                    index={card.index}
-                  />
-                ) : (
-                  <WorkshopOfferingCard
-                    key={card.offering._id}
-                    offering={card.offering}
-                    index={card.index}
-                  />
-                )
-              )}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {fallbackWorkshops.map((workshop, i) => (
-                <FallbackWorkshopCard key={workshop.num} workshop={workshop} index={i} />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {ergonomicsOfferings.length > 0 && (
+              <ErgonomicsGroupCard
+                key="ergonomics-group"
+                offerings={ergonomicsOfferings}
+                index={0}
+              />
+            )}
+            {otherOfferings.map((o, i) => (
+              <WorkshopOfferingCard
+                key={o._id}
+                offering={o}
+                index={ergonomicsOfferings.length > 0 ? i + 1 : i}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -793,9 +717,8 @@ export default async function WorkshopsPage() {
                 className="text-base leading-relaxed mb-8 max-w-md"
                 style={{ color: "#2B303A" }}
               >
-                Our team can walk you through each workshop, discuss your
-                professional development goals, and help you find the best
-                fit — no pressure, no commitment required.
+                Our team can walk you through each workshop, discuss your professional development
+                goals, and help you find the best fit — no pressure, no commitment required.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -825,10 +748,22 @@ export default async function WorkshopsPage() {
                 </p>
                 <ul className="flex flex-col gap-6">
                   {[
-                    { label: "Next Workshop", value: "See current dates above or contact us" },
-                    { label: "Registration", value: "Rolling intake — register any time" },
-                    { label: "Credential", value: "Certificate of Attendance issued upon completion" },
-                    { label: "Location", value: "Online theory + hands-on training in Sherwood Park, AB" },
+                    {
+                      label: "Next Workshop",
+                      value: "Contact us for current workshop dates",
+                    },
+                    {
+                      label: "Registration",
+                      value: "Rolling intake — register any time",
+                    },
+                    {
+                      label: "Credential",
+                      value: "Certificate of Attendance issued upon completion",
+                    },
+                    {
+                      label: "Location",
+                      value: "Online theory + hands-on training in Sherwood Park, AB",
+                    },
                   ].map(({ label, value }) => (
                     <li
                       key={label}
@@ -847,14 +782,19 @@ export default async function WorkshopsPage() {
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6 pt-6" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                <div
+                  className="mt-6 pt-6"
+                  style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+                >
                   <Link
                     href="mailto:info@westerndentalacademy.com"
                     className="group flex items-center gap-2 text-sm font-bold transition-colors duration-200"
                     style={{ color: "#4A9FD4" }}
                   >
                     info@westerndentalacademy.com
-                    <span className="transition-transform duration-200 group-hover:translate-x-1">→</span>
+                    <span className="transition-transform duration-200 group-hover:translate-x-1">
+                      →
+                    </span>
                   </Link>
                 </div>
               </div>

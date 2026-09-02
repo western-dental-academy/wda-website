@@ -99,16 +99,16 @@ export default function RegisterPage() {
             className="text-lg leading-relaxed max-w-xl mb-8"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Complete the three-step form below to secure your spot. Payment is
-            processed securely via Stripe — you&apos;ll receive a confirmation
-            email with any directives for the session after checkout.
+            Register one or more attendees in a single transaction. Add each person
+            to your cart, then proceed to secure checkout — everyone gets their
+            own confirmation email.
           </p>
 
           {/* Quick stats */}
           <div className="flex flex-wrap gap-6">
             {[
-              { value: "3", label: "Short steps" },
-              { value: "~2 min", label: "To complete" },
+              { value: "1 cart", label: "Per group" },
+              { value: "~3 min", label: "To complete" },
               { value: "Instant", label: "Confirmation" },
             ].map(({ value, label }) => (
               <div key={label} className="flex items-center gap-2.5">
@@ -132,7 +132,7 @@ export default function RegisterPage() {
 
       {/* ── Form ───────────────────────────────────── */}
       <section className="py-16" style={{ backgroundColor: "#F4F7F9" }}>
-        <div className="max-w-2xl mx-auto px-6">
+        <div className="max-w-5xl mx-auto px-6">
           <WorkshopRegisterForm />
 
           <p

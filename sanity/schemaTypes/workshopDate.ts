@@ -51,6 +51,25 @@ export default defineType({
       description: 'Enable the feedback QR code for this workshop date',
       initialValue: true,
     }),
+    defineField({
+      name: 'hasVirtualOption',
+      title: 'Offers Virtual Attendance',
+      type: 'boolean',
+      description: 'Enable to allow registrants to choose in-person or virtual attendance',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'virtualPrice',
+      title: 'Virtual Price (CAD)',
+      type: 'number',
+      description: 'Price for virtual attendance. Only used if hasVirtualOption is enabled.',
+    }),
+    defineField({
+      name: 'zoomLink',
+      title: 'Zoom Link',
+      type: 'string',
+      description: 'Zoom meeting URL sent to virtual registrants in their confirmation email. Leave blank to send a placeholder message.',
+    }),
   ],
   preview: {
     select: {

@@ -11,8 +11,15 @@ const client = createClient({
 
 export async function GET(req: NextRequest) {
   const workshopDateId = req.nextUrl.searchParams.get('workshopDateId')
+  const deliveryMethod = req.nextUrl.searchParams.get('deliveryMethod')
+
   if (!workshopDateId) {
     return Response.json({ error: 'workshopDateId is required' }, { status: 400 })
+  }
+
+  // Virtual attendance has unlimited capacity
+  if (deliveryMethod === 'virtual') {
+    return Response.json({ capacity: null, registered: 0, available: null, unlimited: true })
   }
 
   try {
@@ -20,8 +27,9 @@ export async function GET(req: NextRequest) {
       client.fetch<{ capacity: number } | null>(
         `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ capacity }`,
       ),
+      // Count only in-person paid registrations (null deliveryMethod = legacy in-person)
       client.fetch<number>(
-        `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid"])`,
+        `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
       ),
     ])
 
@@ -29,7 +37,7 @@ export async function GET(req: NextRequest) {
     const registered = registeredCount
     const available = Math.max(0, capacity - registered)
 
-    return Response.json({ capacity, registered, available })
+    return Response.json({ capacity, registered, available, unlimited: false })
   } catch (error) {
     console.error('check-capacity error:', error)
     return Response.json({ error: String(error) }, { status: 500 })

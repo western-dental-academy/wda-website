@@ -18,6 +18,7 @@ export interface WorkshopRegistration {
   checkedInAt?: string;
   workshopDateId?: string;
   certificateSent?: boolean;
+  deliveryMethod?: string;
 }
 
 export interface WorkshopWaitlistEntry {
@@ -324,7 +325,14 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
               {registrations.map((r) => (
                 <tr key={r._id} style={{ borderBottom: "1px solid rgba(30,53,96,0.06)" }}>
                   <td className="px-4 py-3 font-semibold whitespace-nowrap" style={{ color: "#1E3560" }}>
-                    {r.firstName} {r.lastName}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span>{r.firstName} {r.lastName}</span>
+                      {r.deliveryMethod === 'virtual' ? (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(55,138,221,0.12)", color: "#378ADD" }}>Virtual</span>
+                      ) : (
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(13,59,110,0.08)", color: "#0D3B6E" }}>In-Person</span>
+                      )}
+                    </div>
                     {r.pronouns && (
                       <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.45)" }}>
                         {r.pronouns}

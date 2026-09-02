@@ -19,9 +19,11 @@ export async function GET() {
         date: string
         capacity: number
         category: string
+        hasVirtualOption?: boolean
+        virtualPrice?: number
       }>>(
         `*[_type == "workshopDate" && active == true && date > $now] | order(date asc){
-          _id, workshop, date, capacity, category
+          _id, workshop, date, capacity, category, hasVirtualOption, virtualPrice
         }`,
         { now },
       ),
@@ -49,6 +51,8 @@ export async function GET() {
       category: d.category ?? 'workshop',
       registered: countMap[d._id] ?? 0,
       isFull: (countMap[d._id] ?? 0) >= d.capacity,
+      hasVirtualOption: d.hasVirtualOption ?? false,
+      virtualPrice: d.virtualPrice ?? null,
     }))
 
     return Response.json(result)

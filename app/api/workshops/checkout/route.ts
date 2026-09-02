@@ -19,6 +19,7 @@ interface CartItemPayload {
   pronouns?: string
   mediaConsent?: boolean
   isPrimary: boolean
+  deliveryMethod: 'in-person' | 'virtual'
 }
 
 const client = createClient({
@@ -55,10 +56,11 @@ export async function POST(req: NextRequest) {
       if (!item.workshopName)      return Response.json({ error: 'Workshop selection is required for all registrants' }, { status: 400 })
     }
 
-    // Server-side capacity check per unique workshopDateId
+    // Server-side capacity check per unique workshopDateId (in-person only)
     const dateGroups = new Map<string, CartItemPayload[]>()
     for (const item of items) {
-      if (!item.workshopDateId) continue // no specific date — no capacity check needed
+      if (!item.workshopDateId) continue
+      if (item.deliveryMethod === 'virtual') continue // virtual = unlimited
       const group = dateGroups.get(item.workshopDateId) ?? []
       group.push(item)
       dateGroups.set(item.workshopDateId, group)
@@ -70,7 +72,7 @@ export async function POST(req: NextRequest) {
           `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ capacity }`,
         ),
         client.fetch<number>(
-          `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid"])`,
+          `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
         ),
       ])
       const capacity = dateDoc?.capacity ?? 20
@@ -101,6 +103,7 @@ export async function POST(req: NextRequest) {
         cadaNumber: item.cadaNumber?.trim() || undefined,
         dentalBackground: item.dentalBackground?.trim() || undefined,
         mediaConsent: item.mediaConsent === true,
+        deliveryMethod: item.deliveryMethod,
         stripePaymentStatus: 'unpaid',
         registeredAt: now,
       } as { _type: string; [key: string]: unknown })
@@ -124,7 +127,7 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'cad',
             product_data: {
-              name: `${item.workshopName} — ${item.firstName} ${item.lastName}`,
+              name: `${item.workshopName} — ${item.firstName} ${item.lastName} (${item.deliveryMethod === 'virtual' ? 'Virtual' : 'In-Person'})`,
               description: 'Western Dental Academy — Workshop Registration',
             },
             unit_amount: item.price * 100,

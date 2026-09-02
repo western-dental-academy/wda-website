@@ -103,7 +103,7 @@ export default async function AdminPage() {
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
         _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
-        feedbackToken, feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
+        deliveryMethod, feedbackToken, feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
         feedbackWouldRecommend, feedbackSubmittedAt
       }`
     ),

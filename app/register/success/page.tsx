@@ -28,6 +28,7 @@ interface RegistrationRecord {
   workshopDateId: string | null;
   stripePaymentStatus: string;
   preferredDate?: string;
+  deliveryMethod?: string;
 }
 
 function workshopInstructions(workshop: string): string {
@@ -58,7 +59,25 @@ function workshopInstructions(workshop: string): string {
   return "";
 }
 
-function confirmationEmailHtml(firstName: string, workshop: string, formattedDate: string): string {
+function confirmationEmailHtml(
+  firstName: string,
+  workshop: string,
+  formattedDate: string,
+  deliveryMethod?: string,
+  zoomLink?: string,
+): string {
+  const isVirtual = deliveryMethod === 'virtual';
+
+  const virtualSection = isVirtual
+    ? `<div style="background-color:#EFF6FF;border-radius:8px;padding:16px;margin:16px 0;border-left:4px solid #378ADD;">
+        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 6px;">Virtual Attendance — Zoom Link</p>
+        ${zoomLink
+          ? `<p style="font-size:14px;margin:0;"><a href="${zoomLink}" style="color:#378ADD;">${zoomLink}</a></p>`
+          : `<p style="color:#374151;font-size:14px;margin:0;">Your Zoom link will be sent to you by our team prior to the event. If you have not received it 24 hours before, please contact us.</p>`
+        }
+      </div>`
+    : '';
+
   return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
       <div style="background-color:#1E3560;padding:28px 32px;">
@@ -68,14 +87,16 @@ function confirmationEmailHtml(firstName: string, workshop: string, formattedDat
       <div style="padding:32px;background:#ffffff;border:1px solid #e5e7eb;">
         <p style="color:#1E3560;font-size:15px;margin:0 0 16px;">Hi ${firstName},</p>
         <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 20px;">
-          You're registered! We look forward to seeing you at the event.
+          ${isVirtual ? "You're registered to attend virtually!" : "You're registered! We look forward to seeing you at the event."}
         </p>
         <p style="color:#1E3560;font-size:16px;font-weight:700;margin:0 0 8px;">${workshop}</p>
-        ${formattedDate ? `<p style="color:#374151;font-size:14px;margin:0 0 20px;">${formattedDate}</p>` : ""}
+        ${formattedDate ? `<p style="color:#374151;font-size:14px;margin:0 0 4px;">${formattedDate}</p>` : ""}
+        ${isVirtual ? `<p style="font-size:13px;font-weight:600;margin:0 0 16px;"><span style="background-color:#EFF6FF;color:#378ADD;padding:2px 8px;border-radius:4px;">Virtual</span></p>` : `<p style="margin:0 0 16px;"></p>`}
+        ${virtualSection}
         <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
           Our team will be in touch if there are any changes.
         </p>
-        ${workshopInstructions(workshop)}
+        ${!isVirtual ? workshopInstructions(workshop) : ''}
         <p style="color:#374151;font-size:14px;line-height:1.6;margin-top:16px;">
           If you have any questions,
           <a href="https://westerndentalacademy.com/contact" style="color:#378ADD;">contact us here</a>
@@ -91,7 +112,7 @@ function confirmationEmailHtml(firstName: string, workshop: string, formattedDat
 
 function receiptEmailHtml(
   primaryFirstName: string,
-  rows: { name: string; workshop: string; date: string; price: number }[],
+  rows: { name: string; workshop: string; date: string; price: number; delivery?: string }[],
   totalPaid: number,
 ): string {
   const subtotal = rows.reduce((s, r) => s + r.price, 0);
@@ -102,6 +123,7 @@ function receiptEmailHtml(
       <td style="padding:10px 12px;border-bottom:1px solid #f3f4f6;color:#1E3560;font-size:13px;font-weight:600;">${r.name}</td>
       <td style="padding:10px 12px;border-bottom:1px solid #f3f4f6;color:#374151;font-size:13px;">${r.workshop}</td>
       <td style="padding:10px 12px;border-bottom:1px solid #f3f4f6;color:#374151;font-size:13px;">${r.date}</td>
+      <td style="padding:10px 12px;border-bottom:1px solid #f3f4f6;font-size:13px;">${r.delivery === 'virtual' ? '<span style="background-color:#EFF6FF;color:#378ADD;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;">Virtual</span>' : '<span style="background-color:#EEF2FF;color:#1E3560;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:600;">In-Person</span>'}</td>
       <td style="padding:10px 12px;border-bottom:1px solid #f3f4f6;color:#374151;font-size:13px;text-align:right;">$${r.price.toFixed(2)}</td>
     </tr>`).join("");
 
@@ -123,6 +145,7 @@ function receiptEmailHtml(
               <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;border-bottom:2px solid #e5e7eb;">Registrant</th>
               <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;border-bottom:2px solid #e5e7eb;">Workshop</th>
               <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;border-bottom:2px solid #e5e7eb;">Date</th>
+              <th style="padding:10px 12px;text-align:left;font-size:12px;color:#6b7280;font-weight:600;border-bottom:2px solid #e5e7eb;">Delivery</th>
               <th style="padding:10px 12px;text-align:right;font-size:12px;color:#6b7280;font-weight:600;border-bottom:2px solid #e5e7eb;">Price</th>
             </tr>
           </thead>
@@ -220,7 +243,7 @@ export default async function SuccessPage({
       // Fetch all registrations
       const idList = ids.map(id => `"${id}"`).join(",");
       const existing = await sanity.fetch<RegistrationRecord[]>(
-        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate }`,
+        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod }`,
       );
       registrations = existing;
 
@@ -246,9 +269,11 @@ export default async function SuccessPage({
             registrations.map(r => r.workshopDateId).filter(Boolean) as string[]
           )];
           const dateMap: Record<string, string> = {};
+          const zoomMap: Record<string, string | null> = {};
+          const virtualPriceMap: Record<string, number | null> = {};
           if (dateIds.length > 0) {
-            const dateResults = await sanity.fetch<{ _id: string; date: string }[]>(
-              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date }`,
+            const dateResults = await sanity.fetch<{ _id: string; date: string; zoomLink?: string; virtualPrice?: number }[]>(
+              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, zoomLink, virtualPrice }`,
             );
             for (const d of dateResults) {
               dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
@@ -256,6 +281,8 @@ export default async function SuccessPage({
                 weekday: "long", year: "numeric", month: "long", day: "numeric",
                 hour: "numeric", minute: "2-digit", timeZoneName: "short",
               });
+              zoomMap[d._id] = d.zoomLink ?? null;
+              virtualPriceMap[d._id] = d.virtualPrice ?? null;
             }
           }
 
@@ -263,11 +290,12 @@ export default async function SuccessPage({
           await Promise.all(
             registrations.map(r => {
               const formattedDate = r.workshopDateId ? dateMap[r.workshopDateId] ?? "" : "";
+              const zoomLink = r.workshopDateId ? zoomMap[r.workshopDateId] ?? undefined : undefined;
               return resend.emails.send({
                 from: "Western Dental Academy <info@westerndentalacademy.com>",
                 to: r.email,
                 subject: `Registration Confirmed — ${r.workshop}`,
-                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate),
+                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod, zoomLink),
               });
             })
           );
@@ -275,20 +303,25 @@ export default async function SuccessPage({
           // Send receipt to primary registrant (first in list)
           const primary = registrations[0];
           if (registrations.length > 1 || !isLegacy) {
-            const receiptRows = registrations.map(r => ({
-              name: `${r.firstName} ${r.lastName}`,
-              workshop: r.workshop,
-              date: r.workshopDateId ? dateMap[r.workshopDateId] ?? "TBD" : "TBD",
-              price: (() => {
-                const prices: Record<string, number> = {
-                  "Ergonomics in Dentistry: Hands and Spine": 40,
-                  "Ergonomics in Dentistry: Hips and Hamstrings": 40,
-                  "Ergonomics in Dentistry: Neck and Shoulders": 40,
-                  "National Board Guided Practice Workshop": 600,
-                };
-                return prices[r.workshop] ?? 0;
-              })(),
-            }));
+            const basePrices: Record<string, number> = {
+              "Ergonomics in Dentistry: Hands and Spine": 40,
+              "Ergonomics in Dentistry: Hips and Hamstrings": 40,
+              "Ergonomics in Dentistry: Neck and Shoulders": 40,
+              "National Board Guided Practice Workshop": 600,
+              "Renewal Wellness Workshop": 129,
+            };
+            const receiptRows = registrations.map(r => {
+              const isVirtual = r.deliveryMethod === 'virtual';
+              const vp = r.workshopDateId ? virtualPriceMap[r.workshopDateId] : null;
+              const price = isVirtual && vp != null ? vp : (basePrices[r.workshop] ?? 0);
+              return {
+                name: `${r.firstName} ${r.lastName}`,
+                workshop: r.workshop,
+                date: r.workshopDateId ? dateMap[r.workshopDateId] ?? "TBD" : "TBD",
+                delivery: r.deliveryMethod,
+                price,
+              };
+            });
             const totalPaidDollars = totalPaidCents / 100;
             await resend.emails.send({
               from: "Western Dental Academy <info@westerndentalacademy.com>",

@@ -21,6 +21,7 @@ export interface CartItem {
   pronouns?: string;
   mediaConsent?: boolean;
   isPrimary: boolean;
+  deliveryMethod: 'in-person' | 'virtual';
 }
 
 interface RegistrantForm {
@@ -45,6 +46,8 @@ interface WorkshopDate {
   registered: number;
   isFull: boolean;
   category: string;
+  hasVirtualOption?: boolean;
+  virtualPrice?: number;
 }
 
 // ─── Constants ─────────────────────────────────────────────────────────────────
@@ -54,6 +57,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
   "Ergonomics in Dentistry: Hips and Hamstrings": 40,
   "Ergonomics in Dentistry: Neck and Shoulders": 40,
   "National Board Guided Practice Workshop": 600,
+  "Renewal Wellness Workshop": 129,
 };
 
 const WORKSHOP_OPTIONS = Object.keys(WORKSHOP_PRICES).map(label => ({
@@ -180,13 +184,22 @@ function CartPanel({
         {cart.map((item) => (
           <div key={item.id} className="px-5 py-4 flex items-start gap-3">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-semibold truncate" style={{ color: "#1E3560" }}>
                   {item.firstName} {item.lastName}
                 </p>
                 {item.isPrimary && (
                   <span className="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(230,126,34,0.1)", color: "#E67E22" }}>
                     Primary
+                  </span>
+                )}
+                {item.deliveryMethod === 'virtual' ? (
+                  <span className="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(55,138,221,0.1)", color: "#378ADD" }}>
+                    Virtual
+                  </span>
+                ) : (
+                  <span className="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(13,59,110,0.08)", color: "#0D3B6E" }}>
+                    In-Person
                   </span>
                 )}
               </div>
@@ -280,8 +293,13 @@ export default function WorkshopRegisterForm() {
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
   const [datesLoading, setDatesLoading] = useState(true);
   const [datesError, setDatesError] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<'in-person' | 'virtual'>('in-person');
 
   const isPrimary = cart.length === 0;
+
+  useEffect(() => {
+    setDeliveryMethod('in-person');
+  }, [form.workshopDateId]);
 
   useEffect(() => {
     fetch("/api/workshops/dates")
@@ -361,7 +379,7 @@ export default function WorkshopRegisterForm() {
     setCapacityError("");
     setWaitlistMode(false);
     try {
-      const res = await fetch(`/api/workshops/check-capacity?workshopDateId=${form.workshopDateId}`);
+      const res = await fetch(`/api/workshops/check-capacity?workshopDateId=${form.workshopDateId}&deliveryMethod=${deliveryMethod}`);
       const data = await res.json();
       const { available } = data as { available: number };
       const cartCountForDate = cart.filter(c => c.workshopDateId === form.workshopDateId).length;
@@ -379,7 +397,10 @@ export default function WorkshopRegisterForm() {
   }
 
   function addItemToCart() {
-    const price = WORKSHOP_PRICES[form.workshop] ?? 0;
+    const basePrice = WORKSHOP_PRICES[form.workshop] ?? 0;
+    const price = deliveryMethod === 'virtual' && selectedDateObj?.virtualPrice != null
+      ? selectedDateObj.virtualPrice
+      : basePrice;
     const pronounsResolved = form.pronouns === "Prefer to self-describe"
       ? form.customPronouns.trim()
       : form.pronouns;
@@ -401,6 +422,7 @@ export default function WorkshopRegisterForm() {
       pronouns: isPrimary && pronounsResolved ? pronounsResolved : undefined,
       mediaConsent: isPrimary ? form.mediaConsent : undefined,
       isPrimary,
+      deliveryMethod,
     };
 
     setCart(c => [...c, item]);
@@ -756,6 +778,47 @@ export default function WorkshopRegisterForm() {
                     Contact us for available dates — we&apos;ll confirm scheduling by email after registration.
                   </p>
                 )
+              )}
+
+              {/* Delivery method toggle — shown when the selected date offers virtual attendance */}
+              {form.workshopDateId && selectedDateObj?.hasVirtualOption && (
+                <div className="mt-5">
+                  <p className="block text-xs font-semibold mb-3" style={{ color: "#1E3560" }}>
+                    Attendance Format<span className="ml-0.5" style={{ color: "#4A9FD4" }} aria-hidden>*</span>
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {([ 'in-person', 'virtual' ] as const).map(method => {
+                      const selected = deliveryMethod === method;
+                      const isVirtual = method === 'virtual';
+                      const price = isVirtual && selectedDateObj.virtualPrice != null
+                        ? selectedDateObj.virtualPrice
+                        : WORKSHOP_PRICES[form.workshop] ?? 0;
+                      return (
+                        <button
+                          key={method}
+                          type="button"
+                          onClick={() => setDeliveryMethod(method)}
+                          className="flex flex-col items-center gap-1.5 py-4 px-3 rounded-xl text-center transition-all duration-200"
+                          style={{
+                            backgroundColor: selected ? (isVirtual ? "rgba(55,138,221,0.08)" : "rgba(30,53,96,0.06)") : "#ffffff",
+                            border: `2px solid ${selected ? (isVirtual ? "#378ADD" : "#1E3560") : "rgba(30,53,96,0.12)"}`,
+                          }}
+                        >
+                          <span className="text-xl" aria-hidden>{isVirtual ? "💻" : "🏛️"}</span>
+                          <span className="text-xs font-bold leading-tight" style={{ color: selected ? (isVirtual ? "#378ADD" : "#1E3560") : "rgba(30,53,96,0.45)" }}>
+                            {isVirtual ? "Virtual" : "In-Person"}
+                          </span>
+                          <span className="text-[10px]" style={{ color: "rgba(43,48,58,0.5)" }}>${price} CAD</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {deliveryMethod === 'virtual' && (
+                    <p className="mt-2 text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                      A Zoom link will be emailed to you after registration is confirmed.
+                    </p>
+                  )}
+                </div>
               )}
 
               {/* National Board eligibility */}

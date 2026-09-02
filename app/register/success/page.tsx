@@ -64,16 +64,16 @@ function confirmationEmailHtml(
   workshop: string,
   formattedDate: string,
   deliveryMethod?: string,
-  zoomLink?: string,
+  teamsLink?: string,
 ): string {
   const isVirtual = deliveryMethod === 'virtual';
 
   const virtualSection = isVirtual
     ? `<div style="background-color:#EFF6FF;border-radius:8px;padding:16px;margin:16px 0;border-left:4px solid #378ADD;">
-        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 6px;">Virtual Attendance — Zoom Link</p>
-        ${zoomLink
-          ? `<p style="font-size:14px;margin:0;"><a href="${zoomLink}" style="color:#378ADD;">${zoomLink}</a></p>`
-          : `<p style="color:#374151;font-size:14px;margin:0;">Your Zoom link will be sent to you by our team prior to the event. If you have not received it 24 hours before, please contact us.</p>`
+        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 6px;">Virtual Attendance — Teams Meeting Link</p>
+        ${teamsLink
+          ? `<p style="font-size:14px;margin:0;"><a href="${teamsLink}" style="color:#378ADD;">${teamsLink}</a></p>`
+          : `<p style="color:#374151;font-size:14px;margin:0;">Your Teams meeting link will be sent to you by our team prior to the event. If you have not received it 24 hours before, please contact us.</p>`
         }
       </div>`
     : '';
@@ -269,11 +269,11 @@ export default async function SuccessPage({
             registrations.map(r => r.workshopDateId).filter(Boolean) as string[]
           )];
           const dateMap: Record<string, string> = {};
-          const zoomMap: Record<string, string | null> = {};
+          const teamsMap: Record<string, string | null> = {};
           const virtualPriceMap: Record<string, number | null> = {};
           if (dateIds.length > 0) {
-            const dateResults = await sanity.fetch<{ _id: string; date: string; zoomLink?: string; virtualPrice?: number }[]>(
-              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "zoomLink": offering->zoomLink, "virtualPrice": offering->virtualPrice }`,
+            const dateResults = await sanity.fetch<{ _id: string; date: string; teamsLink?: string; virtualPrice?: number }[]>(
+              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsLink": offering->teamsLink, "virtualPrice": offering->virtualPrice }`,
             );
             for (const d of dateResults) {
               dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
@@ -281,7 +281,7 @@ export default async function SuccessPage({
                 weekday: "long", year: "numeric", month: "long", day: "numeric",
                 hour: "numeric", minute: "2-digit", timeZoneName: "short",
               });
-              zoomMap[d._id] = d.zoomLink ?? null;
+              teamsMap[d._id] = d.teamsLink ?? null;
               virtualPriceMap[d._id] = d.virtualPrice ?? null;
             }
           }
@@ -290,12 +290,12 @@ export default async function SuccessPage({
           await Promise.all(
             registrations.map(r => {
               const formattedDate = r.workshopDateId ? dateMap[r.workshopDateId] ?? "" : "";
-              const zoomLink = r.workshopDateId ? zoomMap[r.workshopDateId] ?? undefined : undefined;
+              const teamsLink = r.workshopDateId ? teamsMap[r.workshopDateId] ?? undefined : undefined;
               return resend.emails.send({
                 from: "Western Dental Academy <info@westerndentalacademy.com>",
                 to: r.email,
                 subject: `Registration Confirmed — ${r.workshop}`,
-                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod, zoomLink),
+                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod, teamsLink),
               });
             })
           );

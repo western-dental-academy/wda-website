@@ -37,13 +37,13 @@ function fmtWorkshopDate(iso: string): string {
   return `${datePart} · ${timePart} ${isMDT ? 'MDT' : 'MST'}`
 }
 
-function zoomLinkEmail(args: {
+function teamsLinkEmail(args: {
   firstName: string
   workshopName: string
   dateFormatted: string
-  zoomLink: string
+  teamsLink: string
 }): string {
-  const { firstName, workshopName, dateFormatted, zoomLink } = args
+  const { firstName, workshopName, dateFormatted, teamsLink } = args
   return `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;">
   <div style="background-color:#0D3B6E;padding:28px 32px;">
@@ -53,12 +53,12 @@ function zoomLinkEmail(args: {
   <div style="padding:32px 32px 24px;border:1px solid #e5e7eb;border-top:none;">
     <p style="color:#0D3B6E;font-size:15px;font-weight:600;margin:0 0 16px;">Hi ${firstName},</p>
     <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 8px;">
-      Your Zoom link for <strong>${workshopName}</strong> is ready.
+      Your Teams meeting link for <strong>${workshopName}</strong> is ready.
     </p>
     <p style="color:#6b7280;font-size:13px;margin:0 0 24px;">${dateFormatted}</p>
     <div style="margin-bottom:28px;">
-      <a href="${zoomLink}" style="display:inline-block;background-color:#E67E22;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:8px;">
-        Join via Zoom →
+      <a href="${teamsLink}" style="display:inline-block;background-color:#E67E22;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:8px;">
+        Join via Teams →
       </a>
     </div>
     <div style="background:#F4F7F9;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
@@ -66,6 +66,7 @@ function zoomLinkEmail(args: {
       <ul style="color:#374151;font-size:13px;line-height:1.7;margin:0;padding-left:18px;">
         <li>Join 5 minutes early to test your audio and video</li>
         <li>Make sure your display name is set to your full name</li>
+        <li>You do not need a Teams account — click "Join as a guest" if prompted</li>
         <li>Have a quiet space ready with good lighting</li>
       </ul>
     </div>
@@ -100,21 +101,21 @@ export async function POST(req: NextRequest) {
   const dateDoc = await client.fetch<{
     date: string
     title: string
-    zoomLink: string | null
+    teamsLink: string | null
     hasVirtualOption: boolean
   } | null>(
     `*[_type == "workshopDate" && _id == $id][0]{
       date,
-      "title":          offering->title,
-      "zoomLink":       offering->zoomLink,
+      "title":            offering->title,
+      "teamsLink":        offering->teamsLink,
       "hasVirtualOption": offering->hasVirtualOption
     }`,
     { id: workshopDateId }
   )
 
   if (!dateDoc) return Response.json({ error: 'Workshop date not found.' }, { status: 404 })
-  if (!dateDoc.zoomLink?.trim()) {
-    return Response.json({ error: 'No Zoom link has been added for this workshop yet.' }, { status: 400 })
+  if (!dateDoc.teamsLink?.trim()) {
+    return Response.json({ error: 'No Teams meeting link has been added for this workshop yet.' }, { status: 400 })
   }
 
   const registrants = await client.fetch<Array<{ firstName: string; lastName: string; email: string }>>(
@@ -130,7 +131,7 @@ export async function POST(req: NextRequest) {
 
   const workshopName  = dateDoc.title
   const dateFormatted = fmtWorkshopDate(dateDoc.date)
-  const zoomLink      = dateDoc.zoomLink
+  const teamsLink     = dateDoc.teamsLink
 
   try {
     await Promise.all(
@@ -138,13 +139,13 @@ export async function POST(req: NextRequest) {
         resend.emails.send({
           from:    'Western Dental Academy <info@westerndentalacademy.com>',
           to:      r.email,
-          subject: `Your Zoom Link for ${workshopName}`,
-          html:    zoomLinkEmail({ firstName: r.firstName, workshopName, dateFormatted, zoomLink }),
+          subject: `Your Teams Meeting Link for ${workshopName}`,
+          html:    teamsLinkEmail({ firstName: r.firstName, workshopName, dateFormatted, teamsLink }),
         })
       )
     )
   } catch (err) {
-    console.error('Send Zoom link error:', err)
+    console.error('Send Teams link error:', err)
     return Response.json({ error: String(err) }, { status: 500 })
   }
 

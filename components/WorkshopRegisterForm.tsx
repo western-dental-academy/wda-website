@@ -821,7 +821,7 @@ export default function WorkshopRegisterForm() {
                   </div>
                   {deliveryMethod === 'virtual' && (
                     <p className="mt-2 text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
-                      A Zoom link will be emailed to you after registration is confirmed.
+                      A Teams meeting link will be emailed to you after registration is confirmed.
                     </p>
                   )}
                 </div>

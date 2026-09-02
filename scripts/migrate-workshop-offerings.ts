@@ -68,7 +68,7 @@ interface OldWorkshopDate {
   category?: string
   hasVirtualOption?: boolean
   virtualPrice?: number
-  zoomLink?: string
+  teamsLink?: string
   active?: boolean
   feedbackEnabled?: boolean
 }
@@ -85,7 +85,7 @@ async function main() {
 
   // 1. Fetch all existing workshopDate documents
   const dates = await client.fetch<OldWorkshopDate[]>(
-    `*[_type == "workshopDate"]{ _id, workshop, date, capacity, category, hasVirtualOption, virtualPrice, zoomLink, active, feedbackEnabled }`
+    `*[_type == "workshopDate"]{ _id, workshop, date, capacity, category, hasVirtualOption, virtualPrice, teamsLink, active, feedbackEnabled }`
   )
   console.log(`Found ${dates.length} workshopDate document(s).`)
 
@@ -124,7 +124,7 @@ async function main() {
       ...(representative.capacity   != null ? { capacity: representative.capacity }          : {}),
       ...(representative.hasVirtualOption     ? { hasVirtualOption: true }                   : { hasVirtualOption: false }),
       ...(representative.virtualPrice != null ? { virtualPrice: representative.virtualPrice } : {}),
-      ...(representative.zoomLink             ? { zoomLink: representative.zoomLink }         : {}),
+      ...(representative.teamsLink            ? { teamsLink: representative.teamsLink }        : {}),
       ...(meta.hours      != null ? { hours: meta.hours }           : {}),
       ...(meta.cadaCppCodes       ? { cadaCppCodes: meta.cadaCppCodes } : {}),
     }
@@ -149,12 +149,12 @@ async function main() {
       console.log(`  Patching workshopDate ${d._id} (date: ${d.date.slice(0, 10)})`)
       if (DRY_RUN) {
         console.log(`    [DRY RUN] Would set offering ref → ${createdId}`)
-        console.log(`    [DRY RUN] Would unset: workshop, capacity, category, hasVirtualOption, virtualPrice, zoomLink`)
+        console.log(`    [DRY RUN] Would unset: workshop, capacity, category, hasVirtualOption, virtualPrice, teamsLink`)
       } else {
         await client
           .patch(d._id)
           .set({ offering: { _type: 'reference', _ref: createdId } })
-          .unset(['workshop', 'capacity', 'category', 'hasVirtualOption', 'virtualPrice', 'zoomLink'])
+          .unset(['workshop', 'capacity', 'category', 'hasVirtualOption', 'virtualPrice', 'teamsLink'])
           .commit()
         console.log(`    ✓ Patched ${d._id}`)
       }

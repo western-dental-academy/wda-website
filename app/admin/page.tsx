@@ -100,7 +100,7 @@ export default async function AdminPage() {
       `*[_type == "workshopDate"] | order(date asc){
         _id, date, active,
         offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price },
-        "zoomLink": offering->zoomLink,
+        "teamsLink": offering->teamsLink,
         "virtualRegistrantCount": count(*[_type == "workshopRegistration" && workshopDateId == ^._id && deliveryMethod == "virtual"])
       }`
     ),

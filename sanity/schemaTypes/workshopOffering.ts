@@ -64,10 +64,10 @@ export default defineType({
       of: [{ type: 'string' }],
     }),
     defineField({
-      name: 'zoomLink',
-      title: 'Zoom Link',
+      name: 'teamsLink',
+      title: 'Teams Meeting Link',
       type: 'string',
-      description: 'Zoom URL sent to virtual registrants. Leave blank to send a placeholder.',
+      description: 'Microsoft Teams meeting URL sent to virtual registrants. Leave blank to send a placeholder.',
     }),
     defineField({
       name: 'includesFood',

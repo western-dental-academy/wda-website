@@ -273,7 +273,7 @@ export default async function SuccessPage({
           const virtualPriceMap: Record<string, number | null> = {};
           if (dateIds.length > 0) {
             const dateResults = await sanity.fetch<{ _id: string; date: string; zoomLink?: string; virtualPrice?: number }[]>(
-              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, zoomLink, virtualPrice }`,
+              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "zoomLink": offering->zoomLink, "virtualPrice": offering->virtualPrice }`,
             );
             for (const d of dateResults) {
               dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {

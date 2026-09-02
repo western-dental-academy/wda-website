@@ -97,7 +97,7 @@ export default async function AdminPage() {
       `*[_type == "program"] | order(title asc){ _id, title }`
     ),
     client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active, category }`
+      `*[_type == "workshopDate"] | order(date asc){ _id, date, active, offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price } }`
     ),
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){
@@ -196,13 +196,18 @@ export default async function AdminPage() {
   }
 
   // Build DateGroup array for workshop registrations
-  const dateGroups: DateGroup[] = (workshopDates as Array<{ _id: string; workshop: string; date: string; capacity: number; active: boolean }>)
+  const dateGroups: DateGroup[] = (workshopDates as Array<{
+    _id: string
+    date: string
+    active: boolean
+    offering: { title: string; category: string; capacity: number } | null
+  }>)
     .filter((d) => d.active !== false)
     .map((d) => ({
       dateId: d._id,
-      workshop: d.workshop,
+      workshop: d.offering?.title ?? '',
       date: d.date,
-      capacity: d.capacity,
+      capacity: d.offering?.capacity ?? 0,
       registrations: (workshopRegs as WorkshopRegistration[]).filter((r) => r.workshopDateId === d._id),
       waitlist: (workshopWaitlist as WorkshopWaitlistEntry[]).filter((w) => w.workshopDateId === d._id),
     }))

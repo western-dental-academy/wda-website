@@ -25,9 +25,9 @@ export async function GET(req: NextRequest) {
   try {
     const [dateDoc, registeredCount] = await Promise.all([
       client.fetch<{ capacity: number } | null>(
-        `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ capacity }`,
+        `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ "capacity": offering->capacity }`,
       ),
-      // Count only in-person paid registrations (null deliveryMethod = legacy in-person)
+      // Count only in-person paid registrations
       client.fetch<number>(
         `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
       ),

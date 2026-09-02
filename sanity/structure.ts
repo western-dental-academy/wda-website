@@ -28,11 +28,11 @@ export const structure: StructureResolver = (S) =>
         .title("Students")
         .schemaType("student")
         .child(S.documentTypeList("student").title("Students")),
-        S.listItem()
+      S.listItem()
         .title('Subscribers')
         .schemaType('subscriber')
         .child(S.documentTypeList('subscriber').title('Subscribers')),
-        S.listItem()
+      S.listItem()
         .title('Announcements')
         .schemaType('announcement')
         .child(S.documentTypeList('announcement').title('Announcements')),
@@ -40,11 +40,32 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem()
-        .title('Workshops')
+        .title('Professional Development')
         .child(
           S.list()
-            .title('Workshops')
+            .title('Professional Development')
             .items([
+              S.listItem()
+                .title('Workshops')
+                .child(
+                  S.documentTypeList('workshopOffering')
+                    .title('Workshops')
+                    .filter('_type == "workshopOffering" && category == "workshop"')
+                ),
+              S.listItem()
+                .title('Guest Speakers')
+                .child(
+                  S.documentTypeList('workshopOffering')
+                    .title('Guest Speakers')
+                    .filter('_type == "workshopOffering" && category == "guest-speaker"')
+                ),
+              S.listItem()
+                .title('Courses')
+                .child(
+                  S.documentTypeList('workshopOffering')
+                    .title('Courses')
+                    .filter('_type == "workshopOffering" && category == "course"')
+                ),
               S.listItem()
                 .title('Workshop Dates')
                 .schemaType('workshopDate')

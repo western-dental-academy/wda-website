@@ -35,7 +35,10 @@ export async function GET() {
 
   try {
     const dates = await client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){ _id, workshop, date, capacity, active, category }`
+      `*[_type == "workshopDate"] | order(date asc){
+        _id, date, active,
+        offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price }
+      }`
     )
     return NextResponse.json(dates)
   } catch (err) {
@@ -53,30 +56,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { workshop, date, capacity, category } = body as {
-    workshop?: string
+  const { offeringId, date, active } = body as {
+    offeringId?: string
     date?: string
-    capacity?: number
-    category?: string
+    active?: boolean
   }
 
-  if (!workshop?.trim()) return NextResponse.json({ error: 'workshop is required' }, { status: 400 })
-  if (!date?.trim())     return NextResponse.json({ error: 'date is required' },     { status: 400 })
-  if (!capacity || capacity < 1) return NextResponse.json({ error: 'capacity must be at least 1' }, { status: 400 })
+  if (!offeringId?.trim()) return NextResponse.json({ error: 'offeringId is required' }, { status: 400 })
+  if (!date?.trim())       return NextResponse.json({ error: 'date is required' },       { status: 400 })
 
   try {
     const created = await client.create({
       _type:    'workshopDate',
-      workshop: workshop.trim(),
+      offering: { _type: 'reference', _ref: offeringId.trim() },
       date:     date.trim(),
-      capacity: Number(capacity),
-      category: category ?? 'workshop',
-      active:   true,
+      active:   active ?? false,
     })
 
     const doc = await client.fetch(
-      `*[_id == $id][0]{ _id, workshop, date, capacity, active, category }`,
-      { id: created._id }
+      `*[_id == "${created._id}"][0]{
+        _id, date, active,
+        offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price }
+      }`
     )
     return NextResponse.json(doc, { status: 201 })
   } catch (err) {

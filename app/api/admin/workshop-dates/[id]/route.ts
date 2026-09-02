@@ -29,7 +29,7 @@ async function getAuthedEmail(): Promise<{ email: string } | NextResponse> {
   return { email }
 }
 
-// PATCH — update workshop, date, capacity, or active
+// PATCH — update date and/or active status (offering is immutable after creation)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -45,20 +45,11 @@ export async function PATCH(
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { workshop, date, capacity, active, category } = body as {
-    workshop?: string
-    date?: string
-    capacity?: number
-    active?: boolean
-    category?: string
-  }
+  const { date, active } = body as { date?: string; active?: boolean }
 
   const patch: Record<string, unknown> = {}
-  if (workshop !== undefined) patch.workshop = workshop
-  if (date     !== undefined) patch.date     = date
-  if (capacity !== undefined) patch.capacity = Number(capacity)
-  if (active   !== undefined) patch.active   = active
-  if (category !== undefined) patch.category = category
+  if (date   !== undefined) patch.date   = date
+  if (active !== undefined) patch.active = active
 
   if (Object.keys(patch).length === 0) {
     return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
@@ -73,7 +64,7 @@ export async function PATCH(
   }
 }
 
-// DELETE — hard delete: permanently removes the document from Sanity
+// DELETE — permanently removes the document from Sanity
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -15,45 +15,54 @@ export async function GET() {
     const [dates, paidRegs] = await Promise.all([
       client.fetch<Array<{
         _id: string
-        workshop: string
         date: string
-        capacity: number
-        category: string
-        hasVirtualOption?: boolean
-        virtualPrice?: number
+        offering: {
+          title: string
+          category: string
+          capacity: number
+          hasVirtualOption?: boolean
+          virtualPrice?: number
+          price?: number
+        } | null
       }>>(
         `*[_type == "workshopDate" && active == true && date > $now] | order(date asc){
-          _id, workshop, date, capacity, category, hasVirtualOption, virtualPrice
+          _id, date,
+          offering->{ title, category, capacity, hasVirtualOption, virtualPrice, price }
         }`,
         { now },
       ),
-      client.fetch<Array<{ workshopDateId: string }>>(
+      // Only count in-person paid registrations toward capacity
+      client.fetch<Array<{ workshopDateId: string; deliveryMethod?: string }>>(
         `*[_type == "workshopRegistration" && defined(workshopDateId) && stripePaymentStatus == "paid"]{
-          workshopDateId
+          workshopDateId, deliveryMethod
         }`,
         {},
       ),
     ])
 
-    // Count paid registrations per date ID
+    // Count in-person paid registrations per date ID
     const countMap: Record<string, number> = {}
     for (const r of paidRegs) {
-      if (r.workshopDateId) {
+      if (r.workshopDateId && r.deliveryMethod !== 'virtual') {
         countMap[r.workshopDateId] = (countMap[r.workshopDateId] ?? 0) + 1
       }
     }
 
-    const result = dates.map(d => ({
-      id: d._id,
-      workshop: d.workshop,
-      date: d.date,
-      capacity: d.capacity,
-      category: d.category ?? 'workshop',
-      registered: countMap[d._id] ?? 0,
-      isFull: (countMap[d._id] ?? 0) >= d.capacity,
-      hasVirtualOption: d.hasVirtualOption ?? false,
-      virtualPrice: d.virtualPrice ?? null,
-    }))
+    const result = dates.map(d => {
+      const cap = d.offering?.capacity ?? 20
+      const registered = countMap[d._id] ?? 0
+      return {
+        id: d._id,
+        workshop: d.offering?.title ?? '',
+        date: d.date,
+        capacity: cap,
+        category: d.offering?.category ?? 'workshop',
+        registered,
+        isFull: registered >= cap,
+        hasVirtualOption: d.offering?.hasVirtualOption ?? false,
+        virtualPrice: d.offering?.virtualPrice ?? null,
+      }
+    })
 
     return Response.json(result)
   } catch (error) {

@@ -1,17 +1,25 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { WorkshopRegistration, WorkshopWaitlistEntry } from './AdminWorkshopRegistrations'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
+export interface WorkshopOffering {
+  _id: string
+  title: string
+  category: string
+  capacity: number
+  hasVirtualOption?: boolean
+  virtualPrice?: number
+  price?: number
+}
+
 export interface WorkshopDateItem {
   _id: string
-  workshop: string
   date: string
-  capacity: number
   active: boolean
-  category: string
+  offering: WorkshopOffering | null
 }
 
 interface Props {
@@ -21,19 +29,6 @@ interface Props {
 }
 
 // ── Constants ──────────────────────────────────────────────────────────────────
-
-const WORKSHOP_OPTIONS = [
-  'Ergonomics in Dentistry: Hands and Spine',
-  'Ergonomics in Dentistry: Hips and Hamstrings',
-  'Ergonomics in Dentistry: Neck and Shoulders',
-  'National Board Guided Practice Workshop',
-]
-
-const CATEGORY_OPTIONS = [
-  { value: 'workshop',      label: 'Workshop'      },
-  { value: 'course',        label: 'Course'        },
-  { value: 'guest-speaker', label: 'Guest Speaker' },
-]
 
 const CATEGORY_COLOUR: Record<string, string> = {
   'workshop':      '#16a34a',
@@ -47,7 +42,7 @@ const CATEGORY_LABEL: Record<string, string> = {
   'guest-speaker': 'Guest Speaker',
 }
 
-const BLANK_ADD = { workshop: WORKSHOP_OPTIONS[0], date: '', capacity: 15, category: 'workshop' }
+const BLANK_ADD = { offeringId: '', date: '', active: false }
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -100,116 +95,25 @@ function waitlistCount(dateId: string, wl: WorkshopWaitlistEntry[]): number {
 }
 
 function borderColor(date: WorkshopDateItem, regCount: number): string {
+  const cap = date.offering?.capacity ?? 0
   if (!date.active || isPast(date.date)) return '3px solid rgba(43,48,58,0.12)'
-  if (regCount >= date.capacity)         return '3px solid #E67E22'
+  if (cap > 0 && regCount >= cap)         return '3px solid #E67E22'
   return '3px solid #22c55e'
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
-
-function FormFields({
-  workshop, date, capacity, category,
-  onChange,
-  showActiveToggle, active, onActiveChange,
-}: {
-  workshop: string; date: string; capacity: number; category: string
-  onChange: (field: string, value: string | number) => void
-  showActiveToggle?: boolean; active?: boolean; onActiveChange?: (v: boolean) => void
-}) {
-  const inputCls = 'w-full rounded-lg px-3 py-2 text-sm border bg-white outline-none focus:ring-2 focus:ring-[#378ADD]/20'
-  const inputStyle = { borderColor: 'rgba(30,53,96,0.15)', color: '#1E3560' }
-  const labelCls = 'block text-[11px] font-bold uppercase tracking-wide mb-1'
-  const labelStyle = { color: 'rgba(30,53,96,0.5)' }
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-      {/* Category */}
-      <div>
-        <label className={labelCls} style={labelStyle}>Category</label>
-        <select
-          value={category}
-          onChange={e => onChange('category', e.target.value)}
-          className={inputCls + ' cursor-pointer'}
-          style={inputStyle}
-        >
-          {CATEGORY_OPTIONS.map(c => (
-            <option key={c.value} value={c.value}>{c.label}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Offering */}
-      <div>
-        <label className={labelCls} style={labelStyle}>Offering</label>
-        <select
-          value={workshop}
-          onChange={e => onChange('workshop', e.target.value)}
-          className={inputCls + ' cursor-pointer'}
-          style={inputStyle}
-        >
-          {WORKSHOP_OPTIONS.map(w => (
-            <option key={w} value={w}>{w}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* Date + time */}
-      <div className="sm:col-span-1">
-        <label className={labelCls} style={labelStyle}>
-          Date &amp; Time <span className="normal-case font-normal">(Mountain Time)</span>
-        </label>
-        <input
-          type="datetime-local"
-          value={date}
-          onChange={e => onChange('date', e.target.value)}
-          className={inputCls + ' cursor-pointer'}
-          style={inputStyle}
-        />
-      </div>
-
-      {/* Capacity */}
-      <div>
-        <label className={labelCls} style={labelStyle}>Capacity</label>
-        <input
-          type="number"
-          min={1}
-          max={200}
-          value={capacity}
-          onChange={e => onChange('capacity', parseInt(e.target.value, 10) || 1)}
-          className={inputCls}
-          style={inputStyle}
-        />
-      </div>
-
-      {/* Active toggle (edit only) */}
-      {showActiveToggle && onActiveChange && (
-        <div className="sm:col-span-2 flex items-center gap-2.5">
-          <button
-            type="button"
-            role="switch"
-            aria-checked={active}
-            onClick={() => onActiveChange(!active)}
-            className="relative inline-flex h-5 w-9 rounded-full transition-colors duration-200 shrink-0"
-            style={{ backgroundColor: active ? '#22c55e' : 'rgba(43,48,58,0.2)' }}
-          >
-            <span
-              className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200"
-              style={{ transform: active ? 'translateX(16px)' : 'translateX(0)' }}
-            />
-          </button>
-          <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
-            {active ? 'Active — visible in registration form' : 'Inactive — hidden from registration form'}
-          </span>
-        </div>
-      )}
-    </div>
-  )
-}
+// Shared input / label styles
+const inputCls = 'w-full rounded-lg px-3 py-2 text-sm border bg-white outline-none focus:ring-2 focus:ring-[#378ADD]/20'
+const inputStyle = { borderColor: 'rgba(30,53,96,0.15)', color: '#1E3560' }
+const labelCls = 'block text-[11px] font-bold uppercase tracking-wide mb-1'
+const labelStyle = { color: 'rgba(30,53,96,0.5)' }
 
 // ── Main component ─────────────────────────────────────────────────────────────
 
 export default function AdminWorkshopDates({ initialDates, registrations, waitlist }: Props) {
   const [dates,      setDates]      = useState<WorkshopDateItem[]>(initialDates)
+  const [offerings,  setOfferings]  = useState<WorkshopOffering[]>([])
+  const [offeringsLoading, setOfferingsLoading] = useState(true)
+
   const [showAdd,    setShowAdd]    = useState(false)
   const [editingId,  setEditingId]  = useState<string | null>(null)
   const [busyIds,    setBusyIds]    = useState<Set<string>>(new Set())
@@ -220,9 +124,18 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
   const [addBusy,    setAddBusy]    = useState(false)
   const [addError,   setAddError]   = useState('')
 
-  const [editForm,   setEditForm]   = useState({ workshop: '', date: '', capacity: 15, active: true, category: 'workshop' })
+  const [editForm,   setEditForm]   = useState({ date: '', active: true })
   const [editBusy,   setEditBusy]   = useState(false)
   const [editError,  setEditError]  = useState('')
+
+  // Fetch workshop offerings for the Add Date dropdown
+  useEffect(() => {
+    fetch('/api/admin/workshop-offerings')
+      .then(r => r.json())
+      .then((data: WorkshopOffering[]) => setOfferings(Array.isArray(data) ? data : []))
+      .catch(() => setOfferings([]))
+      .finally(() => setOfferingsLoading(false))
+  }, [])
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -233,11 +146,8 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
   function startEdit(d: WorkshopDateItem) {
     setEditingId(d._id)
     setEditForm({
-      workshop: d.workshop,
-      date:     utcToMountainLocal(d.date),
-      capacity: d.capacity,
-      active:   d.active,
-      category: d.category ?? 'workshop',
+      date:   utcToMountainLocal(d.date),
+      active: d.active,
     })
     setEditError('')
     setShowAdd(false)
@@ -247,7 +157,8 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
 
   async function createDate(e: React.FormEvent) {
     e.preventDefault()
-    if (!addForm.date) { setAddError('Please select a date and time.'); return }
+    if (!addForm.offeringId) { setAddError('Please select a workshop offering.'); return }
+    if (!addForm.date)        { setAddError('Please select a date and time.'); return }
     setAddBusy(true); setAddError('')
 
     try {
@@ -255,10 +166,9 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workshop: addForm.workshop,
-          date:     mountainLocalToUTC(addForm.date),
-          capacity: addForm.capacity,
-          category: addForm.category,
+          offeringId: addForm.offeringId,
+          date:       mountainLocalToUTC(addForm.date),
+          active:     addForm.active,
         }),
       })
       if (!res.ok) { const j = await res.json(); throw new Error(j.error ?? 'Error') }
@@ -284,11 +194,8 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          workshop: editForm.workshop,
-          date:     mountainLocalToUTC(editForm.date),
-          capacity: editForm.capacity,
-          active:   editForm.active,
-          category: editForm.category,
+          date:   mountainLocalToUTC(editForm.date),
+          active: editForm.active,
         }),
       })
       if (!res.ok) { const j = await res.json(); throw new Error(j.error ?? 'Error') }
@@ -298,11 +205,8 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
         prev
           .map(d => d._id === id ? {
             ...d,
-            workshop: editForm.workshop,
-            date:     mountainLocalToUTC(editForm.date),
-            capacity: editForm.capacity,
-            active:   editForm.active,
-            category: editForm.category,
+            date:   mountainLocalToUTC(editForm.date),
+            active: editForm.active,
           } : d)
           .sort((a, b) => a.date.localeCompare(b.date))
       )
@@ -314,15 +218,15 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
     }
   }
 
-  async function deactivate(id: string) {
-    if (!confirm('Deactivate this workshop date? It will be hidden from the registration form.')) return
+  async function deleteDate(id: string) {
+    if (!confirm('Delete this workshop date permanently? This cannot be undone.')) return
     setBusy(id, true)
     try {
       const res = await fetch(`/api/admin/workshop-dates/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error()
       setDates(prev => prev.filter(d => d._id !== id))
     } catch {
-      alert('Failed to deactivate date. Please try again.')
+      alert('Failed to delete date. Please try again.')
     } finally {
       setBusy(id, false)
     }
@@ -358,16 +262,74 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
           style={{ borderColor: 'rgba(30,53,96,0.08)', backgroundColor: '#F4F7F9' }}
         >
           <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(30,53,96,0.45)' }}>
-            New Offering
+            New Date
           </p>
           <form onSubmit={createDate} noValidate>
-            <FormFields
-              workshop={addForm.workshop}
-              date={addForm.date}
-              capacity={addForm.capacity}
-              category={addForm.category}
-              onChange={(field, val) => setAddForm(f => ({ ...f, [field]: val }))}
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+              {/* Offering select */}
+              <div className="sm:col-span-2">
+                <label className={labelCls} style={labelStyle}>Workshop Offering</label>
+                {offeringsLoading ? (
+                  <p className="text-xs py-2" style={{ color: 'rgba(43,48,58,0.45)' }}>Loading offerings…</p>
+                ) : offerings.length === 0 ? (
+                  <p className="text-xs py-2" style={{ color: '#dc2626' }}>
+                    No offerings found. Create one in Sanity Studio first (Professional Development → Workshops/Courses/Guest Speakers).
+                  </p>
+                ) : (
+                  <select
+                    value={addForm.offeringId}
+                    onChange={e => setAddForm(f => ({ ...f, offeringId: e.target.value }))}
+                    className={inputCls + ' cursor-pointer'}
+                    style={inputStyle}
+                  >
+                    <option value="">Select an offering…</option>
+                    {offerings.map(o => (
+                      <option key={o._id} value={o._id}>
+                        {o.title} ({CATEGORY_LABEL[o.category] ?? o.category})
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+
+              {/* Date + time */}
+              <div>
+                <label className={labelCls} style={labelStyle}>
+                  Date &amp; Time <span className="normal-case font-normal">(Mountain Time)</span>
+                </label>
+                <input
+                  type="datetime-local"
+                  value={addForm.date}
+                  onChange={e => setAddForm(f => ({ ...f, date: e.target.value }))}
+                  className={inputCls + ' cursor-pointer'}
+                  style={inputStyle}
+                />
+              </div>
+
+              {/* Active toggle */}
+              <div className="flex items-end pb-2">
+                <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={addForm.active}
+                    onClick={() => setAddForm(f => ({ ...f, active: !f.active }))}
+                    className="relative inline-flex h-5 w-9 rounded-full transition-colors duration-200 shrink-0"
+                    style={{ backgroundColor: addForm.active ? '#22c55e' : 'rgba(43,48,58,0.2)' }}
+                  >
+                    <span
+                      className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200"
+                      style={{ transform: addForm.active ? 'translateX(16px)' : 'translateX(0)' }}
+                    />
+                  </button>
+                  <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
+                    {addForm.active ? 'Active (visible in registration form)' : 'Inactive (hidden)'}
+                  </span>
+                </label>
+              </div>
+            </div>
+
             {addError && <p className="text-xs mt-3" style={{ color: '#dc2626' }}>{addError}</p>}
             <div className="flex items-center gap-2 mt-4">
               <button
@@ -410,7 +372,7 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
                 <div className="text-left">
                   <p className="text-xs font-bold uppercase tracking-widest" style={{ color: '#E67E22' }}>Feedback QR</p>
                   <p className="text-sm font-bold mt-0.5 leading-tight" style={{ color: '#1E3560' }}>
-                    {qrDate?.workshop ?? 'Workshop'}
+                    {qrDate?.offering?.title ?? 'Workshop'}
                   </p>
                 </div>
                 <button
@@ -483,13 +445,14 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
       <div className="p-4 flex flex-col gap-3">
         {dates.filter(d => !isPast(d.date)).length === 0 && (
           <p className="text-center py-10 text-sm" style={{ color: 'rgba(43,48,58,0.38)' }}>
-            No upcoming offerings — add one above.
+            No upcoming dates — add one above.
           </p>
         )}
 
         {dates.filter(d => !isPast(d.date)).map(d => {
           const regCount  = registeredCount(d._id, registrations)
           const wlCount   = waitlistCount(d._id, waitlist)
+          const cap       = d.offering?.capacity ?? 0
           const past      = isPast(d.date)
           const inactive  = !d.active || past
           const isBusy    = busyIds.has(d._id)
@@ -502,20 +465,51 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
                 className="rounded-xl p-4"
                 style={{ backgroundColor: '#F4F7F9', border: '1.5px solid rgba(30,53,96,0.1)' }}
               >
-                <p className="text-[11px] font-bold uppercase tracking-widest mb-3" style={{ color: 'rgba(30,53,96,0.45)' }}>
+                <p className="text-[11px] font-bold uppercase tracking-widest mb-1" style={{ color: 'rgba(30,53,96,0.45)' }}>
                   Editing Date
                 </p>
+                <p className="text-sm font-semibold mb-3" style={{ color: '#1E3560' }}>
+                  {d.offering?.title ?? 'Workshop Date'}
+                </p>
                 <form onSubmit={saveEdit} noValidate>
-                  <FormFields
-                    workshop={editForm.workshop}
-                    date={editForm.date}
-                    capacity={editForm.capacity}
-                    category={editForm.category}
-                    onChange={(field, val) => setEditForm(f => ({ ...f, [field]: val }))}
-                    showActiveToggle
-                    active={editForm.active}
-                    onActiveChange={v => setEditForm(f => ({ ...f, active: v }))}
-                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {/* Date + time */}
+                    <div>
+                      <label className={labelCls} style={labelStyle}>
+                        Date &amp; Time <span className="normal-case font-normal">(Mountain Time)</span>
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={editForm.date}
+                        onChange={e => setEditForm(f => ({ ...f, date: e.target.value }))}
+                        className={inputCls + ' cursor-pointer'}
+                        style={inputStyle}
+                      />
+                    </div>
+
+                    {/* Active toggle */}
+                    <div className="flex items-end pb-2">
+                      <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={editForm.active}
+                          onClick={() => setEditForm(f => ({ ...f, active: !f.active }))}
+                          className="relative inline-flex h-5 w-9 rounded-full transition-colors duration-200 shrink-0"
+                          style={{ backgroundColor: editForm.active ? '#22c55e' : 'rgba(43,48,58,0.2)' }}
+                        >
+                          <span
+                            className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200"
+                            style={{ transform: editForm.active ? 'translateX(16px)' : 'translateX(0)' }}
+                          />
+                        </button>
+                        <span className="text-sm font-medium" style={{ color: '#1E3560' }}>
+                          {editForm.active ? 'Active — visible in registration form' : 'Inactive — hidden from registration form'}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
                   {editError && <p className="text-xs mt-3" style={{ color: '#dc2626' }}>{editError}</p>}
                   <div className="flex items-center gap-2 mt-4">
                     <button
@@ -537,20 +531,7 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
                     <button
                       type="button"
                       disabled={editBusy}
-                      onClick={async () => {
-                        if (!confirm('Are you sure you want to delete this date? This cannot be undone.')) return
-                        setBusy(d._id, true)
-                        try {
-                          const res = await fetch(`/api/admin/workshop-dates/${d._id}`, { method: 'DELETE' })
-                          if (!res.ok) throw new Error()
-                          setDates(prev => prev.filter(x => x._id !== d._id))
-                          setEditingId(null)
-                        } catch {
-                          setEditError('Failed to delete. Please try again.')
-                        } finally {
-                          setBusy(d._id, false)
-                        }
-                      }}
+                      onClick={() => deleteDate(d._id)}
                       className="ml-auto rounded-lg px-4 py-2 text-xs font-bold text-white disabled:opacity-50 transition-colors duration-150 hover:bg-red-700"
                       style={{ backgroundColor: '#dc2626' }}
                     >
@@ -578,7 +559,7 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
               <div className="flex-1 min-w-0">
                 {/* Workshop name */}
                 <p className="text-sm font-bold leading-snug mb-1" style={{ color: '#1E3560' }}>
-                  {d.workshop}
+                  {d.offering?.title ?? '—'}
                 </p>
 
                 {/* Date + time */}
@@ -586,30 +567,46 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
                   {fmtDate(d.date)} · {fmtTime(d.date)}
                 </p>
 
-                {/* Capacity + registration count + status */}
+                {/* Badges */}
                 <div className="flex flex-wrap items-center gap-2">
                   {/* Category badge */}
-                  <span
-                    className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: `${CATEGORY_COLOUR[d.category ?? 'workshop']}18`,
-                      color: CATEGORY_COLOUR[d.category ?? 'workshop'],
-                    }}
-                  >
-                    {CATEGORY_LABEL[d.category ?? 'workshop']}
-                  </span>
+                  {d.offering?.category && (
+                    <span
+                      className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor: `${CATEGORY_COLOUR[d.offering.category] ?? '#888'}18`,
+                        color: CATEGORY_COLOUR[d.offering.category] ?? '#888',
+                      }}
+                    >
+                      {CATEGORY_LABEL[d.offering.category] ?? d.offering.category}
+                    </span>
+                  )}
 
-                  <span
-                    className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{
-                      backgroundColor: regCount >= d.capacity
-                        ? 'rgba(230,126,34,0.1)' : 'rgba(30,53,96,0.07)',
-                      color: regCount >= d.capacity ? '#E67E22' : 'rgba(43,48,58,0.55)',
-                    }}
-                  >
-                    {regCount}/{d.capacity} registered
-                  </span>
+                  {/* Virtual badge */}
+                  {d.offering?.hasVirtualOption && (
+                    <span
+                      className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: 'rgba(55,138,221,0.12)', color: '#378ADD' }}
+                    >
+                      + Virtual
+                    </span>
+                  )}
 
+                  {/* Capacity */}
+                  {cap > 0 && (
+                    <span
+                      className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
+                      style={{
+                        backgroundColor: regCount >= cap
+                          ? 'rgba(230,126,34,0.1)' : 'rgba(30,53,96,0.07)',
+                        color: regCount >= cap ? '#E67E22' : 'rgba(43,48,58,0.55)',
+                      }}
+                    >
+                      {regCount}/{cap} registered
+                    </span>
+                  )}
+
+                  {/* Waitlist */}
                   {wlCount > 0 && (
                     <span
                       className="text-[11px] font-semibold px-2 py-0.5 rounded-full"
@@ -621,35 +618,15 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
 
                   {/* Status badge */}
                   {past ? (
-                    <span
-                      className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: 'rgba(43,48,58,0.07)', color: 'rgba(43,48,58,0.45)' }}
-                    >
-                      Past
-                    </span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(43,48,58,0.07)', color: 'rgba(43,48,58,0.45)' }}>Past</span>
                   ) : d.active ? (
-                    <span
-                      className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#16a34a' }}
-                    >
-                      Active
-                    </span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(34,197,94,0.1)', color: '#16a34a' }}>Active</span>
                   ) : (
-                    <span
-                      className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: 'rgba(43,48,58,0.07)', color: 'rgba(43,48,58,0.45)' }}
-                    >
-                      Inactive
-                    </span>
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(43,48,58,0.07)', color: 'rgba(43,48,58,0.45)' }}>Inactive</span>
                   )}
 
-                  {regCount >= d.capacity && d.active && !past && (
-                    <span
-                      className="text-[11px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: 'rgba(230,126,34,0.1)', color: '#E67E22' }}
-                    >
-                      Full
-                    </span>
+                  {cap > 0 && regCount >= cap && d.active && !past && (
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'rgba(230,126,34,0.1)', color: '#E67E22' }}>Full</span>
                   )}
                 </div>
               </div>
@@ -673,16 +650,6 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
                 >
                   Edit
                 </button>
-                {d.active && !past && (
-                  <button
-                    onClick={() => deactivate(d._id)}
-                    disabled={isBusy}
-                    className="rounded-lg px-3 py-1.5 text-xs font-semibold border transition-colors duration-150 hover:border-[#dc2626]/40 hover:text-[#dc2626] disabled:opacity-40"
-                    style={{ borderColor: 'rgba(30,53,96,0.15)', color: 'rgba(43,48,58,0.5)' }}
-                  >
-                    Deactivate
-                  </button>
-                )}
               </div>
             </div>
           )

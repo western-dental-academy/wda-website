@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     for (const [workshopDateId, dateItems] of dateGroups) {
       const [dateDoc, registeredCount] = await Promise.all([
         client.fetch<{ capacity: number } | null>(
-          `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ capacity }`,
+          `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ "capacity": offering->capacity }`,
         ),
         client.fetch<number>(
           `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,

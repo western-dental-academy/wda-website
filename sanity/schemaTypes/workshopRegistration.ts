@@ -40,7 +40,7 @@ export default defineType({
       options: {
         list: [
           { title: 'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer', value: 'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer' },
-          { title: 'Ergonomics in Dentistry: Hands and Spine', value: 'Ergonomics in Dentistry: Hands and Spine' },
+          { title: 'Ergonomics in Dentistry: Hands, Feet and Spine', value: 'Ergonomics in Dentistry: Hands, Feet and Spine' },
           { title: 'Ergonomics in Dentistry: Hips and Hamstrings', value: 'Ergonomics in Dentistry: Hips and Hamstrings' },
           { title: 'Ergonomics in Dentistry: Neck and Shoulders', value: 'Ergonomics in Dentistry: Neck and Shoulders' },
           { title: 'National Board Guided Practice Workshop', value: 'National Board Guided Practice Workshop' },

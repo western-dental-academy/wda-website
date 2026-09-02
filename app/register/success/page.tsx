@@ -304,7 +304,7 @@ export default async function SuccessPage({
           const primary = registrations[0];
           if (registrations.length > 1 || !isLegacy) {
             const basePrices: Record<string, number> = {
-              "Ergonomics in Dentistry: Hands and Spine": 40,
+              "Ergonomics in Dentistry: Hands, Feet and Spine": 40,
               "Ergonomics in Dentistry: Hips and Hamstrings": 40,
               "Ergonomics in Dentistry: Neck and Shoulders": 40,
               "National Board Guided Practice Workshop": 600,

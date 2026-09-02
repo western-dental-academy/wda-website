@@ -3,7 +3,7 @@ import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
 
 const WORKSHOP_PRICES: Record<string, number> = {
-  'Ergonomics in Dentistry: Hands and Spine': 40,
+  'Ergonomics in Dentistry: Hands, Feet and Spine': 40,
   'Ergonomics in Dentistry: Hips and Hamstrings': 40,
   'Ergonomics in Dentistry: Neck and Shoulders': 40,
   'National Board Guided Practice Workshop': 600,

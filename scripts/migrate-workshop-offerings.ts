@@ -37,7 +37,7 @@ const OFFERING_METADATA: Record<string, { hours?: number; cadaCppCodes?: string[
     hours: 1.5,
     cadaCppCodes: ['B-4-2', 'I-5-3', 'I-5-4'],
   },
-  'Ergonomics in Dentistry: Hands and Spine': {
+  'Ergonomics in Dentistry: Hands, Feet and Spine': {
     hours: 1.5,
     cadaCppCodes: ['B-4-2', 'I-5-3', 'I-5-4'],
   },

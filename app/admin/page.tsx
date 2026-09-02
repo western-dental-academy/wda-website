@@ -97,7 +97,12 @@ export default async function AdminPage() {
       `*[_type == "program"] | order(title asc){ _id, title }`
     ),
     client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){ _id, date, active, offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price } }`
+      `*[_type == "workshopDate"] | order(date asc){
+        _id, date, active,
+        offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price },
+        "zoomLink": offering->zoomLink,
+        "virtualRegistrantCount": count(*[_type == "workshopRegistration" && workshopDateId == ^._id && deliveryMethod == "virtual"])
+      }`
     ),
     client.fetch(
       `*[_type == "workshopRegistration"] | order(registeredAt desc){

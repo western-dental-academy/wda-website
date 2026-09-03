@@ -68,12 +68,6 @@ const WORKSHOP_OPTIONS = Object.keys(WORKSHOP_PRICES).map(label => ({
   price: WORKSHOP_PRICES[label],
 }));
 
-const CATEGORIES = [
-  { value: "workshop",        label: "Workshops",         emoji: "🎓" },
-  { value: "course",          label: "Courses",           emoji: "📚" },
-  { value: "guest-speaker",   label: "Guest Speakers",    emoji: "🎤" },
-  { value: "board-exam-prep", label: "Practical Exam Prep", emoji: "📋" },
-] as const;
 
 const PRONOUNS_OPTIONS = [
   "She/Her", "He/Him", "They/Them", "She/They", "He/They",
@@ -322,20 +316,13 @@ export default function WorkshopRegisterForm() {
   // ── Derived workshop/date values ────────────────────────────────────────────
 
   const workshopsForCategory = selectedCategory
-    ? selectedCategory === "board-exam-prep"
-      ? WORKSHOP_OPTIONS.filter(opt =>
-          opt.label === "National Board Guided Practice Workshop" &&
-          workshopDates.some(d => d.workshop === opt.label)
-        )
-      : WORKSHOP_OPTIONS.filter(opt =>
-          workshopDates.some(d => d.category === selectedCategory && d.workshop === opt.label)
-        )
+    ? WORKSHOP_OPTIONS.filter(opt =>
+        workshopDates.some(d => d.category === selectedCategory && d.workshop === opt.label)
+      )
     : [];
 
   const availableDates = workshopDates.filter(
-    selectedCategory === "board-exam-prep"
-      ? (d) => d.workshop === form.workshop
-      : (d) => d.workshop === form.workshop && d.category === selectedCategory
+    (d) => d.workshop === form.workshop && d.category === selectedCategory
   );
 
   const hasDates = availableDates.length > 0;
@@ -677,34 +664,30 @@ export default function WorkshopRegisterForm() {
                 {categoryError && (
                   <p className="text-xs font-medium mb-3" style={{ color: "#dc2626" }} role="alert">{categoryError}</p>
                 )}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {CATEGORIES.map(cat => {
-                    const sel = selectedCategory === cat.value;
-                    return (
-                      <button
-                        key={cat.value} type="button"
-                        onClick={() => {
-                          if (selectedCategory !== cat.value) {
-                            setSelectedCategory(cat.value);
-                            setField("workshop", "");
-                            setField("workshopDateId", "");
-                            setCategoryError("");
-                            setErrors(e => ({ ...e, workshop: undefined as unknown as string, workshopDateId: undefined as unknown as string }));
-                            setCapacityError("");
-                            setWaitlistMode(false);
-                          }
-                        }}
-                        className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl text-center transition-all duration-200"
-                        style={{
-                          backgroundColor: sel ? "rgba(30,53,96,0.06)" : "#ffffff",
-                          border: `2px solid ${sel ? "#1E3560" : "rgba(30,53,96,0.12)"}`,
-                        }}
-                      >
-                        <span className="text-2xl" aria-hidden>{cat.emoji}</span>
-                        <span className="text-xs font-bold leading-tight" style={{ color: sel ? "#1E3560" : "rgba(30,53,96,0.45)" }}>{cat.label}</span>
-                      </button>
-                    );
-                  })}
+                <div className="relative">
+                  <select
+                    id="reg-category"
+                    value={selectedCategory}
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (selectedCategory !== val) {
+                        setSelectedCategory(val);
+                        setField("workshop", "");
+                        setField("workshopDateId", "");
+                        setCategoryError("");
+                        setErrors(prev => ({ ...prev, workshop: undefined as unknown as string, workshopDateId: undefined as unknown as string }));
+                        setCapacityError("");
+                        setWaitlistMode(false);
+                      }
+                    }}
+                    className="wda-input pr-10 cursor-pointer"
+                  >
+                    <option value="">Select a category</option>
+                    <option value="workshop">Workshops</option>
+                    <option value="guest-speaker">Guest Speakers</option>
+                    <option value="course">Courses</option>
+                  </select>
+                  <Chevron />
                 </div>
               </div>
 

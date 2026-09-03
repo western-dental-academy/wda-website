@@ -117,12 +117,12 @@ function WorkshopOfferingCard({
     priceDisplay = `$${offering.price} CAD`;
   }
 
-  const durationDisplay = offering.hours != null ? `${offering.hours} CADA CPP Hours` : null;
+  const durationDisplay = offering.hours != null ? `${offering.hours} CADA CCP Hours` : null;
 
   const cadaNote =
     staticContent?.cadaNote ??
     (offering.cadaCppCodes && offering.cadaCppCodes.length > 0
-      ? `Meets CADA Competency Profile #s ${offering.cadaCppCodes.join(", ")}. Provides a certificate of attendance to support your annual CCP submission.`
+      ? `Meets various competencies for the CCP`
       : null);
 
   return (
@@ -400,10 +400,7 @@ function ErgonomicsGroupCard({
             }}
           >
             <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
-            <span style={{ color: "#2B303A" }}>
-              Meets CADA Competency Profile #s B-4-2, I-5-3, or I-5-4. Provides a certificate of
-              attendance to support your annual CCP submission.
-            </span>
+            <span style={{ color: "#2B303A" }}>Meets various competencies for the CCP</span>
           </div>
 
           {hasUpcoming ? (

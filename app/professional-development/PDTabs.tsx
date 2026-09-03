@@ -447,8 +447,14 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
   const ergonomicsOfferings = offerings.filter((o) =>
     o.title.startsWith("Ergonomics in Dentistry")
   );
-  const otherOfferings = offerings.filter(
-    (o) => !o.title.startsWith("Ergonomics in Dentistry")
+  const workshopOfferings = offerings.filter(
+    (o) => o.category === "workshop" && !o.title.startsWith("Ergonomics in Dentistry")
+  );
+  const guestSpeakerOfferings = offerings.filter(
+    (o) => o.category === "guest-speaker"
+  );
+  const courseOfferings = offerings.filter(
+    (o) => o.category === "course"
   );
 
   return (
@@ -496,7 +502,7 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
             {ergonomicsOfferings.length > 0 && (
               <ErgonomicsGroupCard offerings={ergonomicsOfferings} index={0} />
             )}
-            {otherOfferings.map((o, i) => (
+            {workshopOfferings.map((o, i) => (
               <WorkshopOfferingCard
                 key={o._id}
                 offering={o}
@@ -508,52 +514,96 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
 
         {/* Guest Speakers */}
         <div className={activeTab === "guest-speakers" ? undefined : "hidden"}>
-          <div className="max-w-2xl mx-auto text-center py-16">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-              style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
+          {guestSpeakerOfferings.length > 0 ? (
+            <>
+              <div className="mb-12">
+                <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+                  Guest Speaker Events
+                </p>
+                <h2
+                  className="text-3xl font-bold leading-tight"
+                  style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                >
+                  Learn From Industry Experts
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {guestSpeakerOfferings.map((o, i) => (
+                  <WorkshopOfferingCard key={o._id} offering={o} index={i} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="max-w-2xl mx-auto text-center py-16">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
+                style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-8 h-8">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+              <h2
+                className="text-2xl font-bold mb-4"
+                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Guest Speaker Events
+              </h2>
+              <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+                Guest speaker opportunities coming soon. Sign up to be notified when guest speaker events are announced.
+              </p>
+              <div className="flex justify-center">
+                <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when guest speaker events are announced." />
+              </div>
             </div>
-            <h2
-              className="text-2xl font-bold mb-4"
-              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-            >
-              Guest Speaker Events
-            </h2>
-            <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
-              Guest speaker opportunities coming soon. Sign up to be notified when guest speaker events are announced.
-            </p>
-            <div className="flex justify-center">
-              <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when guest speaker events are announced." />
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Courses */}
         <div className={activeTab === "courses" ? undefined : "hidden"}>
-          <div className="mb-12">
-            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-              Coming Soon
-            </p>
-            <h2
-              className="text-3xl font-bold leading-tight"
-              style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-            >
-              Courses
-            </h2>
-            <p className="mt-4 text-base leading-relaxed" style={{ color: "#2B303A" }}>
-              Courses are coming soon.
-            </p>
-          </div>
-          <div className="pt-10 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
-            <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
-              Sign up to be notified when new courses are available.
-            </p>
-            <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when new courses are available." />
-          </div>
+          {courseOfferings.length > 0 ? (
+            <>
+              <div className="mb-12">
+                <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+                  Available Courses
+                </p>
+                <h2
+                  className="text-3xl font-bold leading-tight"
+                  style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                >
+                  Courses
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {courseOfferings.map((o, i) => (
+                  <WorkshopOfferingCard key={o._id} offering={o} index={i} />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="mb-12">
+                <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+                  Coming Soon
+                </p>
+                <h2
+                  className="text-3xl font-bold leading-tight"
+                  style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                >
+                  Courses
+                </h2>
+                <p className="mt-4 text-base leading-relaxed" style={{ color: "#2B303A" }}>
+                  Courses are coming soon.
+                </p>
+              </div>
+              <div className="pt-10 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+                <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
+                  Sign up to be notified when new courses are available.
+                </p>
+                <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when new courses are available." />
+              </div>
+            </>
+          )}
         </div>
 
         {/* Practical Exam Prep */}

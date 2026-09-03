@@ -101,6 +101,7 @@ export default async function AdminPage() {
         _id, date, active,
         offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price },
         "teamsLink": offering->teamsLink,
+        "teamsWebinarId": offering->teamsWebinarId,
         "virtualRegistrantCount": count(*[_type == "workshopRegistration" && workshopDateId == ^._id && deliveryMethod == "virtual"])
       }`
     ),

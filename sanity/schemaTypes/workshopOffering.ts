@@ -70,6 +70,12 @@ export default defineType({
       description: 'Microsoft Teams meeting URL sent to virtual registrants. Leave blank to send a placeholder.',
     }),
     defineField({
+      name: 'teamsWebinarId',
+      title: 'Teams Webinar ID',
+      type: 'string',
+      description: 'The Teams webinar ID from the event share link. Used to auto-register virtual attendees.',
+    }),
+    defineField({
       name: 'includesFood',
       title: 'Includes Food (Beverages/Snacks/Lunch)',
       type: 'boolean',

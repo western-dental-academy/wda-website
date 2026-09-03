@@ -164,6 +164,12 @@ export default defineType({
       description: 'How the registrant will attend',
     }),
     defineField({
+      name: 'teamsRegistrationId',
+      title: 'Teams Webinar Registration ID',
+      type: 'string',
+      description: 'The registration ID returned by Microsoft Graph after auto-registering the attendee',
+    }),
+    defineField({
       name: 'checkedIn',
       title: 'Checked In',
       type: 'boolean',

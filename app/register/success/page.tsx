@@ -3,6 +3,7 @@ import Link from "next/link";
 import { stripe } from "@/lib/stripe/client";
 import { createClient } from "@sanity/client";
 import { Resend } from "resend";
+import { registerTeamsWebinarAttendee } from "@/lib/microsoft-graph";
 
 export const metadata: Metadata = {
   title: "Registration Confirmed",
@@ -270,10 +271,11 @@ export default async function SuccessPage({
           )];
           const dateMap: Record<string, string> = {};
           const teamsMap: Record<string, string | null> = {};
+          const teamsWebinarIdMap: Record<string, string | null> = {};
           const virtualPriceMap: Record<string, number | null> = {};
           if (dateIds.length > 0) {
-            const dateResults = await sanity.fetch<{ _id: string; date: string; teamsLink?: string; virtualPrice?: number }[]>(
-              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsLink": offering->teamsLink, "virtualPrice": offering->virtualPrice }`,
+            const dateResults = await sanity.fetch<{ _id: string; date: string; teamsLink?: string; teamsWebinarId?: string; virtualPrice?: number }[]>(
+              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsLink": offering->teamsLink, "teamsWebinarId": offering->teamsWebinarId, "virtualPrice": offering->virtualPrice }`,
             );
             for (const d of dateResults) {
               dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
@@ -282,6 +284,7 @@ export default async function SuccessPage({
                 hour: "numeric", minute: "2-digit", timeZoneName: "short",
               });
               teamsMap[d._id] = d.teamsLink ?? null;
+              teamsWebinarIdMap[d._id] = d.teamsWebinarId ?? null;
               virtualPriceMap[d._id] = d.virtualPrice ?? null;
             }
           }
@@ -299,6 +302,27 @@ export default async function SuccessPage({
               });
             })
           );
+
+          // Auto-register virtual attendees in Teams webinar
+          const virtualRegistrants = registrations.filter(
+            r => r.deliveryMethod === 'virtual' && r.workshopDateId && teamsWebinarIdMap[r.workshopDateId]
+          );
+          if (virtualRegistrants.length > 0) {
+            await Promise.all(
+              virtualRegistrants.map(async r => {
+                const webinarId = teamsWebinarIdMap[r.workshopDateId!]!;
+                const result = await registerTeamsWebinarAttendee({
+                  webinarId,
+                  firstName: r.firstName,
+                  lastName: r.lastName,
+                  email: r.email,
+                });
+                if (result.success && result.registrationId) {
+                  await sanity.patch(r._id).set({ teamsRegistrationId: result.registrationId }).commit();
+                }
+              })
+            );
+          }
 
           // Send receipt to primary registrant (first in list)
           const primary = registrations[0];

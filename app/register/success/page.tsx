@@ -65,17 +65,14 @@ function confirmationEmailHtml(
   workshop: string,
   formattedDate: string,
   deliveryMethod?: string,
-  teamsLink?: string,
 ): string {
   const isVirtual = deliveryMethod === 'virtual';
 
   const virtualSection = isVirtual
     ? `<div style="background-color:#EFF6FF;border-radius:8px;padding:16px;margin:16px 0;border-left:4px solid #378ADD;">
-        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 6px;">Virtual Attendance — Teams Meeting Link</p>
-        ${teamsLink
-          ? `<p style="font-size:14px;margin:0;"><a href="${teamsLink}" style="color:#378ADD;">${teamsLink}</a></p>`
-          : `<p style="color:#374151;font-size:14px;margin:0;">Your Teams meeting link will be sent to you by our team prior to the event. If you have not received it 24 hours before, please contact us.</p>`
-        }
+        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 10px;">How to Join Virtually</p>
+        <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 10px;">You will receive a unique Microsoft Teams join link directly from Microsoft to this email address. Please check your inbox (and spam folder) for an email from Microsoft containing your personal join link.</p>
+        <p style="color:#374151;font-size:14px;line-height:1.6;margin:0;">If you do not receive your Teams link within 24 hours, please contact us at <a href="mailto:info@westerndentalacademy.com" style="color:#378ADD;">info@westerndentalacademy.com</a> and we will assist you.</p>
       </div>`
     : '';
 
@@ -270,12 +267,11 @@ export default async function SuccessPage({
             registrations.map(r => r.workshopDateId).filter(Boolean) as string[]
           )];
           const dateMap: Record<string, string> = {};
-          const teamsMap: Record<string, string | null> = {};
           const teamsWebinarIdMap: Record<string, string | null> = {};
           const virtualPriceMap: Record<string, number | null> = {};
           if (dateIds.length > 0) {
-            const dateResults = await sanity.fetch<{ _id: string; date: string; teamsLink?: string; teamsWebinarId?: string; virtualPrice?: number }[]>(
-              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsLink": offering->teamsLink, "teamsWebinarId": offering->teamsWebinarId, "virtualPrice": offering->virtualPrice }`,
+            const dateResults = await sanity.fetch<{ _id: string; date: string; teamsWebinarId?: string; virtualPrice?: number }[]>(
+              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsWebinarId": offering->teamsWebinarId, "virtualPrice": offering->virtualPrice }`,
             );
             for (const d of dateResults) {
               dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
@@ -283,7 +279,6 @@ export default async function SuccessPage({
                 weekday: "long", year: "numeric", month: "long", day: "numeric",
                 hour: "numeric", minute: "2-digit", timeZoneName: "short",
               });
-              teamsMap[d._id] = d.teamsLink ?? null;
               teamsWebinarIdMap[d._id] = d.teamsWebinarId ?? null;
               virtualPriceMap[d._id] = d.virtualPrice ?? null;
             }
@@ -293,12 +288,11 @@ export default async function SuccessPage({
           await Promise.all(
             registrations.map(r => {
               const formattedDate = r.workshopDateId ? dateMap[r.workshopDateId] ?? "" : "";
-              const teamsLink = r.workshopDateId ? teamsMap[r.workshopDateId] ?? undefined : undefined;
               return resend.emails.send({
                 from: "Western Dental Academy <info@westerndentalacademy.com>",
                 to: r.email,
                 subject: `Registration Confirmed — ${r.workshop}`,
-                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod, teamsLink),
+                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod),
               });
             })
           );

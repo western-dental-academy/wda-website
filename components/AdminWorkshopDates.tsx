@@ -20,7 +20,6 @@ export interface WorkshopDateItem {
   date: string
   active: boolean
   offering: WorkshopOffering | null
-  teamsLink?: string
   virtualRegistrantCount?: number
 }
 
@@ -121,14 +120,6 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
   const [busyIds,    setBusyIds]    = useState<Set<string>>(new Set())
   const [qrModalId,  setQrModalId]  = useState<string | null>(null)
   const [copied,     setCopied]     = useState(false)
-
-  // Teams link modal state
-  const [teamsModal,   setTeamsModal]   = useState<{
-    dateId: string; workshopName: string; dateStr: string; count: number
-  } | null>(null)
-  const [teamsSending, setTeamsSending] = useState(false)
-  const [teamsSuccess, setTeamsSuccess] = useState<number | null>(null)
-  const [teamsError,   setTeamsError]   = useState('')
 
   const [addForm,    setAddForm]    = useState(BLANK_ADD)
   const [addBusy,    setAddBusy]    = useState(false)
@@ -239,26 +230,6 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
       alert('Failed to delete date. Please try again.')
     } finally {
       setBusy(id, false)
-    }
-  }
-
-  async function sendTeamsLink(dateId: string) {
-    setTeamsSending(true)
-    setTeamsError('')
-    setTeamsSuccess(null)
-    try {
-      const res = await fetch('/api/admin/send-teams-link', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workshopDateId: dateId }),
-      })
-      const data = await res.json() as { sent?: number; error?: string }
-      if (!res.ok) throw new Error(data.error ?? 'Failed to send Teams link')
-      setTeamsSuccess(data.sent ?? 0)
-    } catch (err: unknown) {
-      setTeamsError(err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setTeamsSending(false)
     }
   }
 
@@ -471,110 +442,6 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
         )
       })()}
 
-      {/* ── Teams link modal ── */}
-      {teamsModal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
-          style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
-          onClick={() => { if (!teamsSending) { setTeamsModal(null); setTeamsSuccess(null); setTeamsError('') } }}
-        >
-          <div
-            className="bg-white rounded-2xl p-7 max-w-sm w-full shadow-2xl"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest mb-0.5" style={{ color: '#378ADD' }}>Send Teams Link</p>
-                <p className="text-sm font-bold leading-snug" style={{ color: '#0D3B6E' }}>{teamsModal.workshopName}</p>
-              </div>
-              {!teamsSending && (
-                <button
-                  onClick={() => { setTeamsModal(null); setTeamsSuccess(null); setTeamsError('') }}
-                  className="rounded-full p-1 transition-colors hover:bg-gray-100"
-                  style={{ color: 'rgba(43,48,58,0.4)' }}
-                  aria-label="Close"
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {teamsSuccess !== null ? (
-              <div className="text-center py-4">
-                <div
-                  className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
-                  style={{ backgroundColor: 'rgba(34,197,94,0.1)' }}
-                >
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <p className="text-sm font-bold mb-1" style={{ color: '#15803d' }}>Teams link sent!</p>
-                <p className="text-sm" style={{ color: 'rgba(43,48,58,0.6)' }}>
-                  Emailed to {teamsSuccess} virtual {teamsSuccess === 1 ? 'registrant' : 'registrants'}.
-                </p>
-                <button
-                  onClick={() => { setTeamsModal(null); setTeamsSuccess(null); setTeamsError('') }}
-                  className="mt-5 rounded-lg px-5 py-2 text-xs font-bold text-white"
-                  style={{ backgroundColor: '#0D3B6E' }}
-                >
-                  Done
-                </button>
-              </div>
-            ) : (
-              <>
-                <p className="text-sm mb-5" style={{ color: 'rgba(43,48,58,0.7)' }}>
-                  Send Teams meeting link to all virtual registrants of{' '}
-                  <strong style={{ color: '#0D3B6E' }}>{teamsModal.workshopName}</strong>{' '}
-                  on {teamsModal.dateStr}?{' '}
-                  This will email{' '}
-                  <strong style={{ color: '#0D3B6E' }}>{teamsModal.count} virtual {teamsModal.count === 1 ? 'registrant' : 'registrants'}</strong>.
-                </p>
-
-                {teamsError && (
-                  <p className="mb-4 text-xs rounded-lg px-3 py-2" style={{ backgroundColor: 'rgba(220,38,38,0.07)', color: '#dc2626', border: '1px solid rgba(220,38,38,0.2)' }}>
-                    {teamsError}
-                  </p>
-                )}
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => sendTeamsLink(teamsModal.dateId)}
-                    disabled={teamsSending}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-bold text-white transition-colors duration-150 disabled:opacity-60"
-                    style={{ backgroundColor: '#378ADD' }}
-                  >
-                    {teamsSending ? (
-                      <>
-                        <span className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white shrink-0" style={{ animation: 'spin 0.75s linear infinite' }} aria-hidden />
-                        Sending…
-                      </>
-                    ) : (
-                      <>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 shrink-0" aria-hidden>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                        Send Teams Link
-                      </>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => { setTeamsModal(null); setTeamsError('') }}
-                    disabled={teamsSending}
-                    className="rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors duration-150 hover:bg-gray-50 disabled:opacity-40"
-                    style={{ color: 'rgba(30,53,96,0.55)', border: '1.5px solid rgba(30,53,96,0.12)' }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* ── Date list ── */}
       <div className="p-4 flex flex-col gap-3">
         {dates.filter(d => !isPast(d.date)).length === 0 && (
@@ -767,25 +634,6 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
 
               {/* Right: actions */}
               <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-                {d.teamsLink && d.offering?.hasVirtualOption && (
-                  <button
-                    onClick={() => setTeamsModal({
-                      dateId: d._id,
-                      workshopName: d.offering?.title ?? '',
-                      dateStr: fmtDate(d.date) + ' · ' + fmtTime(d.date),
-                      count: d.virtualRegistrantCount ?? 0,
-                    })}
-                    disabled={isBusy}
-                    title="Send Teams meeting link to virtual registrants"
-                    className="rounded-lg px-3 py-1.5 text-xs font-semibold border transition-colors duration-150 hover:border-[#378ADD] disabled:opacity-40 flex items-center gap-1"
-                    style={{ borderColor: '#378ADD', color: '#378ADD' }}
-                  >
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3.5 h-3.5 shrink-0" aria-hidden>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-                    </svg>
-                    Teams
-                  </button>
-                )}
                 <button
                   onClick={() => { setQrModalId(d._id); setCopied(false) }}
                   disabled={isBusy}

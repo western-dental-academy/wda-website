@@ -64,12 +64,6 @@ export default defineType({
       of: [{ type: 'string' }],
     }),
     defineField({
-      name: 'teamsLink',
-      title: 'Teams Meeting Link',
-      type: 'string',
-      description: 'Microsoft Teams meeting URL sent to virtual registrants. Leave blank to send a placeholder.',
-    }),
-    defineField({
       name: 'teamsWebinarId',
       title: 'Teams Webinar ID',
       type: 'string',

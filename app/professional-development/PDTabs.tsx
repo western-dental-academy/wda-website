@@ -30,8 +30,12 @@ interface WorkshopOffering {
 // ─── Per-offering static content not stored in Sanity ─────────────────────────
 
 interface OfferingStaticContent {
+  displayTitle?: string;
+  durationOverride?: string;
   highlights: string[];
   tags: string[];
+  foodNote?: string;
+  agendaNote?: string;
   whatToBring?: string;
   idealFor?: string;
   cadaNote?: string;
@@ -39,6 +43,8 @@ interface OfferingStaticContent {
 
 const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
   "Renewal Wellness": {
+    displayTitle: "Renewal Wellness Guest Speaker Event",
+    durationOverride: "All Day Event",
     highlights: [
       "Registration Renewal Unraveled — Jolene Moore",
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
@@ -46,7 +52,9 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
       "Financial Health for the DHCP — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
-    tags: ["Full Day", "In-Person & Virtual", "CADA CPP Support", "Certificate of Attendance"],
+    tags: ["Full Day", "In-Person & Virtual", "Supports CADA CCP", "Certificate of Attendance"],
+    foodNote: "In-person session includes Lunch, Snacks and Refreshments",
+    agendaNote: "Day's agenda will be sent with your email confirmation.",
   },
 };
 
@@ -117,7 +125,7 @@ function WorkshopOfferingCard({
     priceDisplay = `$${offering.price} CAD`;
   }
 
-  const durationDisplay = offering.hours != null ? `${offering.hours} CADA CCP Hours` : null;
+  const durationDisplay = staticContent?.durationOverride ?? (offering.hours != null ? `${offering.hours} CADA CCP Hours` : null);
 
   const cadaNote =
     staticContent?.cadaNote ??
@@ -142,7 +150,7 @@ function WorkshopOfferingCard({
             className="text-xl font-bold mb-3 leading-snug"
             style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            {offering.title}
+            {staticContent?.displayTitle ?? offering.title}
           </h2>
 
           {(priceDisplay || durationDisplay) && (
@@ -164,8 +172,13 @@ function WorkshopOfferingCard({
           )}
 
           {offering.description && (
-            <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+            <p className="text-sm leading-relaxed mb-3" style={{ color: "#2B303A" }}>
               {offering.description}
+            </p>
+          )}
+          {staticContent?.foodNote && (
+            <p className="text-xs leading-relaxed mb-6" style={{ color: "#E67E22", fontStyle: "italic" }}>
+              {staticContent.foodNote}
             </p>
           )}
 
@@ -187,7 +200,7 @@ function WorkshopOfferingCard({
           <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
 
           {staticContent?.tags && staticContent.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-6">
+            <div className="flex flex-wrap gap-2 mb-3">
               {staticContent.tags.map((tag) => (
                 <span
                   key={tag}
@@ -198,6 +211,11 @@ function WorkshopOfferingCard({
                 </span>
               ))}
             </div>
+          )}
+          {staticContent?.agendaNote && (
+            <p className="text-xs mb-5 leading-relaxed" style={{ color: "rgba(43,48,58,0.5)", fontStyle: "italic" }}>
+              {staticContent.agendaNote}
+            </p>
           )}
 
           {(staticContent?.whatToBring || staticContent?.idealFor) && (

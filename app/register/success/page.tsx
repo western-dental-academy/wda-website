@@ -91,7 +91,50 @@ function confirmationEmailHtml(
         ${formattedDate ? `<p style="color:#374151;font-size:14px;margin:0 0 4px;">${formattedDate}</p>` : ""}
         ${isVirtual ? `<p style="font-size:13px;font-weight:600;margin:0 0 16px;"><span style="background-color:#EFF6FF;color:#378ADD;padding:2px 8px;border-radius:4px;">Virtual</span></p>` : `<p style="margin:0 0 16px;"></p>`}
         ${virtualSection}
-        <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
+        ${workshop.includes('Renewal Wellness') ? `
+        <div style="margin-top:24px;">
+          <p style="font-size:16px;font-weight:700;color:#0D3B6E;margin:0 0 12px;">Day's Agenda — Saturday, October 3</p>
+          <table style="width:100%;border-collapse:collapse;font-size:13px;">
+            <tr style="background-color:#0D3B6E;color:#ffffff;">
+              <td style="padding:8px 12px;font-weight:700;">Time</td>
+              <td style="padding:8px 12px;font-weight:700;">Session</td>
+            </tr>
+            <tr style="background-color:#f9fafb;">
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:15 – 8:45 AM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Welcome &amp; Introductions (refreshments)</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:45 – 9:30 AM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Registration Renewal Unraveled — Jolene Moore</td>
+            </tr>
+            <tr style="background-color:#f9fafb;">
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">9:30 – 10:30 AM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Obstructive Sleep Apnea — Samantha Coleman &amp; Emily Griffiths</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">10:30 – 10:45 AM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Morning Break (refreshments)</td>
+            </tr>
+            <tr style="background-color:#f9fafb;">
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">10:45 AM – 12:00 PM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Dementia and Oral Health Care — Naomi Klassen</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:00 – 12:45 PM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Lunch Break (lunch provided for in-person attendees)</td>
+            </tr>
+            <tr style="background-color:#f9fafb;">
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:45 – 2:00 PM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Financial Health for the DHCP — Josie McKenzie</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px;">2:00 – 4:00 PM</td>
+              <td style="padding:8px 12px;">Limiting your Liability in Emergency Situations — Tony Korobanik</td>
+            </tr>
+          </table>
+          <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">All times are Mountain Daylight Time (MDT).</p>
+        </div>` : ''}
+        <p style="color:#374151;font-size:14px;line-height:1.6;margin:${workshop.includes('Renewal Wellness') ? '16px' : '0'} 0 16px;">
           Our team will be in touch if there are any changes.
         </p>
         ${!isVirtual ? workshopInstructions(workshop) : ''}

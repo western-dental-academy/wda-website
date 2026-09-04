@@ -217,9 +217,14 @@ export default function NPEWorkshopPage() {
                   }}
                 >
                   <span style={{ color: "#1E3560", fontWeight: 600 }}>Please note: </span>
-                  While attendance at the preparation workshop does not guarantee board examination
-                  success, it provides participants with valuable preparation and resources to support
-                  their readiness.
+                  <ul style={{ marginTop: "6px", paddingLeft: "16px", listStyleType: "disc" }}>
+                    <li style={{ marginBottom: "4px" }}>
+                      While attendance at the preparation workshop does not guarantee board examination
+                      success, it provides participants with valuable preparation and resources to support
+                      their readiness.
+                    </li>
+                    <li>Option to take partial skills if all skills are not needed</li>
+                  </ul>
                 </div>
               </div>
             </AnimateIn>
@@ -240,7 +245,7 @@ export default function NPEWorkshopPage() {
                   {[
                     "Graduates of non-registered/non-accredited dental assisting programs preparing for the NDAEB CPE",
                     "Internationally educated dental professionals seeking NDAEB certification",
-                    "Dental professionals requiring re-evaluation of unsuccessful CPE skills",
+                    "Dental professionals requiring practice of unsuccessful CPE skills",
                     "Candidates seeking structured preparation prior to their scheduled CPE",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3">

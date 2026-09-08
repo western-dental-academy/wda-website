@@ -50,7 +50,7 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
       "Registration Renewal Unraveled — Jolene Moore",
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
       "Dementia and Oral Health Care — TBD",
-      "Financial Health for the DHCP — Josie McKenzie",
+      "Financial Wellness — Drill into Your Finances — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
     dateOverride: "October 3, 2026",

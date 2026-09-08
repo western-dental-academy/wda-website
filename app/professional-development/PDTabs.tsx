@@ -49,7 +49,7 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     highlights: [
       "Registration Renewal Unraveled — Jolene Moore",
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
-      "Dementia and Oral Health Care — Naomi Klassen",
+      "Dementia and Oral Health Care — TBD",
       "Financial Health for the DHCP — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],

@@ -54,10 +54,10 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
     dateOverride: "October 3, 2026",
-    tags: ["Full Day", "In-Person & Virtual", "Supports CADA and all DHCP CCP", "Certificate of Attendance"],
+    tags: ["Full Day", "In-Person & Virtual", "Meets all Professional CCP Requirements", "Certificate of Attendance"],
     foodNote: "In-person session includes Lunch, Snacks and Refreshments",
     agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.",
-    cadaNote: "Meets various competencies of the CCP for all Dental Health Care Professionals.",
+    cadaNote: "Meets requirements for all Professional Continued Competency programs",
   },
 };
 

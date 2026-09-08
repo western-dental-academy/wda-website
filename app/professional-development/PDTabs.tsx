@@ -32,6 +32,7 @@ interface WorkshopOffering {
 interface OfferingStaticContent {
   displayTitle?: string;
   durationOverride?: string;
+  dateOverride?: string;
   highlights: string[];
   tags: string[];
   foodNote?: string;
@@ -52,9 +53,11 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
       "Financial Health for the DHCP — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
-    tags: ["Full Day", "In-Person & Virtual", "Supports CADA CCP", "Certificate of Attendance"],
+    dateOverride: "October 3, 2026",
+    tags: ["Full Day", "In-Person & Virtual", "Supports CADA and all DHCP CCP", "Certificate of Attendance"],
     foodNote: "In-person session includes Lunch, Snacks and Refreshments",
-    agendaNote: "Day's agenda will be sent with your email confirmation.",
+    agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.",
+    cadaNote: "Meets various competencies of the CCP for all Dental Health Care Professionals.",
   },
 };
 
@@ -152,6 +155,18 @@ function WorkshopOfferingCard({
           >
             {staticContent?.displayTitle ?? offering.title}
           </h2>
+
+          {staticContent?.dateOverride && (
+            <div className="flex items-center gap-1.5 mb-3 -mt-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden className="w-3.5 h-3.5 shrink-0" style={{ color: "#378ADD" }}>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>{staticContent.dateOverride}</span>
+            </div>
+          )}
 
           {(priceDisplay || durationDisplay) && (
             <div className="flex items-center gap-3 mb-4 -mt-1">

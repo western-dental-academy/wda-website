@@ -117,7 +117,7 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">10:45 AM – 12:00 PM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Dementia and Oral Health Care — TBD</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Session 3 — TBD</td>
             </tr>
             <tr>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:00 – 12:45 PM</td>

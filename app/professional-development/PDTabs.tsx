@@ -29,6 +29,13 @@ interface WorkshopOffering {
 
 // ─── Per-offering static content not stored in Sanity ─────────────────────────
 
+interface Speaker {
+  name: string;
+  affiliation: string;
+  topic: string;
+  description: string;
+}
+
 interface OfferingStaticContent {
   displayTitle?: string;
   durationOverride?: string;
@@ -40,6 +47,7 @@ interface OfferingStaticContent {
   whatToBring?: string;
   idealFor?: string;
   cadaNote?: string;
+  speakers?: Speaker[];
 }
 
 const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
@@ -58,6 +66,38 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     foodNote: "In-person session includes Lunch, Snacks and Refreshments",
     agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.",
     cadaNote: "Meets requirements for all Professional Continued Competency programs",
+    speakers: [
+      {
+        name: "Jolene Moore",
+        affiliation: "Western Dental Academy",
+        topic: "Registration Renewal Unraveled",
+        description: "Have questions during the renewal process? Wondering why registration is necessary or where to get Liability Insurance? Jolene will discuss common myths, offer suggestions to make the registration process easier, and answer your questions.",
+      },
+      {
+        name: "Samantha Coleman & Emily Griffiths",
+        affiliation: "Sleep Well Diagnostics Ltd",
+        topic: "Obstructive Sleep Apnea",
+        description: "Both Registered Respiratory Therapists with backgrounds in critical care at the University of Alberta Hospital, Samantha and Emily are passionate about preventative sleep care, patient education, and early detection. They opened Sleep Well Diagnostics in April 2026 to bring high-quality, accessible sleep care to Fort Saskatchewan and surrounding communities.",
+      },
+      {
+        name: "TBD",
+        affiliation: "",
+        topic: "Session 3",
+        description: "Speaker and topic to be announced.",
+      },
+      {
+        name: "Josie McKenzie",
+        affiliation: "PFSL Investments",
+        topic: "Financial Wellness — Drill Down Into Your Finances",
+        description: "A Financial Services Representative on a mission to make wealth planning and financial literacy simple and accessible. Josie will share practical, real-world strategies to help you build healthy money habits, optimize investments, and take control of your financial future.",
+      },
+      {
+        name: "Tony Korobanik",
+        affiliation: "Prepared Now",
+        topic: "Limiting Your Liability in Emergency Situations",
+        description: "Are you prepared to react in an emergency situation? Do you know your roles and responsibilities? This talk will get you thinking and motivated to learn more about reducing risk in your practice.",
+      },
+    ],
   },
 };
 
@@ -120,6 +160,11 @@ function WorkshopOfferingCard({
   const nextDate = getNextUpcomingDate(offering.dates);
   const hasUpcoming = nextDate !== null;
   const staticContent = OFFERING_STATIC[offering.title];
+  const [openSpeakers, setOpenSpeakers] = useState<Record<number, boolean>>({});
+
+  function toggleSpeaker(i: number) {
+    setOpenSpeakers((prev) => ({ ...prev, [i]: !prev[i] }));
+  }
 
   let priceDisplay: string | null = null;
   if (offering.hasVirtualOption && offering.virtualPrice != null && offering.price != null) {
@@ -210,6 +255,86 @@ function WorkshopOfferingCard({
                 </li>
               ))}
             </ul>
+          )}
+
+          {staticContent?.speakers && staticContent.speakers.length > 0 && (
+            <div className="mb-6">
+              <p
+                className="text-xs font-bold uppercase tracking-[0.15em] mb-3"
+                style={{ color: "rgba(30,53,96,0.45)" }}
+              >
+                Speakers
+              </p>
+              <div
+                className="rounded-xl overflow-hidden"
+                style={{ border: "1.5px solid rgba(30,53,96,0.1)" }}
+              >
+                {staticContent.speakers.map((speaker, i) => {
+                  const isOpen = !!openSpeakers[i];
+                  const isLast = i === staticContent.speakers!.length - 1;
+                  return (
+                    <div
+                      key={i}
+                      style={
+                        !isLast
+                          ? { borderBottom: "1px solid rgba(30,53,96,0.08)" }
+                          : undefined
+                      }
+                    >
+                      <button
+                        type="button"
+                        onClick={() => toggleSpeaker(i)}
+                        className="w-full flex items-start justify-between gap-3 px-4 py-3 text-left transition-colors duration-150"
+                        style={{ backgroundColor: isOpen ? "rgba(30,53,96,0.03)" : "transparent" }}
+                        aria-expanded={isOpen}
+                      >
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-baseline gap-1.5">
+                            <span className="text-sm font-bold" style={{ color: "#1E3560" }}>
+                              {speaker.name}
+                            </span>
+                            {speaker.affiliation && (
+                              <>
+                                <span className="text-xs" style={{ color: "rgba(30,53,96,0.3)" }}>·</span>
+                                <span className="text-xs italic" style={{ color: "rgba(43,48,58,0.5)" }}>
+                                  {speaker.affiliation}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                          <p className="text-xs mt-0.5" style={{ color: "#378ADD" }}>
+                            {speaker.topic}
+                          </p>
+                        </div>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          aria-hidden
+                          className="w-3.5 h-3.5 shrink-0 mt-1 transition-transform duration-200"
+                          style={{
+                            color: "rgba(30,53,96,0.35)",
+                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                          }}
+                        >
+                          <polyline points="6 9 12 15 18 9" />
+                        </svg>
+                      </button>
+                      {isOpen && (
+                        <div className="px-4 pb-3">
+                          <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.65)" }}>
+                            {speaker.description}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           )}
 
           <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />

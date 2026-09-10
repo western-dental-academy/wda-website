@@ -480,6 +480,12 @@ function ErgonomicsGroupCard({
             </div>
           )}
 
+          <div className="mb-4">
+            <span className="inline-block bg-[#0D3B6E] text-white text-xs font-semibold px-3 py-1 rounded-full">
+              In-Person
+            </span>
+          </div>
+
           <div className="flex items-center gap-3 mb-4 -mt-1">
             <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
               $40 CAD

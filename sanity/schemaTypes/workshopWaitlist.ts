@@ -34,9 +34,9 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          { title: 'Ergonomics in Dentistry: Hands, Feet and Spine', value: 'Ergonomics in Dentistry: Hands, Feet and Spine' },
-          { title: 'Ergonomics in Dentistry: Hips and Hamstrings', value: 'Ergonomics in Dentistry: Hips and Hamstrings' },
-          { title: 'Ergonomics in Dentistry: Neck and Shoulders', value: 'Ergonomics in Dentistry: Neck and Shoulders' },
+          { title: 'Ergonomics in Healthcare: Hands, Feet and Spine', value: 'Ergonomics in Healthcare: Hands, Feet and Spine' },
+          { title: 'Ergonomics in Healthcare: Hips and Hamstrings', value: 'Ergonomics in Healthcare: Hips and Hamstrings' },
+          { title: 'Ergonomics in Healthcare: Neck and Shoulders', value: 'Ergonomics in Healthcare: Neck and Shoulders' },
           { title: 'National Board Guided Practice Workshop', value: 'National Board Guided Practice Workshop' },
         ],
       },

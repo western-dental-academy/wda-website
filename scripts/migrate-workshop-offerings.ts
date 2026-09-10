@@ -33,19 +33,19 @@ const client = createClient({
 // ─── CPP/hours metadata from lib/workshops/offerings.ts ─────────────────────
 
 const OFFERING_METADATA: Record<string, { hours?: number; cadaCppCodes?: string[] }> = {
-  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': {
+  'Ergonomics in Healthcare: Move Well, Breathe Well, Practice Longer': {
     hours: 1.5,
     cadaCppCodes: ['B-4-2', 'I-5-3', 'I-5-4'],
   },
-  'Ergonomics in Dentistry: Hands, Feet and Spine': {
+  'Ergonomics in Healthcare: Hands, Feet and Spine': {
     hours: 1.5,
     cadaCppCodes: ['B-4-2', 'I-5-3', 'I-5-4'],
   },
-  'Ergonomics in Dentistry: Hips and Hamstrings': {
+  'Ergonomics in Healthcare: Hips and Hamstrings': {
     hours: 1.5,
     cadaCppCodes: ['B-4-2', 'I-5-3', 'I-5-4'],
   },
-  'Ergonomics in Dentistry: Neck and Shoulders': {
+  'Ergonomics in Healthcare: Neck and Shoulders': {
     hours: 1.5,
     cadaCppCodes: ['B-4-2', 'I-5-3', 'I-5-4'],
   },

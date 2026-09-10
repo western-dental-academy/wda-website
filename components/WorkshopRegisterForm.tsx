@@ -56,9 +56,9 @@ interface WorkshopDate {
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
 const WORKSHOP_PRICES: Record<string, number> = {
-  "Ergonomics in Dentistry: Hands, Feet and Spine": 40,
-  "Ergonomics in Dentistry: Hips and Hamstrings": 40,
-  "Ergonomics in Dentistry: Neck and Shoulders": 40,
+  "Ergonomics in Healthcare: Hands, Feet and Spine": 40,
+  "Ergonomics in Healthcare: Hips and Hamstrings": 40,
+  "Ergonomics in Healthcare: Neck and Shoulders": 40,
   "National Board Guided Practice Workshop": 600,
   "Renewal Wellness Workshop": 129,
 };

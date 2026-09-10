@@ -33,7 +33,7 @@ interface RegistrationRecord {
 }
 
 function workshopInstructions(workshop: string): string {
-  if (workshop.includes("Ergonomics in Dentistry")) {
+  if (workshop.includes("Ergonomics in Healthcare")) {
     return `
       <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin:16px 0;">
         <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 8px;">What to Bring</p>
@@ -104,6 +104,10 @@ function confirmationEmailHtml(
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Welcome &amp; Introductions (refreshments)</td>
             </tr>
             <tr>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:30 – 8:45 AM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Virtual Welcome</td>
+            </tr>
+            <tr>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:45 – 9:30 AM</td>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Registration Renewal Unraveled — Jolene Moore</td>
             </tr>
@@ -125,7 +129,7 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:45 – 2:00 PM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Financial Wellness — Drill into Your Finances — Josie McKenzie</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Financial Wellness — Drill Down Into Your Finances — Josie McKenzie</td>
             </tr>
             <tr>
               <td style="padding:8px 12px;">2:00 – 4:00 PM</td>
@@ -365,9 +369,9 @@ export default async function SuccessPage({
           const primary = registrations[0];
           if (registrations.length > 1 || !isLegacy) {
             const basePrices: Record<string, number> = {
-              "Ergonomics in Dentistry: Hands, Feet and Spine": 40,
-              "Ergonomics in Dentistry: Hips and Hamstrings": 40,
-              "Ergonomics in Dentistry: Neck and Shoulders": 40,
+              "Ergonomics in Healthcare: Hands, Feet and Spine": 40,
+              "Ergonomics in Healthcare: Hips and Hamstrings": 40,
+              "Ergonomics in Healthcare: Neck and Shoulders": 40,
               "National Board Guided Practice Workshop": 600,
               "Renewal Wellness Workshop": 129,
             };

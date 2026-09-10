@@ -435,7 +435,7 @@ function ErgonomicsGroupCard({
   const nextDate = getNextUpcomingDate(allDates);
   const hasUpcoming = nextDate !== null;
 
-  const prefix = "Ergonomics in Dentistry: ";
+  const prefix = "Ergonomics in Healthcare: ";
   const sessions = offerings
     .map((o) => (o.title.startsWith(prefix) ? o.title.slice(prefix.length) : o.title))
     .filter(Boolean);
@@ -457,7 +457,7 @@ function ErgonomicsGroupCard({
             className="text-xl font-bold mb-3 leading-snug"
             style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
           >
-            Ergonomics in Dentistry
+            Ergonomics in Healthcare
           </h2>
 
           <div className="flex items-center gap-3 mb-4 -mt-1">
@@ -474,7 +474,7 @@ function ErgonomicsGroupCard({
             Developed by a Registered Dental Assistant (RDA) and RYT 200. Dental professionals
             spend countless hours caring for others, often in sustained postures that place
             significant demands on the body. This interactive workshop is designed specifically for
-            dental health care professionals who want to understand the impact of ergonomics and
+            healthcare professionals who want to understand the impact of ergonomics and
             develop practical strategies to prevent pain, injury, and burnout. Includes guided
             breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation
             practice. There will be 3 separate sessions available focusing on different areas of the
@@ -499,7 +499,7 @@ function ErgonomicsGroupCard({
             {[
               "Ergonomic risk factors and posture principles for dental practice",
               "Guided breathwork techniques to reduce tension and support focus",
-              "Yoga-inspired movement sequences adapted for dental professionals",
+              "Yoga-inspired movement sequences adapted for healthcare professionals",
               "Targeted stretches for specific areas of the body",
               "Closing Yoga Nidra relaxation practice",
             ].map((h) => (
@@ -599,13 +599,13 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
   const [activeTab, setActiveTab] = useState<Tab>("events");
 
   const ergonomicsOfferings = offerings.filter((o) =>
-    o.title.startsWith("Ergonomics in Dentistry")
+    o.title.startsWith("Ergonomics in Healthcare")
   );
   const eventOfferings = offerings
     .filter(
       (o) =>
         (o.category === "workshop" || o.category === "guest-speaker") &&
-        !o.title.startsWith("Ergonomics in Dentistry")
+        !o.title.startsWith("Ergonomics in Healthcare")
     )
     .sort((a, b) => {
       const aDate = getNextUpcomingDate(a.dates);

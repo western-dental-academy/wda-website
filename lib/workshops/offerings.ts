@@ -3,22 +3,22 @@ export const OFFERING_METADATA: Record<string, {
   cadaCppNumbers?: string[]
   delivery: 'In Person' | 'Online' | 'In Person / Virtual'
 }> = {
-  'Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer': {
+  'Ergonomics in Healthcare: Move Well, Breathe Well, Practice Longer': {
     hours: 1.5,
     cadaCppNumbers: ['B-4-2', 'I-5-3', 'I-5-4'],
     delivery: 'In Person',
   },
-  'Ergonomics in Dentistry: Hands, Feet and Spine': {
+  'Ergonomics in Healthcare: Hands, Feet and Spine': {
     hours: 1.5,
     cadaCppNumbers: ['B-4-2', 'I-5-3', 'I-5-4'],
     delivery: 'In Person',
   },
-  'Ergonomics in Dentistry: Hips and Hamstrings': {
+  'Ergonomics in Healthcare: Hips and Hamstrings': {
     hours: 1.5,
     cadaCppNumbers: ['B-4-2', 'I-5-3', 'I-5-4'],
     delivery: 'In Person',
   },
-  'Ergonomics in Dentistry: Neck and Shoulders': {
+  'Ergonomics in Healthcare: Neck and Shoulders': {
     hours: 1.5,
     cadaCppNumbers: ['B-4-2', 'I-5-3', 'I-5-4'],
     delivery: 'In Person',

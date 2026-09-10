@@ -33,7 +33,7 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     order: 3,
     question: "How many spots are available per workshop?",
     answer:
-      "Workshop capacity varies by offering. The Ergonomics in Dentistry workshop is capped at 20 participants to ensure a quality experience. Register early to secure your spot.",
+      "Workshop capacity varies by offering. The Ergonomics in Healthcare workshop is capped at 20 participants to ensure a quality experience. Register early to secure your spot.",
   },
   {
     _id: "p-reg-4",
@@ -50,7 +50,7 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     order: 1,
     question: "What workshops does WDA currently offer?",
     answer:
-      "WDA currently offers the Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer workshop. Additional workshops are in development. Sign up for our newsletter to be notified of new offerings.",
+      "WDA currently offers the Ergonomics in Healthcare: Move Well, Breathe Well, Practice Longer workshop. Additional workshops are in development. Sign up for our newsletter to be notified of new offerings.",
   },
   {
     _id: "p-wsh-2",
@@ -58,7 +58,7 @@ const PLACEHOLDER_FAQ_ITEMS: FaqItem[] = [
     order: 2,
     question: "What should I bring to a workshop?",
     answer:
-      "Requirements vary by workshop. The Ergonomics in Dentistry workshop requires a water bottle, yoga mat, and comfortable clothing. Check individual workshop listings for specific requirements.",
+      "Requirements vary by workshop. The Ergonomics in Healthcare workshop requires a water bottle, yoga mat, and comfortable clothing. Check individual workshop listings for specific requirements.",
   },
   {
     _id: "p-wsh-3",

@@ -168,9 +168,9 @@ Staff (under Staff Time Tracking group)
 
 | Offering | Category | Price | Virtual | Capacity | Hours | CADA Codes |
 |---|---|---|---|---|---|---|
-| Ergonomics in Dentistry: Hands, Feet and Spine | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
-| Ergonomics in Dentistry: Hips and Hamstrings | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
-| Ergonomics in Dentistry: Neck and Shoulders | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
+| Ergonomics in Healthcare: Hands, Feet and Spine | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
+| Ergonomics in Healthcare: Hips and Hamstrings | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
+| Ergonomics in Healthcare: Neck and Shoulders | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
 | National Board Guided Practice | workshop | $600 | No | — | 8 | — |
 | Renewal Wellness | guest-speaker | $129 in-person / $99 virtual | Yes | 20 in-person / unlimited virtual | 6.25 | I-2-1, D-3-1, G-3-TBD, I-5-4, B-5-3 |
 
@@ -313,14 +313,14 @@ Located at `/admin`. Tabs:
 
 - Route: `/professional-development`
 - `force-dynamic` + `cache: 'no-store'` — always fetches fresh from Sanity
-- Ergonomics offerings (title starts with "Ergonomics in Dentistry") grouped as single card
+- Ergonomics offerings (title starts with "Ergonomics in Healthcare") grouped as single card
 - All other offerings rendered as individual `WorkshopOfferingCard` components
 - `OFFERING_STATIC` map in `PDTabs.tsx` controls highlights, tags, displayTitle overrides, food notes, agenda notes
 - Card shows "Registration Open" (green) if active date exists, "Coming Soon" (amber) if not
 - Offerings pulled from Sanity automatically — add new offering in Studio to have it appear
 
 ### OFFERING_STATIC Keys (must match Sanity title exactly)
-- `"Ergonomics in Dentistry: Neck and Shoulders"` (and other Ergonomics variants)
+- `"Ergonomics in Healthcare: Neck and Shoulders"` (and other Ergonomics variants)
 - `"Renewal Wellness"` — displayTitle: "Renewal Wellness Guest Speaker Event", durationOverride: "All Day Event"
 - `"National Board Guided Practice"`
 

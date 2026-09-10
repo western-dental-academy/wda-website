@@ -369,7 +369,7 @@ export default async function SuccessPage({
           const primary = registrations[0];
           if (registrations.length > 1 || !isLegacy) {
             const basePrices: Record<string, number> = {
-              "Ergonomics in Healthcare: Hands, Feet and Spine": 40,
+              "Ergonomics in Healthcare: Hands, Feet, and Spine": 40,
               "Ergonomics in Healthcare: Hips and Hamstrings": 40,
               "Ergonomics in Healthcare: Neck and Shoulders": 40,
               "National Board Guided Practice Workshop": 750,

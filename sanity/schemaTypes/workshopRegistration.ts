@@ -40,7 +40,7 @@ export default defineType({
       options: {
         list: [
           { title: 'Ergonomics in Healthcare: Move Well, Breathe Well, Practice Longer', value: 'Ergonomics in Healthcare: Move Well, Breathe Well, Practice Longer' },
-          { title: 'Ergonomics in Healthcare: Hands, Feet and Spine', value: 'Ergonomics in Healthcare: Hands, Feet and Spine' },
+          { title: 'Ergonomics in Healthcare: Hands, Feet, and Spine', value: 'Ergonomics in Healthcare: Hands, Feet, and Spine' },
           { title: 'Ergonomics in Healthcare: Hips and Hamstrings', value: 'Ergonomics in Healthcare: Hips and Hamstrings' },
           { title: 'Ergonomics in Healthcare: Neck and Shoulders', value: 'Ergonomics in Healthcare: Neck and Shoulders' },
           { title: 'National Board Guided Practice Workshop', value: 'National Board Guided Practice Workshop' },

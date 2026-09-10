@@ -173,13 +173,13 @@ Staff Time Tracking
 | Renewal Wellness | guest-speaker | $129 in-person / $99 virtual | Yes | 20 in-person / unlimited virtual | 6.25 | I-2-1, D-3-1, G-3-TBD, I-5-4, B-5-3 |
 
 **Offerings not yet in Sanity (add when scheduling):**
-- Ergonomics in Healthcare: Hands, Feet and Spine ($40, 15 cap, 1.5hrs)
+- Ergonomics in Healthcare: Hands, Feet, and Spine ($40, 15 cap, 1.5hrs)
 - Ergonomics in Healthcare: Hips and Hamstrings ($40, 15 cap, 1.5hrs)
 - National Board Guided Practice ($750, 8hrs)
 
 **WORKSHOP_PRICES keys** (must match Sanity titles exactly):
 - `"Ergonomics in Healthcare: Neck and Shoulders"` → 40
-- `"Ergonomics in Healthcare: Hands, Feet and Spine"` → 40
+- `"Ergonomics in Healthcare: Hands, Feet, and Spine"` → 40
 - `"Ergonomics in Healthcare: Hips and Hamstrings"` → 40
 - `"Renewal Wellness"` → 129
 - `"National Board Guided Practice"` → 750

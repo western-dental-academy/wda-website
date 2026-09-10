@@ -133,7 +133,7 @@ const CARD        = 'rounded-2xl p-8 bg-white'
 const CARD_BORDER = '1.5px solid rgba(30,53,96,0.09)'
 
 const WORKSHOP_PRICES: Record<string, number> = {
-  'Ergonomics in Healthcare: Hands, Feet and Spine': 40,
+  'Ergonomics in Healthcare: Hands, Feet, and Spine': 40,
   'Ergonomics in Healthcare: Hips and Hamstrings': 40,
   'Ergonomics in Healthcare: Neck and Shoulders': 40,
   'National Board Guided Practice Workshop': 750,

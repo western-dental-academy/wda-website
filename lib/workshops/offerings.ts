@@ -27,7 +27,7 @@ export const OFFERING_METADATA: Record<string, {
     hours: 8,
     delivery: 'In Person',
   },
-  'Renewal Wellness Workshop': {
+  'Renewal Wellness': {
     hours: 6.25,
     cadaCppNumbers: ['I-2-1', 'D-3-1', 'I-5-4', 'B-5-3'],
     delivery: 'In Person / Virtual',

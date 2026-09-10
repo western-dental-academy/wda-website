@@ -52,7 +52,7 @@ const OFFERING_METADATA: Record<string, { hours?: number; cadaCppCodes?: string[
   'National Board Guided Practice Workshop': {
     hours: 8,
   },
-  'Renewal Wellness Workshop': {
+  'Renewal Wellness': {
     hours: 6.25,
     cadaCppCodes: ['I-2-1', 'D-3-1', 'I-5-4', 'B-5-3'],
   },

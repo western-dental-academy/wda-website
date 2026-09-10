@@ -60,7 +60,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
   "Ergonomics in Healthcare: Hips and Hamstrings": 40,
   "Ergonomics in Healthcare: Neck and Shoulders": 40,
   "National Board Guided Practice Workshop": 750,
-  "Renewal Wellness Workshop": 129,
+  "Renewal Wellness": 129,
 };
 
 const WORKSHOP_OPTIONS = Object.keys(WORKSHOP_PRICES).map(label => ({

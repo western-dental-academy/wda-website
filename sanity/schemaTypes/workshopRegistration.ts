@@ -49,7 +49,7 @@ export default defineType({
           { title: 'Front Office Excellence Workshop', value: 'Front Office Excellence Workshop' },
           { title: 'Ergonomics & Career Longevity Workshop', value: 'Ergonomics & Career Longevity Workshop' },
           { title: 'Inventory & Supply Management Workshop', value: 'Inventory & Supply Management Workshop' },
-          { title: 'Renewal Wellness Workshop', value: 'Renewal Wellness Workshop' },
+          { title: 'Renewal Wellness', value: 'Renewal Wellness' },
         ],
       },
       validation: Rule => Rule.required(),

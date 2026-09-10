@@ -373,7 +373,7 @@ export default async function SuccessPage({
               "Ergonomics in Healthcare: Hips and Hamstrings": 40,
               "Ergonomics in Healthcare: Neck and Shoulders": 40,
               "National Board Guided Practice Workshop": 750,
-              "Renewal Wellness Workshop": 129,
+              "Renewal Wellness": 129,
             };
             const receiptRows = registrations.map(r => {
               const isVirtual = r.deliveryMethod === 'virtual';

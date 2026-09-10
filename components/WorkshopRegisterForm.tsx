@@ -522,7 +522,7 @@ export default function WorkshopRegisterForm() {
                   Your Details
                 </h2>
                 <p className="text-sm" style={{ color: "rgba(43,48,58,0.55)" }}>
-                  Fill in your details, select a workshop, and add yourself to the cart.
+                  Fill in your details, select an event, and add yourself to the cart.
                   You can then add more attendees before checking out.
                 </p>
               </>
@@ -539,7 +539,7 @@ export default function WorkshopRegisterForm() {
                   Add Another Attendee
                 </h2>
                 <p className="text-sm" style={{ color: "rgba(43,48,58,0.55)" }}>
-                  Add another person to this registration. Each attendee can select a different workshop.
+                  Add another person to this registration. Each attendee can select a different event.
                 </p>
               </>
             )}
@@ -661,7 +661,7 @@ export default function WorkshopRegisterForm() {
             {/* ── Workshop selection ── */}
             <div className="pt-2 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
               <p className="text-xs font-bold mb-4 uppercase tracking-[0.12em]" style={{ color: "rgba(30,53,96,0.4)", fontFamily: "var(--font-montserrat), sans-serif" }}>
-                Workshop Selection
+                Event Selection
               </p>
 
               {/* Category */}

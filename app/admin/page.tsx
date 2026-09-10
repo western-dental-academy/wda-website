@@ -200,6 +200,12 @@ export default async function AdminPage() {
       .reduce((sum: number, s: any) => sum + (s.tuitionAmount as number), 0)
   }
 
+  // Deduplicate registrations by _id — unpaid ghost docs from failed/retried checkouts
+  // can leave multiple Sanity documents for the same person on the same date.
+  const uniqueWorkshopRegs: WorkshopRegistration[] = Array.from(
+    new Map((workshopRegs as WorkshopRegistration[]).map(r => [r._id, r])).values()
+  )
+
   // Build DateGroup array for workshop registrations
   const dateGroups: DateGroup[] = (workshopDates as Array<{
     _id: string
@@ -213,7 +219,7 @@ export default async function AdminPage() {
       workshop: d.offering?.title ?? '',
       date: d.date,
       capacity: d.offering?.capacity ?? 0,
-      registrations: (workshopRegs as WorkshopRegistration[]).filter((r) => r.workshopDateId === d._id),
+      registrations: uniqueWorkshopRegs.filter((r) => r.workshopDateId === d._id),
       waitlist: (workshopWaitlist as WorkshopWaitlistEntry[]).filter((w) => w.workshopDateId === d._id),
     }))
 
@@ -272,7 +278,7 @@ export default async function AdminPage() {
         programmes={programmes}
         referralData={referralData}
         canViewFinancials={canViewFinancials}
-        workshopRegs={workshopRegs as WorkshopRegistration[]}
+        workshopRegs={uniqueWorkshopRegs}
         workshopWaitlist={workshopWaitlist as WorkshopWaitlistEntry[]}
         dateGroups={dateGroups}
         totalRevenue={totalRevenue}

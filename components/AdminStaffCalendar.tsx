@@ -41,13 +41,13 @@ const TYPE_META: Record<string, { bg: string; text: string; label: string }> = {
 const CATEGORY_COLOUR: Record<string, string> = {
   'workshop':      '#16a34a',
   'course':        '#378ADD',
-  'guest-speaker': '#8b5cf6',
+  'guest-speaker': '#16a34a',
 }
 
 const CATEGORY_LABEL: Record<string, string> = {
-  'workshop':      'Workshop',
+  'workshop':      'Event',
   'course':        'Course',
-  'guest-speaker': 'Guest Speaker',
+  'guest-speaker': 'Event',
 }
 
 const MONTH_NAMES = [
@@ -195,11 +195,10 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
           {[
             { label: 'Vacation',      bg: '#378ADD' },
             { label: 'Sick Day',      bg: '#dc2626' },
-            { label: 'Day Off',       bg: '#E67E22' },
-            { label: 'Appointment',   bg: '#E67E22' },
-            { label: 'Workshop',      bg: '#16a34a' },
-            { label: 'Course',        bg: '#378ADD' },
-            { label: 'Guest Speaker', bg: '#8b5cf6' },
+            { label: 'Day Off',     bg: '#E67E22' },
+            { label: 'Appointment', bg: '#E67E22' },
+            { label: 'Event',       bg: '#16a34a' },
+            { label: 'Course',      bg: '#378ADD' },
           ].map(({ label, bg }) => (
             <span key={label} className="flex items-center gap-1.5 text-xs" style={{ color: 'rgba(43,48,58,0.55)' }}>
               <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: bg }} />

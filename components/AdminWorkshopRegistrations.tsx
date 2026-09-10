@@ -488,7 +488,7 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
           </h2>
         </div>
         <p className="px-6 py-8 text-sm text-center" style={{ color: "rgba(43,48,58,0.4)" }}>
-          No workshop dates scheduled yet. Add dates in Sanity Studio under Workshops → Workshop Dates.
+          No event dates scheduled yet. Add dates in Sanity Studio under Events → Workshop Dates.
         </p>
       </div>
     );
@@ -545,10 +545,10 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
         })}
       </div>
 
-      {/* Workshop name */}
+      {/* Event name */}
       <div className="px-4 sm:px-6 pt-4 pb-2">
         <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "rgba(30,53,96,0.4)" }}>
-          Workshop
+          Event
         </p>
         <p className="text-sm font-bold" style={{ color: "#1E3560" }}>
           {activeGroup.workshop}

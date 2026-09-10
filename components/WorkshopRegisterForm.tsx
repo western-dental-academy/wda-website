@@ -151,12 +151,14 @@ function CartPanel({
   onCheckout,
   redirecting,
   checkoutError,
+  duplicateIds,
 }: {
   cart: CartItem[];
   onRemove: (id: string) => void;
   onCheckout: () => void;
   redirecting: boolean;
   checkoutError: string;
+  duplicateIds: Set<string>;
 }) {
   const subtotalCents = cart.reduce((s, i) => s + i.price * 100, 0);
   const feeCents = subtotalCents > 0 ? calcFee(subtotalCents) : 0;
@@ -179,8 +181,14 @@ function CartPanel({
 
       {/* Items */}
       <div className="divide-y" style={{ borderColor: "rgba(30,53,96,0.07)" }}>
-        {cart.map((item) => (
-          <div key={item.id} className="px-5 py-4 flex items-start gap-3">
+        {cart.map((item) => {
+          const isDuplicate = duplicateIds.has(item.id);
+          return (
+          <div
+            key={item.id}
+            className="px-5 py-4 flex items-start gap-3"
+            style={isDuplicate ? { backgroundColor: "rgba(220,38,38,0.04)", borderLeft: "3px solid rgba(220,38,38,0.5)" } : undefined}
+          >
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-semibold truncate" style={{ color: "#1E3560" }}>
@@ -189,6 +197,11 @@ function CartPanel({
                 {item.isPrimary && (
                   <span className="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(230,126,34,0.1)", color: "#E67E22" }}>
                     Primary
+                  </span>
+                )}
+                {isDuplicate && (
+                  <span className="shrink-0 text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
+                    Already registered
                   </span>
                 )}
                 {item.deliveryMethod === 'virtual' ? (
@@ -218,7 +231,8 @@ function CartPanel({
               </button>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Totals */}
@@ -291,6 +305,7 @@ function WorkshopRegisterFormInner() {
   const [waitlistError, setWaitlistError] = useState("");
   const [redirecting, setRedirecting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [duplicateIds, setDuplicateIds] = useState<Set<string>>(new Set());
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
   const [datesLoading, setDatesLoading] = useState(true);
   const [datesError, setDatesError] = useState(false);
@@ -502,6 +517,7 @@ function WorkshopRegisterFormInner() {
     if (cart.length === 0) return;
     setRedirecting(true);
     setCheckoutError("");
+    setDuplicateIds(new Set());
     try {
       const res = await fetch("/api/workshops/checkout", {
         method: "POST",
@@ -509,6 +525,17 @@ function WorkshopRegisterFormInner() {
         body: JSON.stringify({ items: cart }),
       });
       const result = await res.json();
+      if (res.status === 409 && result.error === "duplicate") {
+        const ids = new Set<string>();
+        for (const dup of (result.duplicates ?? []) as Array<{ email: string; workshopDateId: string }>) {
+          const matched = cart.find(c => c.email === dup.email && c.workshopDateId === dup.workshopDateId);
+          if (matched) ids.add(matched.id);
+        }
+        setDuplicateIds(ids);
+        setCheckoutError(result.message ?? "A duplicate registration was detected.");
+        setRedirecting(false);
+        return;
+      }
       if (!res.ok || !result.url) throw new Error(result.error ?? "Something went wrong.");
       window.location.href = result.url;
     } catch (err) {
@@ -988,10 +1015,14 @@ function WorkshopRegisterFormInner() {
         <div className="lg:w-[360px] shrink-0 mt-6 lg:mt-0">
           <CartPanel
             cart={cart}
-            onRemove={id => setCart(c => c.filter(item => item.id !== id).map((item, i) => ({ ...item, isPrimary: i === 0 })))}
+            onRemove={id => {
+              setCart(c => c.filter(item => item.id !== id).map((item, i) => ({ ...item, isPrimary: i === 0 })));
+              setDuplicateIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+            }}
             onCheckout={handleCheckout}
             redirecting={redirecting}
             checkoutError={checkoutError}
+            duplicateIds={duplicateIds}
           />
         </div>
       )}

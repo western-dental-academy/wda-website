@@ -57,6 +57,30 @@ export async function POST(req: NextRequest) {
       if (!item.workshopName)      return Response.json({ error: 'Workshop selection is required for all registrants' }, { status: 400 })
     }
 
+    // Duplicate registration check — block same email + same workshopDateId
+    const duplicates: Array<{ firstName: string; lastName: string; email: string; workshopDateId: string }> = []
+    for (const item of items) {
+      if (!item.workshopDateId || !item.email?.trim()) continue
+      const existing = await client.fetch<{ _id: string } | null>(
+        `*[_type == "workshopRegistration" && email == $email && workshopDateId == $workshopDateId && stripePaymentStatus == "paid"][0]{ _id }`,
+        { email: item.email.trim(), workshopDateId: item.workshopDateId },
+      )
+      if (existing) {
+        duplicates.push({
+          firstName: item.firstName,
+          lastName: item.lastName,
+          email: item.email.trim(),
+          workshopDateId: item.workshopDateId,
+        })
+      }
+    }
+    if (duplicates.length > 0) {
+      const message = duplicates.length === 1
+        ? `A registration already exists for ${duplicates[0].firstName} ${duplicates[0].lastName} (${duplicates[0].email}) for this event date. Please remove them from your cart or choose a different date.`
+        : `Registrations already exist for: ${duplicates.map(d => `${d.firstName} ${d.lastName} (${d.email})`).join('; ')}. Please remove them from your cart or choose a different date.`
+      return Response.json({ error: 'duplicate', message, duplicates }, { status: 409 })
+    }
+
     // Server-side capacity check per unique workshopDateId (in-person only)
     const dateGroups = new Map<string, CartItemPayload[]>()
     for (const item of items) {

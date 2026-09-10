@@ -400,7 +400,7 @@ function WorkshopOfferingCard({
 
           {hasUpcoming ? (
             <>
-              {!staticContent?.dateOverride && nextDate && (
+              {nextDate && (
                 <div className="flex items-center gap-1.5 mb-3">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden className="w-3.5 h-3.5 shrink-0" style={{ color: "#378ADD" }}>
                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />

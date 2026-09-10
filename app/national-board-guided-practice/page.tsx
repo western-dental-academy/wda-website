@@ -135,7 +135,7 @@ export default function NPEWorkshopPage() {
                     { label: "Duration", value: "8 Hours" },
                     { label: "Format", value: "Hands-On Practice" },
                     { label: "Skills", value: "9 CPE Clinical Skills" },
-                    { label: "Investment", value: "$600" },
+                    { label: "Investment", value: "$750" },
                   ].map(({ label, value }) => (
                     <div key={label}>
                       <p

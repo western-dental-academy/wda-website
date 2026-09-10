@@ -171,7 +171,7 @@ Staff (under Staff Time Tracking group)
 | Ergonomics in Healthcare: Hands, Feet and Spine | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
 | Ergonomics in Healthcare: Hips and Hamstrings | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
 | Ergonomics in Healthcare: Neck and Shoulders | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
-| National Board Guided Practice | workshop | $600 | No | — | 8 | — |
+| National Board Guided Practice | workshop | $750 | No | — | 8 | — |
 | Renewal Wellness | guest-speaker | $129 in-person / $99 virtual | Yes | 20 in-person / unlimited virtual | 6.25 | I-2-1, D-3-1, G-3-TBD, I-5-4, B-5-3 |
 
 **Note:** Ergonomics three sessions shown as one grouped card on PD page. Offerings only added to Sanity when ready to schedule.

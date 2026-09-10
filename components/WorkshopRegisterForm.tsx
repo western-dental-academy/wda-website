@@ -290,6 +290,7 @@ function CartPanel({
 function WorkshopRegisterFormInner() {
   const searchParams = useSearchParams();
   const preselectedOffering = searchParams.get("offering");
+  const preselectedDateId = searchParams.get("dateId");
 
   const [cart, setCart] = useState<CartItem[]>([]);
   const [form, setForm] = useState<RegistrantForm>(INITIAL_FORM);
@@ -332,18 +333,21 @@ function WorkshopRegisterFormInner() {
     if (!match) return;
     didAutoselect.current = true;
     setSelectedCategory("event");
-    setForm(f => ({ ...f, workshop: preselectedOffering }));
     const now = new Date();
-    const firstDate = workshopDates
-      .filter(d =>
-        d.workshop === preselectedOffering &&
-        (d.category === "workshop" || d.category === "guest-speaker") &&
-        new Date(d.date) > now &&
-        !d.isFull
-      )
+    const candidateDates = workshopDates.filter(d =>
+      d.workshop === preselectedOffering &&
+      (d.category === "workshop" || d.category === "guest-speaker") &&
+      new Date(d.date) > now
+    );
+    const targeted = preselectedDateId
+      ? candidateDates.find(d => d.id === preselectedDateId)
+      : null;
+    const firstAvailable = candidateDates
+      .filter(d => !d.isFull)
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
-    if (firstDate) setForm(f => ({ ...f, workshopDateId: firstDate.id }));
-  }, [workshopDates, datesLoading, preselectedOffering]);
+    const selectedDate = targeted ?? firstAvailable;
+    setForm(f => ({ ...f, workshop: preselectedOffering, workshopDateId: selectedDate?.id ?? "" }));
+  }, [workshopDates, datesLoading, preselectedOffering, preselectedDateId]);
 
   function setField<K extends keyof RegistrantForm>(key: K, value: RegistrantForm[K]) {
     setForm(f => ({ ...f, [key]: value }));

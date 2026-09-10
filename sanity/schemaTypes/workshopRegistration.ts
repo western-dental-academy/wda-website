@@ -170,6 +170,12 @@ export default defineType({
       description: 'The registration ID returned by Microsoft Graph after auto-registering the attendee',
     }),
     defineField({
+      name: 'feedbackShareConsent',
+      title: 'Consents to Share Feedback',
+      type: 'boolean',
+      description: 'Whether the registrant consents to their feedback being shared on website/socials',
+    }),
+    defineField({
       name: 'checkedIn',
       title: 'Checked In',
       type: 'boolean',

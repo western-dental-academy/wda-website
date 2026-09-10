@@ -17,12 +17,13 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { token, rating, enjoyedMost, improvement, wouldRecommend } = body as {
+  const { token, rating, enjoyedMost, improvement, wouldRecommend, shareConsent } = body as {
     token?: string
     rating?: number
     enjoyedMost?: string
     improvement?: string
     wouldRecommend?: boolean
+    shareConsent?: boolean
   }
 
   if (!token?.trim()) {
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
     feedbackEnjoyedMost: enjoyedMost?.trim() || undefined,
     feedbackImprovement: improvement?.trim() || undefined,
     feedbackWouldRecommend: typeof wouldRecommend === 'boolean' ? wouldRecommend : undefined,
+    feedbackShareConsent: shareConsent === true ? true : undefined,
     feedbackSubmittedAt: new Date().toISOString(),
   }).commit()
 

@@ -17,13 +17,14 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { workshopDateId, workshopName, rating, enjoyedMost, improvement, wouldRecommend } = body as {
+  const { workshopDateId, workshopName, rating, enjoyedMost, improvement, wouldRecommend, shareConsent } = body as {
     workshopDateId?: string
     workshopName?: string
     rating?: number
     enjoyedMost?: string
     improvement?: string
     wouldRecommend?: boolean
+    shareConsent?: boolean
   }
 
   if (!workshopDateId?.trim()) {
@@ -40,8 +41,9 @@ export async function POST(req: NextRequest) {
     rating,
     enjoyedMost:    enjoyedMost?.trim()  || undefined,
     improvement:    improvement?.trim()  || undefined,
-    wouldRecommend: typeof wouldRecommend === 'boolean' ? wouldRecommend : undefined,
-    submittedAt:    new Date().toISOString(),
+    wouldRecommend:        typeof wouldRecommend === 'boolean' ? wouldRecommend : undefined,
+    feedbackShareConsent:  shareConsent === true ? true : undefined,
+    submittedAt:           new Date().toISOString(),
   } as { _type: string; [key: string]: unknown })
 
   return Response.json({ success: true })

@@ -14,6 +14,7 @@ export interface FeedbackEntry {
   feedbackImprovement?: string
   feedbackWouldRecommend?: boolean
   feedbackSubmittedAt: string
+  feedbackShareConsent?: boolean
 }
 
 export interface QRFeedbackEntry {
@@ -25,6 +26,7 @@ export interface QRFeedbackEntry {
   improvement?: string
   wouldRecommend?: boolean
   submittedAt: string
+  feedbackShareConsent?: boolean
 }
 
 // ── Normalised internal type ───────────────────────────────────────────────────
@@ -39,6 +41,7 @@ interface NormEntry {
   wouldRecommend?: boolean
   submittedAt: string
   respondentName?: string
+  shareConsent?: boolean
 }
 
 interface WorkshopGroup {
@@ -60,6 +63,7 @@ function normalise(emailEntries: FeedbackEntry[], qrEntries: QRFeedbackEntry[]):
     wouldRecommend: e.feedbackWouldRecommend,
     submittedAt: e.feedbackSubmittedAt,
     respondentName: `${e.firstName} ${e.lastName}`.trim() || undefined,
+    shareConsent: e.feedbackShareConsent,
   }))
   const qr: NormEntry[] = qrEntries.map(e => ({
     id: e._id,
@@ -70,6 +74,7 @@ function normalise(emailEntries: FeedbackEntry[], qrEntries: QRFeedbackEntry[]):
     improvement: e.improvement,
     wouldRecommend: e.wouldRecommend,
     submittedAt: e.submittedAt,
+    shareConsent: e.feedbackShareConsent,
   }))
   return [...email, ...qr].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))
 }
@@ -198,6 +203,11 @@ export default function AdminWorkshopFeedback({ entries, qrEntries }: { entries:
                               ) : (
                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(43,48,58,0.08)', color: 'rgba(43,48,58,0.55)' }}>
                                   Via QR
+                                </span>
+                              )}
+                              {entry.shareConsent && (
+                                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: '#dcfce7', color: '#15803d' }}>
+                                  Can Share
                                 </span>
                               )}
                             </div>

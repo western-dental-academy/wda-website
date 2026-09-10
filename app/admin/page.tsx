@@ -109,7 +109,7 @@ export default async function AdminPage() {
         _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
         deliveryMethod, dietaryRestrictions, feedbackToken, feedbackRating, feedbackEnjoyedMost,
-        feedbackImprovement, feedbackWouldRecommend, feedbackSubmittedAt
+        feedbackImprovement, feedbackWouldRecommend, feedbackSubmittedAt, feedbackShareConsent
       }`
     ),
     client.fetch(
@@ -146,13 +146,13 @@ export default async function AdminPage() {
       `*[_type == "workshopRegistration" && defined(feedbackSubmittedAt)] | order(feedbackSubmittedAt desc){
         _id, firstName, lastName, workshop,
         feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
-        feedbackWouldRecommend, feedbackSubmittedAt
+        feedbackWouldRecommend, feedbackSubmittedAt, feedbackShareConsent
       }`
     ),
     client.fetch(
       `*[_type == "workshopFeedback"] | order(submittedAt desc){
         _id, workshopDateId, workshopName, rating,
-        enjoyedMost, improvement, wouldRecommend, submittedAt
+        enjoyedMost, improvement, wouldRecommend, submittedAt, feedbackShareConsent
       }`
     ),
   ])

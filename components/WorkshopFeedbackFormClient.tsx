@@ -13,6 +13,7 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, workshopNam
   const [enjoyedMost, setEnjoyedMost] = useState('')
   const [improvement, setImprovement] = useState('')
   const [wouldRecommend, setWouldRecommend] = useState<boolean | null>(null)
+  const [shareConsent, setShareConsent] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -33,6 +34,7 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, workshopNam
           enjoyedMost,
           improvement,
           wouldRecommend,
+          shareConsent,
         }),
       })
       const data = await res.json()
@@ -166,6 +168,19 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, workshopNam
           ))}
         </div>
       </div>
+
+      <label className="flex items-start gap-3 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={shareConsent}
+          onChange={e => setShareConsent(e.target.checked)}
+          className="mt-1 h-4 w-4 rounded border-gray-300 accent-[#E67E22] cursor-pointer"
+        />
+        <span className="text-sm text-gray-600">
+          I consent to Western Dental Academy sharing my feedback on our website and social media. My name will not be shared without additional permission.
+          <span className="text-gray-400"> (Optional)</span>
+        </span>
+      </label>
 
       {error && (
         <p className="text-sm rounded-lg px-4 py-3" style={{ backgroundColor: 'rgba(229,62,62,0.08)', color: '#c53030' }}>

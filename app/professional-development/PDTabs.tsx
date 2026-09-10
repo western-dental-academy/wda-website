@@ -432,13 +432,9 @@ function ErgonomicsGroupCard({
   index: number;
 }) {
   const allDates = offerings.flatMap((o) => o.dates);
-  const nextDate = getNextUpcomingDate(allDates);
-  const hasUpcoming = nextDate !== null;
+  const hasUpcoming = getNextUpcomingDate(allDates) !== null;
 
   const prefix = "Ergonomics in Healthcare: ";
-  const sessions = offerings
-    .map((o) => (o.title.startsWith(prefix) ? o.title.slice(prefix.length) : o.title))
-    .filter(Boolean);
 
   return (
     <AnimateIn delay={index * 80} className="flex flex-col">
@@ -459,26 +455,6 @@ function ErgonomicsGroupCard({
           >
             Ergonomics in Healthcare
           </h2>
-
-          {nextDate && (
-            <div className="flex items-center gap-1.5 mb-3 -mt-1">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden className="w-3.5 h-3.5 shrink-0" style={{ color: "#378ADD" }}>
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>
-                {new Date(nextDate.date).toLocaleDateString("en-CA", {
-                  timeZone: "America/Edmonton",
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </span>
-            </div>
-          )}
 
           <div className="mb-4">
             <span className="inline-block bg-[#0D3B6E] text-white text-xs font-semibold px-3 py-1 rounded-full">
@@ -506,20 +482,6 @@ function ErgonomicsGroupCard({
             practice. There will be 3 separate sessions available focusing on different areas of the
             body. Each session targets a specific area, so you can attend one or all three.
           </p>
-
-          {sessions.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-5">
-              {sessions.map((session) => (
-                <span
-                  key={session}
-                  className="text-[11px] font-semibold px-3 py-1.5 rounded-lg"
-                  style={{ backgroundColor: "rgba(74,159,212,0.10)", color: "#1E3560" }}
-                >
-                  {session}
-                </span>
-              ))}
-            </div>
-          )}
 
           <ul className="flex flex-col gap-2.5 mb-6 flex-1">
             {[
@@ -587,24 +549,53 @@ function ErgonomicsGroupCard({
             <span style={{ color: "#2B303A" }}>Meets various competencies for the CCP</span>
           </div>
 
-          {hasUpcoming ? (
-            <Link
-              href="/register"
-              className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
-              style={{ backgroundColor: "#E67E22" }}
-            >
-              Register Now
-              <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
-            </Link>
-          ) : (
-            <button
-              disabled
-              className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold self-start cursor-not-allowed"
-              style={{ backgroundColor: "rgba(43,48,58,0.08)", color: "rgba(43,48,58,0.35)" }}
-            >
-              Coming Soon
-            </button>
-          )}
+          <div className="flex flex-col" style={{ borderTop: "1px solid rgba(30,53,96,0.08)" }}>
+            {offerings.map((o) => {
+              const sessionName = o.title.startsWith(prefix)
+                ? o.title.slice(prefix.length)
+                : o.title;
+              const sessionDate = getNextUpcomingDate(o.dates);
+              const href = `/register?offering=${encodeURIComponent(o.title)}`;
+              return (
+                <div
+                  key={o._id}
+                  className="flex items-center gap-3 py-3"
+                  style={{ borderBottom: "1px solid rgba(30,53,96,0.08)" }}
+                >
+                  <span className="text-sm font-bold flex-1 min-w-0" style={{ color: "#1E3560" }}>
+                    {sessionName}
+                  </span>
+                  <span className="text-xs shrink-0" style={{ color: "rgba(43,48,58,0.45)" }}>
+                    {sessionDate
+                      ? new Date(sessionDate.date).toLocaleDateString("en-CA", {
+                          timeZone: "America/Edmonton",
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "No dates scheduled"}
+                  </span>
+                  {sessionDate ? (
+                    <Link
+                      href={href}
+                      className="shrink-0 inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-bold text-white transition-all duration-200 hover:scale-[1.02]"
+                      style={{ backgroundColor: "#E67E22" }}
+                    >
+                      Register <span>→</span>
+                    </Link>
+                  ) : (
+                    <button
+                      disabled
+                      className="shrink-0 inline-flex items-center rounded-lg px-3 py-1.5 text-xs font-bold cursor-not-allowed"
+                      style={{ backgroundColor: "rgba(43,48,58,0.08)", color: "rgba(43,48,58,0.35)" }}
+                    >
+                      Coming Soon
+                    </button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </AnimateIn>

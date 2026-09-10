@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -272,7 +273,10 @@ function CartPanel({
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export default function WorkshopRegisterForm() {
+function WorkshopRegisterFormInner() {
+  const searchParams = useSearchParams();
+  const preselectedOffering = searchParams.get("offering");
+
   const [cart, setCart] = useState<CartItem[]>([]);
   const [form, setForm] = useState<RegistrantForm>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -305,6 +309,26 @@ export default function WorkshopRegisterForm() {
       .catch(() => setDatesError(true))
       .finally(() => setDatesLoading(false));
   }, []);
+
+  const didAutoselect = useRef(false);
+  useEffect(() => {
+    if (didAutoselect.current || !preselectedOffering || datesLoading) return;
+    const match = WORKSHOP_OPTIONS.find(o => o.label === preselectedOffering);
+    if (!match) return;
+    didAutoselect.current = true;
+    setSelectedCategory("event");
+    setForm(f => ({ ...f, workshop: preselectedOffering }));
+    const now = new Date();
+    const firstDate = workshopDates
+      .filter(d =>
+        d.workshop === preselectedOffering &&
+        (d.category === "workshop" || d.category === "guest-speaker") &&
+        new Date(d.date) > now &&
+        !d.isFull
+      )
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
+    if (firstDate) setForm(f => ({ ...f, workshopDateId: firstDate.id }));
+  }, [workshopDates, datesLoading, preselectedOffering]);
 
   function setField<K extends keyof RegistrantForm>(key: K, value: RegistrantForm[K]) {
     setForm(f => ({ ...f, [key]: value }));
@@ -972,5 +996,13 @@ export default function WorkshopRegisterForm() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function WorkshopRegisterForm() {
+  return (
+    <Suspense fallback={null}>
+      <WorkshopRegisterFormInner />
+    </Suspense>
   );
 }

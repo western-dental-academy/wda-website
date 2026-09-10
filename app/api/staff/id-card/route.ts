@@ -33,13 +33,35 @@ export async function GET() {
     )
   }
 
+  // Fetch logo
   const logoRes = await fetch('https://westerndentalacademy.com/Inverted.png')
-  console.log('Logo fetch status:', logoRes.status)
-  console.log('Logo fetch ok:', logoRes.ok)
   const logoBuffer = await logoRes.arrayBuffer()
-  console.log('Logo buffer size:', logoBuffer.byteLength)
   const logoBase64 = `data:image/png;base64,${Buffer.from(logoBuffer).toString('base64')}`
-  console.log('Logo base64 length:', logoBase64.length)
+
+  // Look up matching teamMember for photo
+  let photoBase64: string | null = null
+  try {
+    const teamMember = await sanity.fetch<{ imageUrl: string } | null>(
+      `*[_type == "teamMember" && name match $name][0]{ "imageUrl": image.asset->url }`,
+      { name: staff.fullName ?? '' }
+    )
+    if (teamMember?.imageUrl) {
+      const photoRes = await fetch(`${teamMember.imageUrl}?w=200&h=267&fit=crop&auto=format`)
+      if (photoRes.ok) {
+        const photoBuffer = await photoRes.arrayBuffer()
+        photoBase64 = `data:image/jpeg;base64,${Buffer.from(photoBuffer).toString('base64')}`
+      }
+    }
+  } catch {
+    // Photo is optional — proceed without it
+  }
+
+  // Fetch QR code
+  const qrRes = await fetch(
+    'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://westerndentalacademy.com&bgcolor=ffffff&color=0D3B6E'
+  )
+  const qrBuffer = await qrRes.arrayBuffer()
+  const qrBase64 = `data:image/png;base64,${Buffer.from(qrBuffer).toString('base64')}`
 
   const buffer = await renderToBuffer(
     React.createElement(StaffIdCardDocument, {
@@ -48,6 +70,8 @@ export async function GET() {
       department: staff.department ?? '',
       staffId: staff.staffId,
       logoUrl: logoBase64,
+      photoBase64,
+      qrBase64,
     }) as React.ReactElement<import('@react-pdf/renderer').DocumentProps>
   )
 

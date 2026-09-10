@@ -37,16 +37,42 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+    flexDirection: 'row',
     paddingHorizontal: 11,
     paddingTop: 9,
     paddingBottom: 9,
+  },
+  photoColumn: {
+    width: 60,
+    alignItems: 'center',
+    paddingTop: 1,
+  },
+  photo: {
+    width: 55,
+    height: 73,
+    objectFit: 'cover',
+    borderRadius: 3,
+  },
+  photoPlaceholder: {
+    width: 55,
+    height: 73,
+    borderRadius: 3,
+    backgroundColor: NAVY,
+  },
+  contentColumn: {
+    flex: 1,
+    paddingLeft: 8,
+    flexDirection: 'column',
     justifyContent: 'space-between',
   },
+  topSection: {
+    flexDirection: 'column',
+  },
   name: {
-    fontSize: 14,
+    fontSize: 11,
     fontFamily: 'Helvetica-Bold',
     color: NAVY,
-    marginBottom: 3,
+    marginBottom: 2,
   },
   role: {
     fontSize: 8,
@@ -55,9 +81,10 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   department: {
-    fontSize: 6.5,
+    fontSize: 7,
     fontFamily: 'Helvetica',
     color: '#AAAAAA',
+    letterSpacing: 0.8,
   },
   idSection: {
     flexDirection: 'column',
@@ -66,18 +93,35 @@ const styles = StyleSheet.create({
     fontSize: 5.5,
     fontFamily: 'Helvetica',
     color: BLUE,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   idNumber: {
     fontSize: 10,
     fontFamily: 'Helvetica-Bold',
     color: BLUE,
-    marginBottom: 3,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   issuedDate: {
-    fontSize: 5.5,
+    fontSize: 6,
     fontFamily: 'Helvetica',
     color: '#CCCCCC',
+  },
+  qrSection: {
+    alignItems: 'center',
+  },
+  qrImage: {
+    width: 40,
+    height: 40,
+  },
+  qrLabel: {
+    fontSize: 5,
+    fontFamily: 'Helvetica',
+    color: '#CCCCCC',
+    marginTop: 1,
   },
 })
 
@@ -87,9 +131,11 @@ export interface StaffIdCardProps {
   department: string
   staffId: string
   logoUrl: string
+  photoBase64: string | null
+  qrBase64: string
 }
 
-export function StaffIdCardDocument({ name, role, department, staffId, logoUrl }: StaffIdCardProps) {
+export function StaffIdCardDocument({ name, role, department, staffId, logoUrl, photoBase64, qrBase64 }: StaffIdCardProps) {
   const issuedDate = new Date().toLocaleDateString('en-CA', {
     year: 'numeric',
     month: 'long',
@@ -112,15 +158,41 @@ export function StaffIdCardDocument({ name, role, department, staffId, logoUrl }
 
         {/* Card body */}
         <View style={styles.body}>
-          <View>
-            <Text style={styles.name}>{name}</Text>
-            <Text style={styles.role}>{role}</Text>
-            <Text style={styles.department}>{department ? department.toUpperCase() : ''}</Text>
+
+          {/* Left column — photo or placeholder */}
+          <View style={styles.photoColumn}>
+            {photoBase64 ? (
+              <Image src={photoBase64} style={styles.photo} />
+            ) : (
+              <View style={styles.photoPlaceholder} />
+            )}
           </View>
-          <View style={styles.idSection}>
-            <Text style={styles.idLabel}>STAFF ID</Text>
-            <Text style={styles.idNumber}>{staffId}</Text>
-            <Text style={styles.issuedDate}>Issued {issuedDate}</Text>
+
+          {/* Right column — info + QR */}
+          <View style={styles.contentColumn}>
+
+            {/* Name / role / department */}
+            <View style={styles.topSection}>
+              <Text style={styles.name}>{name}</Text>
+              <Text style={styles.role}>{role}</Text>
+              <Text style={styles.department}>{department ? department.toUpperCase() : ''}</Text>
+            </View>
+
+            {/* Staff ID */}
+            <View style={styles.idSection}>
+              <Text style={styles.idLabel}>STAFF ID</Text>
+              <Text style={styles.idNumber}>{staffId}</Text>
+            </View>
+
+            {/* Bottom row — issue date + QR */}
+            <View style={styles.bottomRow}>
+              <Text style={styles.issuedDate}>Issued {issuedDate}</Text>
+              <View style={styles.qrSection}>
+                <Image src={qrBase64} style={styles.qrImage} />
+                <Text style={styles.qrLabel}>westerndentalacademy.com</Text>
+              </View>
+            </View>
+
           </View>
         </View>
 

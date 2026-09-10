@@ -46,17 +46,17 @@ export const structure: StructureResolver = (S) =>
             .title('Professional Development')
             .items([
               S.listItem()
-                .title('Workshops')
+                .title('Events')
                 .child(
                   S.list()
-                    .title('Workshops')
+                    .title('Events')
                     .items([
                       S.listItem()
                         .title('Offerings')
                         .child(
                           S.documentTypeList('workshopOffering')
                             .title('Offerings')
-                            .filter('_type == "workshopOffering" && category == "workshop"')
+                            .filter('_type == "workshopOffering" && (category == "workshop" || category == "guest-speaker")')
                         ),
                       S.listItem()
                         .title('Workshop Dates')
@@ -75,21 +75,6 @@ export const structure: StructureResolver = (S) =>
                         .child(
                           S.documentTypeList('workshopFeedback')
                             .title('Workshop QR Feedback')
-                        ),
-                    ])
-                ),
-              S.listItem()
-                .title('Guest Speakers')
-                .child(
-                  S.list()
-                    .title('Guest Speakers')
-                    .items([
-                      S.listItem()
-                        .title('Offerings')
-                        .child(
-                          S.documentTypeList('workshopOffering')
-                            .title('Offerings')
-                            .filter('_type == "workshopOffering" && category == "guest-speaker"')
                         ),
                     ])
                 ),

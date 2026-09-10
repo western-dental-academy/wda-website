@@ -462,27 +462,34 @@ function ErgonomicsGroupCard({
 
 // ─── Tabs ──────────────────────────────────────────────────────────────────────
 
-type Tab = "workshops" | "guest-speakers" | "courses" | "practical-exam-prep";
+type Tab = "events" | "courses" | "practical-exam-prep";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "workshops",           label: "Workshops" },
-  { id: "guest-speakers",      label: "Guest Speakers" },
+  { id: "events",              label: "Events" },
   { id: "courses",             label: "Courses" },
   { id: "practical-exam-prep", label: "Practical Exam Prep" },
 ];
 
 export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] }) {
-  const [activeTab, setActiveTab] = useState<Tab>("workshops");
+  const [activeTab, setActiveTab] = useState<Tab>("events");
 
   const ergonomicsOfferings = offerings.filter((o) =>
     o.title.startsWith("Ergonomics in Dentistry")
   );
-  const workshopOfferings = offerings.filter(
-    (o) => o.category === "workshop" && !o.title.startsWith("Ergonomics in Dentistry")
-  );
-  const guestSpeakerOfferings = offerings.filter(
-    (o) => o.category === "guest-speaker"
-  );
+  const eventOfferings = offerings
+    .filter(
+      (o) =>
+        (o.category === "workshop" || o.category === "guest-speaker") &&
+        !o.title.startsWith("Ergonomics in Dentistry")
+    )
+    .sort((a, b) => {
+      const aDate = getNextUpcomingDate(a.dates);
+      const bDate = getNextUpcomingDate(b.dates);
+      if (aDate && bDate) return new Date(aDate.date).getTime() - new Date(bDate.date).getTime();
+      if (aDate) return -1;
+      if (bDate) return 1;
+      return 0;
+    });
   const courseOfferings = offerings.filter(
     (o) => o.category === "course"
   );
@@ -515,24 +522,24 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
           ))}
         </div>
 
-        {/* Workshops */}
-        <div className={activeTab === "workshops" ? undefined : "hidden"}>
+        {/* Events */}
+        <div className={activeTab === "events" ? undefined : "hidden"}>
           <div className="mb-12">
             <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-              Current Workshops
+              Upcoming Events
             </p>
             <h2
               className="text-3xl font-bold leading-tight"
               style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
             >
-              Hands-On Professional Development
+              Professional Development Events
             </h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {ergonomicsOfferings.length > 0 && (
               <ErgonomicsGroupCard offerings={ergonomicsOfferings} index={0} />
             )}
-            {workshopOfferings.map((o, i) => (
+            {eventOfferings.map((o, i) => (
               <WorkshopOfferingCard
                 key={o._id}
                 offering={o}
@@ -540,53 +547,6 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
               />
             ))}
           </div>
-        </div>
-
-        {/* Guest Speakers */}
-        <div className={activeTab === "guest-speakers" ? undefined : "hidden"}>
-          {guestSpeakerOfferings.length > 0 ? (
-            <>
-              <div className="mb-12">
-                <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-                  Guest Speaker Events
-                </p>
-                <h2
-                  className="text-3xl font-bold leading-tight"
-                  style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-                >
-                  Learn From Industry Experts
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {guestSpeakerOfferings.map((o, i) => (
-                  <WorkshopOfferingCard key={o._id} offering={o} index={i} />
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="max-w-2xl mx-auto text-center py-16">
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-                style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={1.5} aria-hidden className="w-8 h-8">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0zM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                </svg>
-              </div>
-              <h2
-                className="text-2xl font-bold mb-4"
-                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-              >
-                Guest Speaker Events
-              </h2>
-              <p className="text-base leading-relaxed mb-6" style={{ color: "#2B303A" }}>
-                Guest speaker opportunities coming soon. Sign up to be notified when guest speaker events are announced.
-              </p>
-              <div className="flex justify-center">
-                <InlineNewsletterForm successMessage="You're subscribed! We'll notify you when guest speaker events are announced." />
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Courses */}

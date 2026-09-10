@@ -317,13 +317,21 @@ export default function WorkshopRegisterForm() {
 
   const workshopsForCategory = selectedCategory
     ? WORKSHOP_OPTIONS.filter(opt =>
-        workshopDates.some(d => d.category === selectedCategory && d.workshop === opt.label)
+        workshopDates.some(d => {
+          const catMatch = selectedCategory === 'event'
+            ? (d.category === 'workshop' || d.category === 'guest-speaker')
+            : d.category === selectedCategory;
+          return catMatch && d.workshop === opt.label;
+        })
       )
     : [];
 
-  const availableDates = workshopDates.filter(
-    (d) => d.workshop === form.workshop && d.category === selectedCategory
-  );
+  const availableDates = workshopDates.filter(d => {
+    const catMatch = selectedCategory === 'event'
+      ? (d.category === 'workshop' || d.category === 'guest-speaker')
+      : d.category === selectedCategory;
+    return d.workshop === form.workshop && catMatch;
+  });
 
   const hasDates = availableDates.length > 0;
   const isNationalBoard = form.workshop.includes("National Board");
@@ -683,8 +691,7 @@ export default function WorkshopRegisterForm() {
                     className="wda-input pr-10 cursor-pointer"
                   >
                     <option value="">Select a category</option>
-                    <option value="workshop">Workshops</option>
-                    <option value="guest-speaker">Guest Speakers</option>
+                    <option value="event">Events</option>
                     <option value="course">Courses</option>
                   </select>
                   <Chevron />

@@ -34,13 +34,13 @@ interface Props {
 const CATEGORY_COLOUR: Record<string, string> = {
   'workshop':      '#16a34a',
   'course':        '#378ADD',
-  'guest-speaker': '#8b5cf6',
+  'guest-speaker': '#16a34a',
 }
 
 const CATEGORY_LABEL: Record<string, string> = {
-  'workshop':      'Workshop',
+  'workshop':      'Event',
   'course':        'Course',
-  'guest-speaker': 'Guest Speaker',
+  'guest-speaker': 'Event',
 }
 
 const BLANK_ADD = { offeringId: '', date: '', active: false }

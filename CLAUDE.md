@@ -9,9 +9,10 @@ This file provides Claude Code with full project context. Read this before makin
 - **NEVER run `npm audit fix` or `npm update`** — Framer Motion is pinned to exactly `12.39.0` via `package.json` and `overrides`. Upgrading silently breaks SSR animations site-wide.
 - **NEVER overwrite the `role` field on `staffMember`** — it controls system access (`staff`/`owner`). Job title is stored in `jobTitle`.
 - **Always use Canadian English** in all copy.
-- **CADA compliance rules** — never use: "program" (use "workshop" or "course"), "certified/certification" (use "Certificate of Attendance"), "accredited", "distance delivery". Use "dental training" not "dental education" (except the preserved tagline). Location is "Edmonton Area" not "Sherwood Park".
+- **CADA compliance rules** — never use: "program" (use "workshop", "course", or "event"), "certified/certification" (use "Certificate of Attendance"), "accredited", "distance delivery". Use "dental training" not "dental education" (except the preserved tagline). Location is "Edmonton Area" not "Sherwood Park".
 - **Middleware file is `proxy.ts`** not `middleware.ts` — Clerk's `clerkMiddleware()` lives there.
 - **Two Sanity accounts exist** — only use project `p8yox22i` (Microsoft login). The other (`lgaofd9n`, Google login) is empty/unused.
+- **Workshop name keys must match Sanity offering titles exactly** — WORKSHOP_PRICES keys, OFFERING_STATIC keys, and lib/workshops/offerings.ts keys must all match the Sanity `workshopOffering.title` field exactly or registration/certificate lookups will fail.
 
 ---
 
@@ -105,14 +106,15 @@ git checkout main && git merge full-platform && git push origin HEAD
 | `RECAPTCHA_SECRET_KEY` | reCAPTCHA v3 server-side |
 | `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | reCAPTCHA v3 client-side |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics 4 |
-| `NEXT_PUBLIC_CLARITY_ID` | Microsoft Clarity (hardcoded: `ybgoq5pp4m`) |
+| `AZURE_TENANT_ID` | Microsoft Graph API tenant (`ace28189-3767-4d67-b9ee-402dffc1db52`) |
+| `AZURE_CLIENT_ID` | Microsoft Graph API client |
+| `AZURE_CLIENT_SECRET` | Microsoft Graph API secret |
 | `VERCEL_ACCESS_TOKEN` | Maintenance mode toggle |
 | `VERCEL_PROJECT_ID` | Vercel project ID |
 | `VERCEL_MAINTENANCE_ENV_ID` | `KhTLQMVKSoi0hVsZ` |
 | `VERCEL_REPO_ID` | `1244021411` |
-| `AZURE_TENANT_ID` | Microsoft Graph API tenant |
-| `AZURE_CLIENT_ID` | Microsoft Graph API client |
-| `AZURE_CLIENT_SECRET` | Microsoft Graph API secret |
+
+**Note:** Microsoft Clarity ID is hardcoded directly in `components/MicrosoftClarity.tsx` as `ybgoq5pp4m` — not stored as env var.
 
 ---
 
@@ -142,53 +144,70 @@ git checkout main && git merge full-platform && git push origin HEAD
 |---|---|
 | `workshopOffering` | The "what" — title, category, description, price, virtualPrice, hasVirtualOption, capacity, hours, cadaCppCodes, includesFood, teamsWebinarId, feedbackEnabled |
 | `workshopDate` | The "when" — reference to offering, date, active, feedbackEnabled |
-| `workshopRegistration` | Individual registrant record — links to workshopDate, stores Stripe session, deliveryMethod, pronouns, mediaConsent, dietaryRestrictions, feedbackToken, feedbackRating, feedbackSubmittedAt, teamsRegistrationId |
+| `workshopRegistration` | Individual registrant record — links to workshopDate via workshopDateId, stores workshop name as plain string (frozen at checkout time), deliveryMethod, pronouns, mediaConsent, dietaryRestrictions, feedbackToken, feedbackRating, feedbackSubmittedAt, feedbackShareConsent, teamsRegistrationId |
 | `workshopWaitlist` | Waitlist entries for full workshops |
-| `workshopFeedback` | Anonymous QR code feedback (separate from per-registrant feedback) |
+| `workshopFeedback` | Anonymous QR code feedback — workshopDateId, rating, enjoyedMost, improvement, wouldRecommend, shareConsent, submittedAt |
 
 ### Sanity Studio Structure
 ```
 Professional Development
-  └── Workshops
-        ├── Offerings (filtered: category == 'workshop')
+  └── Events
+        ├── Offerings (filtered: category == 'workshop' || category == 'guest-speaker')
         ├── Workshop Dates
         ├── Workshop Registrations
         ├── Workshop Waitlist
         └── Workshop QR Feedback
-  └── Guest Speakers
-        └── Offerings (filtered: category == 'guest-speaker')
   └── Courses
         └── Offerings (filtered: category == 'course')
-Staff (under Staff Time Tracking group)
+Staff Time Tracking
+  └── Staff Members
 ```
 
 ---
 
-## Workshop Offerings (Current)
+## Workshop Offerings (Current in Sanity)
 
-| Offering | Category | Price | Virtual | Capacity | Hours | CADA Codes |
+| Offering (Sanity title — must match exactly) | Category | Price | Virtual | Capacity | Hours | CADA Codes |
 |---|---|---|---|---|---|---|
-| Ergonomics in Healthcare: Hands, Feet and Spine | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
-| Ergonomics in Healthcare: Hips and Hamstrings | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
 | Ergonomics in Healthcare: Neck and Shoulders | workshop | $40 | No | 15 | 1.5 | B-4-2, I-5-3, I-5-4 |
-| National Board Guided Practice | workshop | $750 | No | — | 8 | — |
 | Renewal Wellness | guest-speaker | $129 in-person / $99 virtual | Yes | 20 in-person / unlimited virtual | 6.25 | I-2-1, D-3-1, G-3-TBD, I-5-4, B-5-3 |
 
-**Note:** Ergonomics three sessions shown as one grouped card on PD page. Offerings only added to Sanity when ready to schedule.
+**Offerings not yet in Sanity (add when scheduling):**
+- Ergonomics in Healthcare: Hands, Feet and Spine ($40, 15 cap, 1.5hrs)
+- Ergonomics in Healthcare: Hips and Hamstrings ($40, 15 cap, 1.5hrs)
+- National Board Guided Practice ($750, 8hrs)
+
+**WORKSHOP_PRICES keys** (must match Sanity titles exactly):
+- `"Ergonomics in Healthcare: Neck and Shoulders"` → 40
+- `"Ergonomics in Healthcare: Hands, Feet and Spine"` → 40
+- `"Ergonomics in Healthcare: Hips and Hamstrings"` → 40
+- `"Renewal Wellness"` → 129
+- `"National Board Guided Practice"` → 750
+
+---
+
+## Category Consolidation
+
+Workshops and Guest Speakers are consolidated into **"Events"** on the frontend:
+- Sanity backend values remain: `workshop`, `guest-speaker`, `course`
+- Display label for both `workshop` and `guest-speaker` = "Event"
+- Registration form category dropdown: "Events" (covers both), "Courses"
+- PD page tabs: "Events", "Courses", "Practical Exam Prep"
+- Home page "What We Offer": "Events" (merged), "Courses"
 
 ---
 
 ## Registration Flow
 
-1. Registrant selects category (dropdown) → selects workshop → selects date
+1. Registrant selects category (Events/Courses dropdown) → selects offering → selects date
 2. If `hasVirtualOption`: In-Person/Virtual toggle appears, price updates dynamically
 3. If in-person + `includesFood`: dietary restrictions textarea appears
-4. Primary registrant fills full form (name, email, pronouns, dental background, CADA number, media consent)
+4. Primary registrant fills full form (name, email, phone, pronouns, dental background, CADA number, media consent)
 5. Additional registrants: simplified form (no pronouns/media consent)
 6. Each person added to cart — capacity checked per add (virtual = unlimited, in-person = enforced)
 7. Single Stripe checkout session created with one line item per registrant
 8. On success (`/register/success`):
-   - Each registrant gets individual confirmation email (Resend)
+   - Each registrant gets individual confirmation email (Resend) including agenda for Renewal Wellness
    - Primary registrant gets receipt email with all registrants listed
    - Virtual registrants auto-registered in Teams webinar via Microsoft Graph API
    - Teams sends each virtual registrant their unique join link
@@ -201,9 +220,9 @@ Staff (under Staff Time Tracking group)
 ### Workshop Routes
 | Route | Method | Purpose |
 |---|---|---|
-| `/api/workshops/dates` | GET | Fetch active workshop dates with offering details |
+| `/api/workshops/dates` | GET | Fetch active future workshop dates with offering details |
 | `/api/workshops/checkout` | POST | Create Stripe checkout session (multi-registrant) |
-| `/api/workshops/check-capacity` | GET | Check remaining capacity for a date |
+| `/api/workshops/check-capacity` | GET | Check remaining capacity for a date + deliveryMethod |
 | `/api/feedback` | POST | Submit per-registrant feedback (token-based) |
 | `/api/feedback/workshop` | POST | Submit anonymous QR feedback |
 
@@ -259,7 +278,6 @@ Located at `/admin`. Tabs:
 - Logo fetched as base64 at request time from `https://westerndentalacademy.com/Inverted.png`
 - Fields on card: name, jobTitle, department, staffId, issued date
 - Download button in both `/staff` portal and Staff tab of WDA Hub
-- `staffId`, `jobTitle`, `department` stored on `staffMember` Sanity schema
 
 **Assigned IDs:**
 | Name | Staff ID | Job Title | Department |
@@ -280,18 +298,20 @@ Located at `/admin`. Tabs:
 - Triggered after check-in — certificate email includes "Leave Feedback" button
 - URL: `/feedback?token=XXXX` (token = `crypto.randomUUID()`, stored on `workshopRegistration`)
 - One-time use — `feedbackSubmittedAt` guards against resubmission
-- Fields: 1-5 star rating, enjoyed most (optional), improvement (optional), would recommend (Yes/No)
+- Fields: 1-5 star rating, enjoyed most (optional), improvement (optional), would recommend (Yes/No), share consent (optional)
 
 ### Anonymous QR Feedback
 - QR code shown in PD Schedule panel per workshop date
 - URL: `/feedback/workshop/[workshopDateId]`
 - Stored as separate `workshopFeedback` documents in Sanity
+- Fields: same as above + shareConsent boolean
 - `feedbackEnabled` boolean on `workshopDate` controls availability
 
 ### Admin Display
 - Both sources merged into unified "PD Feedback" panel in PD tab
 - Normalized to common interface, grouped by workshop, sorted by date
 - Source badge: navy "Via Email" / grey "Via QR"
+- Green "Can Share" badge on entries where shareConsent is true
 
 ---
 
@@ -300,10 +320,10 @@ Located at `/admin`. Tabs:
 - **Purpose:** Auto-register virtual attendees in Teams webinar on payment completion
 - **Flow:** Stripe payment success → `registerTeamsWebinarAttendee()` → Teams sends unique join link to each attendee
 - **Helper:** `lib/microsoft-graph.ts` — `graphClient` + `registerTeamsWebinarAttendee()`
-- **Credentials:** `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` (app registration in Azure AD)
 - **Webinar ID stored:** `teamsWebinarId` field on `workshopOffering` in Sanity
 - **Registration ID stored:** `teamsRegistrationId` on `workshopRegistration` after successful Graph API call
 - **Renewal Wellness Webinar ID:** `9c637229-bcf5-40f2-b96d-0bfb2da1bf7b`
+- **Tenant ID:** `ace28189-3767-4d67-b9ee-402dffc1db52`
 - **Confirmation email:** Virtual attendees told "You will receive a unique Microsoft Teams join link directly from Microsoft"
 - Teams handles unique link delivery — no manual link sending needed
 
@@ -313,16 +333,35 @@ Located at `/admin`. Tabs:
 
 - Route: `/professional-development`
 - `force-dynamic` + `cache: 'no-store'` — always fetches fresh from Sanity
-- Ergonomics offerings (title starts with "Ergonomics in Healthcare") grouped as single card
+- **Tabs:** Events, Courses, Practical Exam Prep
+- Ergonomics offerings (title starts with "Ergonomics in Healthcare") grouped as single card in Events tab
+- Renewal Wellness (category: guest-speaker) appears in Events tab
 - All other offerings rendered as individual `WorkshopOfferingCard` components
-- `OFFERING_STATIC` map in `PDTabs.tsx` controls highlights, tags, displayTitle overrides, food notes, agenda notes
+- `OFFERING_STATIC` map in `PDTabs.tsx` controls highlights, tags, displayTitle overrides, food notes, agenda notes, date overrides, speaker accordions
 - Card shows "Registration Open" (green) if active date exists, "Coming Soon" (amber) if not
-- Offerings pulled from Sanity automatically — add new offering in Studio to have it appear
 
 ### OFFERING_STATIC Keys (must match Sanity title exactly)
 - `"Ergonomics in Healthcare: Neck and Shoulders"` (and other Ergonomics variants)
-- `"Renewal Wellness"` — displayTitle: "Renewal Wellness Guest Speaker Event", durationOverride: "All Day Event"
+- `"Renewal Wellness"` — displayTitle: "Renewal Wellness Guest Speaker Event", durationOverride: "All Day Event", dateOverride: "October 3, 2026", includesFood note, speakers accordion (5 speakers)
 - `"National Board Guided Practice"`
+
+### Renewal Wellness Speakers (in accordion on PD page)
+1. Jolene Moore — Western Dental Academy — Registration Renewal Unraveled
+2. Samantha Coleman & Emily Griffiths — Sleep Well Diagnostics Ltd — Obstructive Sleep Apnea
+3. TBD — Session 3
+4. Josie McKenzie — PFSL Investments — Financial Wellness — Drill Down Into Your Finances
+5. Tony Korobanik — Prepared Now — Limiting Your Liability in Emergency Situations
+
+### Renewal Wellness Confirmation Email Agenda
+- 8:15 – 8:45 AM: Welcome & Introductions (refreshments)
+- 8:30 – 8:45 AM: Virtual Welcome
+- 8:45 – 9:30 AM: Registration Renewal Unraveled — Jolene Moore
+- 9:30 – 10:30 AM: Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths
+- 10:30 – 10:45 AM: Morning Break (refreshments)
+- 10:45 AM – 12:00 PM: Session 3 — TBD
+- 12:00 – 12:45 PM: Lunch Break (lunch provided for in-person)
+- 12:45 – 2:00 PM: Financial Wellness — Drill Down Into Your Finances — Josie McKenzie
+- 2:00 – 4:00 PM: Limiting Your Liability in Emergency Situations — Tony Korobanik
 
 ---
 
@@ -330,14 +369,14 @@ Located at `/admin`. Tabs:
 
 | Page | Route | Notes |
 |---|---|---|
-| Home | `/` | Hero, stats, workshop preview, CTA |
+| Home | `/` | Hero, stats, What We Offer (Events + Courses), CTA |
 | About | `/about` | Team, mission, values |
-| Professional Development | `/professional-development` | Dynamic workshop cards from Sanity |
-| Practical Exam Prep | `/national-board-guided-practice` | Redirected from `/national-board-preparation` |
+| Professional Development | `/professional-development` | Dynamic event cards from Sanity, force-dynamic |
+| Practical Exam Prep | `/national-board-guided-practice` | Redirected from `/national-board-preparation`, price $750 |
 | Blog | `/blog` | Sanity-powered |
 | Contact | `/contact` | Contact form + FAQ section |
 | Sponsorship | `/sponsorship` | Footer-only link |
-| Register | `/register` | Multi-registrant cart registration form |
+| Register | `/register` | Multi-registrant cart, category dropdown (Events/Courses) |
 | Register Success | `/register/success` | Post-payment confirmation |
 | Feedback | `/feedback` | Per-registrant token-based feedback form |
 | Feedback (QR) | `/feedback/workshop/[id]` | Anonymous QR feedback form |
@@ -356,7 +395,7 @@ Located at `/admin`. Tabs:
 
 - **URL:** learn.westerndentalacademy.com
 - **Server:** DigitalOcean TOR1, `143.110.221.1`, SSH: `ssh root@143.110.221.1`
-- **Docker:** containers `wda_moodle` / `wda_moodle_db` at `/opt/moodle`
+- **Hosted directly on droplet** — not in Docker containers
 - **Config:** `$CFG->sslproxy = true`, nginx proxies 443→8080 with exact Host header match
 - **DAC-DD course ID:** 2
 - **WDA SIS webservice token:** generated, 12 functions enabled
@@ -367,7 +406,7 @@ Located at `/admin`. Tabs:
 
 - Project ID: `ybgoq5pp4m`
 - Account: `aiden@westerndentalacademy.com`
-- Hardcoded in `components/MicrosoftClarity.tsx` (not env var — Clarity IDs are public)
+- Hardcoded in `components/MicrosoftClarity.tsx`
 - Only fires after cookie consent accepted
 
 ---
@@ -386,6 +425,7 @@ Located at `/admin`. Tabs:
 - **Vercel preview URLs** throw Clerk middleware errors — expected, production domain unaffected
 - **Resend IT health check returns 401** — expected for send-only API key, treated as "Operational"
 - **Ryan Zmurchuk** has not accepted Clerk invite
+- **workshopRegistration.workshop** is a plain string frozen at checkout time — updating offering titles in Sanity does not retroactively update existing registrations
 
 ---
 
@@ -394,11 +434,11 @@ Located at `/admin`. Tabs:
 - `proxy.ts` — Clerk middleware (not `middleware.ts`)
 - `lib/staff/idCard.tsx` — Staff ID card PDF generator
 - `lib/microsoft-graph.ts` — Microsoft Graph API helper
-- `lib/workshops/offerings.ts` — Workshop metadata map (hours, CADA codes, pricing)
+- `lib/workshops/offerings.ts` — Workshop metadata map (hours, CADA codes, pricing) — keys must match Sanity titles exactly
 - `lib/workshops/certificate.tsx` — Certificate of Attendance PDF generator
 - `components/AdminTabs.tsx` — Main WDA Hub tab controller
 - `components/admin/AdminMarketing.tsx` — Marketing tab
 - `components/admin/AdminWorkshopFeedback.tsx` — Unified PD Feedback panel
 - `components/staff/DownloadIdCardButton.tsx` — Staff ID card download button
 - `scripts/migrate-workshop-offerings.ts` — One-time migration script (DRY_RUN=true, do not run again)
-- `app/professional-development/PDTabs.tsx` — PD page tab content + dynamic cards
+- `app/professional-development/PDTabs.tsx` — PD page tab content + dynamic cards + OFFERING_STATIC map + speaker accordions

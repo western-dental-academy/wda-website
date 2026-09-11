@@ -422,11 +422,13 @@ function WorkshopRegisterFormInner() {
     try {
       const res = await fetch(`/api/workshops/check-capacity?workshopDateId=${form.workshopDateId}&deliveryMethod=${deliveryMethod}`);
       const data = await res.json();
-      const { available } = data as { available: number };
-      const cartCountForDate = cart.filter(c => c.workshopDateId === form.workshopDateId).length;
-      if (available - cartCountForDate <= 0) {
-        setWaitlistMode(true);
-        return;
+      const { available, unlimited } = data as { available: number | null; unlimited: boolean };
+      if (!unlimited) {
+        const cartCountForDate = cart.filter(c => c.workshopDateId === form.workshopDateId).length;
+        if ((available ?? 0) - cartCountForDate <= 0) {
+          setWaitlistMode(true);
+          return;
+        }
       }
     } catch {
       // Capacity check failed — server will recheck at checkout
@@ -936,7 +938,7 @@ function WorkshopRegisterFormInner() {
               </div>
             )}
 
-            {waitlistMode && !waitlistSuccess && (
+            {waitlistMode && !waitlistSuccess && deliveryMethod !== 'virtual' && (
               <div className="rounded-xl p-4" style={{ backgroundColor: "rgba(230,126,34,0.06)", border: "1.5px solid rgba(230,126,34,0.25)" }}>
                 <p className="text-sm font-semibold mb-1" style={{ color: "#92400e" }}>
                   This workshop date is currently full.

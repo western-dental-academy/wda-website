@@ -121,6 +121,7 @@ function WorkshopRegisterFormInner() {
   const searchParams = useSearchParams();
   const preselectedOffering = searchParams.get("offering");
   const preselectedDateId = searchParams.get("dateId");
+  const preselectedDelivery = searchParams.get("delivery") as 'in-person' | 'virtual' | null;
 
   const [form, setForm] = useState<RegistrantForm>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -141,6 +142,7 @@ function WorkshopRegisterFormInner() {
   const [deliveryMethod, setDeliveryMethod] = useState<'in-person' | 'virtual'>('in-person');
 
   useEffect(() => {
+    if (didAutoselect.current) return;
     setDeliveryMethod('in-person');
   }, [form.workshopDateId]);
 
@@ -173,7 +175,12 @@ function WorkshopRegisterFormInner() {
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
     const selectedDate = targeted ?? firstAvailable;
     setForm(f => ({ ...f, workshop: preselectedOffering, workshopDateId: selectedDate?.id ?? "" }));
-  }, [workshopDates, datesLoading, preselectedOffering, preselectedDateId]);
+    if (preselectedDelivery === 'virtual' && selectedDate?.hasVirtualOption) {
+      setDeliveryMethod('virtual');
+    } else if (preselectedDelivery === 'in-person') {
+      setDeliveryMethod('in-person');
+    }
+  }, [workshopDates, datesLoading, preselectedOffering, preselectedDateId, preselectedDelivery]);
 
   function setField<K extends keyof RegistrantForm>(key: K, value: RegistrantForm[K]) {
     setForm(f => ({ ...f, [key]: value }));

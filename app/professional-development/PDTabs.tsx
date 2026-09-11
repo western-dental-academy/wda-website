@@ -161,6 +161,7 @@ function WorkshopOfferingCard({
   const hasUpcoming = nextDate !== null;
   const staticContent = OFFERING_STATIC[offering.title];
   const [openSpeakers, setOpenSpeakers] = useState<Record<number, boolean>>({});
+  const [expanded, setExpanded] = useState(false);
 
   function toggleSpeaker(i: number) {
     setOpenSpeakers((prev) => ({ ...prev, [i]: !prev[i] }));
@@ -173,7 +174,7 @@ function WorkshopOfferingCard({
     priceDisplay = `$${offering.price} CAD`;
   }
 
-  const durationDisplay = staticContent?.durationOverride ?? (offering.hours != null ? `${offering.hours} CADA CCP Hours` : null);
+  const durationDisplay = staticContent?.durationOverride ?? (offering.hours != null ? `${offering.hours} CCP Hours` : null);
 
   const cadaNote =
     staticContent?.cadaNote ??
@@ -231,172 +232,195 @@ function WorkshopOfferingCard({
             </div>
           )}
 
-          {offering.description && (
-            <p className="text-sm leading-relaxed mb-3" style={{ color: "#2B303A" }}>
-              {offering.description}
-            </p>
-          )}
-          {staticContent?.foodNote && (
-            <p className="text-xs leading-relaxed mb-6" style={{ color: "#E67E22", fontStyle: "italic" }}>
-              {staticContent.foodNote}
-            </p>
-          )}
-
-          {staticContent?.highlights && staticContent.highlights.length > 0 && (
-            <ul className="flex flex-col gap-2.5 mb-6 flex-1">
-              {staticContent.highlights.map((h) => (
-                <li key={h} className="flex items-start gap-2.5">
-                  <span style={{ color: "#4A9FD4" }}>
-                    <CheckIcon />
-                  </span>
-                  <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
-                    {h}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {staticContent?.speakers && staticContent.speakers.length > 0 && (
-            <div className="mb-6">
-              <p
-                className="text-xs font-bold uppercase tracking-[0.15em] mb-3"
-                style={{ color: "rgba(30,53,96,0.45)" }}
-              >
-                Speakers
-              </p>
-              <div
-                className="rounded-xl overflow-hidden"
-                style={{ border: "1.5px solid rgba(30,53,96,0.1)" }}
-              >
-                {staticContent.speakers.map((speaker, i) => {
-                  const isOpen = !!openSpeakers[i];
-                  const isLast = i === staticContent.speakers!.length - 1;
-                  return (
-                    <div
-                      key={i}
-                      style={
-                        !isLast
-                          ? { borderBottom: "1px solid rgba(30,53,96,0.08)" }
-                          : undefined
-                      }
-                    >
-                      <button
-                        type="button"
-                        onClick={() => toggleSpeaker(i)}
-                        className="w-full flex items-start justify-between gap-3 px-4 py-3 text-left transition-colors duration-150"
-                        style={{ backgroundColor: isOpen ? "rgba(30,53,96,0.03)" : "transparent" }}
-                        aria-expanded={isOpen}
-                      >
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-baseline gap-1.5">
-                            <span className="text-sm font-bold" style={{ color: "#1E3560" }}>
-                              {speaker.name}
-                            </span>
-                            {speaker.affiliation && (
-                              <>
-                                <span className="text-xs" style={{ color: "rgba(30,53,96,0.3)" }}>·</span>
-                                <span className="text-xs italic" style={{ color: "rgba(43,48,58,0.5)" }}>
-                                  {speaker.affiliation}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                          <p className="text-xs mt-0.5" style={{ color: "#378ADD" }}>
-                            {speaker.topic}
-                          </p>
-                        </div>
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth={2.5}
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          aria-hidden
-                          className="w-3.5 h-3.5 shrink-0 mt-1 transition-transform duration-200"
-                          style={{
-                            color: "rgba(30,53,96,0.35)",
-                            transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-                          }}
-                        >
-                          <polyline points="6 9 12 15 18 9" />
-                        </svg>
-                      </button>
-                      {isOpen && (
-                        <div className="px-4 pb-3">
-                          <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.65)" }}>
-                            {speaker.description}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
-
-          {staticContent?.tags && staticContent.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {staticContent.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[11px] font-semibold px-3 py-1 rounded-full"
-                  style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
-          {staticContent?.agendaNote && (
-            <p className="text-xs mb-5 leading-relaxed" style={{ color: "rgba(43,48,58,0.5)", fontStyle: "italic" }}>
-              {staticContent.agendaNote}
-            </p>
-          )}
-
-          {(staticContent?.whatToBring || staticContent?.idealFor) && (
-            <div className="mb-5 flex flex-col gap-2">
-              {staticContent.whatToBring && (
-                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-                  <span
-                    className="font-bold uppercase tracking-wide"
-                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
-                  >
-                    What to bring:{" "}
-                  </span>
-                  {staticContent.whatToBring}
-                </p>
-              )}
-              {staticContent.idealFor && (
-                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-                  <span
-                    className="font-bold uppercase tracking-wide"
-                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
-                  >
-                    Ideal for:{" "}
-                  </span>
-                  {staticContent.idealFor}
-                </p>
-              )}
-            </div>
-          )}
-
-          {cadaNote && (
+          {/* Collapsible body */}
+          <div className="relative">
             <div
-              className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
-              style={{
-                backgroundColor: "rgba(230,126,34,0.08)",
-                border: "1px solid rgba(230,126,34,0.18)",
-              }}
+              className={expanded ? "" : "overflow-hidden"}
+              style={{ maxHeight: expanded ? undefined : 320 }}
             >
-              <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
-              <span style={{ color: "#2B303A" }}>{cadaNote}</span>
+              {offering.description && (
+                <p className="text-sm leading-relaxed mb-3" style={{ color: "#2B303A" }}>
+                  {offering.description}
+                </p>
+              )}
+              {staticContent?.foodNote && (
+                <p className="text-xs leading-relaxed mb-6" style={{ color: "#E67E22", fontStyle: "italic" }}>
+                  {staticContent.foodNote}
+                </p>
+              )}
+
+              {staticContent?.highlights && staticContent.highlights.length > 0 && (
+                <ul className="flex flex-col gap-2.5 mb-6">
+                  {staticContent.highlights.map((h) => (
+                    <li key={h} className="flex items-start gap-2.5">
+                      <span style={{ color: "#4A9FD4" }}>
+                        <CheckIcon />
+                      </span>
+                      <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
+                        {h}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {staticContent?.speakers && staticContent.speakers.length > 0 && (
+                <div className="mb-6">
+                  <p
+                    className="text-xs font-bold uppercase tracking-[0.15em] mb-3"
+                    style={{ color: "rgba(30,53,96,0.45)" }}
+                  >
+                    Speakers
+                  </p>
+                  <div
+                    className="rounded-xl overflow-hidden"
+                    style={{ border: "1.5px solid rgba(30,53,96,0.1)" }}
+                  >
+                    {staticContent.speakers.map((speaker, i) => {
+                      const isOpen = !!openSpeakers[i];
+                      const isLast = i === staticContent.speakers!.length - 1;
+                      return (
+                        <div
+                          key={i}
+                          style={
+                            !isLast
+                              ? { borderBottom: "1px solid rgba(30,53,96,0.08)" }
+                              : undefined
+                          }
+                        >
+                          <button
+                            type="button"
+                            onClick={() => toggleSpeaker(i)}
+                            className="w-full flex items-start justify-between gap-3 px-4 py-3 text-left transition-colors duration-150"
+                            style={{ backgroundColor: isOpen ? "rgba(30,53,96,0.03)" : "transparent" }}
+                            aria-expanded={isOpen}
+                          >
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-baseline gap-1.5">
+                                <span className="text-sm font-bold" style={{ color: "#1E3560" }}>
+                                  {speaker.name}
+                                </span>
+                                {speaker.affiliation && (
+                                  <>
+                                    <span className="text-xs" style={{ color: "rgba(30,53,96,0.3)" }}>·</span>
+                                    <span className="text-xs italic" style={{ color: "rgba(43,48,58,0.5)" }}>
+                                      {speaker.affiliation}
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                              <p className="text-xs mt-0.5" style={{ color: "#378ADD" }}>
+                                {speaker.topic}
+                              </p>
+                            </div>
+                            <svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth={2.5}
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              aria-hidden
+                              className="w-3.5 h-3.5 shrink-0 mt-1 transition-transform duration-200"
+                              style={{
+                                color: "rgba(30,53,96,0.35)",
+                                transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                              }}
+                            >
+                              <polyline points="6 9 12 15 18 9" />
+                            </svg>
+                          </button>
+                          {isOpen && (
+                            <div className="px-4 pb-3">
+                              <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.65)" }}>
+                                {speaker.description}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
+
+              {staticContent?.tags && staticContent.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {staticContent.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                      style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {staticContent?.agendaNote && (
+                <p className="text-xs mb-5 leading-relaxed" style={{ color: "rgba(43,48,58,0.5)", fontStyle: "italic" }}>
+                  {staticContent.agendaNote}
+                </p>
+              )}
+
+              {(staticContent?.whatToBring || staticContent?.idealFor) && (
+                <div className="mb-5 flex flex-col gap-2">
+                  {staticContent.whatToBring && (
+                    <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                      <span
+                        className="font-bold uppercase tracking-wide"
+                        style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                      >
+                        What to bring:{" "}
+                      </span>
+                      {staticContent.whatToBring}
+                    </p>
+                  )}
+                  {staticContent.idealFor && (
+                    <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                      <span
+                        className="font-bold uppercase tracking-wide"
+                        style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                      >
+                        Ideal for:{" "}
+                      </span>
+                      {staticContent.idealFor}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {cadaNote && (
+                <div
+                  className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
+                  style={{
+                    backgroundColor: "rgba(230,126,34,0.08)",
+                    border: "1px solid rgba(230,126,34,0.18)",
+                    color: "#2B303A",
+                  }}
+                >
+                  {cadaNote}
+                </div>
+              )}
             </div>
-          )}
+            {!expanded && (
+              <div
+                className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+                style={{ background: "linear-gradient(to bottom, transparent, #F4F7F9)" }}
+              />
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setExpanded((p) => !p)}
+            className="self-start text-xs font-bold mt-1 mb-4 transition-colors duration-150"
+            style={{ color: "#1E3560" }}
+          >
+            {expanded ? "Show Less ↑" : "Read More ↓"}
+          </button>
+          <div className="flex-1" />
 
           {hasUpcoming ? (
             <>
@@ -454,6 +478,7 @@ function ErgonomicsGroupCard({
 }) {
   const allDates = offerings.flatMap((o) => o.dates);
   const hasUpcoming = getNextUpcomingDate(allDates) !== null;
+  const [expanded, setExpanded] = useState(false);
 
   const prefix = "Ergonomics in Healthcare: ";
 
@@ -493,82 +518,105 @@ function ErgonomicsGroupCard({
             </span>
           </div>
 
-          <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
-            Developed by a Registered Dental Assistant (RDA) and RYT 200. Healthcare professionals
-            spend countless hours caring for others, often in sustained postures that place
-            significant demands on the body. This interactive workshop is designed specifically for
-            healthcare professionals who want to understand the impact of ergonomics and
-            develop practical strategies to prevent pain, injury, and burnout. Includes guided
-            breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation
-            practice. There will be 3 separate sessions available focusing on different areas of the
-            body. Each session targets a specific area, so you can attend one or all three.
-          </p>
+          {/* Collapsible body */}
+          <div className="relative">
+            <div
+              className={expanded ? "" : "overflow-hidden"}
+              style={{ maxHeight: expanded ? undefined : 320 }}
+            >
+              <p className="text-sm leading-relaxed mb-4" style={{ color: "#2B303A" }}>
+                Developed by a Registered Dental Assistant (RDA) and RYT 200. Healthcare professionals
+                spend countless hours caring for others, often in sustained postures that place
+                significant demands on the body. This interactive workshop is designed specifically for
+                healthcare professionals who want to understand the impact of ergonomics and
+                develop practical strategies to prevent pain, injury, and burnout. Includes guided
+                breathwork, yoga-inspired movement, stretches, and a closing Yoga Nidra relaxation
+                practice. There will be 3 separate sessions available focusing on different areas of the
+                body. Each session targets a specific area, so you can attend one or all three.
+              </p>
 
-          <ul className="flex flex-col gap-2.5 mb-6 flex-1">
-            {[
-              "Ergonomic risk factors and posture principles for dental practice",
-              "Guided breathwork techniques to reduce tension and support focus",
-              "Yoga-inspired movement sequences adapted for healthcare professionals",
-              "Targeted stretches for specific areas of the body",
-              "Closing Yoga Nidra relaxation practice",
-            ].map((h) => (
-              <li key={h} className="flex items-start gap-2.5">
-                <span style={{ color: "#4A9FD4" }}>
-                  <CheckIcon />
-                </span>
-                <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
-                  {h}
-                </span>
-              </li>
-            ))}
-          </ul>
+              <ul className="flex flex-col gap-2.5 mb-6">
+                {[
+                  "Ergonomic risk factors and posture principles for dental practice",
+                  "Guided breathwork techniques to reduce tension and support focus",
+                  "Yoga-inspired movement sequences adapted for healthcare professionals",
+                  "Targeted stretches for specific areas of the body",
+                  "Closing Yoga Nidra relaxation practice",
+                ].map((h) => (
+                  <li key={h} className="flex items-start gap-2.5">
+                    <span style={{ color: "#4A9FD4" }}>
+                      <CheckIcon />
+                    </span>
+                    <span className="text-sm leading-relaxed" style={{ color: "#2B303A" }}>
+                      {h}
+                    </span>
+                  </li>
+                ))}
+              </ul>
 
-          <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
+              <div className="mb-5 h-px" style={{ backgroundColor: "rgba(30,53,96,0.1)" }} />
 
-          <div className="flex flex-wrap gap-2 mb-6">
-            {["Interactive", "Wellness", "CADA CCP Support", "Certificate of Attendance"].map((tag) => (
-              <span
-                key={tag}
-                className="text-[11px] font-semibold px-3 py-1 rounded-full"
-                style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {["Interactive", "Wellness", "CCP Support", "Certificate of Attendance"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="text-[11px] font-semibold px-3 py-1 rounded-full"
+                    style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "#1E3560" }}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mb-5 flex flex-col gap-2">
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    What to bring:{" "}
+                  </span>
+                  Water bottle, yoga mat, and comfortable clothes
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    Ideal for:{" "}
+                  </span>
+                  Dentists, dental hygienists, dental assistants, treatment coordinators, and all dental
+                  team members
+                </p>
+              </div>
+
+              <div
+                className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
+                style={{
+                  backgroundColor: "rgba(230,126,34,0.08)",
+                  border: "1px solid rgba(230,126,34,0.18)",
+                  color: "#2B303A",
+                }}
               >
-                {tag}
-              </span>
-            ))}
+                Meets various competencies for the CCP
+              </div>
+            </div>
+            {!expanded && (
+              <div
+                className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+                style={{ background: "linear-gradient(to bottom, transparent, #F4F7F9)" }}
+              />
+            )}
           </div>
-
-          <div className="mb-5 flex flex-col gap-2">
-            <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-              <span
-                className="font-bold uppercase tracking-wide"
-                style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
-              >
-                What to bring:{" "}
-              </span>
-              Water bottle, yoga mat, and comfortable clothes
-            </p>
-            <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
-              <span
-                className="font-bold uppercase tracking-wide"
-                style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
-              >
-                Ideal for:{" "}
-              </span>
-              Dentists, dental hygienists, dental assistants, treatment coordinators, and all dental
-              team members
-            </p>
-          </div>
-
-          <div
-            className="mb-5 rounded-lg px-4 py-3 text-xs leading-relaxed"
-            style={{
-              backgroundColor: "rgba(230,126,34,0.08)",
-              border: "1px solid rgba(230,126,34,0.18)",
-            }}
+          <button
+            type="button"
+            onClick={() => setExpanded((p) => !p)}
+            className="self-start text-xs font-bold mt-1 mb-4 transition-colors duration-150"
+            style={{ color: "#1E3560" }}
           >
-            <span className="font-bold" style={{ color: "#E67E22" }}>CADA: </span>
-            <span style={{ color: "#2B303A" }}>Meets various competencies for the CCP</span>
-          </div>
+            {expanded ? "Show Less ↑" : "Read More ↓"}
+          </button>
+          <div className="flex-1" />
 
           <div className="flex flex-col" style={{ borderTop: "1px solid rgba(30,53,96,0.08)" }}>
             {offerings.map((o) => {

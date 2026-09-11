@@ -30,7 +30,7 @@ export const TEAM_MEMBERS_QUERY = groq`
     name,
     role,
     bio,
-    photo { asset, alt },
+    photo { asset->, hotspot, crop, alt },
     order
   }
 `;

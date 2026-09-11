@@ -30,7 +30,7 @@ export default function TeamCard({ member, index }: { member: any; index: number
         >
           {member.photo?.asset ? (
             <Image
-              src={urlFor(member.photo).width(600).height(320).fit('crop').url()}
+              src={urlFor(member.photo).width(600).height(320).fit('crop').crop('focalpoint').url()}
               alt={member.photo.alt ?? member.name}
               fill
               className="object-cover"

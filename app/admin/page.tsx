@@ -223,9 +223,14 @@ export default async function AdminPage() {
       waitlist: (workshopWaitlist as WorkshopWaitlistEntry[]).filter((w) => w.workshopDateId === d._id),
     }))
 
-  console.log('workshopRegs count:', (workshopRegs as WorkshopRegistration[]).length)
-  console.log('unique IDs:', new Set((workshopRegs as WorkshopRegistration[]).map(r => r._id)).size)
-  console.log('emails:', (workshopRegs as WorkshopRegistration[]).map(r => r.email))
+  // Diagnostic: workshopRegs comes from a single flat Sanity fetch — not combined with any other fetch.
+  // workshopFeedback is a separate variable and is never merged into workshopRegs.
+  const _regs = workshopRegs as WorkshopRegistration[]
+  console.log('[DIAG] workshopRegs raw count from Sanity:', _regs.length)
+  console.log('[DIAG] unique _id count:', new Set(_regs.map(r => r._id)).size)
+  console.log('[DIAG] all emails:', _regs.map(r => `${r.firstName} ${r.lastName} <${r.email}> id=${r._id} dateId=${r.workshopDateId}`))
+  const susanEntries = _regs.filter(r => r.firstName?.toLowerCase().includes('susan') || r.lastName?.toLowerCase().includes('hunter'))
+  console.log('[DIAG] Susan Hunter entries:', susanEntries.length, JSON.stringify(susanEntries.map(r => ({ _id: r._id, email: r.email, workshopDateId: r.workshopDateId, status: r.stripePaymentStatus }))))
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F4F7F9' }}>

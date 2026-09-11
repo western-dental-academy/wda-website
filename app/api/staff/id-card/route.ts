@@ -41,22 +41,19 @@ export async function GET() {
   // Look up matching teamMember for photo
   let photoBase64: string | null = null
   try {
-    console.log('Looking for team member:', staff.fullName)
     const teamMember = await sanity.fetch<{ imageUrl: string } | null>(
       `*[_type == "teamMember" && !(_id in path("drafts.**")) && name == $name][0]{ "imageUrl": photo.asset->url }`,
       { name: staff.fullName ?? '' }
     )
-    console.log('Found team member:', teamMember)
     if (teamMember?.imageUrl) {
-      const photoRes = await fetch(`${teamMember.imageUrl}?w=200&h=267&fit=crop&auto=format`)
+      const imageUrl = `${teamMember.imageUrl}?w=200&h=267&fit=crop&fm=jpg&auto=format`
+      const photoRes = await fetch(imageUrl)
       if (photoRes.ok) {
         const photoBuffer = await photoRes.arrayBuffer()
         photoBase64 = `data:image/jpeg;base64,${Buffer.from(photoBuffer).toString('base64')}`
       }
     }
-    console.log('Photo base64 length:', photoBase64?.length ?? 0)
-  } catch (err) {
-    console.log('Photo fetch error:', err)
+  } catch {
     // Photo is optional — proceed without it
   }
 

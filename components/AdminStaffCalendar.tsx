@@ -16,11 +16,12 @@ interface TimeOffRequest {
 
 interface WorkshopDate {
   _id: string
-  workshop: string
   date: string
-  capacity: number
   active?: boolean
-  category?: string
+  offering?: {
+    title?: string
+    category?: string
+  }
 }
 
 interface Props {
@@ -60,11 +61,13 @@ const DAY_LABELS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 
 function pad(n: number) { return String(n).padStart(2, '0') }
 
-function formatWorkshopDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-CA', {
+function formatWorkshopTime(dateStr: string): string {
+  return new Date(dateStr).toLocaleTimeString('en-CA', {
+    hour: 'numeric',
+    minute: '2-digit',
     timeZone: 'America/Edmonton',
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  })
+    hour12: true,
+  }).replace('a.m.', 'AM').replace('p.m.', 'PM') + ' MDT'
 }
 
 function buildDayMap(
@@ -287,14 +290,14 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                         </div>
                       )}
                       {workshopEntries.map((w, j) => {
-                        const col = CATEGORY_COLOUR[w.category ?? 'workshop'] ?? '#16a34a'
-                        const lbl = CATEGORY_LABEL[w.category ?? 'workshop'] ?? 'Workshop'
+                        const col = CATEGORY_COLOUR[w.offering?.category ?? 'workshop'] ?? '#16a34a'
+                        const lbl = CATEGORY_LABEL[w.offering?.category ?? 'workshop'] ?? 'Workshop'
                         return (
                           <div
                             key={`ws-${j}`}
                             className="text-[10px] font-medium px-1 rounded truncate leading-[14px]"
                             style={{ backgroundColor: col, color: '#fff' }}
-                            title={`${lbl}: ${w.workshop}`}
+                            title={`${lbl}: ${w.offering?.title ?? ''}`}
                           >
                             {lbl}
                           </div>
@@ -357,16 +360,16 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                 )
               })}
               {selectedWorkshops.map((w) => {
-                const col = CATEGORY_COLOUR[w.category ?? 'workshop'] ?? '#16a34a'
-                const lbl = CATEGORY_LABEL[w.category ?? 'workshop'] ?? 'Workshop'
+                const col = CATEGORY_COLOUR[w.offering?.category ?? 'workshop'] ?? '#16a34a'
+                const lbl = CATEGORY_LABEL[w.offering?.category ?? 'workshop'] ?? 'Workshop'
                 return (
                 <div key={w._id} className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <span className="text-sm font-medium block" style={{ color: '#1E3560' }}>
-                      {w.workshop}
+                      {w.offering?.title ?? ''}
                     </span>
                     <span className="text-[11px]" style={{ color: 'rgba(43,48,58,0.45)' }}>
-                      {formatWorkshopDate(w.date)}
+                      {formatWorkshopTime(w.date)}
                     </span>
                   </div>
                   <span

@@ -43,7 +43,7 @@ export default async function StaffPage() {
   if (!userId) redirect('/sign-in')
 
   const staff = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{
       _id, fullName, role, vacationDaysPerYear, sickDaysPerYear
     }`,
     { uid: userId }
@@ -55,21 +55,21 @@ export default async function StaffPage() {
 
   const [active, weekLogs, approvedThisYear, requests] = await Promise.all([
     client.fetch(
-      `*[_type == "hoursLog" && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
       { id: staff._id }
     ),
     client.fetch(
-      `*[_type == "hoursLog" && staffMember._ref == $id && clockIn >= $start && defined(clockOut)]{ clockIn, clockOut }`,
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && clockIn >= $start && defined(clockOut)]{ clockIn, clockOut }`,
       { id: staff._id, start: weekStart }
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && staffMember._ref == $id && status == "approved" && startDate >= $yearStart]{
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && staffMember._ref == $id && status == "approved" && startDate >= $yearStart]{
         type, startDate, endDate, halfDay
       }`,
       { id: staff._id, yearStart }
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && staffMember._ref == $id] | order(submittedAt desc)[0...20]{
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && staffMember._ref == $id] | order(submittedAt desc)[0...20]{
         _id, type, startDate, endDate, halfDay, reason, status, submittedAt
       }`,
       { id: staff._id }

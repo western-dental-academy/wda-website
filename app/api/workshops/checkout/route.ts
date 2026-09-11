@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
     for (const item of items) {
       if (!item.workshopDateId || !item.email?.trim()) continue
       const existing = await client.fetch<{ _id: string } | null>(
-        `*[_type == "workshopRegistration" && email == $email && workshopDateId == $workshopDateId && stripePaymentStatus == "paid"][0]{ _id }`,
+        `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && email == $email && workshopDateId == $workshopDateId && stripePaymentStatus == "paid"][0]{ _id }`,
         { email: item.email.trim(), workshopDateId: item.workshopDateId },
       )
       if (existing) {
@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
           `*[_type == "workshopDate" && _id == "${workshopDateId}"][0]{ "capacity": offering->capacity }`,
         ),
         client.fetch<number>(
-          `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
+          `count(*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
         ),
       ])
       const capacity = dateDoc?.capacity ?? 20

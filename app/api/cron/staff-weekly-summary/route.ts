@@ -61,18 +61,18 @@ export async function GET(req: Request) {
     const [staffSummary, owners, approvedTimeOff, pendingRequests] = await Promise.all([
       getStaffHoursSummary(client, startIso, endIso),
       client.fetch(
-        `*[_type == "staffMember" && active == true && role == "owner"]{ _id, fullName, email }`,
+        `*[_type == "staffMember" && !(_id in path("drafts.**")) && active == true && role == "owner"]{ _id, fullName, email }`,
         {},
       ),
       client.fetch(
-        `*[_type == "timeOffRequest" && status == "approved" && startDate <= $end && endDate >= $start] | order(startDate asc){
+        `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "approved" && startDate <= $end && endDate >= $start] | order(startDate asc){
           type, startDate, endDate, halfDay,
           staffMember->{ fullName }
         }`,
         { start: periodStart, end: periodEnd },
       ),
       client.fetch(
-        `*[_type == "timeOffRequest" && status == "pending"] | order(submittedAt asc){
+        `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "pending"] | order(submittedAt asc){
           type, startDate, endDate, halfDay, reason,
           staffMember->{ fullName }
         }`,

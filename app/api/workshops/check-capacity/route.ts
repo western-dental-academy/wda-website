@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       ),
       // Count only in-person paid registrations
       client.fetch<number>(
-        `count(*[_type == "workshopRegistration" && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
+        `count(*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && workshopDateId == "${workshopDateId}" && stripePaymentStatus == "paid" && (deliveryMethod == "in-person" || !defined(deliveryMethod))])`,
       ),
     ])
 

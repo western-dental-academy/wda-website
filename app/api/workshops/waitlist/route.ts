@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
     // Prevent duplicate waitlist entries for same email + date
     const existing = await client.fetch(
-      `*[_type == "workshopWaitlist" && email == $email && workshopDateId == $dateId][0]._id`,
+      `*[_type == "workshopWaitlist" && !(_id in path("drafts.**")) && email == $email && workshopDateId == $dateId][0]._id`,
       { email, dateId: workshopDateId }
     )
     if (existing) {

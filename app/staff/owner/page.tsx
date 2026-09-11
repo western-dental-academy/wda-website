@@ -56,7 +56,7 @@ export default async function OwnerPage() {
   if (!userId) redirect('/sign-in?redirect_url=%2Fstaff%2Fowner')
 
   const viewer = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id, fullName, role }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ _id, fullName, role }`,
     { uid: userId }
   )
   if (!viewer || viewer.role !== 'owner') redirect('/staff')
@@ -69,22 +69,22 @@ export default async function OwnerPage() {
 
   const [allStaff, allLogs, pendingRequests, approvedThisMonth] = await Promise.all([
     client.fetch(
-      `*[_type == "staffMember" && active == true] | order(fullName asc){ _id, fullName }`,
+      `*[_type == "staffMember" && !(_id in path("drafts.**")) && active == true] | order(fullName asc){ _id, fullName }`,
       {}
     ),
     client.fetch(
-      `*[_type == "hoursLog" && clockIn >= $since]{ clockIn, clockOut, "staffId": staffMember._ref }`,
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && clockIn >= $since]{ clockIn, clockOut, "staffId": staffMember._ref }`,
       { since: fiveWeeksAgo }
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && status == "pending"] | order(submittedAt asc){
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "pending"] | order(submittedAt asc){
         _id, type, startDate, endDate, halfDay, reason, submittedAt,
         staffMember->{ _id, fullName, email }
       }`,
       {}
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && status == "approved" && startDate <= $monthEnd && endDate >= $monthStart]{
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "approved" && startDate <= $monthEnd && endDate >= $monthStart]{
         _id, type, startDate, endDate,
         staffMember->{ _id, fullName }
       }`,

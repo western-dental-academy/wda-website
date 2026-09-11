@@ -24,7 +24,7 @@ export async function GET(req: Request) {
     threeDaysAgo.setDate(threeDaysAgo.getDate() - 3)
 
     const unpaidStudents = await client.fetch(
-      `*[_type == "student" && status == "accepted" && paymentStatus == "unpaid" && acceptedDate < $cutoff]{
+      `*[_type == "student" && !(_id in path("drafts.**")) && status == "accepted" && paymentStatus == "unpaid" && acceptedDate < $cutoff]{
         _id, firstName, lastName, email, tuitionAmount,
         program->{ title }
       }`,

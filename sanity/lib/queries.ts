@@ -1,7 +1,7 @@
 import { groq } from "next-sanity";
 
 export const PROGRAMS_QUERY = groq`
-  *[_type == "program" && isActive != false] | order(_createdAt asc) {
+  *[_type == "program" && !(_id in path("drafts.**")) && isActive != false] | order(_createdAt asc) {
     _id,
     title,
     slug,
@@ -12,7 +12,7 @@ export const PROGRAMS_QUERY = groq`
 `;
 
 export const PROGRAM_BY_SLUG_QUERY = groq`
-  *[_type == "program" && slug.current == $slug][0] {
+  *[_type == "program" && !(_id in path("drafts.**")) && slug.current == $slug][0] {
     _id,
     title,
     slug,
@@ -25,7 +25,7 @@ export const PROGRAM_BY_SLUG_QUERY = groq`
 `;
 
 export const TEAM_MEMBERS_QUERY = groq`
-  *[_type == "teamMember"] | order(order asc, name asc) {
+  *[_type == "teamMember" && !(_id in path("drafts.**"))] | order(order asc, name asc) {
     _id,
     name,
     role,
@@ -36,7 +36,7 @@ export const TEAM_MEMBERS_QUERY = groq`
 `;
 
 export const TESTIMONIALS_QUERY = groq`
-  *[_type == "testimonial" && isActive != false] | order(graduationYear desc) {
+  *[_type == "testimonial" && !(_id in path("drafts.**")) && isActive != false] | order(graduationYear desc) {
     _id,
     quote,
     author,
@@ -46,7 +46,7 @@ export const TESTIMONIALS_QUERY = groq`
 `;
 
 export const BLOG_POSTS_QUERY = groq`
-  *[_type == "blogPost" && defined(publishedAt)] | order(publishedAt desc) {
+  *[_type == "blogPost" && !(_id in path("drafts.**")) && defined(publishedAt)] | order(publishedAt desc) {
     _id,
     title,
     slug,
@@ -58,7 +58,7 @@ export const BLOG_POSTS_QUERY = groq`
 `;
 
 export const BLOG_POST_BY_SLUG_QUERY = groq`
-  *[_type == "blogPost" && slug.current == $slug][0] {
+  *[_type == "blogPost" && !(_id in path("drafts.**")) && slug.current == $slug][0] {
     _id,
     title,
     slug,
@@ -71,7 +71,7 @@ export const BLOG_POST_BY_SLUG_QUERY = groq`
 `;
 
 export const FAQ_ITEMS_QUERY = groq`
-  *[_type == "faqItem"] | order(category asc, order asc, question asc) {
+  *[_type == "faqItem" && !(_id in path("drafts.**"))] | order(category asc, order asc, question asc) {
     _id,
     question,
     answer,

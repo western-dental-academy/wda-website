@@ -52,7 +52,7 @@ export default async function AdminPage() {
   const canViewSanity     = SANITY_EMAILS.includes(email)
 
   const students = await client.fetch(
-    `*[_type == "student"] | order(applicationDate desc) {
+    `*[_type == "student" && !(_id in path("drafts.**"))] | order(applicationDate desc) {
       _id, firstName, lastName, email, phone, status, paymentStatus,
       applicationDate, acceptedDate, tuitionAmount, cohort, notes,
       moodleUserId, program->{ title },

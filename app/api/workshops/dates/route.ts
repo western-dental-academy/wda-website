@@ -26,7 +26,7 @@ export async function GET() {
           includesFood?: boolean
         } | null
       }>>(
-        `*[_type == "workshopDate" && active == true && date > $now] | order(date asc){
+        `*[_type == "workshopDate" && !(_id in path("drafts.**")) && active == true && date > $now] | order(date asc){
           _id, date,
           offering->{ title, category, capacity, hasVirtualOption, virtualPrice, price, includesFood }
         }`,
@@ -34,7 +34,7 @@ export async function GET() {
       ),
       // Only count in-person paid registrations toward capacity
       client.fetch<Array<{ workshopDateId: string; deliveryMethod?: string }>>(
-        `*[_type == "workshopRegistration" && defined(workshopDateId) && stripePaymentStatus == "paid"]{
+        `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && defined(workshopDateId) && stripePaymentStatus == "paid"]{
           workshopDateId, deliveryMethod
         }`,
         {},

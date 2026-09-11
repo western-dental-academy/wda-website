@@ -37,7 +37,7 @@ export async function GET() {
   if (denied) return denied
 
   const announcements = await client.fetch(
-    `*[_type == "announcement" && active == true] | order(publishedAt desc){
+    `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true] | order(publishedAt desc){
       _id, title, message, type, publishedAt, expiresAt,
       program->{ _id, title }
     }`
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     : ''
 
   const students = await client.fetch<{ firstName: string; email: string }[]>(
-    `*[_type == "student" && (status == "accepted" || status == "enrolled") ${programFilter}]{
+    `*[_type == "student" && !(_id in path("drafts.**")) && (status == "accepted" || status == "enrolled") ${programFilter}]{
       firstName, email
     }`
   )

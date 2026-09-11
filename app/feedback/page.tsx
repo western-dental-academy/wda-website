@@ -28,7 +28,7 @@ export default async function FeedbackPage({ searchParams }: PageProps) {
 
   if (token?.trim()) {
     const reg = await client.fetch<{ firstName: string; workshop: string; feedbackSubmittedAt?: string } | null>(
-      `*[_type == "workshopRegistration" && feedbackToken == "${token}"][0]{
+      `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && feedbackToken == "${token}"][0]{
         firstName, workshop, feedbackSubmittedAt
       }`
     )

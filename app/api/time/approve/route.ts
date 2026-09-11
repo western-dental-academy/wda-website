@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const decider = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id, fullName, role }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ _id, fullName, role }`,
     { uid: userId }
   )
   if (!decider || decider.role !== 'owner') {

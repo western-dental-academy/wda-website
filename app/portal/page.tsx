@@ -40,7 +40,7 @@ export default async function PortalPage() {
   }
 
   const student = await client.fetch(
-    `*[_type == "student" && email == $email][0]{
+    `*[_type == "student" && !(_id in path("drafts.**")) && email == $email][0]{
       _id, firstName, lastName, email, phone, status,
       moodleUserId, applicationDate, acceptedDate,
       paymentStatus, tuitionAmount, stripeCustomerId,
@@ -71,19 +71,19 @@ export default async function PortalPage() {
   // Announcements, workshop dates, and this student's paid registrations
   const [announcements, workshopDates, myWorkshopRegistrations] = await Promise.all([
     client.fetch(
-      `*[_type == "announcement" && active == true && (!defined(expiresAt) || expiresAt > now()) && (!defined(program) || program._ref == $programId)] | order(publishedAt desc)[0...5]{
+      `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true && (!defined(expiresAt) || expiresAt > now()) && (!defined(program) || program._ref == $programId)] | order(publishedAt desc)[0...5]{
         _id, title, message, type, publishedAt
       }`,
       { programId: student?.program?._id ?? '' }
     ),
     client.fetch(
-      `*[_type == "workshopDate" && active == true] | order(date asc){
+      `*[_type == "workshopDate" && !(_id in path("drafts.**")) && active == true] | order(date asc){
         _id, workshop, date, capacity, category,
-        "registered": count(*[_type == "workshopRegistration" && workshopDateId == ^._id && stripePaymentStatus == "paid"])
+        "registered": count(*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && workshopDateId == ^._id && stripePaymentStatus == "paid"])
       }`
     ) as Promise<SerializedWorkshopDate[]>,
     client.fetch(
-      `*[_type == "workshopRegistration" && email == $email && stripePaymentStatus == "paid"]{ workshopDateId }`,
+      `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && email == $email && stripePaymentStatus == "paid"]{ workshopDateId }`,
       { email }
     ) as Promise<SerializedWorkshopRegistration[]>,
   ])

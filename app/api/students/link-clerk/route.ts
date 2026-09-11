@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     // Find student record by email
     const student = await client.fetch(
-      `*[_type == "student" && email == $email][0]{ _id, clerkUserId }`,
+      `*[_type == "student" && !(_id in path("drafts.**")) && email == $email][0]{ _id, clerkUserId }`,
       { email }
     )
 

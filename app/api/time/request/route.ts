@@ -25,7 +25,7 @@ export async function GET() {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const staff = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{
       _id, vacationDaysPerYear, sickDaysPerYear
     }`,
     { uid: userId }
@@ -36,13 +36,13 @@ export async function GET() {
 
   const [approvedThisYear, requests] = await Promise.all([
     client.fetch(
-      `*[_type == "timeOffRequest" && staffMember._ref == $id && status == "approved" && startDate >= $yearStart]{
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && staffMember._ref == $id && status == "approved" && startDate >= $yearStart]{
         type, startDate, endDate, halfDay
       }`,
       { id: staff._id, yearStart }
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && staffMember._ref == $id] | order(submittedAt desc)[0...20]{
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && staffMember._ref == $id] | order(submittedAt desc)[0...20]{
         _id, type, startDate, endDate, halfDay, reason, status, submittedAt
       }`,
       { id: staff._id }
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const staff = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id, fullName, email }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ _id, fullName, email }`,
     { uid: userId }
   )
   if (!staff) return Response.json({ error: 'Staff member not found' }, { status: 404 })
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
   // Notify all active owners
   try {
     const owners = await client.fetch(
-      `*[_type == "staffMember" && role == "owner" && active == true]{ email, fullName }`,
+      `*[_type == "staffMember" && !(_id in path("drafts.**")) && role == "owner" && active == true]{ email, fullName }`,
       {}
     )
 

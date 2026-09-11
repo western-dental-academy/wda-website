@@ -32,7 +32,7 @@ export async function GET() {
     const email = user?.emailAddresses[0]?.emailAddress
 
     const student = await client.fetch(
-      `*[_type == "student" && email == $email][0]{
+      `*[_type == "student" && !(_id in path("drafts.**")) && email == $email][0]{
         _id, firstName, lastName, moodleUserId, certificateId,
         program->{ title, moodleCourseId }
       }`,

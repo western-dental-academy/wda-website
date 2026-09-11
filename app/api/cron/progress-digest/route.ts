@@ -21,7 +21,7 @@ export async function GET(req: Request) {
   try {
     // Get all enrolled students with Moodle IDs
     const students = await client.fetch(
-      `*[_type == "student" && (status == "accepted" || status == "enrolled") && defined(moodleUserId)]{
+      `*[_type == "student" && !(_id in path("drafts.**")) && (status == "accepted" || status == "enrolled") && defined(moodleUserId)]{
         _id, firstName, lastName, email, moodleUserId,
         program->{ title, moodleCourseId }
       }`

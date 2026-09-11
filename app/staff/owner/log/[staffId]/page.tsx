@@ -50,7 +50,7 @@ export default async function StaffLogPage({
   if (!userId) redirect('/sign-in?redirect_url=%2Fstaff%2Fowner')
 
   const viewer = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ role }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ role }`,
     { uid: userId }
   )
   if (!viewer || viewer.role !== 'owner') redirect('/staff')
@@ -63,7 +63,7 @@ export default async function StaffLogPage({
       { id: staffId }
     ),
     client.fetch(
-      `*[_type == "hoursLog" && staffMember._ref == $id] | order(clockIn desc)[0...60]{ _id, clockIn, clockOut, notes }`,
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id] | order(clockIn desc)[0...60]{ _id, clockIn, clockOut, notes }`,
       { id: staffId }
     ),
   ])

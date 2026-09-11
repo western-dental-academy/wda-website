@@ -18,7 +18,7 @@ export async function GET() {
   if (!userId) return new NextResponse('Unauthorized', { status: 401 })
 
   const staff = await sanity.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{
       fullName, jobTitle, department, staffId
     }`,
     { uid: userId }
@@ -42,7 +42,7 @@ export async function GET() {
   let photoBase64: string | null = null
   try {
     const teamMember = await sanity.fetch<{ imageUrl: string } | null>(
-      `*[_type == "teamMember" && name match $name][0]{ "imageUrl": image.asset->url }`,
+      `*[_type == "teamMember" && !(_id in path("drafts.**")) && name match $name][0]{ "imageUrl": image.asset->url }`,
       { name: staff.fullName ?? '' }
     )
     if (teamMember?.imageUrl) {

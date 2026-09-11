@@ -35,7 +35,7 @@ export async function GET() {
 
   try {
     const dates = await client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){
+      `*[_type == "workshopDate" && !(_id in path("drafts.**"))] | order(date asc){
         _id, date, active,
         offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price }
       }`

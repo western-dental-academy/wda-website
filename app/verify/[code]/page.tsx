@@ -22,7 +22,7 @@ export default async function VerifyPage({
   const { code } = await params
 
   const student = await client.fetch(
-    `*[_type == "student" && certificateId == $code][0]{
+    `*[_type == "student" && !(_id in path("drafts.**")) && certificateId == $code][0]{
       firstName, lastName, certificateId, certificateIssuedDate,
       program->{ title }
     }`,

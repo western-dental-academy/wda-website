@@ -15,7 +15,7 @@ export default async function StaffLayout({ children }: { children: React.ReactN
   if (!userId) redirect('/sign-in?redirect_url=%2Fstaff')
 
   const staff = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ _id }`,
     { uid: userId }
   )
   if (!staff) redirect('/')

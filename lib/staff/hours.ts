@@ -78,11 +78,11 @@ export async function getStaffHoursSummary(
   const [allStaff, logs]: [Array<{ _id: string; fullName: string }>, HoursLogEntry[]] =
     await Promise.all([
       client.fetch(
-        `*[_type == "staffMember" && active == true] | order(fullName asc){ _id, fullName }`,
+        `*[_type == "staffMember" && !(_id in path("drafts.**")) && active == true] | order(fullName asc){ _id, fullName }`,
         {},
       ),
       client.fetch(
-        `*[_type == "hoursLog" && clockIn >= $start && clockIn < $end]{
+        `*[_type == "hoursLog" && !(_id in path("drafts.**")) && clockIn >= $start && clockIn < $end]{
           clockIn, clockOut, notes,
           "staffId": staffMember._ref
         }`,

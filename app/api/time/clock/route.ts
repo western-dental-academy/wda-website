@@ -33,18 +33,18 @@ export async function GET() {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const staff = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ _id }`,
     { uid: userId }
   )
   if (!staff) return Response.json({ error: 'Staff member not found' }, { status: 404 })
 
   const [active, weekLogs] = await Promise.all([
     client.fetch(
-      `*[_type == "hoursLog" && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
       { id: staff._id }
     ),
     client.fetch(
-      `*[_type == "hoursLog" && staffMember._ref == $id && clockIn >= $start && defined(clockOut)]{ clockIn, clockOut }`,
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && clockIn >= $start && defined(clockOut)]{ clockIn, clockOut }`,
       { id: staff._id, start: getWeekStart() }
     ),
   ])
@@ -57,13 +57,13 @@ export async function POST(request: Request) {
   if (!userId) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const staff = await client.fetch(
-    `*[_type == "staffMember" && clerkUserId == $uid && active == true][0]{ _id }`,
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{ _id }`,
     { uid: userId }
   )
   if (!staff) return Response.json({ error: 'Staff member not found' }, { status: 404 })
 
   const active = await client.fetch(
-    `*[_type == "hoursLog" && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
+    `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
     { id: staff._id }
   )
 

@@ -51,7 +51,7 @@ export async function GET() {
 
   try {
     const tasks = await client.fetch(
-      `*[_type == "task"] | order(dueDate asc, createdAt desc){
+      `*[_type == "task" && !(_id in path("drafts.**"))] | order(dueDate asc, createdAt desc){
         _id, title, description, assignedTo, assignedBy,
         dueDate, priority, status, createdAt, completedAt
       }`

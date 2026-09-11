@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   }
 
   const registration = await client.fetch<{ _id: string; feedbackSubmittedAt?: string } | null>(
-    `*[_type == "workshopRegistration" && feedbackToken == "${token}"][0]{ _id, feedbackSubmittedAt }`
+    `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && feedbackToken == "${token}"][0]{ _id, feedbackSubmittedAt }`
   )
 
   if (!registration) {

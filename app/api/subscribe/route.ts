@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
     // Check if already subscribed
     const existing = await client.fetch(
-      `*[_type == "subscriber" && email == $email][0]{ _id }`,
+      `*[_type == "subscriber" && !(_id in path("drafts.**")) && email == $email][0]{ _id }`,
       { email }
     )
 

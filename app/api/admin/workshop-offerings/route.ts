@@ -29,7 +29,7 @@ export async function GET() {
 
   try {
     const offerings = await client.fetch(
-      `*[_type == "workshopOffering"] | order(title asc){
+      `*[_type == "workshopOffering" && !(_id in path("drafts.**"))] | order(title asc){
         _id, title, category, capacity, hasVirtualOption, virtualPrice, price
       }`
     )

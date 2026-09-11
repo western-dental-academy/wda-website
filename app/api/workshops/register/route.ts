@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     if (workshopDateId) {
       const [registeredCount, dateDoc] = await Promise.all([
         client.fetch<number>(
-          `count(*[_type == "workshopRegistration" && workshopDateId == $wdid && stripePaymentStatus == "paid"])`,
+          `count(*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && workshopDateId == $wdid && stripePaymentStatus == "paid"])`,
           { wdid: workshopDateId },
         ),
         client.fetch<{ capacity: number } | null>(

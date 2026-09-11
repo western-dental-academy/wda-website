@@ -26,10 +26,10 @@ export default async function ProfessionalDevelopmentPage() {
   let offerings: WorkshopOffering[] = [];
   try {
     offerings = await client.fetch<WorkshopOffering[]>(
-      `*[_type == "workshopOffering"] | order(title asc) {
+      `*[_type == "workshopOffering" && !(_id in path("drafts.**"))] | order(title asc) {
         _id, title, category, description, price, hasVirtualOption, virtualPrice,
         capacity, hours, cadaCppCodes,
-        "dates": *[_type == "workshopDate" && references(^._id)] | order(date asc) {
+        "dates": *[_type == "workshopDate" && !(_id in path("drafts.**")) && references(^._id)] | order(date asc) {
           _id, date, active
         }
       }`,

@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     backgroundColor: WHITE,
     flexDirection: 'column',
   },
+  // ── Header (unchanged) ────────────────────────────────────────────────────────
   header: {
     backgroundColor: NAVY,
     flexDirection: 'row',
@@ -31,75 +32,79 @@ const styles = StyleSheet.create({
     color: AMBER,
     letterSpacing: 2,
   },
+  // ── Amber bar (unchanged) ─────────────────────────────────────────────────────
   amberBar: {
     backgroundColor: AMBER,
     height: 3,
   },
+  // ── Body: flex column ─────────────────────────────────────────────────────────
+  // Body inner height = 153 − 52 − 3 − 12 (pad) = 86 pt
+  // topRow ~52 pt + bottomRow ~32 pt = 84 pt → fits with 2 pt breathing room
   body: {
     flex: 1,
+    flexDirection: 'column',
+    paddingHorizontal: 10,
+    paddingTop: 6,
+    paddingBottom: 6,
+  },
+  // ── Top row: photo (left) + info (right) ─────────────────────────────────────
+  topRow: {
+    flex: 1,
     flexDirection: 'row',
-    paddingHorizontal: 11,
-    paddingTop: 9,
-    paddingBottom: 9,
   },
   photoColumn: {
-    width: 60,
+    width: 44,
     alignItems: 'center',
     paddingTop: 1,
   },
   photo: {
-    width: 55,
-    height: 73,
+    width: 40,
+    height: 50,
     objectFit: 'cover',
-    borderRadius: 3,
+    borderRadius: 2,
   },
   photoPlaceholder: {
-    width: 55,
-    height: 73,
-    borderRadius: 3,
+    width: 40,
+    height: 50,
+    borderRadius: 2,
     backgroundColor: NAVY,
   },
-  contentColumn: {
+  infoColumn: {
     flex: 1,
     paddingLeft: 8,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  topSection: {
     flexDirection: 'column',
   },
   name: {
     fontSize: 11,
     fontFamily: 'Helvetica-Bold',
     color: NAVY,
-    marginBottom: 2,
+    marginBottom: 1,
   },
   role: {
-    fontSize: 8,
+    fontSize: 7,
     fontFamily: 'Helvetica',
     color: '#666666',
-    marginBottom: 2,
+    marginBottom: 1,
   },
   department: {
-    fontSize: 7,
+    fontSize: 6,
     fontFamily: 'Helvetica',
     color: '#AAAAAA',
     letterSpacing: 0.8,
-  },
-  idSection: {
-    flexDirection: 'column',
+    marginBottom: 4,
   },
   idLabel: {
     fontSize: 5.5,
     fontFamily: 'Helvetica',
     color: BLUE,
-    marginBottom: 1,
+    marginBottom: 0.5,
   },
   idNumber: {
     fontSize: 10,
     fontFamily: 'Helvetica-Bold',
     color: BLUE,
   },
+  // ── Bottom row: issue date (left) + QR (right) ───────────────────────────────
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -114,14 +119,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   qrImage: {
-    width: 40,
-    height: 40,
+    width: 28,
+    height: 28,
   },
   qrLabel: {
     fontSize: 5,
     fontFamily: 'Helvetica',
     color: '#CCCCCC',
     marginTop: 1,
+    textAlign: 'center',
   },
 })
 
@@ -144,7 +150,7 @@ export function StaffIdCardDocument({ name, role, department, staffId, logoUrl, 
 
   return (
     <Document>
-      {/* CR80 credit card size: 243pt × 153pt */}
+      {/* CR80 credit card size: 243pt × 153pt — single page */}
       <Page size={[243, 153]} style={styles.page}>
 
         {/* Full-width navy header */}
@@ -159,41 +165,35 @@ export function StaffIdCardDocument({ name, role, department, staffId, logoUrl, 
         {/* Card body */}
         <View style={styles.body}>
 
-          {/* Left column — photo or placeholder */}
-          <View style={styles.photoColumn}>
-            {photoBase64 ? (
-              <Image src={photoBase64} style={styles.photo} />
-            ) : (
-              <View style={styles.photoPlaceholder} />
-            )}
-          </View>
-
-          {/* Right column — info + QR */}
-          <View style={styles.contentColumn}>
-
-            {/* Name / role / department */}
-            <View style={styles.topSection}>
+          {/* Top row: photo (left) + info (right) */}
+          <View style={styles.topRow}>
+            <View style={styles.photoColumn}>
+              {photoBase64 ? (
+                <Image src={photoBase64} style={styles.photo} />
+              ) : (
+                <View style={styles.photoPlaceholder} />
+              )}
+            </View>
+            <View style={styles.infoColumn}>
               <Text style={styles.name}>{name}</Text>
               <Text style={styles.role}>{role}</Text>
               <Text style={styles.department}>{department ? department.toUpperCase() : ''}</Text>
-            </View>
-
-            {/* Staff ID */}
-            <View style={styles.idSection}>
-              <Text style={styles.idLabel}>STAFF ID</Text>
-              <Text style={styles.idNumber}>{staffId}</Text>
-            </View>
-
-            {/* Bottom row — issue date + QR */}
-            <View style={styles.bottomRow}>
-              <Text style={styles.issuedDate}>Issued {issuedDate}</Text>
-              <View style={styles.qrSection}>
-                <Image src={qrBase64} style={styles.qrImage} />
-                <Text style={styles.qrLabel}>westerndentalacademy.com</Text>
+              <View>
+                <Text style={styles.idLabel}>STAFF ID</Text>
+                <Text style={styles.idNumber}>{staffId}</Text>
               </View>
             </View>
-
           </View>
+
+          {/* Bottom row: issue date (left) + QR code (right) */}
+          <View style={styles.bottomRow}>
+            <Text style={styles.issuedDate}>Issued {issuedDate}</Text>
+            <View style={styles.qrSection}>
+              <Image src={qrBase64} style={styles.qrImage} />
+              <Text style={styles.qrLabel}>westerndentalacademy.com</Text>
+            </View>
+          </View>
+
         </View>
 
       </Page>

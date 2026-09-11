@@ -426,9 +426,17 @@ function WorkshopRegisterFormInner() {
                   >
                     <option value="">Select an offering</option>
                     {workshopsForCategory.length > 0
-                      ? workshopsForCategory.map(o => (
-                          <option key={o.label} value={o.label}>{o.label} — ${o.price} CAD</option>
-                        ))
+                      ? workshopsForCategory.map(o => {
+                          const displayPrice =
+                            deliveryMethod === 'virtual' &&
+                            o.label === form.workshop &&
+                            selectedDateObj?.virtualPrice != null
+                              ? selectedDateObj.virtualPrice
+                              : o.price;
+                          return (
+                            <option key={o.label} value={o.label}>{o.label} — ${displayPrice} CAD</option>
+                          );
+                        })
                       : <option disabled value="">No offerings available in this category</option>
                     }
                   </select>

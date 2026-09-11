@@ -99,17 +99,16 @@ export default function RegisterPage() {
             className="text-lg leading-relaxed max-w-xl mb-8"
             style={{ color: "rgba(255,255,255,0.65)" }}
           >
-            Register one or more attendees in a single transaction. Add each person
-            to your cart, then proceed to secure checkout — everyone gets their
-            own confirmation email.
+            Fill in your details below and proceed to secure checkout — you&apos;ll
+            receive a confirmation email immediately after payment.
           </p>
 
           {/* Quick stats */}
           <div className="flex flex-wrap gap-6">
             {[
-              { value: "1 cart", label: "Per group" },
               { value: "~3 min", label: "To complete" },
               { value: "Instant", label: "Confirmation" },
+              { value: "Secure", label: "Checkout" },
             ].map(({ value, label }) => (
               <div key={label} className="flex items-center gap-2.5">
                 <span className="text-lg font-bold" style={{ color: "#4A9FD4" }}>

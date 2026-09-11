@@ -18,6 +18,7 @@ interface CartItemPayload {
   cadaNumber?: string
   pronouns?: string
   mediaConsent?: boolean
+  feedbackShareConsent?: boolean
   isPrimary: boolean
   deliveryMethod: 'in-person' | 'virtual'
   dietaryRestrictions?: string
@@ -128,6 +129,7 @@ export async function POST(req: NextRequest) {
         cadaNumber: item.cadaNumber?.trim() || undefined,
         dentalBackground: item.dentalBackground?.trim() || undefined,
         mediaConsent: item.mediaConsent === true,
+        feedbackShareConsent: item.feedbackShareConsent === true,
         deliveryMethod: item.deliveryMethod,
         dietaryRestrictions: item.dietaryRestrictions?.trim() || undefined,
         stripePaymentStatus: 'unpaid',

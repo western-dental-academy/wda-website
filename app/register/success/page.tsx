@@ -412,7 +412,6 @@ export default async function SuccessPage({
   }
 
   const primary = registrations[0];
-  const isMultiple = registrations.length > 1;
 
   return (
     <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
@@ -439,13 +438,7 @@ export default async function SuccessPage({
             {confirmed ? "Registration Complete!" : "Thank You!"}
           </h1>
 
-          {confirmed && isMultiple && (
-            <p className="text-center text-sm mb-6" style={{ color: "rgba(43,48,58,0.65)" }}>
-              Confirmation emails have been sent to all {registrations.length} registrants.
-            </p>
-          )}
-
-          {confirmed && !isMultiple && primary && (
+          {confirmed && primary && (
             <p className="text-center text-sm mb-6" style={{ color: "rgba(43,48,58,0.65)" }}>
               Thank you, <strong style={{ color: "#1E3560" }}>{primary.firstName}</strong>.{" "}
               Your payment has been received and your spot is confirmed.
@@ -457,22 +450,15 @@ export default async function SuccessPage({
             <div className="mb-6 rounded-xl overflow-hidden" style={{ border: "1.5px solid rgba(30,53,96,0.09)" }}>
               <div className="px-5 py-3" style={{ backgroundColor: "#1E3560" }}>
                 <p className="text-xs font-bold uppercase tracking-[0.15em]" style={{ color: "#4A9FD4", fontFamily: "var(--font-montserrat), sans-serif" }}>
-                  {isMultiple ? `${registrations.length} Registrants` : "Your Registration"}
+                  Your Registration
                 </p>
               </div>
               <div className="divide-y" style={{ borderColor: "rgba(30,53,96,0.07)" }}>
-                {registrations.map((r, i) => (
+                {registrations.map(r => (
                   <div key={r._id} className="px-5 py-4">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>
-                        {r.firstName} {r.lastName}
-                      </p>
-                      {i === 0 && isMultiple && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(230,126,34,0.1)", color: "#E67E22" }}>
-                          Primary
-                        </span>
-                      )}
-                    </div>
+                    <p className="text-sm font-semibold mb-0.5" style={{ color: "#1E3560" }}>
+                      {r.firstName} {r.lastName}
+                    </p>
                     <p className="text-xs" style={{ color: "rgba(43,48,58,0.55)" }}>{r.workshop}</p>
                     {r.preferredDate && (
                       <p className="text-xs mt-0.5" style={{ color: "rgba(43,48,58,0.4)" }}>{r.preferredDate}</p>
@@ -501,13 +487,6 @@ export default async function SuccessPage({
               style={{ borderColor: "rgba(30,53,96,0.2)", color: "rgba(30,53,96,0.55)" }}
             >
               Back to Home
-            </Link>
-            <Link
-              href="/register"
-              className="rounded-lg px-5 py-2.5 text-sm font-semibold border transition-colors hover:border-[#1E3560] hover:text-[#1E3560]"
-              style={{ borderColor: "rgba(30,53,96,0.2)", color: "rgba(30,53,96,0.55)" }}
-            >
-              Register More
             </Link>
             <Link
               href="/contact"

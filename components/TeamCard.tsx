@@ -25,12 +25,12 @@ export default function TeamCard({ member, index }: { member: any; index: number
       >
         {/* Photo area */}
         <div
-          className="relative h-64 flex items-center justify-center overflow-hidden"
+          className="relative aspect-square w-full flex items-center justify-center overflow-hidden"
           style={{ backgroundColor: '#1E3560' }}
         >
           {member.photo?.asset ? (
             <Image
-              src={urlFor(member.photo).width(600).height(320).fit('crop').crop('focalpoint').url()}
+              src={urlFor(member.photo).width(400).height(400).fit('crop').crop('focalpoint').url()}
               alt={member.photo.alt ?? member.name}
               fill
               className="object-cover"

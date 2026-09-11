@@ -223,6 +223,10 @@ export default async function AdminPage() {
       waitlist: (workshopWaitlist as WorkshopWaitlistEntry[]).filter((w) => w.workshopDateId === d._id),
     }))
 
+  console.log('workshopRegs count:', (workshopRegs as WorkshopRegistration[]).length)
+  console.log('unique IDs:', new Set((workshopRegs as WorkshopRegistration[]).map(r => r._id)).size)
+  console.log('emails:', (workshopRegs as WorkshopRegistration[]).map(r => r.email))
+
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F4F7F9' }}>
       {/* Header */}

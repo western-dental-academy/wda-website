@@ -88,24 +88,24 @@ export default async function AdminPage() {
 
   const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback] = await Promise.all([
     client.fetch(
-      `*[_type == "announcement" && active == true] | order(publishedAt desc){
+      `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
         program->{ _id, title }
       }`
     ),
     client.fetch(
-      `*[_type == "program"] | order(title asc){ _id, title }`
+      `*[_type == "program" && !(_id in path("drafts.**"))] | order(title asc){ _id, title }`
     ),
     client.fetch(
-      `*[_type == "workshopDate"] | order(date asc){
+      `*[_type == "workshopDate" && !(_id in path("drafts.**"))] | order(date asc){
         _id, date, active,
         offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price },
         "teamsWebinarId": offering->teamsWebinarId,
-        "virtualRegistrantCount": count(*[_type == "workshopRegistration" && workshopDateId == ^._id && deliveryMethod == "virtual"])
+        "virtualRegistrantCount": count(*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && workshopDateId == ^._id && deliveryMethod == "virtual"])
       }`
     ),
     client.fetch(
-      `*[_type == "workshopRegistration"] | order(registeredAt desc){
+      `*[_type == "workshopRegistration" && !(_id in path("drafts.**"))] | order(registeredAt desc){
         _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
         deliveryMethod, dietaryRestrictions, feedbackToken, feedbackRating, feedbackEnjoyedMost,
@@ -113,44 +113,44 @@ export default async function AdminPage() {
       }`
     ),
     client.fetch(
-      `*[_type == "workshopWaitlist"] | order(joinedAt asc){
+      `*[_type == "workshopWaitlist" && !(_id in path("drafts.**"))] | order(joinedAt asc){
         _id, firstName, lastName, email, phone, workshopDateId, joinedAt, notified, notifiedAt
       }`
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && status == "approved"] | order(startDate asc){
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "approved"] | order(startDate asc){
         _id, type, startDate, endDate, startTime, endTime,
         staffMember->{ fullName }
       }`
     ),
     client.fetch(
-      `*[_type == "task"] | order(dueDate asc, createdAt desc){
+      `*[_type == "task" && !(_id in path("drafts.**"))] | order(dueDate asc, createdAt desc){
         _id, title, description, assignedTo, assignedBy,
         dueDate, priority, status, createdAt, completedAt
       }`
     ),
     client.fetch(
-      `*[_type == "hoursLog" && (clockIn >= $since || !defined(clockOut))] | order(clockIn desc)[0...100]{
+      `*[_type == "hoursLog" && !(_id in path("drafts.**")) && (clockIn >= $since || !defined(clockOut))] | order(clockIn desc)[0...100]{
         _id, clockIn, clockOut, notes,
         staffMember->{ _id, fullName }
       }`,
       { since: sevenDaysAgo }
     ),
     client.fetch(
-      `*[_type == "timeOffRequest" && status == "pending"] | order(submittedAt asc){
+      `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "pending"] | order(submittedAt asc){
         _id, type, startDate, endDate, halfDay, reason, submittedAt,
         staffMember->{ _id, fullName, email }
       }`
     ),
     client.fetch(
-      `*[_type == "workshopRegistration" && defined(feedbackSubmittedAt)] | order(feedbackSubmittedAt desc){
+      `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && defined(feedbackSubmittedAt)] | order(feedbackSubmittedAt desc){
         _id, firstName, lastName, workshop,
         feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
         feedbackWouldRecommend, feedbackSubmittedAt, feedbackShareConsent
       }`
     ),
     client.fetch(
-      `*[_type == "workshopFeedback"] | order(submittedAt desc){
+      `*[_type == "workshopFeedback" && !(_id in path("drafts.**"))] | order(submittedAt desc){
         _id, workshopDateId, workshopName, rating,
         enjoyedMost, improvement, wouldRecommend, submittedAt, feedbackShareConsent
       }`
@@ -222,15 +222,6 @@ export default async function AdminPage() {
       registrations: uniqueWorkshopRegs.filter((r) => r.workshopDateId === d._id),
       waitlist: (workshopWaitlist as WorkshopWaitlistEntry[]).filter((w) => w.workshopDateId === d._id),
     }))
-
-  // Diagnostic: workshopRegs comes from a single flat Sanity fetch — not combined with any other fetch.
-  // workshopFeedback is a separate variable and is never merged into workshopRegs.
-  const _regs = workshopRegs as WorkshopRegistration[]
-  console.log('[DIAG] workshopRegs raw count from Sanity:', _regs.length)
-  console.log('[DIAG] unique _id count:', new Set(_regs.map(r => r._id)).size)
-  console.log('[DIAG] all emails:', _regs.map(r => `${r.firstName} ${r.lastName} <${r.email}> id=${r._id} dateId=${r.workshopDateId}`))
-  const susanEntries = _regs.filter(r => r.firstName?.toLowerCase().includes('susan') || r.lastName?.toLowerCase().includes('hunter'))
-  console.log('[DIAG] Susan Hunter entries:', susanEntries.length, JSON.stringify(susanEntries.map(r => ({ _id: r._id, email: r.email, workshopDateId: r.workshopDateId, status: r.stripePaymentStatus }))))
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#F4F7F9' }}>

@@ -479,7 +479,7 @@ function WorkshopRegisterFormInner() {
                         <option key={d.id} value={d.id}>
                           {d.isFull
                             ? `${formatLong(d.date)} — Full (Join Waitlist)`
-                            : `${formatLong(d.date)} (${d.registered}/${d.capacity} registered)`
+                            : formatLong(d.date)
                           }
                         </option>
                       ))}

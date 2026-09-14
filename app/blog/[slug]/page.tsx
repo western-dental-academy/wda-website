@@ -8,6 +8,7 @@ import { BLOG_POST_BY_SLUG_QUERY, BLOG_POSTS_QUERY } from "@/sanity/lib/queries"
 import { urlFor } from "@/sanity/lib/image";
 import type { BlogPost } from "@/types/blogPost";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import ShareButtons from "@/components/ShareButtons";
 
 export const revalidate = 60;
 
@@ -221,9 +222,21 @@ export default async function BlogPostPage({ params }: Props) {
           <PortableText value={post.body as never} components={portableTextComponents} />
         )}
 
+        {/* Share */}
+        <div className="mt-14 pt-8 border-t" style={{ borderColor: "rgba(30,53,96,0.1)" }}>
+          <p className="text-sm font-semibold mb-3" style={{ color: "#0D3B6E" }}>
+            Share this post
+          </p>
+          <ShareButtons
+            url={`https://westerndentalacademy.com/blog/${slug}`}
+            title={post.title}
+            imageUrl={post.mainImage?.asset ? urlFor(post.mainImage).width(1200).height(675).url() : undefined}
+          />
+        </div>
+
         {/* Author card */}
         <div
-          className="mt-16 pt-8 border-t flex items-center gap-4"
+          className="mt-10 pt-8 border-t flex items-center gap-4"
           style={{ borderColor: "rgba(30,53,96,0.1)" }}
         >
           <div

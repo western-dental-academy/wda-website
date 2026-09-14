@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { createClient } from '@sanity/client'
 import { Resend } from 'resend'
+import { createCalendarEvent } from '@/lib/microsoft-graph'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -50,6 +51,34 @@ export async function POST(req: NextRequest) {
     decidedAt: new Date().toISOString(),
     ...(notes ? { decisionNotes: notes } : {}),
   }).commit()
+
+  // Add to shared calendar when approved
+  if (action === 'approved') {
+    try {
+      const typeLabel: Record<string, string> = {
+        vacation:    'Vacation',
+        sick:        'Sick Day',
+        personal:    'Day Off',
+        unpaid:      'Day Off',
+        appointment: 'Appointment',
+      }
+      const subject = `${request.staffMember.fullName} — ${typeLabel[request.type] ?? 'Time Off'}`
+      // All-day events: Graph API requires end = day after the last day
+      const endDate = new Date(request.endDate)
+      endDate.setDate(endDate.getDate() + 1)
+      const endDateStr = endDate.toISOString().split('T')[0]
+      const calResult = await createCalendarEvent({
+        calendarEmail: 'WDAteamsite@westerndentalacademy.com',
+        subject,
+        start: `${request.startDate}T00:00:00`,
+        end: `${endDateStr}T00:00:00`,
+        isAllDay: true,
+      })
+      if (!calResult.success) console.error('Calendar event failed:', calResult.error)
+    } catch (err) {
+      console.error('Calendar event creation failed:', err)
+    }
+  }
 
   // Notify the requesting staff member
   try {

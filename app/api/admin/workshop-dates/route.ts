@@ -1,6 +1,8 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@sanity/client'
+import { createCalendarEvent } from '@/lib/microsoft-graph'
+import { OFFERING_METADATA } from '@/lib/workshops/offerings'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -79,6 +81,25 @@ export async function POST(req: NextRequest) {
         offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price }
       }`
     )
+
+    // Add to shared calendar
+    try {
+      const hours = OFFERING_METADATA[doc.offering?.title]?.hours ?? 2
+      const startTime = new Date(doc.date)
+      const endTime = new Date(startTime.getTime() + hours * 60 * 60 * 1000)
+      const calResult = await createCalendarEvent({
+        calendarEmail: 'WDAteamsite@westerndentalacademy.com',
+        subject: doc.offering?.title ?? 'WDA Workshop',
+        start: startTime.toISOString(),
+        end: endTime.toISOString(),
+        isAllDay: false,
+        body: 'WDA Workshop/Event — westerndentalacademy.com',
+      })
+      if (!calResult.success) console.error('Workshop calendar event failed:', calResult.error)
+    } catch (err) {
+      console.error('Workshop calendar event creation failed:', err)
+    }
+
     return NextResponse.json(doc, { status: 201 })
   } catch (err) {
     console.error('Workshop date create error:', err)

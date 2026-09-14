@@ -23,10 +23,10 @@ export default async function WorkshopFeedbackPage({ params }: PageProps) {
   const { id } = await params
 
   const workshopDate = await client.fetch<{
-    workshop: string
+    offeringTitle: string
     feedbackEnabled?: boolean
   } | null>(
-    `*[_type == "workshopDate" && _id == "${id}"][0]{ workshop, feedbackEnabled }`
+    `*[_type == "workshopDate" && _id == "${id}"][0]{ "offeringTitle": offering->title, feedbackEnabled }`
   )
 
   const feedbackEnabled = !workshopDate || workshopDate.feedbackEnabled !== false
@@ -65,7 +65,9 @@ export default async function WorkshopFeedbackPage({ params }: PageProps) {
                   className="text-xl font-bold mb-1"
                   style={{ color: '#0D3B6E', fontFamily: 'var(--font-montserrat, sans-serif)' }}
                 >
-                  How was your experience?
+                  {workshopDate?.offeringTitle
+                    ? `How was your experience with ${workshopDate.offeringTitle}?`
+                    : 'How was your experience?'}
                 </h1>
                 <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: '#E67E22' }}>
                   Western Dental Academy
@@ -73,7 +75,7 @@ export default async function WorkshopFeedbackPage({ params }: PageProps) {
               </div>
               <WorkshopFeedbackFormClient
                 workshopDateId={id}
-                workshopName={workshopDate?.workshop ?? ''}
+                eventName={workshopDate?.offeringTitle ?? ''}
               />
             </>
           )}

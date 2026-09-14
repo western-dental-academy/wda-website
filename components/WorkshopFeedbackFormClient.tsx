@@ -4,10 +4,10 @@ import { useState } from 'react'
 
 interface Props {
   workshopDateId: string
-  workshopName: string
+  eventName: string
 }
 
-export default function WorkshopFeedbackFormClient({ workshopDateId, workshopName }: Props) {
+export default function WorkshopFeedbackFormClient({ workshopDateId, eventName }: Props) {
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [enjoyedMost, setEnjoyedMost] = useState('')
@@ -29,7 +29,7 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, workshopNam
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           workshopDateId,
-          workshopName,
+          workshopName: eventName,
           rating,
           enjoyedMost,
           improvement,
@@ -74,9 +74,11 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, workshopNam
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div>
-        <p className="text-sm" style={{ color: 'rgba(43,48,58,0.65)' }}>
-          How was your experience with <strong style={{ color: '#0D3B6E' }}>{workshopName}</strong>?
-        </p>
+        {eventName && (
+          <p className="text-sm" style={{ color: 'rgba(43,48,58,0.65)' }}>
+            How was your experience with <strong style={{ color: '#0D3B6E' }}>{eventName}</strong>?
+          </p>
+        )}
       </div>
 
       {/* Star rating */}

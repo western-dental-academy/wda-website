@@ -80,8 +80,11 @@ function getWeekBounds() {
 }
 
 export async function GET(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get('secret')
-  if (!secret || secret !== process.env.WEEKLY_SUMMARY_SECRET) {
+  const cronSecret   = req.headers.get('authorization')
+  const querySecret  = req.nextUrl.searchParams.get('secret')
+  const isValidCron  = cronSecret === `Bearer ${process.env.CRON_SECRET}`
+  const isValidManual = querySecret === process.env.WEEKLY_SUMMARY_SECRET
+  if (!isValidCron && !isValidManual) {
     return Response.json({ error: 'Unauthorized' }, { status: 401 })
   }
 

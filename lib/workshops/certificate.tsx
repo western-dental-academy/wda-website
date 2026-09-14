@@ -1,7 +1,7 @@
 import { Document, Page, Text, View, StyleSheet, pdf, Image } from '@react-pdf/renderer'
 import fs from 'fs'
 import path from 'path'
-import { OFFERING_METADATA } from './offerings'
+import { OFFERING_METADATA, type SpeakerBreakdownEntry } from './offerings'
 
 // ── Brand tokens ─────────────────────────────────────────────────────────────
 const NAVY  = '#0D3B6E'
@@ -132,6 +132,18 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  // Speaker hours breakdown
+  breakdownSection: { marginTop: 16, marginBottom: 8, alignSelf: 'stretch' },
+  breakdownTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0D3B6E', marginBottom: 6 },
+  breakdownTable: { borderWidth: 0.5, borderColor: '#e5e7eb', borderRadius: 3 },
+  breakdownHeaderRow: { flexDirection: 'row', backgroundColor: '#0D3B6E', borderRadius: 3 },
+  breakdownHeader: { color: '#ffffff', fontFamily: 'Helvetica-Bold' },
+  breakdownRow: { flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: '#e5e7eb' },
+  breakdownRowEven: { backgroundColor: '#f9fafb' },
+  breakdownCell: { fontSize: 7, padding: 4, color: '#374151' },
+  breakdownTotalRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#0D3B6E', backgroundColor: '#f0f4f8' },
+  breakdownTotal: { fontFamily: 'Helvetica-Bold', color: '#0D3B6E' },
+
   // Navy footer
   footer: {
     backgroundColor: NAVY,
@@ -158,6 +170,7 @@ interface CertProps {
   cadaCppNumbers?: string[]
   cadaNumber?: string
   logoDataUrl: string
+  speakerBreakdown?: SpeakerBreakdownEntry[] | null
 }
 
 function WorkshopCertDocument({
@@ -170,6 +183,7 @@ function WorkshopCertDocument({
   cadaCppNumbers,
   cadaNumber,
   logoDataUrl,
+  speakerBreakdown,
 }: CertProps) {
   return (
     <Document>
@@ -225,6 +239,31 @@ function WorkshopCertDocument({
               )}
             </View>
           )}
+
+          {/* Speaker hours breakdown */}
+          {speakerBreakdown && speakerBreakdown.length > 0 && (
+            <View style={styles.breakdownSection}>
+              <Text style={styles.breakdownTitle}>Hours Breakdown</Text>
+              <View style={styles.breakdownTable}>
+                <View style={styles.breakdownHeaderRow}>
+                  <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 2 }]}>Speaker</Text>
+                  <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 3 }]}>Topic</Text>
+                  <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 1, textAlign: 'right' }]}>Hours</Text>
+                </View>
+                {speakerBreakdown.map((row, i) => (
+                  <View key={i} style={[styles.breakdownRow, i % 2 === 0 ? styles.breakdownRowEven : {}]}>
+                    <Text style={[styles.breakdownCell, { flex: 2 }]}>{row.speaker}</Text>
+                    <Text style={[styles.breakdownCell, { flex: 3 }]}>{row.topic}</Text>
+                    <Text style={[styles.breakdownCell, { flex: 1, textAlign: 'right' }]}>{row.hours} hrs</Text>
+                  </View>
+                ))}
+                <View style={styles.breakdownTotalRow}>
+                  <Text style={[styles.breakdownCell, styles.breakdownTotal, { flex: 5 }]}>Total</Text>
+                  <Text style={[styles.breakdownCell, styles.breakdownTotal, { flex: 1, textAlign: 'right' }]}>{hours} hrs</Text>
+                </View>
+              </View>
+            </View>
+          )}
         </View>
 
         {/* Navy footer */}
@@ -249,9 +288,10 @@ export async function generateWorkshopCertificate(params: {
   const { firstName, lastName, workshop, workshopDate, cadaNumber } = params
 
   const meta = OFFERING_METADATA[workshop]
-  const hours    = meta?.hours    ?? 1
-  const delivery = meta?.delivery ?? 'In Person'
-  const cadaCppNumbers = meta?.cadaCppNumbers
+  const hours            = meta?.hours            ?? 1
+  const delivery         = meta?.delivery         ?? 'In Person'
+  const cadaCppNumbers   = meta?.cadaCppNumbers
+  const speakerBreakdown = meta?.speakerBreakdown ?? null
 
   const formattedDate = new Date(workshopDate).toLocaleDateString('en-CA', {
     timeZone: 'America/Edmonton',
@@ -277,6 +317,7 @@ export async function generateWorkshopCertificate(params: {
       cadaCppNumbers={cadaCppNumbers}
       cadaNumber={cadaNumber}
       logoDataUrl={logoDataUrl}
+      speakerBreakdown={speakerBreakdown}
     />
   )
 

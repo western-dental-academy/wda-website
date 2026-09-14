@@ -64,7 +64,7 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     dateOverride: "October 3, 2026",
     tags: ["Full Day", "In-Person & Virtual", "Meets all Professional CCP Requirements", "Certificate of Attendance"],
     foodNote: "In-person session includes Lunch, Snacks and Refreshments",
-    agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.",
+    agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker. Location: 258-150 Chippewa Road, Sherwood Park (plenty of free parking)",
     cadaNote: "Meets requirements for all Professional Continued Competency programs",
     speakers: [
       {
@@ -533,7 +533,7 @@ function ErgonomicsGroupCard({
             </span>
             <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
             <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
-              1.5 hours/session
+              1.5 hrs/session · 7:00–8:30 PM
             </span>
           </div>
 
@@ -604,8 +604,16 @@ function ErgonomicsGroupCard({
                   >
                     Ideal for:{" "}
                   </span>
-                  Dentists, dental hygienists, dental assistants, treatment coordinators, and all dental
-                  team members
+                  All Healthcare Personnel
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  <span
+                    className="font-bold uppercase tracking-wide"
+                    style={{ color: "rgba(30,53,96,0.4)", fontSize: "10px" }}
+                  >
+                    Location:{" "}
+                  </span>
+                  258-150 Chippewa Road, Sherwood Park (plenty of free parking)
                 </p>
               </div>
 

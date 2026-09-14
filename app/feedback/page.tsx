@@ -46,7 +46,7 @@ export default async function FeedbackPage({ searchParams }: PageProps) {
       <div style={{ backgroundColor: '#0D3B6E' }} className="px-6 py-6">
         <div className="max-w-lg mx-auto">
           <Image
-            src="/WesternDentalAcademyLogo-Alternate-Inverted.svg"
+            src="/Western Dental Academy Logo - Alternate - Inverted.svg"
             alt="Western Dental Academy"
             width={160}
             height={48}

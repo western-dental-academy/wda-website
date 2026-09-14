@@ -7,6 +7,7 @@ import { urlFor } from "@/sanity/lib/image";
 import type { BlogPost } from "@/types/blogPost";
 import NewsletterSignup from "@/components/NewsletterSignup";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import ShareButtons from "@/components/ShareButtons";
 
 export const revalidate = 60;
 
@@ -62,13 +63,17 @@ export default async function BlogPage() {
           {posts && posts.length > 0 ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => (
-                <Link
+                <article
                   key={post._id}
-                  href={`/blog/${post.slug.current}`}
                   className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
                 >
                   {/* Thumbnail */}
-                  <div className="relative h-48 w-full overflow-hidden bg-[#1E3560]/10">
+                  <Link
+                    href={`/blog/${post.slug.current}`}
+                    tabIndex={-1}
+                    aria-hidden
+                    className="relative h-48 w-full block overflow-hidden bg-[#1E3560]/10 shrink-0"
+                  >
                     {post.mainImage?.asset ? (
                       <Image
                         src={urlFor(post.mainImage).width(640).height(384).url()}
@@ -85,7 +90,7 @@ export default async function BlogPage() {
                         />
                       </div>
                     )}
-                  </div>
+                  </Link>
 
                   {/* Content */}
                   <div className="flex flex-col flex-1 p-6 gap-3">
@@ -101,12 +106,14 @@ export default async function BlogPage() {
                       )}
                     </div>
 
-                    <h2
-                      className="text-lg font-bold text-[#1E3560] leading-snug group-hover:text-[#4A9FD4] transition-colors duration-200"
-                      style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
-                    >
-                      {post.title}
-                    </h2>
+                    <Link href={`/blog/${post.slug.current}`}>
+                      <h2
+                        className="text-lg font-bold text-[#1E3560] leading-snug hover:text-[#4A9FD4] transition-colors duration-200"
+                        style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+                      >
+                        {post.title}
+                      </h2>
+                    </Link>
 
                     {post.excerpt && (
                       <p className="text-sm text-[#2B303A]/70 leading-relaxed line-clamp-3">
@@ -114,11 +121,23 @@ export default async function BlogPage() {
                       </p>
                     )}
 
-                    <span className="mt-auto pt-2 text-sm font-semibold text-[#4A9FD4] group-hover:text-[#1E3560] transition-colors duration-200">
+                    <Link
+                      href={`/blog/${post.slug.current}`}
+                      className="mt-auto pt-2 text-sm font-semibold text-[#4A9FD4] hover:text-[#1E3560] transition-colors duration-200"
+                    >
                       Read more →
-                    </span>
+                    </Link>
+
+                    <div className="pt-1">
+                      <ShareButtons
+                        url={`https://westerndentalacademy.com/blog/${post.slug.current}`}
+                        title={post.title}
+                        imageUrl={post.mainImage?.asset ? urlFor(post.mainImage).width(1200).height(675).url() : undefined}
+                        size="sm"
+                      />
+                    </div>
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
           ) : (

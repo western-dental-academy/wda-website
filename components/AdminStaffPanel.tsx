@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import PendingApprovals from '@/components/staff/PendingApprovals'
 import DownloadIdCardButton from '@/components/staff/DownloadIdCardButton'
 
@@ -504,6 +504,7 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
   const now = Date.now()
   const sevenDaysAgo = now - 7 * 24 * 3_600_000
   const [showRecentEntries, setShowRecentEntries] = useState(false)
+  const [expandedEntry, setExpandedEntry] = useState<string | null>(null)
 
   const clockedIn = clockEntries.filter(e => !e.clockOut)
   const recentEntries = clockEntries.filter(e => new Date(e.clockIn).getTime() >= sevenDaysAgo)
@@ -601,9 +602,9 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
                   <table className="w-full text-sm">
                     <thead>
                       <tr style={{ borderBottom: '1px solid rgba(30,53,96,0.07)' }}>
-                        {['Staff', 'Clock In', 'Clock Out', 'Hours'].map(h => (
+                        {['Staff', 'Clock In', 'Clock Out', 'Hours', ''].map((h, i) => (
                           <th
-                            key={h}
+                            key={i}
                             className="px-6 py-3 text-left text-xs font-bold uppercase tracking-wide"
                             style={{ color: 'rgba(30,53,96,0.4)' }}
                           >
@@ -615,22 +616,57 @@ export default function AdminStaffPanel({ clockEntries, pendingTimeOff, currentU
                     <tbody>
                       {recentEntries.map(e => {
                         const hours = e.clockOut ? entryHours(e) : null
+                        const isExpanded = expandedEntry === e._id
                         return (
-                          <tr key={e._id} style={{ borderBottom: '1px solid rgba(30,53,96,0.05)' }}>
-                            <td className="px-6 py-3 font-medium" style={{ color: '#1E3560' }}>{e.staffMember.fullName}</td>
-                            <td className="px-6 py-3" style={{ color: '#2B303A' }}>{fmtDt(e.clockIn)}</td>
-                            <td className="px-6 py-3" style={{ color: '#2B303A' }}>
-                              {e.clockOut ? fmtDt(e.clockOut) : (
-                                <span className="flex items-center gap-1.5">
-                                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block animate-pulse" />
-                                  <span style={{ color: '#15803d' }}>Active</span>
-                                </span>
-                              )}
-                            </td>
-                            <td className="px-6 py-3 tabular-nums" style={{ color: '#2B303A' }}>
-                              {hours !== null ? fmtH(hours) : <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>}
-                            </td>
-                          </tr>
+                          <React.Fragment key={e._id}>
+                            <tr
+                              onClick={() => setExpandedEntry(isExpanded ? null : e._id)}
+                              className="cursor-pointer transition-colors duration-100 hover:bg-[#F4F7F9]"
+                              style={{ borderBottom: isExpanded ? 'none' : '1px solid rgba(30,53,96,0.05)' }}
+                            >
+                              <td className="px-6 py-3 font-medium" style={{ color: '#1E3560' }}>{e.staffMember.fullName}</td>
+                              <td className="px-6 py-3" style={{ color: '#2B303A' }}>{fmtDt(e.clockIn)}</td>
+                              <td className="px-6 py-3" style={{ color: '#2B303A' }}>
+                                {e.clockOut ? fmtDt(e.clockOut) : (
+                                  <span className="flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block animate-pulse" />
+                                    <span style={{ color: '#15803d' }}>Active</span>
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-3 tabular-nums" style={{ color: '#2B303A' }}>
+                                {hours !== null ? fmtH(hours) : <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                <svg
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  className={`w-4 h-4 inline-block transition-transform duration-200 ${isExpanded ? 'rotate-180' : 'rotate-0'}`}
+                                  style={{ color: 'rgba(30,53,96,0.35)' }}
+                                  aria-hidden
+                                >
+                                  <path fillRule="evenodd" clipRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
+                                </svg>
+                              </td>
+                            </tr>
+                            {isExpanded && (
+                              <tr style={{ borderBottom: '1px solid rgba(30,53,96,0.05)' }}>
+                                <td colSpan={5} className="px-6 pb-4 pt-1">
+                                  <div
+                                    className="rounded-lg px-4 py-3 text-sm"
+                                    style={{
+                                      borderLeft: '3px solid #E67E22',
+                                      backgroundColor: 'rgba(244,247,249,0.8)',
+                                      color: e.notes ? '#2B303A' : 'rgba(43,48,58,0.4)',
+                                    }}
+                                  >
+                                    <span className="text-xs font-bold uppercase tracking-wide mr-2" style={{ color: 'rgba(30,53,96,0.4)' }}>Notes</span>
+                                    {e.notes ? e.notes : 'No notes recorded'}
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
                         )
                       })}
                     </tbody>

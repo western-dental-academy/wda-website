@@ -199,7 +199,7 @@ export async function POST(req: NextRequest) {
     const processingFee = calcFee(remainingCents)
 
     // Build line items
-    const lineItems: Parameters<typeof stripe.checkout.sessions.create>[0]['line_items'] = []
+    const lineItems: any[] = []
 
     if (giftDiscountCents > 0 && validatedGiftCode) {
       // Single line item for the discounted total

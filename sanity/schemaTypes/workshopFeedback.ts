@@ -18,6 +18,24 @@ export default defineType({
       type: 'boolean',
       description: 'Whether the respondent consents to their feedback being shared on website/socials',
     }),
+    defineField({
+      name: 'respondentName',
+      title: 'Respondent Name',
+      type: 'string',
+      description: 'First name + first initial of last name — optional, self-reported',
+    }),
+    defineField({
+      name: 'source',
+      title: 'Feedback Source',
+      type: 'string',
+      description: 'email-link or qr-code',
+    }),
+    defineField({
+      name: 'registrationId',
+      title: 'Registration ID',
+      type: 'string',
+      description: 'Sanity _id of the workshopRegistration doc if submitted via email link',
+    }),
   ],
   preview: {
     select: { workshopName: 'workshopName', rating: 'rating', submittedAt: 'submittedAt' },

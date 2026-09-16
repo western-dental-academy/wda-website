@@ -27,6 +27,9 @@ export interface QRFeedbackEntry {
   wouldRecommend?: boolean
   submittedAt: string
   feedbackShareConsent?: boolean
+  respondentName?: string
+  source?: 'email-link' | 'qr-code'
+  registrationId?: string
 }
 
 // ── Normalised internal type ───────────────────────────────────────────────────
@@ -40,7 +43,7 @@ interface NormEntry {
   improvement?: string
   wouldRecommend?: boolean
   submittedAt: string
-  respondentName?: string
+  respondentName: string
   shareConsent?: boolean
 }
 
@@ -53,27 +56,30 @@ interface WorkshopGroup {
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function normalise(emailEntries: FeedbackEntry[], qrEntries: QRFeedbackEntry[]): NormEntry[] {
+  // Historical email-link entries stored on workshopRegistration docs
   const email: NormEntry[] = emailEntries.map(e => ({
     id: e._id,
-    source: 'email',
+    source: 'email' as const,
     workshopName: e.workshop,
     rating: e.feedbackRating,
     enjoyedMost: e.feedbackEnjoyedMost,
     improvement: e.feedbackImprovement,
     wouldRecommend: e.feedbackWouldRecommend,
     submittedAt: e.feedbackSubmittedAt,
-    respondentName: `${e.firstName} ${e.lastName}`.trim() || undefined,
+    respondentName: `${e.firstName} ${e.lastName}`.trim() || 'Anonymous',
     shareConsent: e.feedbackShareConsent,
   }))
+  // All workshopFeedback docs — includes both qr-code and email-link going forward
   const qr: NormEntry[] = qrEntries.map(e => ({
     id: e._id,
-    source: 'qr',
+    source: e.source === 'email-link' ? 'email' as const : 'qr' as const,
     workshopName: e.workshopName,
     rating: e.rating,
     enjoyedMost: e.enjoyedMost,
     improvement: e.improvement,
     wouldRecommend: e.wouldRecommend,
     submittedAt: e.submittedAt,
+    respondentName: e.respondentName?.trim() || 'Anonymous',
     shareConsent: e.feedbackShareConsent,
   }))
   return [...email, ...qr].sort((a, b) => b.submittedAt.localeCompare(a.submittedAt))
@@ -194,7 +200,7 @@ export default function AdminWorkshopFeedback({ entries, qrEntries }: { entries:
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <p className="text-sm font-semibold" style={{ color: '#1E3560' }}>
-                                {entry.respondentName ?? 'Anonymous'}
+                                {entry.respondentName}
                               </p>
                               {entry.source === 'email' ? (
                                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(13,59,110,0.1)', color: '#0D3B6E' }}>

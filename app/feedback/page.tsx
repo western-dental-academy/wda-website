@@ -24,19 +24,32 @@ export default async function FeedbackPage({ searchParams }: PageProps) {
 
   let state: 'invalid' | 'already-submitted' | 'valid' = 'invalid'
   let firstName = ''
-  let workshop = ''
+  let lastName  = ''
+  let workshop  = ''
+  let workshopDateId   = ''
+  let registrationId   = ''
 
   if (token?.trim()) {
-    const reg = await client.fetch<{ firstName: string; workshop: string; feedbackSubmittedAt?: string } | null>(
+    const reg = await client.fetch<{
+      _id: string
+      firstName: string
+      lastName: string
+      workshop: string
+      workshopDateId?: string
+      feedbackSubmittedAt?: string
+    } | null>(
       `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && feedbackToken == "${token}"][0]{
-        firstName, workshop, feedbackSubmittedAt
+        _id, firstName, lastName, workshop, workshopDateId, feedbackSubmittedAt
       }`
     )
 
     if (reg) {
-      firstName = reg.firstName
-      workshop = reg.workshop
-      state = reg.feedbackSubmittedAt ? 'already-submitted' : 'valid'
+      firstName      = reg.firstName
+      lastName       = reg.lastName ?? ''
+      workshop       = reg.workshop
+      workshopDateId = reg.workshopDateId ?? ''
+      registrationId = reg._id
+      state          = reg.feedbackSubmittedAt ? 'already-submitted' : 'valid'
     }
   }
 
@@ -93,7 +106,14 @@ export default async function FeedbackPage({ searchParams }: PageProps) {
                   Western Dental Academy
                 </p>
               </div>
-              <FeedbackFormClient token={token!} firstName={firstName} workshop={workshop} />
+              <FeedbackFormClient
+                token={token!}
+                firstName={firstName}
+                lastName={lastName}
+                workshop={workshop}
+                workshopDateId={workshopDateId}
+                registrationId={registrationId}
+              />
             </>
           )}
         </div>

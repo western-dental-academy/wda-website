@@ -8,6 +8,7 @@ interface Props {
 }
 
 export default function WorkshopFeedbackFormClient({ workshopDateId, eventName }: Props) {
+  const [respondentName, setRespondentName] = useState('')
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [enjoyedMost, setEnjoyedMost] = useState('')
@@ -35,6 +36,8 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, eventName }
           improvement,
           wouldRecommend,
           shareConsent,
+          respondentName: respondentName.trim(),
+          source: 'qr-code',
         }),
       })
       const data = await res.json()
@@ -79,6 +82,22 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, eventName }
             How was your experience with <strong style={{ color: '#0D3B6E' }}>{eventName}</strong>?
           </p>
         )}
+      </div>
+
+      {/* Optional name */}
+      <div>
+        <label className="block text-sm font-semibold mb-1" style={{ color: '#0D3B6E' }}>
+          Your Name <span className="font-normal" style={{ color: 'rgba(43,48,58,0.4)' }}>(optional)</span>
+        </label>
+        <input
+          type="text"
+          value={respondentName}
+          onChange={(e) => setRespondentName(e.target.value)}
+          placeholder="e.g. Brandy T."
+          className="w-full rounded-lg px-4 py-2.5 text-sm focus:outline-none"
+          style={{ border: '1.5px solid rgba(30,53,96,0.15)', color: '#2B303A', backgroundColor: '#F4F7F9' }}
+        />
+        <p className="text-xs mt-1" style={{ color: 'rgba(43,48,58,0.4)' }}>Leave blank to submit anonymously</p>
       </div>
 
       {/* Star rating */}

@@ -33,8 +33,17 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Rating must be between 1 and 5' }, { status: 400 })
   }
 
-  const registration = await client.fetch<{ _id: string; feedbackSubmittedAt?: string } | null>(
-    `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && feedbackToken == "${token}"][0]{ _id, feedbackSubmittedAt }`
+  const registration = await client.fetch<{
+    _id: string
+    firstName?: string
+    lastName?: string
+    workshop?: string
+    workshopDateId?: string
+    feedbackSubmittedAt?: string
+  } | null>(
+    `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && feedbackToken == "${token}"][0]{
+      _id, firstName, lastName, workshop, workshopDateId, feedbackSubmittedAt
+    }`
   )
 
   if (!registration) {
@@ -45,14 +54,35 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Feedback already submitted' }, { status: 400 })
   }
 
+  const now = new Date().toISOString()
+  const lastInitial = registration.lastName?.trim() ? registration.lastName.trim()[0] + '.' : ''
+  const respondentName = [registration.firstName, lastInitial].filter(Boolean).join(' ')
+
+  // Mark feedbackSubmittedAt on the registration (resubmission guard)
   await client.patch(registration._id).set({
-    feedbackRating: rating,
-    feedbackEnjoyedMost: enjoyedMost?.trim() || undefined,
-    feedbackImprovement: improvement?.trim() || undefined,
-    feedbackWouldRecommend: typeof wouldRecommend === 'boolean' ? wouldRecommend : undefined,
-    feedbackShareConsent: shareConsent === true ? true : undefined,
-    feedbackSubmittedAt: new Date().toISOString(),
+    feedbackRating:           rating,
+    feedbackEnjoyedMost:      enjoyedMost?.trim() || undefined,
+    feedbackImprovement:      improvement?.trim() || undefined,
+    feedbackWouldRecommend:   typeof wouldRecommend === 'boolean' ? wouldRecommend : undefined,
+    feedbackShareConsent:     shareConsent === true ? true : undefined,
+    feedbackSubmittedAt:      now,
   }).commit()
+
+  // Also create a workshopFeedback doc so this entry appears in the unified panel
+  await client.create({
+    _type: 'workshopFeedback',
+    workshopDateId:      registration.workshopDateId ?? '',
+    workshopName:        registration.workshop ?? '',
+    rating,
+    enjoyedMost:         enjoyedMost?.trim() || undefined,
+    improvement:         improvement?.trim() || undefined,
+    wouldRecommend:      typeof wouldRecommend === 'boolean' ? wouldRecommend : undefined,
+    feedbackShareConsent: shareConsent === true ? true : undefined,
+    submittedAt:         now,
+    respondentName:      respondentName || undefined,
+    source:              'email-link',
+    registrationId:      registration._id,
+  } as { _type: string; [key: string]: unknown })
 
   return Response.json({ success: true })
 }

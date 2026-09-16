@@ -152,7 +152,8 @@ export default async function AdminPage() {
     client.fetch(
       `*[_type == "workshopFeedback" && !(_id in path("drafts.**"))] | order(submittedAt desc){
         _id, workshopDateId, workshopName, rating,
-        enjoyedMost, improvement, wouldRecommend, submittedAt, feedbackShareConsent
+        enjoyedMost, improvement, wouldRecommend, submittedAt, feedbackShareConsent,
+        respondentName, source, registrationId
       }`
     ),
   ])

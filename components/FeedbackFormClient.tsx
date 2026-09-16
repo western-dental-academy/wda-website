@@ -5,10 +5,13 @@ import { useState } from 'react'
 interface Props {
   token: string
   firstName: string
+  lastName?: string
   workshop: string
+  workshopDateId?: string
+  registrationId?: string
 }
 
-export default function FeedbackFormClient({ token, firstName, workshop }: Props) {
+export default function FeedbackFormClient({ token, firstName, lastName, workshop, workshopDateId, registrationId }: Props) {
   const [rating, setRating] = useState(0)
   const [hovered, setHovered] = useState(0)
   const [enjoyedMost, setEnjoyedMost] = useState('')
@@ -19,6 +22,10 @@ export default function FeedbackFormClient({ token, firstName, workshop }: Props
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
 
+  const lastInitial = lastName?.trim() ? lastName.trim()[0] + '.' : ''
+  const displayName = [firstName, lastInitial].filter(Boolean).join(' ')
+  const respondentName = lastInitial ? `${firstName} ${lastInitial}` : firstName
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (rating === 0) {
@@ -28,10 +35,23 @@ export default function FeedbackFormClient({ token, firstName, workshop }: Props
     setSubmitting(true)
     setError('')
     try {
-      const res = await fetch('/api/feedback', {
+      const res = await fetch('/api/feedback/workshop', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, rating, enjoyedMost, improvement, wouldRecommend, shareConsent }),
+        body: JSON.stringify({
+          workshopDateId,
+          workshopName: workshop,
+          rating,
+          enjoyedMost,
+          improvement,
+          wouldRecommend,
+          shareConsent,
+          respondentName,
+          source: 'email-link',
+          registrationId,
+          // token passed so the route can mark feedbackSubmittedAt
+          token,
+        }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Something went wrong')
@@ -70,7 +90,9 @@ export default function FeedbackFormClient({ token, firstName, workshop }: Props
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div>
-        <p className="text-sm font-semibold mb-1" style={{ color: '#0D3B6E' }}>Hi {firstName}!</p>
+        <p className="text-base font-bold mb-1" style={{ color: '#0D3B6E', fontFamily: 'var(--font-montserrat, sans-serif)' }}>
+          Hi {displayName}!
+        </p>
         <p className="text-sm" style={{ color: 'rgba(43,48,58,0.65)' }}>
           Tell us about your experience with <strong style={{ color: '#0D3B6E' }}>{workshop}</strong>.
         </p>
@@ -111,11 +133,7 @@ export default function FeedbackFormClient({ token, firstName, workshop }: Props
           onChange={(e) => setEnjoyedMost(e.target.value)}
           placeholder="Share what stood out to you…"
           className="w-full rounded-lg px-4 py-3 text-sm resize-none focus:outline-none"
-          style={{
-            border: '1.5px solid rgba(30,53,96,0.15)',
-            color: '#2B303A',
-            backgroundColor: '#F4F7F9',
-          }}
+          style={{ border: '1.5px solid rgba(30,53,96,0.15)', color: '#2B303A', backgroundColor: '#F4F7F9' }}
         />
       </div>
 
@@ -130,11 +148,7 @@ export default function FeedbackFormClient({ token, firstName, workshop }: Props
           onChange={(e) => setImprovement(e.target.value)}
           placeholder="Your honest input helps us improve…"
           className="w-full rounded-lg px-4 py-3 text-sm resize-none focus:outline-none"
-          style={{
-            border: '1.5px solid rgba(30,53,96,0.15)',
-            color: '#2B303A',
-            backgroundColor: '#F4F7F9',
-          }}
+          style={{ border: '1.5px solid rgba(30,53,96,0.15)', color: '#2B303A', backgroundColor: '#F4F7F9' }}
         />
       </div>
 

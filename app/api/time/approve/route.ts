@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
 
   const request = await client.fetch(
     `*[_type == "timeOffRequest" && _id == $id][0]{
-      _id, type, startDate, endDate, halfDay, status,
+      _id, type, startDate, endDate, halfDay, startTime, endTime, status,
       staffMember->{ _id, fullName, email }
     }`,
     { id: requestId }
@@ -63,16 +63,27 @@ export async function POST(req: NextRequest) {
         appointment: 'Appointment',
       }
       const subject = `${request.staffMember.fullName} — ${typeLabel[request.type] ?? 'Time Off'}`
-      // All-day events: Graph API requires end = day after the last day
-      const endDate = new Date(request.endDate)
-      endDate.setDate(endDate.getDate() + 1)
-      const endDateStr = endDate.toISOString().split('T')[0]
+      let calStart: string
+      let calEnd: string
+      let isAllDay: boolean
+      if (request.halfDay && request.startTime && request.endTime) {
+        calStart = `${request.startDate}T${request.startTime}:00`
+        calEnd = `${request.startDate}T${request.endTime}:00`
+        isAllDay = false
+      } else {
+        // All-day events: Graph API requires end = day after the last day
+        const endDate = new Date(request.endDate)
+        endDate.setDate(endDate.getDate() + 1)
+        calStart = `${request.startDate}T00:00:00`
+        calEnd = `${endDate.toISOString().split('T')[0]}T00:00:00`
+        isAllDay = true
+      }
       const calResult = await createCalendarEvent({
         calendarEmail: 'WDAteamsite@westerndentalacademy.com',
         subject,
-        start: `${request.startDate}T00:00:00`,
-        end: `${endDateStr}T00:00:00`,
-        isAllDay: true,
+        start: calStart,
+        end: calEnd,
+        isAllDay,
       })
       if (!calResult.success) {
         console.error('Calendar event failed:', calResult.error)

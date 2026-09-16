@@ -119,7 +119,7 @@ export default async function AdminPage() {
     ),
     client.fetch(
       `*[_type == "timeOffRequest" && !(_id in path("drafts.**")) && status == "approved"] | order(startDate asc){
-        _id, type, startDate, endDate, startTime, endTime,
+        _id, type, startDate, endDate, halfDay, startTime, endTime,
         staffMember->{ fullName }
       }`
     ),

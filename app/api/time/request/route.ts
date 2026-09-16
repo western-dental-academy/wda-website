@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
     reason: reason || undefined,
     status: 'pending',
     submittedAt: new Date().toISOString(),
-    ...(type === 'appointment' && startTime && endTime ? { startTime, endTime } : {}),
+    ...(startTime && endTime ? { startTime, endTime } : {}),
   })
 
   // Notify all active owners

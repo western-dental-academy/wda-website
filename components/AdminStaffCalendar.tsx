@@ -9,6 +9,7 @@ interface TimeOffRequest {
   type: string
   startDate: string
   endDate: string
+  halfDay?: boolean
   startTime?: string
   endTime?: string
   staffMember: { fullName: string }
@@ -70,19 +71,40 @@ function formatWorkshopTime(dateStr: string): string {
   }).replace('a.m.', 'AM').replace('p.m.', 'PM') + ' MDT'
 }
 
+interface DayEntry {
+  fullName: string
+  type: string
+  halfDay?: boolean
+  startTime?: string
+  endTime?: string
+}
+
+function fmt12(t: string): string {
+  const [h, m] = t.split(':').map(Number)
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  const h12 = h % 12 || 12
+  return m ? `${h12}:${String(m).padStart(2, '0')} ${ampm}` : `${h12} ${ampm}`
+}
+
 function buildDayMap(
   requests: TimeOffRequest[],
   year: number,
   month: number
-): Record<number, Array<{ fullName: string; type: string; startTime?: string; endTime?: string }>> {
+): Record<number, DayEntry[]> {
   const daysInMonth = new Date(year, month, 0).getDate()
-  const map: Record<number, Array<{ fullName: string; type: string; startTime?: string; endTime?: string }>> = {}
+  const map: Record<number, DayEntry[]> = {}
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${pad(month)}-${pad(d)}`
-    const entries: Array<{ fullName: string; type: string; startTime?: string; endTime?: string }> = []
+    const entries: DayEntry[] = []
     for (const r of requests) {
       if (r.startDate <= dateStr && r.endDate >= dateStr) {
-        entries.push({ fullName: r.staffMember.fullName, type: r.type, startTime: r.startTime, endTime: r.endTime })
+        entries.push({
+          fullName: r.staffMember.fullName,
+          type: r.type,
+          halfDay: r.halfDay,
+          startTime: r.startTime,
+          endTime: r.endTime,
+        })
       }
     }
     if (entries.length) map[d] = entries
@@ -270,15 +292,15 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
                       {entries.slice(0, 3).map((e, j) => {
                         const meta = TYPE_META[e.type] ?? { bg: '#6b7280', text: '#fff', label: e.type }
                         const first = e.fullName.split(' ')[0]
-                        const pillText = e.type === 'appointment' && e.startTime && e.endTime
-                          ? `${first} — Appt ${e.startTime}–${e.endTime}`
-                          : first
+                        const hasTime = e.startTime && e.endTime
+                        const timeRange = hasTime ? `${fmt12(e.startTime!)}–${fmt12(e.endTime!)}` : ''
+                        const pillText = hasTime ? `${first} · ${timeRange}` : first
                         return (
                           <div
                             key={j}
                             className="text-[10px] font-medium px-1 rounded truncate leading-[14px]"
                             style={{ backgroundColor: meta.bg, color: meta.text }}
-                            title={`${e.fullName} — ${meta.label}${e.type === 'appointment' && e.startTime ? ` (${e.startTime}–${e.endTime})` : ''}`}
+                            title={`${e.fullName} — ${meta.label}${hasTime ? ` (${timeRange})` : ''}`}
                           >
                             {pillText}
                           </div>
@@ -338,16 +360,20 @@ export default function AdminStaffCalendar({ requests, workshopDates }: Props) {
             <div className="flex flex-col gap-2">
               {selectedEntries.map((e, i) => {
                 const meta = TYPE_META[e.type] ?? { bg: '#6b7280', text: '#fff', label: e.type }
+                const hasTime = e.startTime && e.endTime
                 return (
                   <div key={i} className="flex items-center justify-between gap-2">
                     <div>
                       <span className="text-sm font-medium block" style={{ color: '#1E3560' }}>
                         {e.fullName}
                       </span>
-                      {e.type === 'appointment' && e.startTime && e.endTime && (
+                      {hasTime && (
                         <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>
-                          {e.startTime} – {e.endTime}
+                          Away {fmt12(e.startTime!)} – {fmt12(e.endTime!)}
                         </span>
+                      )}
+                      {e.halfDay && !hasTime && (
+                        <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>Half day</span>
                       )}
                     </div>
                     <span

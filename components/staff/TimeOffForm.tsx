@@ -108,7 +108,7 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
       const res = await fetch('/api/time/request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type, startDate, endDate, halfDay, reason, ...(type === 'appointment' ? { startTime, endTime } : {}) }),
+        body: JSON.stringify({ type, startDate, endDate, halfDay, reason, ...(startTime && endTime ? { startTime, endTime } : {}) }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed to submit')
@@ -234,10 +234,13 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
                 </div>
               </div>
 
-              {type === 'appointment' && (
+              {/* Time inputs for appointments, or for half-day requests */}
+              {(type === 'appointment' || halfDay) && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>Start Time</label>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>
+                      {type === 'appointment' ? 'Start Time' : 'Away from'}
+                    </label>
                     <input
                       type="time"
                       value={startTime}
@@ -248,7 +251,9 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>End Time</label>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: '#0D3B6E' }}>
+                      {type === 'appointment' ? 'End Time' : 'Back at'}
+                    </label>
                     <input
                       type="time"
                       value={endTime}
@@ -266,11 +271,14 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
                   <input
                     type="checkbox"
                     checked={halfDay}
-                    onChange={e => setHalfDay(e.target.checked)}
+                    onChange={e => {
+                      setHalfDay(e.target.checked)
+                      if (!e.target.checked) { setStartTime(''); setEndTime('') }
+                    }}
                     className="w-4 h-4 rounded"
                     style={{ accentColor: '#0D3B6E' }}
                   />
-                  <span className="text-sm" style={{ color: '#2B303A' }}>Half day</span>
+                  <span className="text-sm" style={{ color: '#2B303A' }}>Half day / partial day</span>
                 </label>
               )}
 

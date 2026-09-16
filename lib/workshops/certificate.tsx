@@ -44,13 +44,13 @@ const styles = StyleSheet.create({
     backgroundColor: AMBER,
   },
 
-  // White body
+  // White body — paddingBottom accounts for the absolutely-positioned footer (~29pt)
   body: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 24,
-    paddingBottom: 20,
+    paddingBottom: 36,
     paddingHorizontal: 60,
   },
   certifiesText: {
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
 
   // Learning objectives
-  objectivesSection: { marginTop: 12, marginBottom: 8, alignSelf: 'stretch' },
+  objectivesSection: { marginTop: 8, marginBottom: 4, alignSelf: 'stretch' },
   objectivesTitle: {
     fontSize: 9,
     fontFamily: 'Helvetica-Bold',
@@ -142,24 +142,28 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
   },
-  objectiveRow: { flexDirection: 'row' as const, marginBottom: 3, paddingLeft: 4 },
-  objectiveBullet: { fontSize: 7, color: '#E67E22', marginRight: 4, marginTop: 1 },
-  objectiveText: { fontSize: 7, color: '#374151', flex: 1, lineHeight: 1.4 },
+  objectiveRow: { flexDirection: 'row' as const, marginBottom: 2, paddingLeft: 4 },
+  objectiveBullet: { fontSize: 6.5, color: '#E67E22', marginRight: 4, marginTop: 1 },
+  objectiveText: { fontSize: 6.5, color: '#374151', flex: 1, lineHeight: 1.4 },
 
   // Speaker hours breakdown
-  breakdownSection: { marginTop: 16, marginBottom: 8, alignSelf: 'stretch' },
+  breakdownSection: { marginTop: 8, marginBottom: 8, alignSelf: 'stretch' },
   breakdownTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0D3B6E', marginBottom: 6 },
   breakdownTable: { borderWidth: 0.5, borderColor: '#e5e7eb', borderRadius: 3 },
   breakdownHeaderRow: { flexDirection: 'row', backgroundColor: '#0D3B6E', borderRadius: 3 },
   breakdownHeader: { color: '#ffffff', fontFamily: 'Helvetica-Bold' },
   breakdownRow: { flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: '#e5e7eb' },
   breakdownRowEven: { backgroundColor: '#f9fafb' },
-  breakdownCell: { fontSize: 7, padding: 4, color: '#374151' },
+  breakdownCell: { fontSize: 6.5, padding: 3, color: '#374151' },
   breakdownTotalRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#0D3B6E', backgroundColor: '#f0f4f8' },
   breakdownTotal: { fontFamily: 'Helvetica-Bold', color: '#0D3B6E' },
 
-  // Navy footer
+  // Navy footer — position absolute keeps it pinned to bottom, out of the flow
   footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: NAVY,
     paddingVertical: 10,
     alignItems: 'center',
@@ -332,7 +336,7 @@ export async function generateWorkshopCertificate(params: {
   })
 
   const logoBuffer = fs.readFileSync(
-    path.join(process.cwd(), 'public', 'Western Dental Academy Logo Alternate-1.png')
+    path.join(process.cwd(), 'public', 'Inverted.png')
   )
   const logoDataUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
 

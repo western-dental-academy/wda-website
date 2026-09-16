@@ -74,7 +74,11 @@ export async function POST(req: NextRequest) {
         end: `${endDateStr}T00:00:00`,
         isAllDay: true,
       })
-      if (!calResult.success) console.error('Calendar event failed:', calResult.error)
+      if (!calResult.success) {
+        console.error('Calendar event failed:', calResult.error)
+      } else if (calResult.eventId) {
+        await client.patch(requestId).set({ calendarEventId: calResult.eventId }).commit()
+      }
     } catch (err) {
       console.error('Calendar event creation failed:', err)
     }

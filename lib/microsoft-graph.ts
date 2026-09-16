@@ -47,11 +47,11 @@ export async function createCalendarEvent({
       isAllDay,
     }
 
-    await graphClient
+    const response = await graphClient
       .api(`/users/${calendarEmail}/calendar/events`)
       .post(event)
 
-    return { success: true }
+    return { success: true, eventId: response.id as string | undefined }
   } catch (error: unknown) {
     console.error('Calendar event creation error:', error)
     return { success: false, error: error instanceof Error ? error.message : String(error) }

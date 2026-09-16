@@ -54,6 +54,40 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [cancellingId, setCancellingId] = useState<string | null>(null)
+  const [cancelFlash, setCancelFlash] = useState<string | null>(null)
+  const [cancelError, setCancelError] = useState<string | null>(null)
+
+  const today = new Date().toISOString().split('T')[0]
+
+  async function handleCancel(r: Request) {
+    const dateLabel = r.startDate === r.endDate
+      ? formatDate(r.startDate)
+      : `${formatDate(r.startDate)} – ${formatDate(r.endDate)}`
+    const confirmed = window.confirm(
+      `Are you sure you want to cancel your ${TYPE_LABELS[r.type] ?? r.type} on ${dateLabel}?`
+    )
+    if (!confirmed) return
+
+    setCancellingId(r._id)
+    setCancelError(null)
+    try {
+      const res = await fetch('/api/time/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestId: r._id }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Something went wrong')
+      setRequests(prev => prev.map(x => x._id === r._id ? { ...x, status: 'cancelled' } : x))
+      setCancelFlash(r._id)
+      setTimeout(() => setCancelFlash(null), 3000)
+    } catch (err: unknown) {
+      setCancelError(err instanceof Error ? err.message : 'Something went wrong. Please try again.')
+    } finally {
+      setCancellingId(null)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -285,12 +319,21 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
               Your Requests
             </h2>
           </div>
+          {cancelError && (
+            <p className="px-5 py-2 text-xs" style={{ backgroundColor: 'rgba(220,38,38,0.06)', color: '#dc2626' }}>
+              {cancelError}
+            </p>
+          )}
           <ul className="divide-y" style={{ borderColor: 'rgba(13,59,110,0.06)' }}>
             {requests.map(r => {
-              const style = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending
+              const statusStyle = STATUS_STYLES[r.status] ?? STATUS_STYLES.pending
               const dateLabel = r.startDate === r.endDate
                 ? formatDate(r.startDate)
                 : `${formatDate(r.startDate)} – ${formatDate(r.endDate)}`
+              const isCancellable =
+                (r.status === 'pending' || r.status === 'approved') && r.startDate > today
+              const isCancelling = cancellingId === r._id
+              const flashing = cancelFlash === r._id
               return (
                 <li key={r._id} className="px-5 py-3.5 flex items-center justify-between gap-3">
                   <div>
@@ -300,13 +343,34 @@ export default function TimeOffForm({ initialBalance, initialRequests }: Props) 
                     <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.5)' }}>
                       {TYPE_LABELS[r.type] ?? r.type}
                     </p>
+                    {flashing && (
+                      <p className="text-xs mt-0.5 font-semibold" style={{ color: '#6b7280' }}>
+                        Request cancelled
+                      </p>
+                    )}
                   </div>
-                  <span
-                    className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full flex-shrink-0"
-                    style={{ backgroundColor: style.bg, color: style.color }}
-                  >
-                    {r.status}
-                  </span>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {isCancellable && (
+                      <button
+                        onClick={() => handleCancel(r)}
+                        disabled={isCancelling}
+                        className="text-xs px-2.5 py-1 rounded-lg border transition-colors disabled:opacity-50"
+                        style={{
+                          borderColor: 'rgba(220,38,38,0.35)',
+                          color: '#dc2626',
+                          backgroundColor: 'rgba(220,38,38,0.04)',
+                        }}
+                      >
+                        {isCancelling ? 'Cancelling…' : 'Cancel'}
+                      </button>
+                    )}
+                    <span
+                      className="text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-full"
+                      style={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
+                    >
+                      {r.status}
+                    </span>
+                  </div>
                 </li>
               )
             })}

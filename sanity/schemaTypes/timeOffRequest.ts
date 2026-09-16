@@ -100,6 +100,12 @@ export default defineType({
       title: 'Decided At',
       type: 'datetime',
     }),
+    defineField({
+      name: 'calendarEventId',
+      title: 'Teams Calendar Event ID',
+      type: 'string',
+      description: 'Microsoft Graph event ID for the Teams calendar entry — used to delete the event if the request is cancelled',
+    }),
   ],
   preview: {
     select: {

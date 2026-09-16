@@ -132,6 +132,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 
+  // Learning objectives
+  objectivesSection: { marginTop: 12, marginBottom: 8, alignSelf: 'stretch' },
+  objectivesTitle: {
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    color: '#0D3B6E',
+    marginBottom: 6,
+    textTransform: 'uppercase' as const,
+    letterSpacing: 0.5,
+  },
+  objectiveRow: { flexDirection: 'row' as const, marginBottom: 3, paddingLeft: 4 },
+  objectiveBullet: { fontSize: 7, color: '#E67E22', marginRight: 4, marginTop: 1 },
+  objectiveText: { fontSize: 7, color: '#374151', flex: 1, lineHeight: 1.4 },
+
   // Speaker hours breakdown
   breakdownSection: { marginTop: 16, marginBottom: 8, alignSelf: 'stretch' },
   breakdownTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0D3B6E', marginBottom: 6 },
@@ -171,6 +185,7 @@ interface CertProps {
   cadaNumber?: string
   logoDataUrl: string
   speakerBreakdown?: SpeakerBreakdownEntry[] | null
+  learningObjectives?: string[] | null
 }
 
 function WorkshopCertDocument({
@@ -184,6 +199,7 @@ function WorkshopCertDocument({
   cadaNumber,
   logoDataUrl,
   speakerBreakdown,
+  learningObjectives,
 }: CertProps) {
   return (
     <Document>
@@ -240,6 +256,19 @@ function WorkshopCertDocument({
             </View>
           )}
 
+          {/* Learning objectives */}
+          {learningObjectives && learningObjectives.length > 0 && (
+            <View style={styles.objectivesSection}>
+              <Text style={styles.objectivesTitle}>Learning Objectives</Text>
+              {learningObjectives.map((obj, i) => (
+                <View key={i} style={styles.objectiveRow}>
+                  <Text style={styles.objectiveBullet}>•</Text>
+                  <Text style={styles.objectiveText}>{obj}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
           {/* Speaker hours breakdown */}
           {speakerBreakdown && speakerBreakdown.length > 0 && (
             <View style={styles.breakdownSection}>
@@ -288,10 +317,11 @@ export async function generateWorkshopCertificate(params: {
   const { firstName, lastName, workshop, workshopDate, cadaNumber } = params
 
   const meta = OFFERING_METADATA[workshop]
-  const hours            = meta?.hours            ?? 1
-  const delivery         = meta?.delivery         ?? 'In Person'
-  const cadaCppNumbers   = meta?.cadaCppNumbers
-  const speakerBreakdown = meta?.speakerBreakdown ?? null
+  const hours              = meta?.hours              ?? 1
+  const delivery           = meta?.delivery           ?? 'In Person'
+  const cadaCppNumbers     = meta?.cadaCppNumbers
+  const speakerBreakdown   = meta?.speakerBreakdown   ?? null
+  const learningObjectives = meta?.learningObjectives ?? null
 
   const formattedDate = new Date(workshopDate).toLocaleDateString('en-CA', {
     timeZone: 'America/Edmonton',
@@ -318,6 +348,7 @@ export async function generateWorkshopCertificate(params: {
       cadaNumber={cadaNumber}
       logoDataUrl={logoDataUrl}
       speakerBreakdown={speakerBreakdown}
+      learningObjectives={learningObjectives}
     />
   )
 

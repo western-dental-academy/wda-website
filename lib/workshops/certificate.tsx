@@ -17,21 +17,21 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
 
-  // Navy header band
+  // Navy header band — kept compact to leave maximum body space
   header: {
     backgroundColor: NAVY,
     alignItems: 'center',
-    paddingTop: 26,
-    paddingBottom: 22,
+    paddingTop: 16,
+    paddingBottom: 14,
     paddingHorizontal: 48,
   },
   logo: {
-    width: 200,
-    height: 68,
-    marginBottom: 14,
+    width: 160,
+    height: 54,
+    marginBottom: 8,
   },
   headerTitle: {
-    fontSize: 22,
+    fontSize: 18,
     fontFamily: 'Helvetica-Bold',
     color: '#ffffff',
     letterSpacing: 1,
@@ -40,141 +40,184 @@ const styles = StyleSheet.create({
 
   // Amber stripe
   amberStripe: {
-    height: 5,
+    height: 4,
     backgroundColor: AMBER,
   },
 
-  // White body — paddingBottom accounts for the absolutely-positioned footer (~29pt)
+  // White body — wrap={false} prevents page breaks inside
+  // paddingBottom must clear the absolutely-positioned footer (~29pt)
   body: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 24,
-    paddingBottom: 36,
-    paddingHorizontal: 60,
+    paddingTop: 16,
+    paddingBottom: 40,
+    paddingHorizontal: 52,
   },
   certifiesText: {
-    fontSize: 11,
+    fontSize: 10,
     color: LIGHT,
-    marginBottom: 8,
+    marginBottom: 5,
     letterSpacing: 0.5,
   },
   participantName: {
-    fontSize: 38,
+    fontSize: 26,
     fontFamily: 'Helvetica-Bold',
     color: NAVY,
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
   },
   completedText: {
-    fontSize: 11,
+    fontSize: 10,
     color: LIGHT,
-    marginBottom: 10,
+    marginBottom: 6,
     letterSpacing: 0.5,
   },
   workshopName: {
-    fontSize: 15,
+    fontSize: 13,
     fontFamily: 'Helvetica-Bold',
     color: NAVY,
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 12,
   },
 
-  // Detail rows
+  // Detail pills row
   detailsBlock: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    gap: 20,
-    marginBottom: 14,
+    gap: 16,
+    marginBottom: 10,
   },
   detailItem: {
     alignItems: 'center',
-    minWidth: 100,
+    minWidth: 90,
   },
   detailLabel: {
-    fontSize: 8,
+    fontSize: 7,
     color: LIGHT,
     textTransform: 'uppercase',
     letterSpacing: 1,
-    marginBottom: 3,
+    marginBottom: 2,
   },
   detailValue: {
-    fontSize: 11,
+    fontSize: 10,
     fontFamily: 'Helvetica-Bold',
     color: NAVY,
   },
 
   // CADA box
   cadaBox: {
-    marginTop: 10,
+    marginTop: 7,
     backgroundColor: '#F4F7F9',
     borderRadius: 4,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
     alignItems: 'center',
+    alignSelf: 'stretch',
   },
   cadaCppLabel: {
     fontSize: 8,
     color: LIGHT,
     textTransform: 'uppercase',
     letterSpacing: 1,
-    marginBottom: 4,
+    marginBottom: 3,
   },
   cadaCppNumbers: {
-    fontSize: 11,
+    fontSize: 9,
     fontFamily: 'Helvetica-Bold',
     color: NAVY,
   },
   cadaMembershipText: {
-    fontSize: 10,
+    fontSize: 9,
     color: MID,
-    marginTop: 5,
+    marginTop: 3,
   },
 
-  // Learning objectives
-  objectivesSection: { marginTop: 8, marginBottom: 4, alignSelf: 'stretch' },
+  // Learning objectives — used when shown solo (no breakdown alongside)
+  objectivesSection: { marginTop: 6, marginBottom: 3, alignSelf: 'stretch' },
   objectivesTitle: {
-    fontSize: 9,
+    fontSize: 8,
     fontFamily: 'Helvetica-Bold',
-    color: '#0D3B6E',
-    marginBottom: 6,
+    color: NAVY,
+    marginBottom: 4,
     textTransform: 'uppercase' as const,
     letterSpacing: 0.5,
   },
-  objectiveRow: { flexDirection: 'row' as const, marginBottom: 2, paddingLeft: 4 },
-  objectiveBullet: { fontSize: 6.5, color: '#E67E22', marginRight: 4, marginTop: 1 },
-  objectiveText: { fontSize: 6.5, color: '#374151', flex: 1, lineHeight: 1.4 },
+  objectiveRow: { flexDirection: 'row' as const, marginBottom: 1, paddingLeft: 2 },
+  objectiveBullet: { fontSize: 6, color: AMBER, marginRight: 3, marginTop: 1 },
+  objectiveText: { fontSize: 6, color: '#374151', flex: 1, lineHeight: 1.4 },
 
-  // Speaker hours breakdown
-  breakdownSection: { marginTop: 8, marginBottom: 8, alignSelf: 'stretch' },
-  breakdownTitle: { fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#0D3B6E', marginBottom: 6 },
+  // Speaker hours breakdown — used when shown solo (no objectives alongside)
+  breakdownSection: { marginTop: 6, marginBottom: 4, alignSelf: 'stretch' },
+  breakdownTitle: { fontSize: 8, fontFamily: 'Helvetica-Bold', color: NAVY, marginBottom: 4 },
   breakdownTable: { borderWidth: 0.5, borderColor: '#e5e7eb', borderRadius: 3 },
-  breakdownHeaderRow: { flexDirection: 'row', backgroundColor: '#0D3B6E', borderRadius: 3 },
+  breakdownHeaderRow: { flexDirection: 'row', backgroundColor: NAVY, borderRadius: 3 },
   breakdownHeader: { color: '#ffffff', fontFamily: 'Helvetica-Bold' },
   breakdownRow: { flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: '#e5e7eb' },
   breakdownRowEven: { backgroundColor: '#f9fafb' },
-  breakdownCell: { fontSize: 6.5, padding: 3, color: '#374151' },
-  breakdownTotalRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: '#0D3B6E', backgroundColor: '#f0f4f8' },
-  breakdownTotal: { fontFamily: 'Helvetica-Bold', color: '#0D3B6E' },
+  breakdownCell: { fontSize: 6, padding: 2, color: '#374151' },
+  breakdownTotalRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: NAVY, backgroundColor: '#f0f4f8' },
+  breakdownTotal: { fontFamily: 'Helvetica-Bold', color: NAVY },
 
-  // Navy footer — position absolute keeps it pinned to bottom, out of the flow
+  // Navy footer — absolutely positioned so it never pushes content down
   footer: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: NAVY,
-    paddingVertical: 10,
+    paddingVertical: 8,
     alignItems: 'center',
   },
   footerText: {
-    fontSize: 9,
+    fontSize: 8,
     color: 'rgba(255,255,255,0.45)',
     letterSpacing: 2,
     textTransform: 'uppercase',
   },
 })
+
+// ── Reusable sub-components ───────────────────────────────────────────────────
+
+function ObjectivesList({ objectives }: { objectives: string[] }) {
+  return (
+    <>
+      <Text style={styles.objectivesTitle}>Learning Objectives</Text>
+      {objectives.map((obj, i) => (
+        <View key={i} style={styles.objectiveRow}>
+          <Text style={styles.objectiveBullet}>•</Text>
+          <Text style={styles.objectiveText}>{obj}</Text>
+        </View>
+      ))}
+    </>
+  )
+}
+
+function BreakdownTable({ breakdown, hours }: { breakdown: SpeakerBreakdownEntry[]; hours: number }) {
+  return (
+    <>
+      <Text style={styles.breakdownTitle}>Hours Breakdown</Text>
+      <View style={styles.breakdownTable}>
+        <View style={styles.breakdownHeaderRow}>
+          <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 2 }]}>Speaker</Text>
+          <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 3 }]}>Topic</Text>
+          <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 1, textAlign: 'right' }]}>Hours</Text>
+        </View>
+        {breakdown.map((row, i) => (
+          <View key={i} style={[styles.breakdownRow, i % 2 === 0 ? styles.breakdownRowEven : {}]}>
+            <Text style={[styles.breakdownCell, { flex: 2 }]}>{row.speaker}</Text>
+            <Text style={[styles.breakdownCell, { flex: 3 }]}>{row.topic}</Text>
+            <Text style={[styles.breakdownCell, { flex: 1, textAlign: 'right' }]}>{row.hours} hrs</Text>
+          </View>
+        ))}
+        <View style={styles.breakdownTotalRow}>
+          <Text style={[styles.breakdownCell, styles.breakdownTotal, { flex: 5 }]}>Total</Text>
+          <Text style={[styles.breakdownCell, styles.breakdownTotal, { flex: 1, textAlign: 'right' }]}>{hours} hrs</Text>
+        </View>
+      </View>
+    </>
+  )
+}
 
 // ── Document component ────────────────────────────────────────────────────────
 
@@ -205,6 +248,11 @@ function WorkshopCertDocument({
   speakerBreakdown,
   learningObjectives,
 }: CertProps) {
+  const hasObjectives = learningObjectives && learningObjectives.length > 0
+  const hasBreakdown  = speakerBreakdown  && speakerBreakdown.length  > 0
+  // When both are present, render side-by-side to save vertical space
+  const showTwoColumn = hasObjectives && hasBreakdown
+
   return (
     <Document>
       <Page size="A4" orientation="landscape" style={styles.page}>
@@ -218,8 +266,8 @@ function WorkshopCertDocument({
         {/* Amber stripe */}
         <View style={styles.amberStripe} />
 
-        {/* White body */}
-        <View style={styles.body}>
+        {/* White body — wrap={false} prevents @react-pdf from splitting onto page 2 */}
+        <View style={styles.body} wrap={false}>
           <Text style={styles.certifiesText}>This certifies that</Text>
           <Text style={styles.participantName}>{firstName} {lastName}</Text>
           <Text style={styles.completedText}>has successfully completed</Text>
@@ -260,47 +308,35 @@ function WorkshopCertDocument({
             </View>
           )}
 
-          {/* Learning objectives */}
-          {learningObjectives && learningObjectives.length > 0 && (
-            <View style={styles.objectivesSection}>
-              <Text style={styles.objectivesTitle}>Learning Objectives</Text>
-              {learningObjectives.map((obj, i) => (
-                <View key={i} style={styles.objectiveRow}>
-                  <Text style={styles.objectiveBullet}>•</Text>
-                  <Text style={styles.objectiveText}>{obj}</Text>
-                </View>
-              ))}
+          {/* Two-column layout when both objectives and breakdown are present */}
+          {showTwoColumn && (
+            <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'stretch', marginTop: 8 }}>
+              <View style={{ flex: 1 }}>
+                <ObjectivesList objectives={learningObjectives!} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <BreakdownTable breakdown={speakerBreakdown!} hours={hours} />
+              </View>
             </View>
           )}
 
-          {/* Speaker hours breakdown */}
-          {speakerBreakdown && speakerBreakdown.length > 0 && (
+          {/* Solo learning objectives (no breakdown) */}
+          {hasObjectives && !showTwoColumn && (
+            <View style={styles.objectivesSection}>
+              <ObjectivesList objectives={learningObjectives!} />
+            </View>
+          )}
+
+          {/* Solo speaker breakdown (no objectives) */}
+          {hasBreakdown && !showTwoColumn && (
             <View style={styles.breakdownSection}>
-              <Text style={styles.breakdownTitle}>Hours Breakdown</Text>
-              <View style={styles.breakdownTable}>
-                <View style={styles.breakdownHeaderRow}>
-                  <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 2 }]}>Speaker</Text>
-                  <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 3 }]}>Topic</Text>
-                  <Text style={[styles.breakdownCell, styles.breakdownHeader, { flex: 1, textAlign: 'right' }]}>Hours</Text>
-                </View>
-                {speakerBreakdown.map((row, i) => (
-                  <View key={i} style={[styles.breakdownRow, i % 2 === 0 ? styles.breakdownRowEven : {}]}>
-                    <Text style={[styles.breakdownCell, { flex: 2 }]}>{row.speaker}</Text>
-                    <Text style={[styles.breakdownCell, { flex: 3 }]}>{row.topic}</Text>
-                    <Text style={[styles.breakdownCell, { flex: 1, textAlign: 'right' }]}>{row.hours} hrs</Text>
-                  </View>
-                ))}
-                <View style={styles.breakdownTotalRow}>
-                  <Text style={[styles.breakdownCell, styles.breakdownTotal, { flex: 5 }]}>Total</Text>
-                  <Text style={[styles.breakdownCell, styles.breakdownTotal, { flex: 1, textAlign: 'right' }]}>{hours} hrs</Text>
-                </View>
-              </View>
+              <BreakdownTable breakdown={speakerBreakdown!} hours={hours} />
             </View>
           )}
         </View>
 
-        {/* Navy footer */}
-        <View style={styles.footer}>
+        {/* Navy footer — absolutely positioned, never in flow */}
+        <View style={styles.footer} fixed>
           <Text style={styles.footerText}>westerndentalacademy.com</Text>
         </View>
 

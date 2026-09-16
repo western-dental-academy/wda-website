@@ -228,7 +228,6 @@ interface CertProps {
   formattedDate: string
   hours: number
   delivery: string
-  cadaCppNumbers?: string[]
   cadaNumber?: string
   logoDataUrl: string
   speakerBreakdown?: SpeakerBreakdownEntry[] | null
@@ -242,7 +241,6 @@ function WorkshopCertDocument({
   formattedDate,
   hours,
   delivery,
-  cadaCppNumbers,
   cadaNumber,
   logoDataUrl,
   speakerBreakdown,
@@ -293,18 +291,10 @@ function WorkshopCertDocument({
             </View>
           </View>
 
-          {/* CADA section */}
-          {(cadaCppNumbers || cadaNumber) && (
+          {/* CADA membership number */}
+          {cadaNumber && (
             <View style={styles.cadaBox}>
-              {cadaCppNumbers && (
-                <>
-                  <Text style={styles.cadaCppLabel}>CADA Competency Profile Numbers</Text>
-                  <Text style={styles.cadaCppNumbers}>{cadaCppNumbers.join(', ')}</Text>
-                </>
-              )}
-              {cadaNumber && (
-                <Text style={styles.cadaMembershipText}>CADA Membership #: {cadaNumber}</Text>
-              )}
+              <Text style={styles.cadaMembershipText}>CADA Membership #: {cadaNumber}</Text>
             </View>
           )}
 
@@ -359,7 +349,6 @@ export async function generateWorkshopCertificate(params: {
   const meta = OFFERING_METADATA[workshop]
   const hours              = meta?.hours              ?? 1
   const delivery           = meta?.delivery           ?? 'In Person'
-  const cadaCppNumbers     = meta?.cadaCppNumbers
   const speakerBreakdown   = meta?.speakerBreakdown   ?? null
   const learningObjectives = meta?.learningObjectives ?? null
 
@@ -384,7 +373,6 @@ export async function generateWorkshopCertificate(params: {
       formattedDate={formattedDate}
       hours={hours}
       delivery={delivery}
-      cadaCppNumbers={cadaCppNumbers}
       cadaNumber={cadaNumber}
       logoDataUrl={logoDataUrl}
       speakerBreakdown={speakerBreakdown}

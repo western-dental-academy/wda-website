@@ -136,6 +136,8 @@ function WorkshopRegisterFormInner() {
   const [waitlistError, setWaitlistError] = useState("");
   const [redirecting, setRedirecting] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [giftCode, setGiftCode] = useState("");
+  const [giftCodeError, setGiftCodeError] = useState("");
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
   const [datesLoading, setDatesLoading] = useState(true);
   const [datesError, setDatesError] = useState(false);
@@ -300,7 +302,10 @@ function WorkshopRegisterFormInner() {
       const res = await fetch("/api/workshops/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: [item] }),
+        body: JSON.stringify({
+          items: [item],
+          ...(giftCode.trim() ? { giftCode: giftCode.trim().toUpperCase() } : {}),
+        }),
       });
       const result = await res.json();
       if (res.status === 409) {
@@ -308,7 +313,13 @@ function WorkshopRegisterFormInner() {
         setRedirecting(false);
         return;
       }
-      if (!res.ok || !result.url) throw new Error(result.error ?? "Something went wrong.");
+      if (!res.ok) throw new Error(result.error ?? "Something went wrong.");
+      // Free checkout via gift certificate
+      if (result.free && result.successUrl) {
+        window.location.href = result.successUrl;
+        return;
+      }
+      if (!result.url) throw new Error(result.error ?? "Something went wrong.");
       window.location.href = result.url;
     } catch (err) {
       setCheckoutError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
@@ -714,6 +725,35 @@ function WorkshopRegisterFormInner() {
                 <span style={{ color: "rgba(43,48,58,0.45)" }}>(Optional)</span>
               </span>
             </label>
+          </div>
+
+          {/* Gift certificate */}
+          <div className="pt-5 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+            <label htmlFor="gc-code" className="block text-xs font-semibold mb-1.5" style={{ color: "#1E3560" }}>
+              Gift Certificate Code{" "}
+              <span className="ml-1 font-normal" style={{ color: "rgba(43,48,58,0.4)" }}>(optional)</span>
+            </label>
+            <input
+              id="gc-code"
+              type="text"
+              value={giftCode}
+              onChange={e => { setGiftCode(e.target.value); setGiftCodeError(""); }}
+              onBlur={() => {
+                const v = giftCode.trim().toUpperCase();
+                if (v && !/^WDA-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v)) {
+                  setGiftCodeError("Code should be in the format WDA-XXXX-XXXX.");
+                }
+              }}
+              placeholder="WDA-XXXX-XXXX"
+              autoCapitalize="characters"
+              className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
+              style={{ borderColor: "rgba(30,53,96,0.2)", color: "#2B303A", backgroundColor: "#F4F7F9" }}
+            />
+            {giftCodeError && <p className="mt-1 text-xs" style={{ color: "#dc2626" }}>{giftCodeError}</p>}
+            <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+              Don&apos;t have one?{" "}
+              <a href="/gift-certificates" className="underline" style={{ color: "#378ADD" }}>Purchase a gift certificate →</a>
+            </p>
           </div>
 
           {/* Capacity error */}

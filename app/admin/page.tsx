@@ -86,7 +86,7 @@ export default async function AdminPage() {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -154,6 +154,12 @@ export default async function AdminPage() {
         _id, workshopDateId, workshopName, rating,
         enjoyedMost, improvement, wouldRecommend, submittedAt, feedbackShareConsent,
         respondentName, source, registrationId
+      }`
+    ),
+    client.fetch(
+      `*[_type == "giftCertificate" && !(_id in path("drafts.**"))] | order(purchasedAt desc){
+        _id, code, amount, recipientName, recipientEmail, senderName,
+        status, purchasedAt, expiresAt, redeemedAt, redeemedBy, isAdminGenerated
       }`
     ),
   ])
@@ -291,6 +297,7 @@ export default async function AdminPage() {
         pendingTimeOff={pendingTimeOff}
         workshopFeedback={workshopFeedback as FeedbackEntry[]}
         qrFeedback={qrFeedback as QRFeedbackEntry[]}
+        giftCertificates={giftCertificates as any}
       />
     </main>
   )

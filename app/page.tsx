@@ -283,6 +283,37 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          GIFT CERTIFICATES
+      ═══════════════════════════════════════════════════════════ */}
+      <AnimateIn>
+        <section className="py-16 px-6" style={{ backgroundColor: "#1E3560" }}>
+          <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-8">
+            <div>
+              <p className="text-xs font-bold tracking-[0.22em] uppercase mb-2" style={{ color: "#E67E22" }}>
+                Gift Certificates
+              </p>
+              <h2
+                className="text-2xl sm:text-3xl font-bold mb-2"
+                style={{ color: "#ffffff", fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Give the Gift of Learning
+              </h2>
+              <p className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
+                Empower a colleague or loved one with WDA professional development — redeemable for any event or workshop.
+              </p>
+            </div>
+            <Link
+              href="/gift-certificates"
+              className="shrink-0 inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02] hover:opacity-90"
+              style={{ backgroundColor: "#E67E22", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              Shop Gift Certificates →
+            </Link>
+          </div>
+        </section>
+      </AnimateIn>
+
+      {/* ═══════════════════════════════════════════════════════════
           OUR DIFFERENCE
       ═══════════════════════════════════════════════════════════ */}
       <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>

@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       return Response.json({ error: 'Invalid JSON' }, { status: 400 })
     }
 
-    const { items } = body as { items?: CartItemPayload[] }
+    const { items, giftCode } = body as { items?: CartItemPayload[]; giftCode?: string }
     if (!items?.length) {
       return Response.json({ error: 'Cart is empty' }, { status: 400 })
     }
@@ -141,17 +141,84 @@ export async function POST(req: NextRequest) {
 
     // Pricing
     const subtotalCents = items.reduce((sum, item) => sum + item.price * 100, 0)
-    const processingFee = calcFee(subtotalCents)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
     const idsParam = registrationIds.join(',')
     const primaryItem = items.find(i => i.isPrimary) ?? items[0]
 
-    // Create Stripe session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: primaryItem.email,
-      line_items: [
-        ...items.map(item => ({
+    // Gift certificate validation
+    let giftDiscountCents = 0
+    let validatedGiftCode: string | undefined
+
+    if (giftCode?.trim()) {
+      const normalised = giftCode.trim().toUpperCase()
+      const cert = await client.fetch<{
+        _id: string; status: string; amount: number; expiresAt: string
+      } | null>(
+        `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{
+          _id, status, amount, expiresAt
+        }`,
+        { code: normalised }
+      )
+
+      if (!cert) return Response.json({ error: 'Gift certificate not found. Please check the code and try again.' }, { status: 400 })
+      if (cert.status === 'redeemed') return Response.json({ error: 'This gift certificate has already been redeemed.' }, { status: 400 })
+      if (cert.status === 'expired') return Response.json({ error: 'This gift certificate has expired.' }, { status: 400 })
+      if (cert.status !== 'active' && cert.status !== 'admin') return Response.json({ error: 'This gift certificate is not valid.' }, { status: 400 })
+      if (new Date(cert.expiresAt) < new Date()) return Response.json({ error: 'This gift certificate has expired.' }, { status: 400 })
+
+      giftDiscountCents = Math.min(cert.amount * 100, subtotalCents)
+      validatedGiftCode = normalised
+    }
+
+    // If gift cert covers full amount, mark registrations as paid immediately (no Stripe)
+    if (giftDiscountCents >= subtotalCents && validatedGiftCode) {
+      await Promise.all(
+        registrationIds.map(id =>
+          client.patch(id).set({ stripePaymentStatus: 'paid' }).commit()
+        )
+      )
+      // Mark gift cert as redeemed
+      const certDoc = await client.fetch<{ _id: string } | null>(
+        `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{ _id }`,
+        { code: validatedGiftCode }
+      )
+      if (certDoc) {
+        await client.patch(certDoc._id)
+          .set({ status: 'redeemed', redeemedAt: new Date().toISOString(), redeemedBy: primaryItem.email })
+          .commit()
+      }
+
+      return Response.json({
+        free: true,
+        successUrl: `${siteUrl}/register/success?ids=${idsParam}&gift_redeemed=1`,
+      })
+    }
+
+    // Partial or no gift cert — go through Stripe
+    const remainingCents = subtotalCents - giftDiscountCents
+    const processingFee = calcFee(remainingCents)
+
+    // Build line items
+    const lineItems: Parameters<typeof stripe.checkout.sessions.create>[0]['line_items'] = []
+
+    if (giftDiscountCents > 0 && validatedGiftCode) {
+      // Single line item for the discounted total
+      lineItems.push({
+        price_data: {
+          currency: 'cad',
+          product_data: {
+            name: items.length === 1
+              ? `${items[0].workshopName} — ${items[0].firstName} ${items[0].lastName}`
+              : `Workshop Registration (${items.length} attendees)`,
+            description: `Gift certificate ${validatedGiftCode} applied (-$${giftDiscountCents / 100} CAD)`,
+          },
+          unit_amount: remainingCents,
+        },
+        quantity: 1,
+      })
+    } else {
+      items.forEach(item => {
+        lineItems.push({
           price_data: {
             currency: 'cad',
             product_data: {
@@ -161,19 +228,27 @@ export async function POST(req: NextRequest) {
             unit_amount: item.price * 100,
           },
           quantity: 1,
-        })),
-        {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: 'Payment Processing Fee',
-              description: 'Credit/debit card processing fee (3.3% + $0.30)',
-            },
-            unit_amount: processingFee,
-          },
-          quantity: 1,
+        })
+      })
+    }
+
+    lineItems.push({
+      price_data: {
+        currency: 'cad',
+        product_data: {
+          name: 'Payment Processing Fee',
+          description: 'Credit/debit card processing fee (3.3% + $0.30)',
         },
-      ],
+        unit_amount: processingFee,
+      },
+      quantity: 1,
+    })
+
+    // Create Stripe session
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      customer_email: primaryItem.email,
+      line_items: lineItems,
       mode: 'payment',
       success_url: `${siteUrl}/register/success?session_id={CHECKOUT_SESSION_ID}&ids=${idsParam}`,
       cancel_url: `${siteUrl}/register?cancelled=1`,
@@ -181,6 +256,7 @@ export async function POST(req: NextRequest) {
         registrationIds: idsParam,
         count: String(items.length),
         primaryEmail: primaryItem.email,
+        ...(validatedGiftCode ? { giftCode: validatedGiftCode } : {}),
       },
     })
 

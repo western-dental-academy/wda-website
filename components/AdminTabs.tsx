@@ -15,6 +15,7 @@ import AdminStaffPanel, { type ClockEntry, type PendingTimeOff } from '@/compone
 import AdminITPanel from '@/components/AdminITPanel'
 import AdminMarketing from '@/components/admin/AdminMarketing'
 import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
+import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/admin/AdminGiftCertificates'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -49,9 +50,10 @@ interface AdminTabsProps {
   pendingTimeOff: PendingTimeOff[]
   workshopFeedback: FeedbackEntry[]
   qrFeedback: QRFeedbackEntry[]
+  giftCertificates: GiftCertificateEntry[]
 }
 
-type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Revenue' | 'Marketing' | 'IT'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -84,6 +86,7 @@ export default function AdminTabs({
   pendingTimeOff,
   workshopFeedback,
   qrFeedback,
+  giftCertificates,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -92,6 +95,7 @@ export default function AdminTabs({
     'Students',
     'Staff',
     'Professional Development',
+    'Gift Certificates',
     ...(canViewFinancials ? ['Revenue' as TabId] : []),
     'Marketing',
     ...(isIT ? ['IT' as TabId] : []),
@@ -225,6 +229,11 @@ export default function AdminTabs({
             ))}
           </div>
         </div>
+      )}
+
+      {/* ── Gift Certificates ── */}
+      {activeTab === 'Gift Certificates' && (
+        <AdminGiftCertificates initialEntries={giftCertificates} />
       )}
 
       {/* ── Marketing ── */}

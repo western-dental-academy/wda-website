@@ -266,9 +266,9 @@ function adminEmailHtml(
 export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams: Promise<{ session_id?: string; id?: string; ids?: string }>;
+  searchParams: Promise<{ session_id?: string; id?: string; ids?: string; gift_redeemed?: string }>;
 }) {
-  const { session_id: sessionId, id: legacyId, ids: idsRaw } = await searchParams;
+  const { session_id: sessionId, id: legacyId, ids: idsRaw, gift_redeemed: giftRedeemed } = await searchParams;
 
   // Support both new multi-registrant (?ids=) and legacy single-registrant (?id=)
   const ids = idsRaw
@@ -283,7 +283,19 @@ export default async function SuccessPage({
   let confirmed = false;
   let totalPaidCents = 0;
 
-  if (sessionId && ids.length > 0) {
+  // Gift-covered free checkout: already marked paid + redeemed in checkout route
+  if (giftRedeemed === '1' && ids.length > 0 && !sessionId) {
+    try {
+      const idList = ids.map(id => `"${id}"`).join(",");
+      registrations = await sanity.fetch<RegistrationRecord[]>(
+        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod }`,
+      );
+      confirmed = true;
+    } catch (err) {
+      console.error("Gift-redeemed fetch error:", err);
+      confirmed = true;
+    }
+  } else if (sessionId && ids.length > 0) {
     try {
       // Fetch all registrations
       const idList = ids.map(id => `"${id}"`).join(",");
@@ -403,6 +415,26 @@ export default async function SuccessPage({
             subject: `New Workshop Registration${registrations.length > 1 ? ` (${registrations.length} attendees)` : ""}: ${primary.firstName} ${primary.lastName}`,
             html: adminEmailHtml(registrations, dateMap),
           });
+
+          // Mark gift certificate as redeemed if one was used
+          const giftCodeUsed = session.metadata?.giftCode
+          if (giftCodeUsed) {
+            try {
+              const cert = await sanity.fetch<{ _id: string } | null>(
+                `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{ _id }`,
+                { code: giftCodeUsed }
+              )
+              if (cert) {
+                await sanity.patch(cert._id).set({
+                  status: 'redeemed',
+                  redeemedAt: new Date().toISOString(),
+                  redeemedBy: primary.email,
+                }).commit()
+              }
+            } catch (err) {
+              console.error('Gift cert redemption error:', err)
+            }
+          }
         }
       }
     } catch (err) {

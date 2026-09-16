@@ -1,0 +1,48 @@
+import { defineField, defineType } from 'sanity'
+
+export default defineType({
+  name: 'giftCertificate',
+  title: 'Gift Certificate',
+  type: 'document',
+  fields: [
+    defineField({ name: 'code', title: 'Code', type: 'string' }),
+    defineField({ name: 'amount', title: 'Amount (CAD)', type: 'number' }),
+    defineField({ name: 'recipientName', title: 'Recipient Name', type: 'string' }),
+    defineField({ name: 'recipientEmail', title: 'Recipient Email', type: 'string' }),
+    defineField({ name: 'senderName', title: 'Sender Name', type: 'string' }),
+    defineField({ name: 'message', title: 'Personal Message', type: 'text' }),
+    defineField({ name: 'purchasedAt', title: 'Purchased At', type: 'datetime' }),
+    defineField({ name: 'expiresAt', title: 'Expires At', type: 'datetime' }),
+    defineField({ name: 'redeemedAt', title: 'Redeemed At', type: 'datetime' }),
+    defineField({ name: 'redeemedBy', title: 'Redeemed By (email)', type: 'string' }),
+    defineField({ name: 'stripeSessionId', title: 'Stripe Session ID', type: 'string' }),
+    defineField({
+      name: 'status',
+      title: 'Status',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Active', value: 'active' },
+          { title: 'Redeemed', value: 'redeemed' },
+          { title: 'Expired', value: 'expired' },
+          { title: 'Admin Generated', value: 'admin' },
+        ],
+      },
+    }),
+    defineField({
+      name: 'isAdminGenerated',
+      title: 'Admin Generated (Door Prize)',
+      type: 'boolean',
+      initialValue: false,
+    }),
+  ],
+  preview: {
+    select: { code: 'code', amount: 'amount', recipientName: 'recipientName', status: 'status' },
+    prepare({ code, amount, recipientName, status }) {
+      return {
+        title: code ?? 'Gift Certificate',
+        subtitle: `$${amount ?? 0} CAD — ${recipientName ?? 'No recipient'} — ${status ?? 'unknown'}`,
+      }
+    },
+  },
+})

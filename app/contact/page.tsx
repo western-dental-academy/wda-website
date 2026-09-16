@@ -338,6 +338,26 @@ export default function ContactPage() {
         </div>
       </section>
 
+      {/* Gift certificate callout */}
+      <section className="py-10 px-6" style={{ backgroundColor: "#F4F7F9" }}>
+        <div className="max-w-3xl mx-auto">
+          <div className="rounded-2xl px-7 py-6 flex flex-col sm:flex-row items-center justify-between gap-5" style={{ backgroundColor: "#ffffff", border: "1.5px solid rgba(13,59,110,0.09)" }}>
+            <div>
+              <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#E67E22" }}>Gift Certificates</p>
+              <p className="text-sm font-semibold" style={{ color: "#0D3B6E" }}>Looking for a gift? Give the Gift of Learning.</p>
+              <p className="text-xs mt-0.5" style={{ color: "rgba(43,48,58,0.55)" }}>Send a WDA gift certificate to a colleague or loved one.</p>
+            </div>
+            <Link
+              href="/gift-certificates"
+              className="shrink-0 rounded-xl px-6 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              style={{ backgroundColor: "#E67E22" }}
+            >
+              Shop Gift Certificates →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* ═══════════════════════════════════════════════════════════
           COMMON QUESTIONS PREVIEW
       ═══════════════════════════════════════════════════════════ */}

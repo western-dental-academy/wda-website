@@ -125,4 +125,11 @@ export const structure: StructureResolver = (S) =>
         .title('Tasks')
         .schemaType('task')
         .child(S.documentTypeList('task').title('Tasks')),
+
+      S.divider(),
+
+      S.listItem()
+        .title('Gift Certificates')
+        .schemaType('giftCertificate')
+        .child(S.documentTypeList('giftCertificate').title('Gift Certificates')),
     ]);

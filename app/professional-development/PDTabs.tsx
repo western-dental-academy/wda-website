@@ -709,12 +709,13 @@ function ErgonomicsGroupCard({
 
 // ─── Tabs ──────────────────────────────────────────────────────────────────────
 
-type Tab = "events" | "courses" | "practical-exam-prep";
+type Tab = "events" | "courses" | "practical-exam-prep" | "gift-certificates";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "events",              label: "Events" },
-  { id: "courses",             label: "Courses" },
+  { id: "events",             label: "Events" },
+  { id: "courses",            label: "Courses" },
   { id: "practical-exam-prep", label: "Practical Exam Prep" },
+  { id: "gift-certificates",  label: "Gift Certificates" },
 ];
 
 export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] }) {
@@ -903,6 +904,43 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
                 </Link>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Gift Certificates */}
+        <div className={activeTab === "gift-certificates" ? undefined : "hidden"}>
+          <div className="mb-12">
+            <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+              Gift Certificates
+            </p>
+            <h2 className="text-2xl font-bold mb-2" style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}>
+              Give the Gift of Learning
+            </h2>
+            <p className="text-base max-w-xl mb-8" style={{ color: "rgba(43,48,58,0.65)" }}>
+              Support a colleague or loved one&apos;s professional development with a WDA Gift Certificate. Redeemable for any event, course, or workshop.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+              {[
+                { icon: "💵", title: "Any Amount", body: "Choose from $40 to $750 CAD to match any event or course" },
+                { icon: "📧", title: "Instant Delivery", body: "The recipient receives their gift certificate by email immediately after purchase" },
+                { icon: "📅", title: "Valid 1 Year", body: "Gift certificates are valid for one year from the date of purchase" },
+              ].map(({ icon, title, body }) => (
+                <div key={title} className="rounded-2xl p-6 bg-white" style={{ border: "1.5px solid rgba(30,53,96,0.09)" }}>
+                  <div className="text-3xl mb-3">{icon}</div>
+                  <h3 className="font-bold text-sm mb-1" style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}>{title}</h3>
+                  <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.6)" }}>{body}</p>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href="/gift-certificates"
+              className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-bold text-white transition-all duration-200 hover:scale-[1.02]"
+              style={{ backgroundColor: "#E67E22", fontFamily: "var(--font-montserrat), sans-serif" }}
+            >
+              Purchase a Gift Certificate →
+            </Link>
           </div>
         </div>
 

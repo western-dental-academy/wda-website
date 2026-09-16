@@ -18,6 +18,7 @@ const CONTACT_DETAILS = [
   {
     label: "Address",
     value: "150 Chippewa Road, Suite 258, Sherwood Park, AB",
+    subValue: "Located on the second floor",
     href: undefined,
     icon: (
       <svg
@@ -261,7 +262,7 @@ export default function ContactPage() {
                     Contact Details
                   </p>
                   <ul className="flex flex-col gap-5">
-                    {CONTACT_DETAILS.map(({ label, value, href, icon }) => (
+                    {CONTACT_DETAILS.map(({ label, value, subValue, href, icon }) => (
                       <li key={label} className="flex items-start gap-3.5">
                         <span style={{ color: "#4A9FD4" }}>{icon}</span>
                         <div>
@@ -285,6 +286,11 @@ export default function ContactPage() {
                               style={{ color: "rgba(255,255,255,0.8)" }}
                             >
                               {value}
+                              {subValue && (
+                                <span className="block text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.55)" }}>
+                                  {subValue}
+                                </span>
+                              )}
                             </p>
                           )}
                         </div>

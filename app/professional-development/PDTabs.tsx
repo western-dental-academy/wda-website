@@ -64,7 +64,7 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     dateOverride: "October 3, 2026",
     tags: ["Full Day", "In-Person & Virtual", "CCP Support", "Certificate of Attendance"],
     foodNote: "In-person session includes Lunch, Snacks and Refreshments",
-    agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker. Location: 258-150 Chippewa Road, Sherwood Park (plenty of free parking)",
+    agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.\nLocation: 258-150 Chippewa Road, Sherwood Park (plenty of free parking)\nLocated on the second floor",
     cadaNote: "Meets various competencies for the CCP",
     speakers: [
       {
@@ -360,9 +360,13 @@ function WorkshopOfferingCard({
                 </div>
               )}
               {staticContent?.agendaNote && (
-                <p className="text-xs mb-5 leading-relaxed" style={{ color: "rgba(43,48,58,0.5)", fontStyle: "italic" }}>
-                  {staticContent.agendaNote}
-                </p>
+                <div className="mb-5">
+                  {staticContent.agendaNote.split('\n').map((line, i) => (
+                    <p key={i} className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.5)", fontStyle: "italic", marginBottom: i < staticContent.agendaNote!.split('\n').length - 1 ? '2px' : '0' }}>
+                      {line}
+                    </p>
+                  ))}
+                </div>
               )}
 
               {(staticContent?.whatToBring || staticContent?.idealFor) && (
@@ -614,6 +618,9 @@ function ErgonomicsGroupCard({
                     Location:{" "}
                   </span>
                   258-150 Chippewa Road, Sherwood Park (plenty of free parking)
+                </p>
+                <p className="text-xs leading-relaxed" style={{ color: "#2B303A" }}>
+                  Located on the second floor
                 </p>
               </div>
 

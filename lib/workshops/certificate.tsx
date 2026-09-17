@@ -105,34 +105,6 @@ const styles = StyleSheet.create({
     color: NAVY,
   },
 
-  // CADA box
-  cadaBox: {
-    marginTop: 7,
-    backgroundColor: '#F4F7F9',
-    borderRadius: 4,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-    alignItems: 'center',
-    alignSelf: 'stretch',
-  },
-  cadaCppLabel: {
-    fontSize: 8,
-    color: LIGHT,
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginBottom: 3,
-  },
-  cadaCppNumbers: {
-    fontSize: 9,
-    fontFamily: 'Helvetica-Bold',
-    color: NAVY,
-  },
-  cadaMembershipText: {
-    fontSize: 9,
-    color: MID,
-    marginTop: 3,
-  },
-
   // Learning objectives — used when shown solo (no breakdown alongside)
   objectivesSection: { marginTop: 6, marginBottom: 3, alignSelf: 'stretch' },
   objectivesTitle: {
@@ -228,7 +200,6 @@ interface CertProps {
   formattedDate: string
   hours: number
   delivery: string
-  cadaNumber?: string
   logoDataUrl: string
   speakerBreakdown?: SpeakerBreakdownEntry[] | null
   learningObjectives?: string[] | null
@@ -241,7 +212,6 @@ function WorkshopCertDocument({
   formattedDate,
   hours,
   delivery,
-  cadaNumber,
   logoDataUrl,
   speakerBreakdown,
   learningObjectives,
@@ -291,13 +261,6 @@ function WorkshopCertDocument({
             </View>
           </View>
 
-          {/* CADA membership number */}
-          {cadaNumber && (
-            <View style={styles.cadaBox}>
-              <Text style={styles.cadaMembershipText}>CADA Membership #: {cadaNumber}</Text>
-            </View>
-          )}
-
           {/* Two-column layout when both objectives and breakdown are present */}
           {showTwoColumn && (
             <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'stretch', marginTop: 8 }}>
@@ -342,9 +305,8 @@ export async function generateWorkshopCertificate(params: {
   lastName: string
   workshop: string
   workshopDate: string
-  cadaNumber?: string
 }): Promise<Buffer> {
-  const { firstName, lastName, workshop, workshopDate, cadaNumber } = params
+  const { firstName, lastName, workshop, workshopDate } = params
 
   const meta = OFFERING_METADATA[workshop]
   const hours              = meta?.hours              ?? 1
@@ -373,7 +335,6 @@ export async function generateWorkshopCertificate(params: {
       formattedDate={formattedDate}
       hours={hours}
       delivery={delivery}
-      cadaNumber={cadaNumber}
       logoDataUrl={logoDataUrl}
       speakerBreakdown={speakerBreakdown}
       learningObjectives={learningObjectives}

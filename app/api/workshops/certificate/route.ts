@@ -85,7 +85,6 @@ export async function POST(req: NextRequest) {
       lastName:     registration.lastName,
       workshop:     registration.workshop,
       workshopDate: workshopDate,
-      cadaNumber:   registration.cadaNumber,
     })
 
     // Email certificate to registrant

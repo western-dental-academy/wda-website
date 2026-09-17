@@ -16,6 +16,7 @@ import AdminITPanel from '@/components/AdminITPanel'
 import AdminMarketing from '@/components/admin/AdminMarketing'
 import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/admin/AdminGiftCertificates'
+import AdminCourseEnrollments, { type CourseEnrollmentEntry } from '@/components/admin/AdminCourseEnrollments'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -51,9 +52,10 @@ interface AdminTabsProps {
   workshopFeedback: FeedbackEntry[]
   qrFeedback: QRFeedbackEntry[]
   giftCertificates: GiftCertificateEntry[]
+  courseEnrollments: CourseEnrollmentEntry[]
 }
 
-type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -87,6 +89,7 @@ export default function AdminTabs({
   workshopFeedback,
   qrFeedback,
   giftCertificates,
+  courseEnrollments,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -95,6 +98,7 @@ export default function AdminTabs({
     'Students',
     'Staff',
     'Professional Development',
+    'Courses',
     'Gift Certificates',
     ...(canViewFinancials ? ['Revenue' as TabId] : []),
     'Marketing',
@@ -229,6 +233,11 @@ export default function AdminTabs({
             ))}
           </div>
         </div>
+      )}
+
+      {/* ── Courses ── */}
+      {activeTab === 'Courses' && (
+        <AdminCourseEnrollments entries={courseEnrollments} />
       )}
 
       {/* ── Gift Certificates ── */}

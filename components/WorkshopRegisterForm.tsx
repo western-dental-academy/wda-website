@@ -122,6 +122,7 @@ function WorkshopRegisterFormInner() {
   const preselectedOffering = searchParams.get("offering");
   const preselectedDateId = searchParams.get("dateId");
   const preselectedDelivery = searchParams.get("delivery") as 'in-person' | 'virtual' | null;
+  const preselectedCategory = searchParams.get("category");
 
   const [form, setForm] = useState<RegistrantForm>(INITIAL_FORM);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -144,6 +145,7 @@ function WorkshopRegisterFormInner() {
   const [datesLoading, setDatesLoading] = useState(true);
   const [datesError, setDatesError] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'in-person' | 'virtual'>('in-person');
+  const [onlineCourses, setOnlineCourses] = useState<Array<{ _id: string; title: string; price: number; moodleCourseId: number; accessDurationDays: number; hours: number }>>([]);
 
   useEffect(() => {
     if (didAutoselect.current) return;
@@ -158,9 +160,28 @@ function WorkshopRegisterFormInner() {
       .finally(() => setDatesLoading(false));
   }, []);
 
+  useEffect(() => {
+    fetch("/api/courses/list")
+      .then(r => r.json())
+      .then(data => setOnlineCourses(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
   const didAutoselect = useRef(false);
   useEffect(() => {
     if (didAutoselect.current || !preselectedOffering || datesLoading) return;
+
+    // Online course auto-select
+    if (preselectedCategory === 'course') {
+      const courseMatch = onlineCourses.find(c => c.title === preselectedOffering || c._id === preselectedOffering);
+      if (!courseMatch) return;
+      didAutoselect.current = true;
+      setSelectedCategory('course');
+      setForm(f => ({ ...f, workshop: courseMatch._id, workshopDateId: '' }));
+      return;
+    }
+
+    // Event auto-select
     const match = WORKSHOP_OPTIONS.find(o => o.label === preselectedOffering);
     if (!match) return;
     didAutoselect.current = true;
@@ -184,7 +205,7 @@ function WorkshopRegisterFormInner() {
     } else if (preselectedDelivery === 'in-person') {
       setDeliveryMethod('in-person');
     }
-  }, [workshopDates, datesLoading, preselectedOffering, preselectedDateId, preselectedDelivery]);
+  }, [workshopDates, onlineCourses, datesLoading, preselectedOffering, preselectedDateId, preselectedDelivery, preselectedCategory]);
 
   function setField<K extends keyof RegistrantForm>(key: K, value: RegistrantForm[K]) {
     setForm(f => ({ ...f, [key]: value }));
@@ -216,6 +237,8 @@ function WorkshopRegisterFormInner() {
   const hasDates = availableDates.length > 0;
   const isNationalBoard = form.workshop.includes("National Board");
   const selectedDateObj = workshopDates.find(d => d.id === form.workshopDateId);
+  const isOnlineCourse = selectedCategory === 'course';
+  const selectedCourseObj = isOnlineCourse ? onlineCourses.find(c => c._id === form.workshop) : null;
 
   // ── Validate ────────────────────────────────────────────────────────────────
 
@@ -226,7 +249,7 @@ function WorkshopRegisterFormInner() {
     if (!form.email.trim())            e.email            = "Email address is required.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email address.";
     if (!form.dentalBackground.trim()) e.dentalBackground = "Please briefly describe your dental background.";
-    if (!form.workshop)                e.workshop         = "Please select a workshop.";
+    if (!form.workshop)                e.workshop         = isOnlineCourse ? "Please select a course." : "Please select a workshop.";
     if (form.workshop && hasDates && !form.workshopDateId) e.workshopDateId = "Please select a date.";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -238,6 +261,34 @@ function WorkshopRegisterFormInner() {
     if (!selectedCategory) { setCategoryError("Please select a category."); return; }
     setCategoryError("");
     if (!validate()) return;
+
+    // ── Online course checkout ──────────────────────────────────────────────
+    if (isOnlineCourse && selectedCourseObj) {
+      setRedirecting(true);
+      setCheckoutError("");
+      try {
+        const res = await fetch("/api/courses/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            courseId:  selectedCourseObj._id,
+            firstName: form.firstName.trim(),
+            lastName:  form.lastName.trim(),
+            email:     form.email.trim(),
+            phone:     form.phone.trim() || undefined,
+          }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.error ?? "Something went wrong.");
+        if (!result.url) throw new Error("No checkout URL returned.");
+        window.location.href = result.url;
+      } catch (err) {
+        setCheckoutError(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+        setRedirecting(false);
+      }
+      return;
+    }
+
     if (isNationalBoard && !eligibilityConfirmed) {
       setErrors(e => ({ ...e, eligibility: "Please confirm your eligibility to continue." }));
       return;
@@ -381,7 +432,9 @@ function WorkshopRegisterFormInner() {
             Your Details
           </h2>
           <p className="text-sm" style={{ color: "rgba(43,48,58,0.55)" }}>
-            Fill in your information and select an event. You'll be taken to secure checkout after submitting.
+            {isOnlineCourse
+              ? "Fill in your information and select a course. You'll be taken to secure checkout to complete your enrolment."
+              : "Fill in your information and select an event. You'll be taken to secure checkout after submitting."}
           </p>
         </div>
 
@@ -390,7 +443,7 @@ function WorkshopRegisterFormInner() {
           {/* ── Event selection ─────────────────────────────────────────────── */}
           <div className="pb-5 border-b" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
             <p className="text-xs font-bold mb-4 uppercase tracking-[0.12em]" style={{ color: "rgba(30,53,96,0.4)", fontFamily: "var(--font-montserrat), sans-serif" }}>
-              Event Selection
+              {isOnlineCourse ? 'Course Selection' : 'Event Selection'}
             </p>
 
             {/* Category */}
@@ -445,7 +498,13 @@ function WorkshopRegisterFormInner() {
                     className={`wda-input pr-10 cursor-pointer${errors.workshop ? " invalid" : ""}`}
                   >
                     <option value="">Select an offering</option>
-                    {workshopsForCategory.length > 0
+                    {isOnlineCourse
+                      ? onlineCourses.length > 0
+                        ? onlineCourses.map(c => (
+                            <option key={c._id} value={c._id}>{c.title} — ${c.price} CAD</option>
+                          ))
+                        : <option disabled value="">No courses available</option>
+                      : workshopsForCategory.length > 0
                       ? workshopsForCategory.map(o => {
                           const displayPrice =
                             deliveryMethod === 'virtual' &&
@@ -466,8 +525,28 @@ function WorkshopRegisterFormInner() {
               </div>
             )}
 
+            {/* Online course info */}
+            {isOnlineCourse && selectedCourseObj && (
+              <div
+                className="rounded-xl px-4 py-3 flex items-start gap-3"
+                style={{ backgroundColor: 'rgba(55,138,221,0.07)', border: '1px solid rgba(55,138,221,0.2)' }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="#378ADD" strokeWidth={2} className="w-5 h-5 shrink-0 mt-0.5" aria-hidden>
+                  <rect x="2" y="3" width="20" height="14" rx="2" />
+                  <line x1="8" y1="21" x2="16" y2="21" />
+                  <line x1="12" y1="17" x2="12" y2="21" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold mb-0.5" style={{ color: '#1E3560' }}>Online — Self-Paced</p>
+                  <p className="text-xs" style={{ color: 'rgba(43,48,58,0.6)' }}>
+                    {selectedCourseObj.accessDurationDays ?? 365} days access · {selectedCourseObj.hours ?? 0} hrs · Hosted on WDA Moodle
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Date selection */}
-            {selectedCategory && form.workshop && (
+            {!isOnlineCourse && selectedCategory && form.workshop && (
               datesLoading ? (
                 <p className="text-xs" style={{ color: "rgba(43,48,58,0.4)" }}>Loading available dates…</p>
               ) : datesError ? (
@@ -729,8 +808,8 @@ function WorkshopRegisterFormInner() {
             </label>
           </div>
 
-          {/* Gift certificate */}
-          <div className="pt-5 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+          {/* Gift certificate — events only */}
+          {!isOnlineCourse && <div className="pt-5 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
             <label htmlFor="gc-code" className="block text-xs font-semibold mb-1.5" style={{ color: "#1E3560" }}>
               Gift Certificate Code{" "}
               <span className="ml-1 font-normal" style={{ color: "rgba(43,48,58,0.4)" }}>(optional)</span>
@@ -792,7 +871,7 @@ function WorkshopRegisterFormInner() {
               Don&apos;t have one?{" "}
               <a href="/gift-certificates" className="underline" style={{ color: "#378ADD" }}>Purchase a gift certificate →</a>
             </p>
-          </div>
+          </div>}
 
           {/* Capacity error */}
           {capacityError && (
@@ -874,7 +953,7 @@ function WorkshopRegisterFormInner() {
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4 shrink-0" aria-hidden>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                     </svg>
-                    Register Now →
+                    {isOnlineCourse ? 'Enrol Now →' : 'Register Now →'}
                   </>
                 )}
               </button>

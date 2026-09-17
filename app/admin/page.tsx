@@ -86,7 +86,7 @@ export default async function AdminPage() {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates, courseEnrollments] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -161,6 +161,13 @@ export default async function AdminPage() {
         _id, code, amount, remainingBalance, recipientName, recipientEmail, senderName,
         status, purchasedAt, expiresAt, redeemedAt, redeemedBy, isAdminGenerated,
         generatedBy, generatedByName
+      }`
+    ),
+    client.fetch(
+      `*[_type == "courseEnrollment" && !(_id in path("drafts.**"))] | order(enrolledAt desc){
+        _id, courseName, status, enrolledAt, accessGrantedAt, accessExpiresAt,
+        completedAt, certificateSent, moodleUserId, stripePaymentStatus,
+        student{ firstName, lastName, email, phone }
       }`
     ),
   ])
@@ -299,6 +306,7 @@ export default async function AdminPage() {
         workshopFeedback={workshopFeedback as FeedbackEntry[]}
         qrFeedback={qrFeedback as QRFeedbackEntry[]}
         giftCertificates={giftCertificates as any}
+        courseEnrollments={courseEnrollments as any}
       />
     </main>
   )

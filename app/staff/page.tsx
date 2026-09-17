@@ -1,4 +1,4 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { SignOutButton } from '@clerk/nextjs'
 import { createClient } from '@sanity/client'
@@ -42,6 +42,9 @@ export default async function StaffPage() {
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
+  const clerkUser = await currentUser()
+  const userEmail = clerkUser?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? ''
+
   const staff = await client.fetch(
     `*[_type == "staffMember" && !(_id in path("drafts.**")) && clerkUserId == $uid && active == true][0]{
       _id, fullName, role, vacationDaysPerYear, sickDaysPerYear
@@ -53,7 +56,7 @@ export default async function StaffPage() {
   const yearStart = `${new Date().getFullYear()}-01-01`
   const weekStart = getWeekStart()
 
-  const [active, weekLogs, approvedThisYear, requests] = await Promise.all([
+  const [active, weekLogs, approvedThisYear, requests, myCourses] = await Promise.all([
     client.fetch(
       `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
       { id: staff._id }
@@ -74,6 +77,15 @@ export default async function StaffPage() {
       }`,
       { id: staff._id }
     ),
+    userEmail
+      ? client.fetch(
+          `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && student.email == $email] | order(enrolledAt desc){
+            _id, courseName, status, accessExpiresAt, completedAt,
+            "moodleCourseId": course->moodleCourseId
+          }`,
+          { email: userEmail }
+        )
+      : Promise.resolve([]),
   ])
 
   const weekHours = computeHours(weekLogs)
@@ -159,6 +171,92 @@ export default async function StaffPage() {
           initialBalance={balance}
           initialRequests={requests}
         />
+
+        {/* My Courses */}
+        {myCourses.length > 0 && (
+          <div
+            className="rounded-2xl px-5 py-4"
+            style={{ backgroundColor: '#ffffff', boxShadow: '0 1px 4px rgba(13,59,110,0.07)' }}
+          >
+            <p
+              className="text-xs font-bold uppercase tracking-widest mb-3"
+              style={{ color: 'rgba(13,59,110,0.4)', fontFamily: 'var(--font-montserrat), sans-serif' }}
+            >
+              My Courses
+            </p>
+            <div className="flex flex-col gap-3">
+              {(myCourses as Array<{
+                _id: string
+                courseName: string
+                status: string
+                accessExpiresAt?: string
+                completedAt?: string
+                moodleCourseId?: number
+              }>).map(c => {
+                const statusColour =
+                  c.status === 'active'    ? '#16a34a' :
+                  c.status === 'completed' ? '#378ADD' :
+                  c.status === 'expired'   ? '#dc2626' : '#b45309'
+
+                const statusLabel =
+                  c.status === 'active'    ? 'Active' :
+                  c.status === 'completed' ? 'Completed' :
+                  c.status === 'expired'   ? 'Expired' : 'Suspended'
+
+                const dateLabel = c.status === 'completed' && c.completedAt
+                  ? `Completed ${new Date(c.completedAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/Edmonton' })}`
+                  : c.accessExpiresAt
+                  ? `Access until ${new Date(c.accessExpiresAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/Edmonton' })}`
+                  : null
+
+                return (
+                  <div
+                    key={c._id}
+                    className="flex items-center justify-between gap-3 rounded-xl px-4 py-3"
+                    style={{ backgroundColor: '#F4F7F9' }}
+                  >
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{ color: '#0D3B6E' }}>
+                        {c.courseName}
+                      </p>
+                      {dateLabel && (
+                        <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.55)' }}>{dateLabel}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span
+                        className="text-xs font-bold px-2.5 py-1 rounded-full"
+                        style={{ backgroundColor: `${statusColour}1a`, color: statusColour }}
+                      >
+                        {statusLabel}
+                      </span>
+                      {(c.status === 'active' || c.status === 'completed') && (
+                        <a
+                          href="https://learn.westerndentalacademy.com"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs font-bold px-3 py-1.5 rounded-lg text-white"
+                          style={{ backgroundColor: '#0D3B6E' }}
+                        >
+                          Open →
+                        </a>
+                      )}
+                      {c.status === 'expired' && (
+                        <a
+                          href={`/api/courses/extend-redirect?enrollmentId=${c._id}`}
+                          className="text-xs font-bold px-3 py-1.5 rounded-lg text-white"
+                          style={{ backgroundColor: '#E67E22' }}
+                        >
+                          Extend →
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* TODO: Add a late-day reminder cron job that emails anyone still clocked in after 6 PM with a one-click clock-out link */}

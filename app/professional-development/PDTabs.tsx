@@ -27,6 +27,15 @@ interface WorkshopOffering {
   dates: WorkshopDate[];
 }
 
+interface OnlineCourse {
+  _id: string;
+  title: string;
+  description?: string;
+  price: number;
+  accessDurationDays?: number;
+  hours?: number;
+}
+
 // ─── Per-offering static content not stored in Sanity ─────────────────────────
 
 interface Speaker {
@@ -707,6 +716,94 @@ function ErgonomicsGroupCard({
   );
 }
 
+// ─── Online course card ────────────────────────────────────────────────────────
+
+function OnlineCourseCard({ course, index }: { course: OnlineCourse; index: number }) {
+  return (
+    <AnimateIn delay={index * 80} className="flex flex-col">
+      <div
+        className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+        style={{ backgroundColor: "#F4F7F9" }}
+      >
+        <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+        <div className="flex flex-col flex-1 p-6 sm:p-8">
+          <div className="flex items-center justify-between mb-5">
+            <span
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-[0.15em]"
+              style={{ backgroundColor: "rgba(55,138,221,0.12)", color: "#378ADD" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: "#378ADD" }} />
+              Online · Self-Paced
+            </span>
+          </div>
+
+          <h2
+            className="text-xl font-bold mb-3 leading-snug"
+            style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+          >
+            {course.title}
+          </h2>
+
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-sm font-bold" style={{ color: "#E67E22" }}>
+              ${course.price} CAD
+            </span>
+            {course.hours != null && (
+              <>
+                <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
+                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                  {course.hours} hrs
+                </span>
+              </>
+            )}
+            {course.accessDurationDays != null && (
+              <>
+                <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
+                <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
+                  {course.accessDurationDays} days access
+                </span>
+              </>
+            )}
+          </div>
+
+          {course.description && (
+            <p className="text-sm leading-relaxed mb-4 flex-1" style={{ color: "#2B303A" }}>
+              {course.description}
+            </p>
+          )}
+
+          <div className="flex gap-2 flex-wrap mt-2 mb-4">
+            {[
+              "Certificate of Completion",
+              "Online — Moodle",
+              "Self-Paced",
+            ].map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full px-3 py-1 text-[10px] font-semibold"
+                style={{ backgroundColor: "rgba(30,53,96,0.07)", color: "rgba(30,53,96,0.65)" }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+
+          <div className="flex-1" />
+
+          <Link
+            href={`/register?category=course&offering=${encodeURIComponent(course.title)}`}
+            className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
+            style={{ backgroundColor: "#E67E22" }}
+          >
+            Enrol Now
+            <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
+          </Link>
+        </div>
+      </div>
+    </AnimateIn>
+  );
+}
+
 // ─── Tabs ──────────────────────────────────────────────────────────────────────
 
 type Tab = "events" | "courses" | "practical-exam-prep" | "gift-certificates";
@@ -718,7 +815,7 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "gift-certificates",  label: "Gift Certificates" },
 ];
 
-export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] }) {
+export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: WorkshopOffering[]; onlineCourses?: OnlineCourse[] }) {
   const [activeTab, setActiveTab] = useState<Tab>("events");
 
   const ergonomicsOfferings = offerings.filter((o) =>
@@ -799,7 +896,7 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
 
         {/* Courses */}
         <div className={activeTab === "courses" ? undefined : "hidden"}>
-          {courseOfferings.length > 0 ? (
+          {onlineCourses.length > 0 || courseOfferings.length > 0 ? (
             <>
               <div className="mb-12">
                 <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
@@ -809,12 +906,18 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
                   className="text-3xl font-bold leading-tight"
                   style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
                 >
-                  Courses
+                  Online Refresher Courses
                 </h2>
+                <p className="mt-3 text-base leading-relaxed max-w-xl" style={{ color: "rgba(43,48,58,0.65)" }}>
+                  Self-paced online courses hosted on WDA Moodle. Enrol, study at your own pace, and receive a Certificate of Completion when you finish.
+                </p>
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {onlineCourses.map((c, i) => (
+                  <OnlineCourseCard key={c._id} course={c} index={i} />
+                ))}
                 {courseOfferings.map((o, i) => (
-                  <WorkshopOfferingCard key={o._id} offering={o} index={i} />
+                  <WorkshopOfferingCard key={o._id} offering={o} index={onlineCourses.length + i} />
                 ))}
               </div>
             </>
@@ -831,7 +934,7 @@ export default function PDTabs({ offerings }: { offerings: WorkshopOffering[] })
                   Courses
                 </h2>
                 <p className="mt-4 text-base leading-relaxed" style={{ color: "#2B303A" }}>
-                  Courses are coming soon.
+                  Online refresher courses are coming soon.
                 </p>
               </div>
               <div className="pt-10 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>

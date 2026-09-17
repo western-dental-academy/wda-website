@@ -22,20 +22,35 @@ interface WorkshopOffering {
   dates: WorkshopDate[];
 }
 
+interface OnlineCourse {
+  _id: string; title: string; description?: string;
+  price: number; accessDurationDays?: number; hours?: number;
+}
+
 export default async function ProfessionalDevelopmentPage() {
   let offerings: WorkshopOffering[] = [];
+  let onlineCourses: OnlineCourse[] = [];
   try {
-    offerings = await client.fetch<WorkshopOffering[]>(
-      `*[_type == "workshopOffering" && !(_id in path("drafts.**"))] | order(title asc) {
-        _id, title, category, description, price, hasVirtualOption, virtualPrice,
-        capacity, hours, cadaCppCodes,
-        "dates": *[_type == "workshopDate" && !(_id in path("drafts.**")) && references(^._id)] | order(date asc) {
-          _id, date, active
-        }
-      }`,
-      {},
-      { cache: 'no-store' }
-    );
+    [offerings, onlineCourses] = await Promise.all([
+      client.fetch<WorkshopOffering[]>(
+        `*[_type == "workshopOffering" && !(_id in path("drafts.**"))] | order(title asc) {
+          _id, title, category, description, price, hasVirtualOption, virtualPrice,
+          capacity, hours, cadaCppCodes,
+          "dates": *[_type == "workshopDate" && !(_id in path("drafts.**")) && references(^._id)] | order(date asc) {
+            _id, date, active
+          }
+        }`,
+        {},
+        { cache: 'no-store' }
+      ),
+      client.fetch<OnlineCourse[]>(
+        `*[_type == "onlineCourse" && !(_id in path("drafts.**")) && active == true] | order(title asc){
+          _id, title, description, price, accessDurationDays, hours
+        }`,
+        {},
+        { cache: 'no-store' }
+      ),
+    ]);
   } catch {
     // fall back to empty — PDTabs handles the empty state
   }
@@ -120,7 +135,7 @@ export default async function ProfessionalDevelopmentPage() {
       {/* ═══════════════════════════════════════════════════════════
           TABS + CONTENT (client component)
       ═══════════════════════════════════════════════════════════ */}
-      <PDTabs offerings={offerings} />
+      <PDTabs offerings={offerings} onlineCourses={onlineCourses} />
 
       {/* ═══════════════════════════════════════════════════════════
           CTA

@@ -17,7 +17,9 @@ import workshopWaitlist from './workshopWaitlist'
 import task from './task'
 import workshopFeedback from './workshopFeedback'
 import giftCertificate from './giftCertificate'
+import onlineCourse from './onlineCourse'
+import courseEnrollment from './courseEnrollment'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopOffering, workshopRegistration, workshopDate, workshopWaitlist, task, workshopFeedback, giftCertificate],
+  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopOffering, workshopRegistration, workshopDate, workshopWaitlist, task, workshopFeedback, giftCertificate, onlineCourse, courseEnrollment],
 }

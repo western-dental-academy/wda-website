@@ -85,10 +85,18 @@ export const structure: StructureResolver = (S) =>
                     .title('Courses')
                     .items([
                       S.listItem()
-                        .title('Offerings')
+                        .title('Online Courses')
+                        .schemaType('onlineCourse')
+                        .child(S.documentTypeList('onlineCourse').title('Online Courses')),
+                      S.listItem()
+                        .title('Course Enrollments')
+                        .schemaType('courseEnrollment')
+                        .child(S.documentTypeList('courseEnrollment').title('Course Enrollments')),
+                      S.listItem()
+                        .title('Workshop Course Offerings (Legacy)')
                         .child(
                           S.documentTypeList('workshopOffering')
-                            .title('Offerings')
+                            .title('Workshop Course Offerings')
                             .filter('_type == "workshopOffering" && category == "course"')
                         ),
                     ])

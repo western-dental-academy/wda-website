@@ -107,10 +107,6 @@ function confirmationEmailHtml(
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:30 – 8:45 AM</td>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Virtual Welcome</td>
             </tr>
-            <tr>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:45 – 9:30 AM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Registration Renewal Unraveled — TBD</td>
-            </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">9:30 – 10:30 AM</td>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Obstructive Sleep Apnea — Samantha Coleman &amp; Emily Griffiths</td>

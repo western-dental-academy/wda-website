@@ -33,7 +33,7 @@ export default async function ProfessionalDevelopmentPage() {
   try {
     [offerings, onlineCourses] = await Promise.all([
       client.fetch<WorkshopOffering[]>(
-        `*[_type == "workshopOffering" && !(_id in path("drafts.**")) && _id != "28031f51-3f03-4dd7-8300-e799d6bbc8c7"] | order(title asc) {
+        `*[_type == "workshopOffering" && !(_id in path("drafts.**"))] | order(title asc) {
           _id, title, category, description, price, hasVirtualOption, virtualPrice,
           capacity, hours, cadaCppCodes,
           "dates": *[_type == "workshopDate" && !(_id in path("drafts.**")) && references(^._id)] | order(date asc) {

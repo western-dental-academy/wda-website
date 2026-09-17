@@ -769,7 +769,10 @@ function WorkshopRegisterFormInner() {
             {giftCodeValidating && <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>Validating…</p>}
             {giftCodeError && <p className="mt-1 text-xs" style={{ color: "#dc2626" }}>{giftCodeError}</p>}
             {giftCertInfo && (() => {
-              const applied = Math.min(giftCertInfo.remainingBalance, price);
+              const currentPrice = deliveryMethod === 'virtual' && selectedDateObj?.virtualPrice != null
+                ? selectedDateObj.virtualPrice
+                : WORKSHOP_PRICES[form.workshop] ?? 0;
+              const applied = Math.min(giftCertInfo.remainingBalance, currentPrice);
               const remainingAfter = giftCertInfo.remainingBalance - applied;
               return (
                 <div className="mt-2 rounded-lg px-3 py-2.5 text-xs" style={{ backgroundColor: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.25)" }}>

@@ -64,9 +64,7 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     displayTitle: "Renewal Wellness Guest Speaker Event",
     durationOverride: "All Day Event",
     highlights: [
-      "Registration Renewal Unraveled — Jolene Moore",
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
-      "Session 3 — TBD",
       "Financial Wellness — Drill into Your Finances — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
@@ -76,12 +74,6 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.\nLocation: 258-150 Chippewa Road, Sherwood Park (plenty of free parking)\nLocated on the second floor",
     cadaNote: "Meets various competencies for the CCP",
     speakers: [
-      {
-        name: "TBD",
-        affiliation: "",
-        topic: "Registration Renewal Unraveled",
-        description: "Speaker to be announced.",
-      },
       {
         name: "Samantha Coleman & Emily Griffiths",
         affiliation: "Sleep Well Diagnostics Ltd",

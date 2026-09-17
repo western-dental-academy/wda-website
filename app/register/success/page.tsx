@@ -109,7 +109,7 @@ function confirmationEmailHtml(
             </tr>
             <tr>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:45 – 9:30 AM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Registration Renewal Unraveled — Jolene Moore</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Registration Renewal Unraveled — TBD</td>
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">9:30 – 10:30 AM</td>
@@ -121,7 +121,7 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">10:45 AM – 12:00 PM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Session 3 — TBD</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service</td>
             </tr>
             <tr>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:00 – 12:45 PM</td>

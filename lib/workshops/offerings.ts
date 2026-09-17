@@ -67,7 +67,7 @@ export const OFFERING_METADATA: Record<string, {
   },
   'Renewal Wellness': {
     hours: 6.25,
-    cadaCppNumbers: ['I-2-1', 'D-3-1', 'I-5-4', 'B-5-3'],
+    cadaCppNumbers: ['I-2-1', 'D-3-1', 'I-5-4', 'B-5-3', 'F-2-1', 'F-2-2'],
     delivery: 'In Person / Virtual',
     speakerBreakdown: [
       { speaker: 'Jolene Moore', topic: 'Registration Renewal Unraveled', hours: 0.75 },
@@ -79,7 +79,7 @@ export const OFFERING_METADATA: Record<string, {
     learningObjectives: [
       'Navigate the CADA registration renewal process with confidence',
       'Recognize the signs and risk factors of Obstructive Sleep Apnea in dental patients',
-      'Apply oral health care strategies for patients living with dementia',
+      'Recognize addiction influences on dental health and identify resources to support patients with addictions',
       'Implement personal financial wellness strategies including debt reduction and wealth planning',
       'Identify roles and responsibilities in emergency situations to reduce liability in practice',
     ],

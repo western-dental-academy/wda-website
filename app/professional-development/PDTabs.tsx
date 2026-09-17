@@ -68,10 +68,10 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     cadaNote: "Meets various competencies for the CCP",
     speakers: [
       {
-        name: "Jolene Moore",
-        affiliation: "Western Dental Academy",
+        name: "TBD",
+        affiliation: "",
         topic: "Registration Renewal Unraveled",
-        description: "Have questions during the renewal process? Wondering why registration is necessary or where to get Liability Insurance? Jolene will discuss common myths, offer suggestions to make the registration process easier, and answer your questions.",
+        description: "Speaker to be announced.",
       },
       {
         name: "Samantha Coleman & Emily Griffiths",
@@ -80,10 +80,10 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
         description: "Both Registered Respiratory Therapists with backgrounds in critical care at the University of Alberta Hospital, Samantha and Emily are passionate about preventative sleep care, patient education, and early detection. They opened Sleep Well Diagnostics in April 2026 to bring high-quality, accessible sleep care to Fort Saskatchewan and surrounding communities.",
       },
       {
-        name: "TBD",
-        affiliation: "",
-        topic: "Session 3",
-        description: "Speaker and topic to be announced.",
+        name: "Superintendent Lance Parker",
+        affiliation: "Edmonton Police Service",
+        topic: "Addictions and Oral Health",
+        description: "With over 23 years of service to the Edmonton Police Service, Superintendent Lance Parker brings a wealth of experience in frontline patrol, specialized project teams, and units focused on drug enforcement. Recognized as a subject matter expert in drug enforcement and acknowledged as a drug expert in the Provincial Courts of Alberta, he brings a unique perspective on addiction and its impacts on society and oral health.",
       },
       {
         name: "Josie McKenzie",

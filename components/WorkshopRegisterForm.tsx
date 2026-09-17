@@ -138,6 +138,8 @@ function WorkshopRegisterFormInner() {
   const [checkoutError, setCheckoutError] = useState("");
   const [giftCode, setGiftCode] = useState("");
   const [giftCodeError, setGiftCodeError] = useState("");
+  const [giftCertInfo, setGiftCertInfo] = useState<{ amount: number; remainingBalance: number } | null>(null);
+  const [giftCodeValidating, setGiftCodeValidating] = useState(false);
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
   const [datesLoading, setDatesLoading] = useState(true);
   const [datesError, setDatesError] = useState(false);
@@ -737,19 +739,52 @@ function WorkshopRegisterFormInner() {
               id="gc-code"
               type="text"
               value={giftCode}
-              onChange={e => { setGiftCode(e.target.value); setGiftCodeError(""); }}
-              onBlur={() => {
+              onChange={e => { setGiftCode(e.target.value); setGiftCodeError(""); setGiftCertInfo(null); }}
+              onBlur={async () => {
                 const v = giftCode.trim().toUpperCase();
-                if (v && !/^WDA-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v)) {
+                if (!v) return;
+                if (!/^WDA-[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(v)) {
                   setGiftCodeError("Code should be in the format WDA-XXXX-XXXX.");
+                  return;
+                }
+                setGiftCodeValidating(true);
+                setGiftCodeError("");
+                setGiftCertInfo(null);
+                try {
+                  const res = await fetch(`/api/gift-certificates/validate?code=${encodeURIComponent(v)}`);
+                  const data = await res.json();
+                  if (!res.ok) { setGiftCodeError(data.error ?? "Invalid gift certificate."); return; }
+                  setGiftCertInfo({ amount: data.amount, remainingBalance: data.remainingBalance });
+                } catch {
+                  setGiftCodeError("Could not validate gift certificate. Please try again.");
+                } finally {
+                  setGiftCodeValidating(false);
                 }
               }}
               placeholder="WDA-XXXX-XXXX"
               autoCapitalize="characters"
               className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none focus:ring-2 focus:ring-blue-300 font-mono"
-              style={{ borderColor: "rgba(30,53,96,0.2)", color: "#2B303A", backgroundColor: "#F4F7F9" }}
+              style={{ borderColor: giftCertInfo ? "rgba(22,163,74,0.5)" : "rgba(30,53,96,0.2)", color: "#2B303A", backgroundColor: "#F4F7F9" }}
             />
+            {giftCodeValidating && <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>Validating…</p>}
             {giftCodeError && <p className="mt-1 text-xs" style={{ color: "#dc2626" }}>{giftCodeError}</p>}
+            {giftCertInfo && (() => {
+              const applied = Math.min(giftCertInfo.remainingBalance, price);
+              const remainingAfter = giftCertInfo.remainingBalance - applied;
+              return (
+                <div className="mt-2 rounded-lg px-3 py-2.5 text-xs" style={{ backgroundColor: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.25)" }}>
+                  <p className="font-semibold mb-1" style={{ color: "#16a34a" }}>
+                    ✓ Gift certificate valid — ${giftCertInfo.remainingBalance} available
+                  </p>
+                  <p style={{ color: "#15803d" }}>−${applied} applied to this registration</p>
+                  {remainingAfter > 0 && (
+                    <p className="mt-0.5" style={{ color: "#E67E22" }}>
+                      (${remainingAfter} remaining on certificate after this purchase)
+                    </p>
+                  )}
+                </div>
+              );
+            })()}
             <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
               Don&apos;t have one?{" "}
               <a href="/gift-certificates" className="underline" style={{ color: "#378ADD" }}>Purchase a gift certificate →</a>

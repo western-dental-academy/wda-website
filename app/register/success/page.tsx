@@ -416,19 +416,38 @@ export default async function SuccessPage({
             html: adminEmailHtml(registrations, dateMap),
           });
 
-          // Mark gift certificate as redeemed if one was used
+          // Update gift certificate balance for partial redemption
           const giftCodeUsed = session.metadata?.giftCode
-          if (giftCodeUsed) {
+          const giftDiscountDollars = Number(session.metadata?.giftDiscountDollars ?? 0)
+          const giftNewRemainingBalance = Number(session.metadata?.giftNewRemainingBalance ?? 0)
+          if (giftCodeUsed && giftDiscountDollars > 0) {
             try {
-              const cert = await sanity.fetch<{ _id: string } | null>(
-                `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{ _id }`,
+              const cert = await sanity.fetch<{ _id: string; partialRedemptions?: unknown[] } | null>(
+                `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{ _id, partialRedemptions }`,
                 { code: giftCodeUsed }
               )
               if (cert) {
+                const now = new Date().toISOString()
+                const workshopName = registrations
+                  .map(r => r.workshop)
+                  .filter((v, i, a) => a.indexOf(v) === i)
+                  .join(', ')
+                const currentRedemptions: unknown[] = cert.partialRedemptions ?? []
                 await sanity.patch(cert._id).set({
-                  status: 'redeemed',
-                  redeemedAt: new Date().toISOString(),
-                  redeemedBy: primary.email,
+                  remainingBalance: giftNewRemainingBalance,
+                  status: giftNewRemainingBalance === 0 ? 'redeemed' : 'active',
+                  ...(giftNewRemainingBalance === 0 ? { redeemedAt: now, redeemedBy: primary.email } : {}),
+                  partialRedemptions: [
+                    ...currentRedemptions,
+                    {
+                      _key: `stripe-${Date.now()}`,
+                      redeemedAt: now,
+                      redeemedBy: primary.email,
+                      amountUsed: giftDiscountDollars,
+                      remainingAfter: giftNewRemainingBalance,
+                      workshopName,
+                    },
+                  ],
                 }).commit()
               }
             } catch (err) {

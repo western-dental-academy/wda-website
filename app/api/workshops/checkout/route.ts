@@ -148,14 +148,16 @@ export async function POST(req: NextRequest) {
     // Gift certificate validation
     let giftDiscountCents = 0
     let validatedGiftCode: string | undefined
+    let validatedCertId: string | undefined
+    let availableBalanceCents = 0
 
     if (giftCode?.trim()) {
       const normalised = giftCode.trim().toUpperCase()
       const cert = await client.fetch<{
-        _id: string; status: string; amount: number; expiresAt: string
+        _id: string; status: string; amount: number; remainingBalance?: number; expiresAt: string; partialRedemptions?: unknown[]
       } | null>(
         `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{
-          _id, status, amount, expiresAt
+          _id, status, amount, remainingBalance, expiresAt, partialRedemptions
         }`,
         { code: normalised }
       )
@@ -166,27 +168,51 @@ export async function POST(req: NextRequest) {
       if (cert.status !== 'active' && cert.status !== 'admin') return Response.json({ error: 'This gift certificate is not valid.' }, { status: 400 })
       if (new Date(cert.expiresAt) < new Date()) return Response.json({ error: 'This gift certificate has expired.' }, { status: 400 })
 
-      giftDiscountCents = Math.min(cert.amount * 100, subtotalCents)
+      const availableBalance = cert.remainingBalance ?? cert.amount
+      if (availableBalance <= 0) return Response.json({ error: 'This gift certificate has no remaining balance.' }, { status: 400 })
+
+      availableBalanceCents = Math.round(availableBalance * 100)
+      giftDiscountCents = Math.min(availableBalanceCents, subtotalCents)
       validatedGiftCode = normalised
+      validatedCertId = cert._id
     }
 
     // If gift cert covers full amount, mark registrations as paid immediately (no Stripe)
-    if (giftDiscountCents >= subtotalCents && validatedGiftCode) {
+    if (giftDiscountCents >= subtotalCents && validatedGiftCode && validatedCertId) {
       await Promise.all(
         registrationIds.map(id =>
           client.patch(id).set({ stripePaymentStatus: 'paid' }).commit()
         )
       )
-      // Mark gift cert as redeemed
-      const certDoc = await client.fetch<{ _id: string } | null>(
-        `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{ _id }`,
-        { code: validatedGiftCode }
+
+      // Update gift certificate balance + add partial redemption entry
+      const discountDollars = giftDiscountCents / 100
+      const newRemainingBalance = Math.max(0, (availableBalanceCents - giftDiscountCents) / 100)
+      const now = new Date().toISOString()
+      const workshopName = items.map(i => i.workshopName).filter((v, i, a) => a.indexOf(v) === i).join(', ')
+
+      const currentCert = await client.fetch<{ partialRedemptions?: unknown[] } | null>(
+        `*[_type == "giftCertificate" && _id == $id][0]{ partialRedemptions }`,
+        { id: validatedCertId }
       )
-      if (certDoc) {
-        await client.patch(certDoc._id)
-          .set({ status: 'redeemed', redeemedAt: new Date().toISOString(), redeemedBy: primaryItem.email })
-          .commit()
-      }
+      const currentRedemptions: unknown[] = currentCert?.partialRedemptions ?? []
+
+      await client.patch(validatedCertId).set({
+        remainingBalance: newRemainingBalance,
+        status: newRemainingBalance === 0 ? 'redeemed' : 'active',
+        ...(newRemainingBalance === 0 ? { redeemedAt: now, redeemedBy: primaryItem.email } : {}),
+        partialRedemptions: [
+          ...currentRedemptions,
+          {
+            _key: `free-${Date.now()}`,
+            redeemedAt: now,
+            redeemedBy: primaryItem.email,
+            amountUsed: discountDollars,
+            remainingAfter: newRemainingBalance,
+            workshopName,
+          },
+        ],
+      }).commit()
 
       return Response.json({
         free: true,
@@ -256,7 +282,11 @@ export async function POST(req: NextRequest) {
         registrationIds: idsParam,
         count: String(items.length),
         primaryEmail: primaryItem.email,
-        ...(validatedGiftCode ? { giftCode: validatedGiftCode } : {}),
+        ...(validatedGiftCode ? {
+          giftCode: validatedGiftCode,
+          giftDiscountDollars: String(giftDiscountCents / 100),
+          giftNewRemainingBalance: String(Math.max(0, (availableBalanceCents - giftDiscountCents) / 100)),
+        } : {}),
       },
     })
 

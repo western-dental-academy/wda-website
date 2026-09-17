@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
     _type: 'giftCertificate',
     code,
     amount,
+    remainingBalance: amount,
     recipientName: recipientName?.trim() || 'Door Prize Winner',
     purchasedAt: now,
     expiresAt,

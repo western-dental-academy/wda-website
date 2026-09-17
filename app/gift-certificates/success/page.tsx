@@ -149,6 +149,7 @@ export default async function GiftCertSuccessPage({
           _type: 'giftCertificate',
           code,
           amount,
+          remainingBalance: amount,
           recipientName,
           recipientEmail,
           senderName,

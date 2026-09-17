@@ -35,13 +35,8 @@ export const metadata: Metadata = {
     google: "W0YHDjTkJHZIJUqWXgaikKh6KxGXCA29j1mg1hnNNFM",
   },
   icons: {
-    icon: [
-      {
-        url: "/WDA_ProfileIcon-Inverted.png",
-        type: "image/png",
-      },
-    ],
-    apple: "/WDA_ProfileIcon-Inverted.png",
+    icon: "/Western_Dental_Academy_Logo_-Icon_Only-Updated.png",
+    apple: "/Western_Dental_Academy_Logo_-Icon_Only-Updated.png",
   },
   openGraph: {
     title: "Western Dental Academy",

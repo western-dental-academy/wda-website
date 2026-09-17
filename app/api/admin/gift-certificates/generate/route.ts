@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
   if (!ADMIN_EMAILS.includes(email)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }
+  const generatorName = `${user?.firstName ?? ''} ${user?.lastName ?? ''}`.trim()
 
   let body: unknown
   try { body = await req.json() } catch {
@@ -57,6 +58,8 @@ export async function POST(req: NextRequest) {
     expiresAt,
     status: 'admin',
     isAdminGenerated: true,
+    generatedBy: email,
+    generatedByName: generatorName || email,
   })
 
   const logoPath = path.join(process.cwd(), 'public', 'Inverted.png')

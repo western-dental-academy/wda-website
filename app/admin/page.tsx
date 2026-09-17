@@ -159,7 +159,8 @@ export default async function AdminPage() {
     client.fetch(
       `*[_type == "giftCertificate" && !(_id in path("drafts.**"))] | order(purchasedAt desc){
         _id, code, amount, recipientName, recipientEmail, senderName,
-        status, purchasedAt, expiresAt, redeemedAt, redeemedBy, isAdminGenerated
+        status, purchasedAt, expiresAt, redeemedAt, redeemedBy, isAdminGenerated,
+        generatedBy, generatedByName
       }`
     ),
   ])

@@ -224,6 +224,10 @@ export default function NPEWorkshopPage() {
                       their readiness.
                     </li>
                     <li>Option to take partial skills if all skills are not needed</li>
+                    <li style={{ marginTop: "4px" }}>This practical workshop is independent of NDAEB and has not been endorsed by the NDAEB</li>
+                    <li style={{ marginTop: "4px" }}>For information on the NDAEB Clinical Practical Evaluation visit{" "}
+                      <a href="https://www.ndaeb.ca" target="_blank" rel="noopener noreferrer" style={{ color: "#378ADD" }}>www.ndaeb.ca</a>
+                    </li>
                   </ul>
                 </div>
               </div>

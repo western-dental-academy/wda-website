@@ -162,6 +162,12 @@ export async function POST(req: NextRequest) {
         subject: 'Join the WDA Community — Stay in the Loop',
         html:    inviteEmailHtml(r.firstName, confirmUrl),
       })
+      // Record invite timestamp on the workshopRegistration doc
+      try {
+        await client.patch(r._id).set({ newsletterInviteSentAt: now }).commit()
+      } catch (err) {
+        console.error('Failed to record invite timestamp on registration:', err)
+      }
       sent++
     } catch (err) {
       console.error('Newsletter invite email error:', err)

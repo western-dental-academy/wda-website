@@ -182,6 +182,12 @@ export default defineType({
       description: 'Whether the registrant opted in to receive WDA email updates',
     }),
     defineField({
+      name: 'newsletterInviteSentAt',
+      title: 'Newsletter Invite Sent At',
+      type: 'datetime',
+      description: 'When a newsletter invite was last sent to this registrant',
+    }),
+    defineField({
       name: 'checkedIn',
       title: 'Checked In',
       type: 'boolean',

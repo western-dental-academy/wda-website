@@ -11,6 +11,7 @@ export interface WorkshopRegistration {
   pronouns?: string;
   mediaConsent?: boolean;
   newsletterOptIn?: boolean;
+  newsletterInviteSentAt?: string;
   email: string;
   workshop: string;
   registeredAt: string;
@@ -285,7 +286,7 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
     setBulkResult(null);
     try {
       const uninvitedIds = registrations
-        .filter(r => !r.newsletterOptIn && !invitedIds.has(r._id))
+        .filter(r => !r.newsletterOptIn && !invitedIds.has(r._id) && !r.newsletterInviteSentAt)
         .map(r => r._id);
       if (uninvitedIds.length === 0) {
         setBulkResult({ sent: 0, skipped: 0, alreadySubscribed: 0 });
@@ -475,14 +476,26 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                         Newsletter
                       </span>
                     )}
-                    {!r.newsletterOptIn && !invitedIds.has(r._id) && (
-                      <InviteButton registrantId={r._id} onSent={handleInviteSent} />
-                    )}
-                    {!r.newsletterOptIn && invitedIds.has(r._id) && (
-                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: 'rgba(55,138,221,0.12)', color: '#378ADD' }}>
-                        Invite Sent
-                      </span>
-                    )}
+                    {!r.newsletterOptIn && (() => {
+                      const sentAt = invitedIds.has(r._id)
+                        ? new Date().toISOString()
+                        : r.newsletterInviteSentAt;
+                      if (sentAt) {
+                        const label = new Date(sentAt).toLocaleDateString('en-CA', {
+                          month: 'short', day: 'numeric', timeZone: 'America/Edmonton',
+                        });
+                        return (
+                          <span
+                            className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
+                            style={{ backgroundColor: 'rgba(107,114,128,0.1)', color: '#6b7280' }}
+                            title={`Invite sent ${new Date(sentAt).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Edmonton' })}`}
+                          >
+                            Invited {label}
+                          </span>
+                        );
+                      }
+                      return <InviteButton registrantId={r._id} onSent={handleInviteSent} />;
+                    })()}
                     {r.dietaryRestrictions && (
                       <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.55)" }}>
                         Dietary: {r.dietaryRestrictions}

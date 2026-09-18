@@ -288,7 +288,7 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
         .filter(r => !r.newsletterOptIn && !invitedIds.has(r._id))
         .map(r => r._id);
       if (uninvitedIds.length === 0) {
-        setBulkResult({ sent: 0, skipped: 0 });
+        setBulkResult({ sent: 0, skipped: 0, alreadySubscribed: 0 });
         setBulkStatus('done');
         return;
       }

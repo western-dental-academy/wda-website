@@ -65,6 +65,7 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     durationOverride: "All Day Event",
     highlights: [
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
+      "Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service",
       "Financial Wellness — Drill into Your Finances — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],

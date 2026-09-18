@@ -217,6 +217,50 @@ function NotifyButton({ entry, workshop, workshopDate, onNotified }: {
   );
 }
 
+// ─── Per-registrant newsletter invite button ──────────────────────────────────
+
+function InviteButton({ registrantId, onSent }: { registrantId: string; onSent: (id: string) => void }) {
+  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
+
+  async function handle() {
+    setStatus('sending');
+    try {
+      const res = await fetch('/api/admin/newsletter-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ registrantIds: [registrantId] }),
+      });
+      if (!res.ok) {
+        const j = await res.json();
+        throw new Error(j.error ?? 'Failed to send invite');
+      }
+      setStatus('done');
+      onSent(registrantId);
+    } catch {
+      setStatus('error');
+    }
+  }
+
+  if (status === 'done') {
+    return (
+      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: 'rgba(55,138,221,0.12)', color: '#378ADD' }}>
+        Invite Sent
+      </span>
+    );
+  }
+
+  return (
+    <button
+      onClick={handle}
+      disabled={status === 'sending'}
+      className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold border transition-colors hover:bg-[#378ADD] hover:text-white disabled:opacity-50"
+      style={{ borderColor: '#378ADD', color: '#378ADD' }}
+    >
+      {status === 'sending' ? '…' : status === 'error' ? 'Retry' : 'Invite'}
+    </button>
+  );
+}
+
 // ─── Group tab ─────────────────────────────────────────────────────────────────
 
 function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinancials: boolean }) {
@@ -225,9 +269,43 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
   );
   const [waitlist, setWaitlist] = useState<WorkshopWaitlistEntry[]>(group.waitlist);
   const [subTab, setSubTab] = useState<'registrations' | 'waitlist'>('registrations');
+  const [invitedIds, setInvitedIds] = useState<Set<string>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<'idle' | 'confirming' | 'sending' | 'done' | 'error'>('idle');
+  const [bulkResult, setBulkResult] = useState<{ sent: number; skipped: number } | null>(null);
 
   const paidCount     = registrations.filter((r) => r.stripePaymentStatus === "paid").length;
   const checkedInCount = registrations.filter((r) => r.checkedIn).length;
+
+  function handleInviteSent(id: string) {
+    setInvitedIds(prev => new Set([...prev, id]));
+  }
+
+  async function handleBulkInvite() {
+    setBulkStatus('sending');
+    setBulkResult(null);
+    try {
+      const uninvitedIds = registrations
+        .filter(r => !r.newsletterOptIn && !invitedIds.has(r._id))
+        .map(r => r._id);
+      if (uninvitedIds.length === 0) {
+        setBulkResult({ sent: 0, skipped: 0 });
+        setBulkStatus('done');
+        return;
+      }
+      const res = await fetch('/api/admin/newsletter-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ registrantIds: uninvitedIds }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed');
+      setInvitedIds(prev => new Set([...prev, ...uninvitedIds]));
+      setBulkResult({ sent: data.sent, skipped: data.skipped });
+      setBulkStatus('done');
+    } catch {
+      setBulkStatus('error');
+    }
+  }
 
   function handleToggleCheckIn(id: string, newValue: boolean) {
     setRegistrations((prev) =>
@@ -273,15 +351,60 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
           </div>
         ))}
 
-        {/* CSV button */}
+        {/* CSV + invite buttons */}
         {subTab === 'registrations' && (
-          <button
-            onClick={() => downloadCSV({ ...group, registrations }, canViewFinancials)}
-            className="ml-auto rounded-xl px-5 py-3 text-xs font-bold transition-colors hover:bg-[#1E3560] hover:text-white self-center"
-            style={{ border: "1.5px solid rgba(30,53,96,0.18)", color: "#1E3560" }}
-          >
-            ↓ Download CSV
-          </button>
+          <div className="ml-auto flex items-center gap-2 self-center flex-wrap">
+            {/* Bulk newsletter invite */}
+            {bulkStatus === 'idle' && (
+              <button
+                onClick={() => setBulkStatus('confirming')}
+                className="rounded-xl px-5 py-3 text-xs font-bold text-white transition-colors"
+                style={{ backgroundColor: '#378ADD' }}
+              >
+                ✉ Send Newsletter Invites
+              </button>
+            )}
+            {bulkStatus === 'confirming' && (
+              <div className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs" style={{ backgroundColor: 'rgba(55,138,221,0.08)', border: '1.5px solid rgba(55,138,221,0.3)' }}>
+                <span style={{ color: '#1E3560' }}>Send to all non-opted-in registrants?</span>
+                <button
+                  onClick={handleBulkInvite}
+                  className="rounded-lg px-3 py-1 font-bold text-white"
+                  style={{ backgroundColor: '#378ADD' }}
+                >
+                  Send
+                </button>
+                <button
+                  onClick={() => setBulkStatus('idle')}
+                  className="rounded-lg px-3 py-1 font-semibold"
+                  style={{ color: 'rgba(30,53,96,0.55)', border: '1px solid rgba(30,53,96,0.15)' }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+            {bulkStatus === 'sending' && (
+              <span className="text-xs px-4 py-3" style={{ color: 'rgba(43,48,58,0.55)' }}>Sending invites…</span>
+            )}
+            {bulkStatus === 'done' && bulkResult && (
+              <span className="text-xs px-4 py-3 rounded-xl" style={{ backgroundColor: 'rgba(22,163,74,0.08)', color: '#15803d' }}>
+                ✓ Sent {bulkResult.sent} invite{bulkResult.sent !== 1 ? 's' : ''}{bulkResult.skipped > 0 ? ` (${bulkResult.skipped} skipped)` : ''}
+              </span>
+            )}
+            {bulkStatus === 'error' && (
+              <span className="text-xs px-4 py-3 rounded-xl cursor-pointer" style={{ backgroundColor: 'rgba(220,38,38,0.08)', color: '#dc2626' }} onClick={() => setBulkStatus('idle')}>
+                Error — click to retry
+              </span>
+            )}
+
+            <button
+              onClick={() => downloadCSV({ ...group, registrations }, canViewFinancials)}
+              className="rounded-xl px-5 py-3 text-xs font-bold transition-colors hover:bg-[#1E3560] hover:text-white"
+              style={{ border: "1.5px solid rgba(30,53,96,0.18)", color: "#1E3560" }}
+            >
+              ↓ Download CSV
+            </button>
+          </div>
         )}
       </div>
 
@@ -348,6 +471,14 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     {r.newsletterOptIn && (
                       <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: "#d1fae5", color: "#065f46" }}>
                         Newsletter
+                      </span>
+                    )}
+                    {!r.newsletterOptIn && !invitedIds.has(r._id) && (
+                      <InviteButton registrantId={r._id} onSent={handleInviteSent} />
+                    )}
+                    {!r.newsletterOptIn && invitedIds.has(r._id) && (
+                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: 'rgba(55,138,221,0.12)', color: '#378ADD' }}>
+                        Invite Sent
                       </span>
                     )}
                     {r.dietaryRestrictions && (

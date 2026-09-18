@@ -41,6 +41,24 @@ export default defineType({
       initialValue: true,
       description: 'Uncheck to unsubscribe',
     }),
+    defineField({
+      name: 'confirmed',
+      title: 'Confirmed',
+      type: 'boolean',
+      description: 'Whether the subscriber confirmed via email link',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'inviteToken',
+      title: 'Invite Token',
+      type: 'string',
+      description: 'One-time token for confirming newsletter subscription via email link',
+    }),
+    defineField({
+      name: 'inviteSentAt',
+      title: 'Invite Sent At',
+      type: 'datetime',
+    }),
   ],
   preview: {
     select: {

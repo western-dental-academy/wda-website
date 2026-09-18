@@ -26,7 +26,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
 const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000
 
-function inviteEmailHtml(firstName: string, workshopName: string, confirmUrl: string): string {
+function inviteEmailHtml(firstName: string, confirmUrl: string): string {
   return `
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
   <div style="background-color:#0D3B6E;padding:28px 32px;">
@@ -35,12 +35,10 @@ function inviteEmailHtml(firstName: string, workshopName: string, confirmUrl: st
   </div>
   <div style="padding:32px;background:#ffffff;border:1px solid #e5e7eb;">
     <p style="color:#0D3B6E;font-size:15px;margin:0 0 16px;">Hi ${firstName},</p>
-    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
-      Thank you for attending <strong>${workshopName}</strong> with Western Dental Academy.
-    </p>
     <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 24px;">
-      We'd love to keep you updated on upcoming events, courses, and professional development
-      opportunities. Click below to join our mailing list.
+      Thank you for connecting with Western Dental Academy. We'd love to keep you updated on
+      upcoming events, courses, and professional development opportunities. Click below to join
+      our mailing list.
     </p>
     <div style="text-align:center;margin:0 0 28px;">
       <a
@@ -162,7 +160,7 @@ export async function POST(req: NextRequest) {
         from:    'Western Dental Academy <info@westerndentalacademy.com>',
         to:      normalEmail,
         subject: 'Join the WDA Community — Stay in the Loop',
-        html:    inviteEmailHtml(r.firstName, r.workshop, confirmUrl),
+        html:    inviteEmailHtml(r.firstName, confirmUrl),
       })
       sent++
     } catch (err) {

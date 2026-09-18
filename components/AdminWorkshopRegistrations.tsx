@@ -10,6 +10,7 @@ export interface WorkshopRegistration {
   lastName: string;
   pronouns?: string;
   mediaConsent?: boolean;
+  newsletterOptIn?: boolean;
   email: string;
   workshop: string;
   registeredAt: string;
@@ -342,6 +343,11 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     {r.mediaConsent && (
                       <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: "#dcfce7", color: "#15803d" }}>
                         Media OK
+                      </span>
+                    )}
+                    {r.newsletterOptIn && (
+                      <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold" style={{ backgroundColor: "#d1fae5", color: "#065f46" }}>
+                        Newsletter
                       </span>
                     )}
                     {r.dietaryRestrictions && (

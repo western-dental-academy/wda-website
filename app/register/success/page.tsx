@@ -30,6 +30,7 @@ interface RegistrationRecord {
   stripePaymentStatus: string;
   preferredDate?: string;
   deliveryMethod?: string;
+  newsletterOptIn?: boolean;
 }
 
 function workshopInstructions(workshop: string): string {
@@ -284,7 +285,7 @@ export default async function SuccessPage({
     try {
       const idList = ids.map(id => `"${id}"`).join(",");
       registrations = await sanity.fetch<RegistrationRecord[]>(
-        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod }`,
+        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod, newsletterOptIn }`,
       );
       confirmed = true;
     } catch (err) {
@@ -296,7 +297,7 @@ export default async function SuccessPage({
       // Fetch all registrations
       const idList = ids.map(id => `"${id}"`).join(",");
       const existing = await sanity.fetch<RegistrationRecord[]>(
-        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod }`,
+        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod, newsletterOptIn }`,
       );
       registrations = existing;
 
@@ -371,6 +372,32 @@ export default async function SuccessPage({
                 }
               })
             );
+          }
+
+          // Create subscriber docs for opted-in registrants (idempotent — skip if already subscribed)
+          const optedIn = registrations.filter(r => r.newsletterOptIn === true)
+          if (optedIn.length > 0) {
+            await Promise.all(optedIn.map(async r => {
+              try {
+                const existing = await sanity.fetch<{ _id: string } | null>(
+                  `*[_type == "subscriber" && !(_id in path("drafts.**")) && email == $email][0]{ _id }`,
+                  { email: r.email }
+                )
+                if (!existing) {
+                  await sanity.create({
+                    _type: 'subscriber',
+                    email: r.email,
+                    firstName: r.firstName,
+                    lastName: r.lastName,
+                    subscribedAt: new Date().toISOString(),
+                    source: 'registration',
+                    active: true,
+                  })
+                }
+              } catch (err) {
+                console.error('Subscriber creation error:', err)
+              }
+            }))
           }
 
           // Send receipt to primary registrant (first in list)

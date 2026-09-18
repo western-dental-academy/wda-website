@@ -16,6 +16,7 @@ interface RegistrantForm {
   customPronouns: string;
   mediaConsent: boolean;
   feedbackShareConsent: boolean;
+  newsletterOptIn: boolean;
   workshop: string;
   workshopDateId: string;
   dietaryRestrictions: string;
@@ -58,7 +59,7 @@ const INITIAL_FORM: RegistrantForm = {
   firstName: "", lastName: "", email: "", phone: "",
   dentalBackground: "", cadaNumber: "",
   pronouns: "", customPronouns: "",
-  mediaConsent: false, feedbackShareConsent: false,
+  mediaConsent: false, feedbackShareConsent: false, newsletterOptIn: false,
   workshop: "", workshopDateId: "", dietaryRestrictions: "",
 };
 
@@ -341,6 +342,7 @@ function WorkshopRegisterFormInner() {
       pronouns: pronounsResolved || undefined,
       mediaConsent: form.mediaConsent,
       feedbackShareConsent: form.feedbackShareConsent,
+      newsletterOptIn: form.newsletterOptIn,
       isPrimary: true,
       deliveryMethod,
       dietaryRestrictions: (deliveryMethod === 'in-person' && selectedDateObj?.includesFood && form.dietaryRestrictions.trim())
@@ -794,7 +796,7 @@ function WorkshopRegisterFormInner() {
             </label>
 
             {/* Feedback share consent */}
-            <label className="flex items-start gap-3 cursor-pointer">
+            <label className="flex items-start gap-3 cursor-pointer mb-4">
               <input
                 type="checkbox" checked={form.feedbackShareConsent}
                 onChange={e => setField("feedbackShareConsent", e.target.checked)}
@@ -803,6 +805,21 @@ function WorkshopRegisterFormInner() {
               <span className="text-sm" style={{ color: "rgba(43,48,58,0.65)" }}>
                 I consent to my feedback being shared publicly (e.g. on the WDA website or social media),
                 without personal identifiers.{" "}
+                <span style={{ color: "rgba(43,48,58,0.45)" }}>(Optional)</span>
+              </span>
+            </label>
+
+            {/* Newsletter opt-in */}
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form.newsletterOptIn}
+                onChange={e => setField("newsletterOptIn", e.target.checked)}
+                className="mt-1 h-4 w-4 rounded border-gray-300 accent-[#E67E22] cursor-pointer"
+              />
+              <span className="text-sm" style={{ color: "rgba(43,48,58,0.65)" }}>
+                I would like to receive updates about upcoming events, courses, and professional development
+                opportunities from Western Dental Academy.{" "}
                 <span style={{ color: "rgba(43,48,58,0.45)" }}>(Optional)</span>
               </span>
             </label>

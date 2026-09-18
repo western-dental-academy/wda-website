@@ -106,7 +106,7 @@ export default async function AdminPage() {
     ),
     client.fetch(
       `*[_type == "workshopRegistration" && !(_id in path("drafts.**"))] | order(registeredAt desc){
-        _id, firstName, lastName, pronouns, mediaConsent, email, workshop, registeredAt,
+        _id, firstName, lastName, pronouns, mediaConsent, newsletterOptIn, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
         deliveryMethod, dietaryRestrictions, feedbackToken, feedbackRating, feedbackEnjoyedMost,
         feedbackImprovement, feedbackWouldRecommend, feedbackSubmittedAt, feedbackShareConsent

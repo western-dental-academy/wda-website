@@ -176,6 +176,12 @@ export default defineType({
       description: 'Whether the registrant consents to their feedback being shared on website/socials',
     }),
     defineField({
+      name: 'newsletterOptIn',
+      title: 'Newsletter Opt-In',
+      type: 'boolean',
+      description: 'Whether the registrant opted in to receive WDA email updates',
+    }),
+    defineField({
       name: 'checkedIn',
       title: 'Checked In',
       type: 'boolean',

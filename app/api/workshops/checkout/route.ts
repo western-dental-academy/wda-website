@@ -19,6 +19,7 @@ interface CartItemPayload {
   pronouns?: string
   mediaConsent?: boolean
   feedbackShareConsent?: boolean
+  newsletterOptIn?: boolean
   isPrimary: boolean
   deliveryMethod: 'in-person' | 'virtual'
   dietaryRestrictions?: string
@@ -130,6 +131,7 @@ export async function POST(req: NextRequest) {
         dentalBackground: item.dentalBackground?.trim() || undefined,
         mediaConsent: item.mediaConsent === true,
         feedbackShareConsent: item.feedbackShareConsent === true,
+        newsletterOptIn: item.newsletterOptIn === true,
         deliveryMethod: item.deliveryMethod,
         dietaryRestrictions: item.dietaryRestrictions?.trim() || undefined,
         stripePaymentStatus: 'unpaid',

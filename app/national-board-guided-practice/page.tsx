@@ -405,7 +405,7 @@ export default function NPEWorkshopPage() {
                   value: (
                     <ul style={{ margin: 0, paddingLeft: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
                       <li>Scrubs</li>
-                      <li>Safety glasses (loops are an option)</li>
+                      <li>Safety glasses (loupes are an option)</li>
                       <li>Indoor shoes with closed toe and heel</li>
                       <li>Scrub cap or cultural headcover</li>
                       <li>Candidate handbook (can be downloaded from the NDAEB website)</li>

@@ -102,6 +102,7 @@ export async function POST(req: NextRequest) {
 
   let sent = 0
   let skipped = 0
+  let alreadySubscribed = 0
 
   for (const r of registrants) {
     const normalEmail = r.email.trim().toLowerCase()
@@ -118,10 +119,10 @@ export async function POST(req: NextRequest) {
       { email: normalEmail }
     )
 
-    // Skip if already confirmed subscriber
-    if (existing?.confirmed) { skipped++; continue }
+    // Skip if already a confirmed subscriber
+    if (existing?.confirmed === true) { alreadySubscribed++; continue }
 
-    // Skip if invite sent within last 7 days
+    // Skip if invite sent within last 7 days (unconfirmed — wait before re-sending)
     if (existing?.inviteSentAt) {
       const sentAgo = Date.now() - new Date(existing.inviteSentAt).getTime()
       if (sentAgo < SEVEN_DAYS_MS) { skipped++; continue }
@@ -170,5 +171,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ sent, skipped })
+  return NextResponse.json({ sent, skipped, alreadySubscribed })
 }

@@ -271,7 +271,7 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
   const [subTab, setSubTab] = useState<'registrations' | 'waitlist'>('registrations');
   const [invitedIds, setInvitedIds] = useState<Set<string>>(new Set());
   const [bulkStatus, setBulkStatus] = useState<'idle' | 'confirming' | 'sending' | 'done' | 'error'>('idle');
-  const [bulkResult, setBulkResult] = useState<{ sent: number; skipped: number } | null>(null);
+  const [bulkResult, setBulkResult] = useState<{ sent: number; skipped: number; alreadySubscribed: number } | null>(null);
 
   const paidCount     = registrations.filter((r) => r.stripePaymentStatus === "paid").length;
   const checkedInCount = registrations.filter((r) => r.checkedIn).length;
@@ -300,7 +300,7 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Failed');
       setInvitedIds(prev => new Set([...prev, ...uninvitedIds]));
-      setBulkResult({ sent: data.sent, skipped: data.skipped });
+      setBulkResult({ sent: data.sent, skipped: data.skipped, alreadySubscribed: data.alreadySubscribed ?? 0 });
       setBulkStatus('done');
     } catch {
       setBulkStatus('error');
@@ -388,7 +388,9 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
             )}
             {bulkStatus === 'done' && bulkResult && (
               <span className="text-xs px-4 py-3 rounded-xl" style={{ backgroundColor: 'rgba(22,163,74,0.08)', color: '#15803d' }}>
-                ✓ Sent {bulkResult.sent} invite{bulkResult.sent !== 1 ? 's' : ''}{bulkResult.skipped > 0 ? ` (${bulkResult.skipped} skipped)` : ''}
+                ✓ Sent {bulkResult.sent} invite{bulkResult.sent !== 1 ? 's' : ''}
+                {bulkResult.alreadySubscribed > 0 ? ` · ${bulkResult.alreadySubscribed} already subscribed` : ''}
+                {bulkResult.skipped > 0 ? ` · ${bulkResult.skipped} skipped` : ''}
               </span>
             )}
             {bulkStatus === 'error' && (

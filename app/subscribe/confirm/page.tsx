@@ -14,15 +14,10 @@ const client = createClient({
 })
 
 async function ConfirmContent({ token }: { token: string }) {
-  const subscriber = await client.fetch<{
-    _id: string
-    confirmed?: boolean
-    firstName?: string
-  } | null>(
-    `*[_type == "subscriber" && !(_id in path("drafts.**")) && inviteToken == $token][0]{
+  const subscriber = await client.fetch<{ _id: string; confirmed?: boolean; firstName?: string } | null>(
+    `*[_type == "subscriber" && inviteToken == "${token}" && !(_id in path("drafts.**"))][0]{
       _id, confirmed, firstName
-    }`,
-    { token }
+    }`
   )
 
   if (!subscriber) {

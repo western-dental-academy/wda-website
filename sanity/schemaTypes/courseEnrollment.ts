@@ -94,6 +94,12 @@ export default defineType({
       title: 'Extension Stripe Session ID (last extension)',
       type: 'string',
     }),
+    defineField({
+      name: 'midpointReminderSentAt',
+      title: 'Midpoint Reminder Sent At',
+      type: 'datetime',
+      description: 'When the halfway reminder email was sent',
+    }),
   ],
   preview: {
     select: {

@@ -18,6 +18,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 interface Enrollment {
   _id: string
   status: string
+  enrolledAt?: string
   accessExpiresAt: string
   moodleUserId?: number
   moodleCourseId?: number
@@ -25,6 +26,8 @@ interface Enrollment {
   studentEmail?: string
   studentFirstName?: string
   lastReminderSentAt?: string
+  midpointReminderSentAt?: string
+  extensionPrice?: number
 }
 
 export async function GET(req: NextRequest) {
@@ -36,20 +39,23 @@ export async function GET(req: NextRequest) {
   const now = new Date()
   const sevenDaysOut = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
 
-  // Fetch all active enrollments
+  // Fetch all active/extended enrollments
   const enrollments = await client.fetch<Enrollment[]>(
-    `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && status == "active"]{
-      _id, status, accessExpiresAt, moodleUserId, lastReminderSentAt,
+    `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && status in ["active", "extended"]]{
+      _id, status, enrolledAt, accessExpiresAt, moodleUserId, lastReminderSentAt, midpointReminderSentAt,
       "moodleCourseId": course->moodleCourseId,
       "courseName": courseName,
       "studentEmail": student.email,
-      "studentFirstName": student.firstName
+      "studentFirstName": student.firstName,
+      "extensionPrice": course->extensionPrice
     }`
   )
 
-  const expired: string[]   = []
-  const reminded: string[]  = []
-  const errors: string[]    = []
+  const expired: string[]            = []
+  const reminded: string[]           = []
+  const midpointReminded: string[]   = []
+  const errors: string[]             = []
+  const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000
 
   for (const enrollment of enrollments) {
     if (!enrollment.accessExpiresAt) continue
@@ -97,6 +103,70 @@ export async function GET(req: NextRequest) {
         }
       } catch (err) {
         errors.push(`${enrollment._id}: ${String(err)}`)
+      }
+    } else if (!enrollment.midpointReminderSentAt && enrollment.enrolledAt) {
+      // Midpoint reminder — send once when enrolledAt + 10 days has passed and course not yet expired
+      const enrolledAt = new Date(enrollment.enrolledAt)
+      const midpoint   = new Date(enrolledAt.getTime() + TEN_DAYS_MS)
+      if (now >= midpoint && enrollment.studentEmail) {
+        const expiryDisplay = expiresAt.toLocaleDateString('en-CA', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Edmonton',
+        })
+        const daysLeft = Math.round((expiresAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
+        const extensionPriceLine = enrollment.extensionPrice
+          ? `<p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
+              If you need more time, you can extend your access for an additional 3 weeks for just <strong>$${enrollment.extensionPrice}</strong>.
+             </p>
+             <div style="text-align:center;margin:0 0 24px;">
+               <a href="https://westerndentalacademy.com/courses/extend?enrollmentId=${enrollment._id}"
+                  style="display:inline-block;background-color:#E67E22;color:#ffffff;padding:12px 24px;border-radius:6px;font-size:14px;font-weight:bold;text-decoration:none;">
+                 Extend My Access →
+               </a>
+             </div>`
+          : ''
+        try {
+          await resend.emails.send({
+            from: 'Western Dental Academy <info@westerndentalacademy.com>',
+            to: enrollment.studentEmail,
+            subject: `Halfway there! Your ${enrollment.courseName ?? 'course'} access expires in about ${daysLeft} days`,
+            html: `
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+  <div style="background-color:#0D3B6E;padding:28px 32px;">
+    <h1 style="color:#ffffff;margin:0;font-size:20px;font-weight:700;">Course Access Reminder</h1>
+    <p style="color:rgba(255,255,255,0.5);margin:8px 0 0;font-size:13px;">Western Dental Academy</p>
+  </div>
+  <div style="padding:32px;background:#ffffff;border:1px solid #e5e7eb;">
+    <p style="color:#0D3B6E;font-size:15px;margin:0 0 16px;">Hi ${enrollment.studentFirstName ?? 'there'},</p>
+    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
+      Just a friendly reminder that you're halfway through your access period for
+      <strong>${enrollment.courseName ?? 'your course'}</strong>.
+    </p>
+    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
+      Your access expires on <strong>${expiryDisplay}</strong> — that's about ${daysLeft} days away.
+    </p>
+    ${extensionPriceLine}
+    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
+      If you're on track to finish before your access expires, keep up the great work!
+    </p>
+    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">You can access your course anytime at:</p>
+    <div style="text-align:center;margin:0 0 8px;">
+      <a href="https://learn.westerndentalacademy.com"
+         style="display:inline-block;background-color:#0D3B6E;color:#ffffff;padding:12px 24px;border-radius:6px;font-size:14px;font-weight:bold;text-decoration:none;">
+        Go to Course →
+      </a>
+    </div>
+  </div>
+  <div style="padding:16px 32px;background:#F4F7F9;text-align:center;">
+    <p style="color:#9ca3af;font-size:11px;margin:0;">Western Dental Academy — westerndentalacademy.com</p>
+  </div>
+</div>`,
+          })
+          await client.patch(enrollment._id).set({ midpointReminderSentAt: now.toISOString() }).commit()
+          midpointReminded.push(enrollment._id)
+        } catch (err) {
+          console.error(`Midpoint reminder failed for ${enrollment._id}:`, err)
+          errors.push(`midpoint-${enrollment._id}: ${String(err)}`)
+        }
       }
     } else if (expiresAt <= sevenDaysOut) {
       // 7-day reminder — only send once
@@ -146,5 +216,11 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return Response.json({ expired, reminded, errors, checkedAt: now.toISOString() })
+  return Response.json({
+    suspended: expired.length,
+    expiryReminders: reminded.length,
+    midpointReminders: midpointReminded.length,
+    errors,
+    checkedAt: now.toISOString(),
+  })
 }

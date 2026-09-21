@@ -49,6 +49,12 @@ export default defineType({
       description: 'Total hours for the certificate of completion',
     }),
     defineField({
+      name: 'extensionPrice',
+      title: 'Extension Price (CAD)',
+      type: 'number',
+      description: 'Price to purchase a 3-week access extension (leave blank to disable extensions)',
+    }),
+    defineField({
       name: 'active',
       title: 'Active (visible on website)',
       type: 'boolean',

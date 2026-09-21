@@ -65,6 +65,7 @@ export default defineType({
       options: {
         list: [
           { title: 'Active',    value: 'active' },
+          { title: 'Extended',  value: 'extended' },
           { title: 'Expired',   value: 'expired' },
           { title: 'Suspended', value: 'suspended' },
           { title: 'Completed', value: 'completed' },

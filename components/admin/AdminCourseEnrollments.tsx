@@ -2,6 +2,17 @@
 
 import { useState } from 'react'
 
+export interface CourseOfferingEntry {
+  _id: string
+  title: string
+  price?: number
+  extensionPrice?: number
+  hours?: number
+  accessDurationDays?: number
+  moodleCourseId?: number
+  active?: boolean
+}
+
 export interface CourseEnrollmentEntry {
   _id: string
   student: {
@@ -11,7 +22,7 @@ export interface CourseEnrollmentEntry {
     phone?: string
   }
   courseName: string
-  status: 'active' | 'expired' | 'suspended' | 'completed'
+  status: 'active' | 'expired' | 'suspended' | 'completed' | 'extended'
   enrolledAt?: string
   accessGrantedAt?: string
   accessExpiresAt?: string
@@ -19,13 +30,15 @@ export interface CourseEnrollmentEntry {
   certificateSent?: boolean
   moodleUserId?: number
   stripePaymentStatus?: string
+  midpointReminderSentAt?: string
 }
 
 const STATUS_STYLE: Record<string, { label: string; bg: string; color: string }> = {
-  active:    { label: 'Active',    bg: 'rgba(22,163,74,0.1)',  color: '#16a34a' },
-  expired:   { label: 'Expired',   bg: 'rgba(220,38,38,0.09)', color: '#dc2626' },
-  suspended: { label: 'Suspended', bg: 'rgba(234,179,8,0.1)',  color: '#b45309' },
-  completed: { label: 'Completed', bg: 'rgba(55,138,221,0.1)', color: '#1d4ed8' },
+  active:    { label: 'Active',    bg: 'rgba(22,163,74,0.1)',   color: '#16a34a' },
+  extended:  { label: 'Extended',  bg: 'rgba(55,138,221,0.1)',  color: '#1d6fba' },
+  expired:   { label: 'Expired',   bg: 'rgba(220,38,38,0.09)',  color: '#dc2626' },
+  suspended: { label: 'Suspended', bg: 'rgba(234,179,8,0.1)',   color: '#b45309' },
+  completed: { label: 'Completed', bg: 'rgba(30,53,96,0.08)',   color: '#1E3560' },
 }
 
 function fmt(iso?: string): string {
@@ -36,33 +49,211 @@ function fmt(iso?: string): string {
   })
 }
 
+function fmtDuration(days?: number): string {
+  if (!days) return '—'
+  if (days % 7 === 0) return `${days / 7} week${days / 7 !== 1 ? 's' : ''}`
+  return `${days} days`
+}
+
+function expiryStyle(iso?: string): React.CSSProperties {
+  if (!iso) return {}
+  const diff = new Date(iso).getTime() - Date.now()
+  if (diff < 0) return { color: '#dc2626', fontWeight: 600 }
+  if (diff < 3 * 24 * 60 * 60 * 1000) return { color: '#d97706', fontWeight: 600 }
+  return {}
+}
+
+// ── Course Offerings Panel ─────────────────────────────────────────────────────
+
+function CourseOfferingsPanel({ offerings }: { offerings: CourseOfferingEntry[] }) {
+  const [open, setOpen] = useState(true)
+
+  return (
+    <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full px-6 py-4 flex items-center justify-between border-b text-left"
+        style={{ borderColor: 'rgba(30,53,96,0.08)' }}
+      >
+        <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>
+          Course Offerings <span className="ml-2 font-normal text-xs" style={{ color: 'rgba(30,53,96,0.4)' }}>{offerings.length}</span>
+        </h2>
+        <span className="text-xs" style={{ color: 'rgba(30,53,96,0.4)' }}>{open ? '▲ Collapse' : '▼ Expand'}</span>
+      </button>
+
+      {open && (
+        offerings.length === 0 ? (
+          <p className="px-6 py-10 text-sm text-center" style={{ color: 'rgba(43,48,58,0.4)' }}>
+            No course offerings found.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr style={{ backgroundColor: 'rgba(30,53,96,0.03)', borderBottom: '1px solid rgba(30,53,96,0.08)' }}>
+                  {['Course', 'Price', 'Duration', 'Access Period', 'Moodle ID', 'Status'].map(h => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-bold" style={{ color: 'rgba(30,53,96,0.5)' }}>
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {offerings.map((c, i) => (
+                  <tr
+                    key={c._id}
+                    style={{
+                      borderBottom: '1px solid rgba(30,53,96,0.06)',
+                      backgroundColor: i % 2 === 0 ? '#ffffff' : 'rgba(30,53,96,0.015)',
+                    }}
+                  >
+                    <td className="px-4 py-3 font-semibold" style={{ color: '#1E3560' }}>{c.title}</td>
+                    <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: '#2B303A' }}>
+                      {c.price != null ? `$${c.price}` : '—'}
+                      {c.extensionPrice != null && (
+                        <span style={{ color: 'rgba(43,48,58,0.5)' }}> / ${c.extensionPrice} ext.</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-xs" style={{ color: 'rgba(43,48,58,0.7)' }}>
+                      {c.hours != null ? `${c.hours} hr${c.hours !== 1 ? 's' : ''}` : '—'}
+                    </td>
+                    <td className="px-4 py-3 text-xs" style={{ color: 'rgba(43,48,58,0.7)' }}>
+                      {fmtDuration(c.accessDurationDays)}
+                    </td>
+                    <td className="px-4 py-3 text-xs">
+                      {c.moodleCourseId ? (
+                        <a
+                          href={`https://learn.westerndentalacademy.com/course/view.php?id=${c.moodleCourseId}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="underline"
+                          style={{ color: '#378ADD' }}
+                        >
+                          #{c.moodleCourseId}
+                        </a>
+                      ) : (
+                        <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold"
+                        style={
+                          c.active !== false
+                            ? { backgroundColor: 'rgba(22,163,74,0.1)', color: '#16a34a' }
+                            : { backgroundColor: 'rgba(107,114,128,0.1)', color: '#6b7280' }
+                        }
+                      >
+                        {c.active !== false ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      )}
+    </div>
+  )
+}
+
+// ── Suspend / Reactivate button ────────────────────────────────────────────────
+
+type ActionState = 'idle' | 'loading' | 'done' | 'error'
+
+function EnrollmentActionButton({
+  enrollmentId,
+  status,
+  onDone,
+}: {
+  enrollmentId: string
+  status: string
+  onDone: (id: string, newStatus: 'active' | 'suspended') => void
+}) {
+  const [state, setState] = useState<ActionState>('idle')
+
+  const isSuspendable  = status === 'active' || status === 'extended'
+  const isReactivatable = status === 'suspended'
+
+  if (!isSuspendable && !isReactivatable) return null
+
+  async function handleClick() {
+    setState('loading')
+    const route = isSuspendable ? '/api/admin/courses/suspend' : '/api/admin/courses/reactivate'
+    try {
+      const res = await fetch(route, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ enrollmentId }),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      setState('done')
+      onDone(enrollmentId, isSuspendable ? 'suspended' : 'active')
+    } catch {
+      setState('error')
+      setTimeout(() => setState('idle'), 3000)
+    }
+  }
+
+  if (state === 'done') return null
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={state === 'loading'}
+      className="rounded-md px-2.5 py-1 text-xs font-semibold transition-opacity"
+      style={
+        isSuspendable
+          ? { backgroundColor: 'rgba(220,38,38,0.08)', color: '#dc2626', opacity: state === 'loading' ? 0.5 : 1 }
+          : { backgroundColor: 'rgba(22,163,74,0.1)',   color: '#16a34a', opacity: state === 'loading' ? 0.5 : 1 }
+      }
+    >
+      {state === 'loading' ? '…' : state === 'error' ? 'Error — retry' : isSuspendable ? 'Suspend' : 'Reactivate'}
+    </button>
+  )
+}
+
+// ── Main component ─────────────────────────────────────────────────────────────
+
 export default function AdminCourseEnrollments({
   entries,
+  offerings,
 }: {
   entries: CourseEnrollmentEntry[]
+  offerings: CourseOfferingEntry[]
 }) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [localStatuses, setLocalStatuses] = useState<Record<string, string>>({})
+
+  function handleStatusChange(id: string, newStatus: 'active' | 'suspended') {
+    setLocalStatuses(s => ({ ...s, [id]: newStatus }))
+  }
 
   const filtered = entries.filter(e => {
     const q = search.toLowerCase()
+    const effectiveStatus = localStatuses[e._id] ?? e.status
     const matchesSearch = !q
       || `${e.student.firstName} ${e.student.lastName}`.toLowerCase().includes(q)
       || e.student.email.toLowerCase().includes(q)
       || e.courseName.toLowerCase().includes(q)
-    const matchesStatus = statusFilter === 'all' || e.status === statusFilter
+    const matchesStatus = statusFilter === 'all' || effectiveStatus === statusFilter
     return matchesSearch && matchesStatus
   })
 
   const counts = {
     total:     entries.length,
-    active:    entries.filter(e => e.status === 'active').length,
+    active:    entries.filter(e => (localStatuses[e._id] ?? e.status) === 'active').length,
     completed: entries.filter(e => e.status === 'completed').length,
-    expired:   entries.filter(e => e.status === 'expired').length,
+    expired:   entries.filter(e => (localStatuses[e._id] ?? e.status) === 'expired').length,
   }
 
   return (
     <div>
+      {/* Course Offerings panel */}
+      <CourseOfferingsPanel offerings={offerings} />
+
       {/* Summary cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
         {[
@@ -99,6 +290,7 @@ export default function AdminCourseEnrollments({
             >
               <option value="all">All statuses</option>
               <option value="active">Active</option>
+              <option value="extended">Extended</option>
               <option value="completed">Completed</option>
               <option value="expired">Expired</option>
               <option value="suspended">Suspended</option>
@@ -116,7 +308,7 @@ export default function AdminCourseEnrollments({
             <table className="w-full text-sm">
               <thead>
                 <tr style={{ backgroundColor: 'rgba(30,53,96,0.03)', borderBottom: '1px solid rgba(30,53,96,0.08)' }}>
-                  {['Student', 'Email', 'Course', 'Status', 'Enrolled', 'Expires / Completed', 'Moodle'].map(h => (
+                  {['Student', 'Email', 'Course', 'Status', 'Enrolled', 'Expires / Completed', 'Midpoint', 'Moodle', 'Actions'].map(h => (
                     <th key={h} className="px-4 py-3 text-left text-xs font-bold" style={{ color: 'rgba(30,53,96,0.5)' }}>
                       {h}
                     </th>
@@ -125,10 +317,10 @@ export default function AdminCourseEnrollments({
               </thead>
               <tbody>
                 {filtered.map((e, i) => {
-                  const st = STATUS_STYLE[e.status] ?? STATUS_STYLE.expired
-                  const expiryOrCompleted = e.status === 'completed'
-                    ? fmt(e.completedAt)
-                    : fmt(e.accessExpiresAt)
+                  const effectiveStatus = (localStatuses[e._id] ?? e.status) as CourseEnrollmentEntry['status']
+                  const st = STATUS_STYLE[effectiveStatus] ?? STATUS_STYLE.expired
+                  const isTerminal = effectiveStatus === 'completed' || effectiveStatus === 'expired'
+                  const expiryIso = isTerminal ? undefined : e.accessExpiresAt
                   return (
                     <tr
                       key={e._id}
@@ -154,7 +346,7 @@ export default function AdminCourseEnrollments({
                           style={{ backgroundColor: st.bg, color: st.color }}
                         >
                           {st.label}
-                          {e.status === 'completed' && e.certificateSent && (
+                          {effectiveStatus === 'completed' && e.certificateSent && (
                             <span className="ml-1 text-[9px]">✓ Cert</span>
                           )}
                         </span>
@@ -162,13 +354,26 @@ export default function AdminCourseEnrollments({
                       <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: 'rgba(43,48,58,0.6)' }}>
                         {fmt(e.enrolledAt)}
                       </td>
-                      <td className="px-4 py-3 text-xs whitespace-nowrap" style={{ color: 'rgba(43,48,58,0.6)' }}>
-                        {e.status === 'completed' ? (
-                          <span style={{ color: '#16a34a' }}>✓ {expiryOrCompleted}</span>
-                        ) : e.status === 'expired' ? (
-                          <span style={{ color: '#dc2626' }}>{expiryOrCompleted}</span>
+                      <td className="px-4 py-3 text-xs whitespace-nowrap">
+                        {effectiveStatus === 'completed' ? (
+                          <span style={{ color: '#16a34a' }}>✓ {fmt(e.completedAt)}</span>
                         ) : (
-                          expiryOrCompleted
+                          <span style={expiryStyle(e.accessExpiresAt)}>
+                            {fmt(e.accessExpiresAt)}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-xs whitespace-nowrap">
+                        {e.midpointReminderSentAt ? (
+                          <span
+                            className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                            style={{ backgroundColor: 'rgba(30,53,96,0.07)', color: 'rgba(30,53,96,0.55)' }}
+                            title={`Sent ${fmt(e.midpointReminderSentAt)}`}
+                          >
+                            ✓ Sent
+                          </span>
+                        ) : (
+                          <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-xs">
@@ -185,6 +390,13 @@ export default function AdminCourseEnrollments({
                         ) : (
                           <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>
                         )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <EnrollmentActionButton
+                          enrollmentId={e._id}
+                          status={effectiveStatus}
+                          onDone={handleStatusChange}
+                        />
                       </td>
                     </tr>
                   )

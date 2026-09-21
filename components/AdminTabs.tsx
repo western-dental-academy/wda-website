@@ -16,7 +16,7 @@ import AdminITPanel from '@/components/AdminITPanel'
 import AdminMarketing from '@/components/admin/AdminMarketing'
 import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/admin/AdminGiftCertificates'
-import AdminCourseEnrollments, { type CourseEnrollmentEntry } from '@/components/admin/AdminCourseEnrollments'
+import AdminCourseEnrollments, { type CourseEnrollmentEntry, type CourseOfferingEntry } from '@/components/admin/AdminCourseEnrollments'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -53,6 +53,7 @@ interface AdminTabsProps {
   qrFeedback: QRFeedbackEntry[]
   giftCertificates: GiftCertificateEntry[]
   courseEnrollments: CourseEnrollmentEntry[]
+  courseOfferings: CourseOfferingEntry[]
 }
 
 type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
@@ -90,6 +91,7 @@ export default function AdminTabs({
   qrFeedback,
   giftCertificates,
   courseEnrollments,
+  courseOfferings,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -237,7 +239,7 @@ export default function AdminTabs({
 
       {/* ── Courses ── */}
       {activeTab === 'Courses' && (
-        <AdminCourseEnrollments entries={courseEnrollments} />
+        <AdminCourseEnrollments entries={courseEnrollments} offerings={courseOfferings} />
       )}
 
       {/* ── Gift Certificates ── */}

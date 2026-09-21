@@ -31,6 +31,12 @@ export interface CourseEnrollmentEntry {
   moodleUserId?: number
   stripePaymentStatus?: string
   midpointReminderSentAt?: string
+  feedbackRating?: number
+  feedbackEnjoyedMost?: string
+  feedbackImprovement?: string
+  feedbackWouldRecommend?: boolean
+  feedbackShareConsent?: boolean
+  feedbackSubmittedAt?: string
 }
 
 const STATUS_STYLE: Record<string, { label: string; bg: string; color: string }> = {
@@ -211,6 +217,117 @@ function EnrollmentActionButton({
     >
       {state === 'loading' ? '…' : state === 'error' ? 'Error — retry' : isSuspendable ? 'Suspend' : 'Reactivate'}
     </button>
+  )
+}
+
+// ── Course Feedback Panel ──────────────────────────────────────────────────────
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <span className="inline-flex gap-0.5">
+      {[1, 2, 3, 4, 5].map(s => (
+        <svg key={s} width="14" height="14" viewBox="0 0 24 24"
+          fill={s <= rating ? '#E67E22' : 'none'}
+          stroke={s <= rating ? '#E67E22' : '#d1d5db'}
+          strokeWidth="1.5"
+        >
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ))}
+    </span>
+  )
+}
+
+function CourseFeedbackPanel({ entries }: { entries: CourseEnrollmentEntry[] }) {
+  const [open, setOpen] = useState(true)
+
+  const withFeedback = [...entries]
+    .filter(e => !!e.feedbackSubmittedAt)
+    .sort((a, b) => new Date(b.feedbackSubmittedAt!).getTime() - new Date(a.feedbackSubmittedAt!).getTime())
+
+  const avgRating = withFeedback.length > 0
+    ? (withFeedback.reduce((sum, e) => sum + (e.feedbackRating ?? 0), 0) / withFeedback.length).toFixed(1)
+    : null
+
+  return (
+    <div className="rounded-2xl bg-white overflow-hidden mt-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full px-6 py-4 flex items-center justify-between border-b text-left"
+        style={{ borderColor: 'rgba(30,53,96,0.08)' }}
+      >
+        <div className="flex items-center gap-4">
+          <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>
+            Course Feedback <span className="ml-2 font-normal text-xs" style={{ color: 'rgba(30,53,96,0.4)' }}>{withFeedback.length} response{withFeedback.length !== 1 ? 's' : ''}</span>
+          </h2>
+          {avgRating && (
+            <span className="text-xs font-semibold" style={{ color: '#E67E22' }}>
+              ★ {avgRating} avg
+            </span>
+          )}
+        </div>
+        <span className="text-xs" style={{ color: 'rgba(30,53,96,0.4)' }}>{open ? '▲ Collapse' : '▼ Expand'}</span>
+      </button>
+
+      {open && (
+        withFeedback.length === 0 ? (
+          <p className="px-6 py-10 text-sm text-center" style={{ color: 'rgba(43,48,58,0.4)' }}>
+            No course feedback received yet.
+          </p>
+        ) : (
+          <div className="divide-y" style={{ borderColor: 'rgba(30,53,96,0.06)' }}>
+            {withFeedback.map(e => (
+              <div key={e._id} className="px-6 py-5">
+                <div className="flex flex-wrap items-start gap-x-4 gap-y-1 mb-3">
+                  <span className="text-sm font-semibold" style={{ color: '#1E3560' }}>
+                    {e.student.firstName} {e.student.lastName}
+                  </span>
+                  <span className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>{e.courseName}</span>
+                  <span className="text-xs ml-auto" style={{ color: 'rgba(43,48,58,0.4)' }}>{fmt(e.feedbackSubmittedAt)}</span>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {e.feedbackRating != null && <Stars rating={e.feedbackRating} />}
+                  {typeof e.feedbackWouldRecommend === 'boolean' && (
+                    <span
+                      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold"
+                      style={
+                        e.feedbackWouldRecommend
+                          ? { backgroundColor: 'rgba(22,163,74,0.1)', color: '#16a34a' }
+                          : { backgroundColor: 'rgba(220,38,38,0.09)', color: '#dc2626' }
+                      }
+                    >
+                      {e.feedbackWouldRecommend ? '✓ Would Recommend' : '✗ Would Not Recommend'}
+                    </span>
+                  )}
+                  {e.feedbackShareConsent && (
+                    <span
+                      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold"
+                      style={{ backgroundColor: 'rgba(22,163,74,0.1)', color: '#16a34a' }}
+                    >
+                      Can Share
+                    </span>
+                  )}
+                </div>
+
+                {e.feedbackEnjoyedMost && (
+                  <div className="mb-2">
+                    <p className="text-xs font-semibold mb-0.5" style={{ color: 'rgba(30,53,96,0.5)' }}>Enjoyed most</p>
+                    <p className="text-sm" style={{ color: '#2B303A' }}>{e.feedbackEnjoyedMost}</p>
+                  </div>
+                )}
+                {e.feedbackImprovement && (
+                  <div>
+                    <p className="text-xs font-semibold mb-0.5" style={{ color: 'rgba(30,53,96,0.5)' }}>Could improve</p>
+                    <p className="text-sm" style={{ color: '#2B303A' }}>{e.feedbackImprovement}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      )}
+    </div>
   )
 }
 
@@ -406,6 +523,9 @@ export default function AdminCourseEnrollments({
           </div>
         )}
       </div>
+
+      {/* Course Feedback panel */}
+      <CourseFeedbackPanel entries={entries} />
     </div>
   )
 }

@@ -168,6 +168,8 @@ export default async function AdminPage() {
         _id, courseName, status, enrolledAt, accessGrantedAt, accessExpiresAt,
         completedAt, certificateSent, moodleUserId, stripePaymentStatus,
         midpointReminderSentAt,
+        feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
+        feedbackWouldRecommend, feedbackShareConsent, feedbackSubmittedAt,
         student{ firstName, lastName, email, phone }
       }`
     ),

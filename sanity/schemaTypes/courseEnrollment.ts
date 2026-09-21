@@ -101,6 +101,43 @@ export default defineType({
       type: 'datetime',
       description: 'When the halfway reminder email was sent',
     }),
+    defineField({
+      name: 'feedbackToken',
+      title: 'Feedback Token',
+      type: 'string',
+      description: 'Unique token for the course feedback form URL',
+    }),
+    defineField({
+      name: 'feedbackRating',
+      title: 'Feedback Rating',
+      type: 'number',
+      description: '1-5 star rating',
+    }),
+    defineField({
+      name: 'feedbackEnjoyedMost',
+      title: 'What They Enjoyed Most',
+      type: 'text',
+    }),
+    defineField({
+      name: 'feedbackImprovement',
+      title: 'What Could Be Improved',
+      type: 'text',
+    }),
+    defineField({
+      name: 'feedbackWouldRecommend',
+      title: 'Would Recommend',
+      type: 'boolean',
+    }),
+    defineField({
+      name: 'feedbackShareConsent',
+      title: 'Consents to Share Feedback',
+      type: 'boolean',
+    }),
+    defineField({
+      name: 'feedbackSubmittedAt',
+      title: 'Feedback Submitted At',
+      type: 'datetime',
+    }),
   ],
   preview: {
     select: {

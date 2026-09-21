@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'moodleUserId and moodleCourseId are required.' }, { status: 400 })
   }
 
-  // Find the active enrollment
+  // Find the active or extended enrollment
   const enrollment = await client.fetch<{
     _id: string
     status: string
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     `*[_type == "courseEnrollment" && !(_id in path("drafts.**"))
        && moodleUserId == $uid
        && course->moodleCourseId == $cid
-       && status == "active"][0]{
+       && status in ["active", "extended"]][0]{
       _id, status, completedAt, certificateSent, courseName,
       student{ firstName, lastName, email },
       "courseHours": course->hours
@@ -66,8 +66,11 @@ export async function POST(req: NextRequest) {
     return Response.json({ success: true, alreadyProcessed: true })
   }
 
-  const completedAt = new Date().toISOString()
-  const hours = enrollment.courseHours ?? 0
+  const completedAt    = new Date().toISOString()
+  const hours          = enrollment.courseHours ?? 0
+  const feedbackToken  = crypto.randomUUID()
+  const SITE_URL       = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
+  const feedbackUrl    = `${SITE_URL}/courses/feedback?token=${feedbackToken}`
 
   // Generate certificate PDF
   let pdfBuffer: Buffer | null = null
@@ -88,6 +91,7 @@ export async function POST(req: NextRequest) {
     status:          'completed',
     completedAt,
     certificateSent: pdfBuffer != null,
+    feedbackToken,
   }).commit()
 
   // Email certificate
@@ -109,9 +113,19 @@ export async function POST(req: NextRequest) {
       Congratulations on completing <strong>${enrollment.courseName}</strong>!
       Your Certificate of Completion is attached to this email.
     </p>
-    <p style="color:#374151;font-size:13px;line-height:1.6;margin:0;">
+    <p style="color:#374151;font-size:13px;line-height:1.6;margin:0 0 24px;">
       Questions? <a href="mailto:info@westerndentalacademy.com" style="color:#378ADD;">info@westerndentalacademy.com</a>
     </p>
+    <div style="border-top:1px solid #e5e7eb;padding-top:24px;text-align:center;">
+      <p style="color:#0D3B6E;font-size:15px;font-weight:700;margin:0 0 8px;">How was your experience?</p>
+      <p style="color:#6b7280;font-size:13px;margin:0 0 20px;">Your feedback helps us improve our courses — it only takes 30 seconds.</p>
+      <a
+        href="${feedbackUrl}"
+        style="display:inline-block;background-color:#E67E22;color:#ffffff;padding:12px 28px;border-radius:6px;font-size:14px;font-weight:700;text-decoration:none;"
+      >
+        Share Your Feedback →
+      </a>
+    </div>
   </div>
   <div style="padding:16px 32px;background:#F4F7F9;text-align:center;">
     <p style="color:#9ca3af;font-size:11px;margin:0;">Western Dental Academy — westerndentalacademy.com</p>

@@ -40,10 +40,11 @@ export async function POST(req: NextRequest) {
     _id: string
     moodleUserId?: number
     moodleCourseId?: number
+    accessExpiresAt?: string
     status: string
   } | null>(
     `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && _id == $id][0]{
-      _id, moodleUserId, status,
+      _id, moodleUserId, accessExpiresAt, status,
       "moodleCourseId": course->moodleCourseId
     }`,
     { id: enrollmentId }
@@ -54,7 +55,8 @@ export async function POST(req: NextRequest) {
 
   try {
     if (enrollment.moodleUserId && enrollment.moodleCourseId) {
-      await reactivateUserEnrollment(enrollment.moodleUserId, enrollment.moodleCourseId)
+      const expiresAt = enrollment.accessExpiresAt ? new Date(enrollment.accessExpiresAt) : new Date(Date.now() + 21 * 24 * 60 * 60 * 1000)
+      await reactivateUserEnrollment(enrollment.moodleUserId, enrollment.moodleCourseId, expiresAt)
     }
     await client.patch(enrollment._id).set({ status: 'active' }).commit()
     return NextResponse.json({ ok: true })

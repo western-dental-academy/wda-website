@@ -48,7 +48,6 @@ interface Speaker {
 interface OfferingStaticContent {
   displayTitle?: string;
   durationOverride?: string;
-  dateOverride?: string;
   highlights: string[];
   tags: string[];
   foodNote?: string;
@@ -69,7 +68,6 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
       "Financial Wellness — Drill into Your Finances — Josie McKenzie",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
-    dateOverride: "October 3, 2026",
     tags: ["Full Day", "In-Person & Virtual", "CCP Support", "Certificate of Attendance"],
     foodNote: "In-person session includes Lunch, Snacks and Refreshments",
     agendaNote: "Day's agenda will be sent with your email confirmation. Certificate of attendance will include breakdown of hours for each speaker.\nLocation: 258-150 Chippewa Road, Sherwood Park (plenty of free parking)\nLocated on the second floor",
@@ -204,7 +202,7 @@ function WorkshopOfferingCard({
             {staticContent?.displayTitle ?? offering.title}
           </h2>
 
-          {staticContent?.dateOverride && (
+          {nextDate && (
             <div className="flex items-center gap-1.5 mb-3 -mt-1">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden className="w-3.5 h-3.5 shrink-0" style={{ color: "#378ADD" }}>
                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
@@ -212,7 +210,15 @@ function WorkshopOfferingCard({
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>{staticContent.dateOverride}</span>
+              <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>
+                {new Date(nextDate.date).toLocaleDateString("en-CA", {
+                  timeZone: "America/Edmonton",
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </span>
             </div>
           )}
 

@@ -94,7 +94,7 @@ function confirmationEmailHtml(
         ${virtualSection}
         ${workshop.includes('Renewal Wellness') ? `
         <div style="margin-top:24px;">
-          <p style="font-size:16px;font-weight:700;color:#0D3B6E;margin:0 0 12px;">Day's Agenda — Saturday, October 3</p>
+          <p style="font-size:16px;font-weight:700;color:#0D3B6E;margin:0 0 12px;">Day's Agenda — ${formattedDate || 'Date TBD'}</p>
           <table style="width:100%;border-collapse:collapse;font-size:13px;">
             <tr style="background-color:#0D3B6E;color:#ffffff;">
               <td style="padding:8px 12px;font-weight:700;">Time</td>

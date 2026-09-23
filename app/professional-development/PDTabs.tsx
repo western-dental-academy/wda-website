@@ -43,6 +43,7 @@ interface Speaker {
   affiliation: string;
   topic: string;
   description: string;
+  website?: string;
 }
 
 interface OfferingStaticContent {
@@ -65,7 +66,8 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     highlights: [
       "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
       "Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service",
-      "Financial Wellness — Drill into Your Finances — Josie McKenzie",
+      "Acupuncture for TMJ — Steve Wong",
+      "Beyond the Diagnosis: Purposeful Dementia Engagement — Naomi Klassen",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
     tags: ["Full Day", "In-Person & Virtual", "CCP Support", "Certificate of Attendance"],
@@ -86,10 +88,17 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
         description: "With over 23 years of service to the Edmonton Police Service, Superintendent Lance Parker brings a wealth of experience in frontline patrol, specialized project teams, and units focused on drug enforcement. Recognized as a subject matter expert in drug enforcement and acknowledged as a drug expert in the Provincial Courts of Alberta, he brings a unique perspective on addiction and its impacts on society and oral health.",
       },
       {
-        name: "Josie McKenzie",
-        affiliation: "PFSL Investments",
-        topic: "Financial Wellness — Drill Down Into Your Finances",
-        description: "A Financial Services Representative on a mission to make wealth planning and financial literacy simple and accessible. Josie will share practical, real-world strategies to help you build healthy money habits, optimize investments, and take control of your financial future.",
+        name: "Steve Wong",
+        affiliation: "R. Ac.",
+        topic: "Acupuncture for TMJ",
+        description: "Bio coming soon.",
+      },
+      {
+        name: "Naomi Klassen",
+        affiliation: "CTRS",
+        topic: "Beyond the Diagnosis: Purposeful Dementia Engagement",
+        description: "Naomi holds a Bachelor's Degree in Therapeutic Recreation from the University of Lethbridge and is a Certified Therapeutic Recreation Specialist (CTRS). She earned her Dementia Engagement Specialist certification in 2025 and brings nearly 15 years of experience supporting older adults across long-term care, supportive living, and adult day programmes. Naomi's work centres on creating meaningful experiences that support cognitive engagement, emotional wellbeing, and social connection.",
+        website: "https://www.silverrootsrecreation.com",
       },
       {
         name: "Tony Korobanik",
@@ -343,6 +352,17 @@ function WorkshopOfferingCard({
                               <p className="text-xs leading-relaxed" style={{ color: "rgba(43,48,58,0.65)" }}>
                                 {speaker.description}
                               </p>
+                              {speaker.website && (
+                                <a
+                                  href={speaker.website}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-block mt-2 text-xs font-semibold underline"
+                                  style={{ color: "#378ADD" }}
+                                >
+                                  {speaker.website.replace(/^https?:\/\//, '')}
+                                </a>
+                              )}
                             </div>
                           )}
                         </div>

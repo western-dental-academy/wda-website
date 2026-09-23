@@ -114,7 +114,7 @@ export default function Navbar() {
               href="/register"
               className="rounded-lg bg-[#E67E22] px-4 py-2 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17] whitespace-nowrap"
             >
-              Enroll
+              Register
             </Link>
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function Navbar() {
               tabIndex={menuOpen ? 0 : -1}
               className="rounded-lg bg-[#E67E22] px-5 py-3 text-center text-sm font-bold text-white transition-colors duration-200 hover:bg-[#CF6D17]"
             >
-              Enroll
+              Register
             </Link>
           </div>
         </nav>

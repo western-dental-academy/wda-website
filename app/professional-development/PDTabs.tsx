@@ -814,7 +814,7 @@ function OnlineCourseCard({ course, index }: { course: OnlineCourse; index: numb
             className="group/link inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold text-white self-start transition-all duration-200 hover:scale-[1.02]"
             style={{ backgroundColor: "#E67E22" }}
           >
-            Enrol Now
+            Register
             <span className="transition-transform duration-200 group-hover/link:translate-x-1">→</span>
           </Link>
         </div>

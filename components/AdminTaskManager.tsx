@@ -528,7 +528,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
                   </select>
 
                   {/* Complete checkmark */}
-                  {!isComplete && (
+                  {!isComplete && task.assignedTo === currentUserEmail && (
                     <button
                       onClick={() => updateTask(task._id, { status: 'Complete', completedAt: new Date().toISOString() })}
                       disabled={isBusy}

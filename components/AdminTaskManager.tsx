@@ -49,7 +49,7 @@ const STATUS_OPTIONS = ['To Do', 'In Progress', 'Complete'] as const
 type StatusOption = typeof STATUS_OPTIONS[number]
 
 type TabKey          = 'all' | 'mine' | 'byMe' | 'overdue'
-type StatusFilter    = 'all' | StatusOption
+type StatusFilter    = 'all' | 'active' | StatusOption
 type PriorityFilter  = 'all' | 'High' | 'Urgent'
 
 const BLANK_FORM = { title: '', description: '', assignedTo: '', dueDate: '', priority: 'Medium' }
@@ -95,7 +95,7 @@ function formatDueDate(dueDate: string) {
 export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail }: Props) {
   const [tasks,          setTasks]         = useState<Task[]>(initialTasks)
   const [tab,            setTab]           = useState<TabKey>('all')
-  const [statusFilter,   setStatusFilter]  = useState<StatusFilter>('all')
+  const [statusFilter,   setStatusFilter]  = useState<StatusFilter>('active')
   const [priorityFilter, setPriFilter]     = useState<PriorityFilter>('all')
   const [showForm,       setShowForm]      = useState(false)
   const [expanded,       setExpanded]      = useState<Set<string>>(new Set())
@@ -115,7 +115,8 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
       if (tab === 'overdue' && (
         !task.dueDate || task.status === 'Complete' || getMountainDateString(task.dueDate) >= t
       )) return false
-      if (statusFilter   !== 'all' && task.status   !== statusFilter)   return false
+      if (statusFilter === 'active' && task.status === 'Complete') return false
+      if (statusFilter !== 'all' && statusFilter !== 'active' && task.status !== statusFilter) return false
       if (priorityFilter !== 'all' && task.priority !== priorityFilter) return false
       return true
     })
@@ -379,10 +380,11 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
             className="rounded-lg px-2.5 py-1.5 text-xs border bg-white cursor-pointer outline-none"
             style={{ borderColor: 'rgba(30,53,96,0.15)', color: 'rgba(30,53,96,0.65)' }}
           >
-            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
             <option value="To Do">To Do</option>
             <option value="In Progress">In Progress</option>
             <option value="Complete">Complete</option>
+            <option value="all">All Statuses</option>
           </select>
           <select
             value={priorityFilter}

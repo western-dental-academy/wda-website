@@ -101,6 +101,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
   const [expanded,       setExpanded]      = useState<Set<string>>(new Set())
   const [busy,           setBusy]          = useState<Set<string>>(new Set())
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
+  const [groupTab, setGroupTab] = useState<Map<string, 'active' | 'completed'>>(new Map())
   const [formData,       setFormData]      = useState(BLANK_FORM)
   const [formError,      setFormError]     = useState('')
   const [formBusy,       setFormBusy]      = useState(false)
@@ -468,9 +469,42 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
                 </button>
 
                 {/* Tasks in group */}
-                {!isCollapsed && (
-                  <div className="flex flex-col gap-2.5">
-                    {groupTasks.map(task => {
+                {!isCollapsed && (() => {
+                  const currentGroupTab = groupTab.get(groupKey) ?? 'active'
+                  const activeTasks     = groupTasks.filter(t => t.status !== 'Complete')
+                  const completedTasks  = groupTasks.filter(t => t.status === 'Complete')
+                  const visibleTasks    = currentGroupTab === 'active' ? activeTasks : completedTasks
+                  return (
+                    <div>
+                      {/* Sub-tabs */}
+                      <div className="flex items-center gap-1 mb-2.5 px-1">
+                        {(['active', 'completed'] as const).map(tabKey => {
+                          const count          = tabKey === 'active' ? activeTasks.length : completedTasks.length
+                          const isGroupTabActive = currentGroupTab === tabKey
+                          return (
+                            <button
+                              key={tabKey}
+                              type="button"
+                              onClick={() => setGroupTab(prev => { const n = new Map(prev); n.set(groupKey, tabKey); return n })}
+                              className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold transition-colors duration-150"
+                              style={isGroupTabActive
+                                ? { backgroundColor: '#1E3560', color: '#ffffff' }
+                                : { backgroundColor: 'rgba(30,53,96,0.07)', color: 'rgba(30,53,96,0.55)' }
+                              }
+                            >
+                              {tabKey === 'active' ? 'Active' : 'Completed'}
+                              {' '}<span style={{ opacity: isGroupTabActive ? 0.75 : 0.55 }}>{count}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                      {visibleTasks.length === 0 ? (
+                        <p className="text-center py-4 text-xs" style={{ color: 'rgba(43,48,58,0.38)' }}>
+                          {currentGroupTab === 'active' ? 'No active tasks.' : 'No completed tasks.'}
+                        </p>
+                      ) : (
+                      <div className="flex flex-col gap-2.5">
+                    {visibleTasks.map(task => {
                       const dSt        = dueDateStatus(task.dueDate, task.status)
                       const isComplete = task.status === 'Complete'
                       const isBusy     = busy.has(task._id)
@@ -629,8 +663,11 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
                         </div>
                       )
                     })}
-                  </div>
-                )}
+                      </div>
+                      )}
+                    </div>
+                  )
+                })()}
               </div>
             )
           })

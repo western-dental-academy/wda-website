@@ -100,6 +100,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
   const [showForm,       setShowForm]      = useState(false)
   const [expanded,       setExpanded]      = useState<Set<string>>(new Set())
   const [busy,           setBusy]          = useState<Set<string>>(new Set())
+  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
   const [formData,       setFormData]      = useState(BLANK_FORM)
   const [formError,      setFormError]     = useState('')
   const [formBusy,       setFormBusy]      = useState(false)
@@ -397,172 +398,240 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
       </div>
 
       {/* ── Task List ── */}
-      <div className="p-3 sm:p-4 flex flex-col gap-2.5">
+      <div className="p-3 sm:p-4 flex flex-col gap-4">
         {filtered.length === 0 && (
           <p className="text-center py-10 text-sm" style={{ color: 'rgba(43,48,58,0.38)' }}>
             {tasks.length === 0 ? 'No tasks yet — create one above.' : 'No tasks match these filters.'}
           </p>
         )}
 
-        {filtered.map(task => {
-          const dSt       = dueDateStatus(task.dueDate, task.status)
-          const isComplete = task.status === 'Complete'
-          const isBusy     = busy.has(task._id)
-          const isExpanded = expanded.has(task._id)
-          const pStyle     = PRIORITY_STYLE[task.priority] ?? PRIORITY_STYLE.Medium
-          const longDesc   = (task.description?.length ?? 0) > 120
+        {(() => {
+          // Build ordered group map
+          const groupMap = new Map<string, Task[]>()
+          for (const task of filtered) {
+            const key = task.assignedTo ?? '__unassigned__'
+            if (!groupMap.has(key)) groupMap.set(key, [])
+            groupMap.get(key)!.push(task)
+          }
 
-          return (
-            <div
-              key={task._id}
-              className="rounded-xl p-4 transition-all duration-200"
-              style={{
-                backgroundColor: '#ffffff',
-                border: '1.5px solid rgba(30,53,96,0.09)',
-                borderLeft: dSt === 'overdue' ? '4px solid #dc2626' : '1.5px solid rgba(30,53,96,0.09)',
-                opacity: isComplete ? 0.52 : 1,
-              }}
-            >
-              <div className="flex items-start gap-3">
+          const orderedKeys: string[] = []
+          for (const { email } of STAFF_OPTIONS) {
+            if (groupMap.has(email)) orderedKeys.push(email)
+          }
+          for (const key of groupMap.keys()) {
+            if (key !== '__unassigned__' && !orderedKeys.includes(key)) orderedKeys.push(key)
+          }
+          if (groupMap.has('__unassigned__')) orderedKeys.push('__unassigned__')
 
-                {/* Left: content */}
-                <div className="flex-1 min-w-0">
-                  {/* Title */}
-                  <p
-                    className="text-sm font-bold leading-snug"
-                    style={{
-                      color: '#1E3560',
-                      textDecoration: isComplete ? 'line-through' : 'none',
-                      textDecorationColor: 'rgba(30,53,96,0.35)',
-                    }}
-                  >
-                    {task.title}
-                  </p>
+          return orderedKeys.map(groupKey => {
+            const groupTasks   = groupMap.get(groupKey)!
+            const isCollapsed  = collapsedGroups.has(groupKey)
+            const label        = groupKey === '__unassigned__' ? 'Unassigned' : (STAFF_NAME[groupKey] ?? groupKey)
 
-                  {/* Description */}
-                  {task.description && (
-                    <p className="text-xs mt-1 leading-relaxed" style={{ color: 'rgba(43,48,58,0.58)' }}>
-                      {isExpanded ? task.description : task.description.slice(0, 120)}
-                      {longDesc && (
-                        <button
-                          onClick={() => toggleExpanded(task._id)}
-                          className="ml-1 font-semibold hover:underline"
-                          style={{ color: '#378ADD' }}
-                        >
-                          {isExpanded ? 'less' : '…more'}
-                        </button>
-                      )}
-                    </p>
-                  )}
+            function toggleGroup() {
+              setCollapsedGroups(prev => {
+                const n = new Set(prev)
+                n.has(groupKey) ? n.delete(groupKey) : n.add(groupKey)
+                return n
+              })
+            }
 
-                  {/* Meta pills */}
-                  <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
-                    {/* Assigned to */}
-                    {task.assignedTo && (
-                      <span
-                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                        style={{ backgroundColor: 'rgba(30,53,96,0.07)', color: '#1E3560' }}
-                      >
-                        → {STAFF_NAME[task.assignedTo] ?? task.assignedTo}
-                      </span>
-                    )}
-
-                    {/* Priority */}
+            return (
+              <div key={groupKey}>
+                {/* Group header */}
+                <button
+                  type="button"
+                  onClick={toggleGroup}
+                  className="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg mb-2 transition-colors duration-150 hover:bg-[#e8edf5] text-left"
+                  style={{ backgroundColor: 'rgba(30,53,96,0.05)' }}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-xs font-bold" style={{ color: '#1E3560' }}>{label}</span>
                     <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                      style={{ backgroundColor: pStyle.bg, color: pStyle.color, border: `1px solid ${pStyle.border}` }}
+                      className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                      style={{ backgroundColor: 'rgba(30,53,96,0.1)', color: 'rgba(30,53,96,0.6)' }}
                     >
-                      {task.priority}
+                      {groupTasks.length}
                     </span>
-
-                    {/* Due date */}
-                    {task.dueDate && (
-                      <span
-                        className="text-[10px] font-semibold"
-                        style={{
-                          color: dSt === 'overdue' ? '#dc2626'
-                               : dSt === 'today'   ? '#E67E22'
-                               : 'rgba(43,48,58,0.42)',
-                        }}
-                      >
-                        {dSt === 'overdue' && '⚠ '}
-                        {dSt === 'today' ? 'Due today' : `Due ${formatDueDate(task.dueDate)}`}
-                      </span>
-                    )}
-
-                    {/* Assigned by */}
-                    {task.assignedBy && task.assignedBy !== currentUserEmail && (
-                      <span className="text-[10px]" style={{ color: 'rgba(43,48,58,0.32)' }}>
-                        from {STAFF_NAME[task.assignedBy] ?? task.assignedBy}
-                      </span>
-                    )}
                   </div>
-                </div>
-
-                {/* Right: controls */}
-                <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
-
-                  {/* Status dropdown */}
-                  <select
-                    value={task.status}
-                    disabled={isBusy}
-                    onChange={e => {
-                      const s = e.target.value as StatusOption
-                      updateTask(task._id, {
-                        status: s,
-                        ...(s === 'Complete' ? { completedAt: new Date().toISOString() } : {}),
-                      })
-                    }}
-                    className="rounded-lg px-2 py-1.5 text-[10px] font-semibold border cursor-pointer outline-none disabled:opacity-40"
-                    style={{
-                      borderColor: 'rgba(30,53,96,0.15)',
-                      color: task.status === 'Complete'   ? '#16a34a'
-                           : task.status === 'In Progress' ? '#378ADD'
-                           : 'rgba(43,48,58,0.55)',
-                      backgroundColor: '#ffffff',
-                    }}
+                  <svg
+                    viewBox="0 0 20 20" fill="currentColor"
+                    className="w-3.5 h-3.5 shrink-0 transition-transform duration-200"
+                    style={{ color: 'rgba(30,53,96,0.35)', transform: isCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
+                    aria-hidden
                   >
-                    {STATUS_OPTIONS.map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
+                    <path fillRule="evenodd" clipRule="evenodd" d="M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z" />
+                  </svg>
+                </button>
 
-                  {/* Complete checkmark */}
-                  {!isComplete && task.assignedTo === currentUserEmail && (
-                    <button
-                      onClick={() => updateTask(task._id, { status: 'Complete', completedAt: new Date().toISOString() })}
-                      disabled={isBusy}
-                      title="Mark complete"
-                      className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors duration-150 hover:bg-[#dcfce7] disabled:opacity-40"
-                      style={{ color: '#16a34a' }}
-                      aria-label="Mark task complete"
-                    >
-                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden>
-                        <path fillRule="evenodd" clipRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                      </svg>
-                    </button>
-                  )}
+                {/* Tasks in group */}
+                {!isCollapsed && (
+                  <div className="flex flex-col gap-2.5">
+                    {groupTasks.map(task => {
+                      const dSt        = dueDateStatus(task.dueDate, task.status)
+                      const isComplete = task.status === 'Complete'
+                      const isBusy     = busy.has(task._id)
+                      const isExpanded = expanded.has(task._id)
+                      const pStyle     = PRIORITY_STYLE[task.priority] ?? PRIORITY_STYLE.Medium
+                      const longDesc   = (task.description?.length ?? 0) > 120
 
-                  {/* Delete */}
-                  {canDelete(task) && (
-                    <button
-                      onClick={() => deleteTask(task._id)}
-                      disabled={isBusy}
-                      title="Delete task"
-                      className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors duration-150 hover:bg-[#fee2e2] disabled:opacity-40"
-                      style={{ color: 'rgba(220,38,38,0.55)' }}
-                      aria-label="Delete task"
-                    >
-                      <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden>
-                        <path fillRule="evenodd" clipRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
+                      return (
+                        <div
+                          key={task._id}
+                          className="rounded-xl p-4 transition-all duration-200"
+                          style={{
+                            backgroundColor: '#ffffff',
+                            border: '1.5px solid rgba(30,53,96,0.09)',
+                            borderLeft: dSt === 'overdue' ? '4px solid #dc2626' : '1.5px solid rgba(30,53,96,0.09)',
+                            opacity: isComplete ? 0.52 : 1,
+                          }}
+                        >
+                          <div className="flex items-start gap-3">
+
+                            {/* Left: content */}
+                            <div className="flex-1 min-w-0">
+                              {/* Title */}
+                              <p
+                                className="text-sm font-bold leading-snug"
+                                style={{
+                                  color: '#1E3560',
+                                  textDecoration: isComplete ? 'line-through' : 'none',
+                                  textDecorationColor: 'rgba(30,53,96,0.35)',
+                                }}
+                              >
+                                {task.title}
+                              </p>
+
+                              {/* Description */}
+                              {task.description && (
+                                <p className="text-xs mt-1 leading-relaxed" style={{ color: 'rgba(43,48,58,0.58)' }}>
+                                  {isExpanded ? task.description : task.description.slice(0, 120)}
+                                  {longDesc && (
+                                    <button
+                                      onClick={() => toggleExpanded(task._id)}
+                                      className="ml-1 font-semibold hover:underline"
+                                      style={{ color: '#378ADD' }}
+                                    >
+                                      {isExpanded ? 'less' : '…more'}
+                                    </button>
+                                  )}
+                                </p>
+                              )}
+
+                              {/* Meta pills */}
+                              <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                                {/* Assigned to */}
+                                {task.assignedTo && (
+                                  <span
+                                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                    style={{ backgroundColor: 'rgba(30,53,96,0.07)', color: '#1E3560' }}
+                                  >
+                                    → {STAFF_NAME[task.assignedTo] ?? task.assignedTo}
+                                  </span>
+                                )}
+
+                                {/* Priority */}
+                                <span
+                                  className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                  style={{ backgroundColor: pStyle.bg, color: pStyle.color, border: `1px solid ${pStyle.border}` }}
+                                >
+                                  {task.priority}
+                                </span>
+
+                                {/* Due date */}
+                                {task.dueDate && (
+                                  <span
+                                    className="text-[10px] font-semibold"
+                                    style={{
+                                      color: dSt === 'overdue' ? '#dc2626'
+                                           : dSt === 'today'   ? '#E67E22'
+                                           : 'rgba(43,48,58,0.42)',
+                                    }}
+                                  >
+                                    {dSt === 'overdue' && '⚠ '}
+                                    {dSt === 'today' ? 'Due today' : `Due ${formatDueDate(task.dueDate)}`}
+                                  </span>
+                                )}
+
+                                {/* Assigned by */}
+                                {task.assignedBy && task.assignedBy !== currentUserEmail && (
+                                  <span className="text-[10px]" style={{ color: 'rgba(43,48,58,0.32)' }}>
+                                    from {STAFF_NAME[task.assignedBy] ?? task.assignedBy}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+
+                            {/* Right: controls */}
+                            <div className="flex items-center gap-1.5 shrink-0 mt-0.5">
+
+                              {/* Status dropdown */}
+                              <select
+                                value={task.status}
+                                disabled={isBusy}
+                                onChange={e => {
+                                  const s = e.target.value as StatusOption
+                                  updateTask(task._id, {
+                                    status: s,
+                                    ...(s === 'Complete' ? { completedAt: new Date().toISOString() } : {}),
+                                  })
+                                }}
+                                className="rounded-lg px-2 py-1.5 text-[10px] font-semibold border cursor-pointer outline-none disabled:opacity-40"
+                                style={{
+                                  borderColor: 'rgba(30,53,96,0.15)',
+                                  color: task.status === 'Complete'    ? '#16a34a'
+                                       : task.status === 'In Progress' ? '#378ADD'
+                                       : 'rgba(43,48,58,0.55)',
+                                  backgroundColor: '#ffffff',
+                                }}
+                              >
+                                {STATUS_OPTIONS.map(s => (
+                                  <option key={s} value={s}>{s}</option>
+                                ))}
+                              </select>
+
+                              {/* Complete checkmark */}
+                              {!isComplete && task.assignedTo === currentUserEmail && (
+                                <button
+                                  onClick={() => updateTask(task._id, { status: 'Complete', completedAt: new Date().toISOString() })}
+                                  disabled={isBusy}
+                                  title="Mark complete"
+                                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors duration-150 hover:bg-[#dcfce7] disabled:opacity-40"
+                                  style={{ color: '#16a34a' }}
+                                  aria-label="Mark task complete"
+                                >
+                                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden>
+                                    <path fillRule="evenodd" clipRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                  </svg>
+                                </button>
+                              )}
+
+                              {/* Delete */}
+                              {canDelete(task) && (
+                                <button
+                                  onClick={() => deleteTask(task._id)}
+                                  disabled={isBusy}
+                                  title="Delete task"
+                                  className="w-7 h-7 flex items-center justify-center rounded-lg transition-colors duration-150 hover:bg-[#fee2e2] disabled:opacity-40"
+                                  style={{ color: 'rgba(220,38,38,0.55)' }}
+                                  aria-label="Delete task"
+                                >
+                                  <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4" aria-hidden>
+                                    <path fillRule="evenodd" clipRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" />
+                                  </svg>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
-            </div>
-          )
-        })}
+            )
+          })
+        })()}
       </div>
     </div>
   )

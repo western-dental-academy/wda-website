@@ -100,7 +100,7 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
   const [showForm,       setShowForm]      = useState(false)
   const [expanded,       setExpanded]      = useState<Set<string>>(new Set())
   const [busy,           setBusy]          = useState<Set<string>>(new Set())
-  const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set())
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set())
   const [formData,       setFormData]      = useState(BLANK_FORM)
   const [formError,      setFormError]     = useState('')
   const [formBusy,       setFormBusy]      = useState(false)
@@ -415,21 +415,22 @@ export default function AdminTaskManager({ tasks: initialTasks, currentUserEmail
           }
 
           const orderedKeys: string[] = []
+          if (groupMap.has(currentUserEmail)) orderedKeys.push(currentUserEmail)
           for (const { email } of STAFF_OPTIONS) {
-            if (groupMap.has(email)) orderedKeys.push(email)
+            if (email !== currentUserEmail && groupMap.has(email)) orderedKeys.push(email)
           }
           for (const key of groupMap.keys()) {
-            if (key !== '__unassigned__' && !orderedKeys.includes(key)) orderedKeys.push(key)
+            if (key !== '__unassigned__' && key !== currentUserEmail && !orderedKeys.includes(key)) orderedKeys.push(key)
           }
           if (groupMap.has('__unassigned__')) orderedKeys.push('__unassigned__')
 
           return orderedKeys.map(groupKey => {
             const groupTasks   = groupMap.get(groupKey)!
-            const isCollapsed  = collapsedGroups.has(groupKey)
+            const isCollapsed  = !expandedGroups.has(groupKey)
             const label        = groupKey === '__unassigned__' ? 'Unassigned' : (STAFF_NAME[groupKey] ?? groupKey)
 
             function toggleGroup() {
-              setCollapsedGroups(prev => {
+              setExpandedGroups(prev => {
                 const n = new Set(prev)
                 n.has(groupKey) ? n.delete(groupKey) : n.add(groupKey)
                 return n

@@ -65,21 +65,32 @@ const INITIAL_FORM: RegistrantForm = {
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
+// Read the local time directly from the ISO string (e.g. "2026-11-07T08:15:00.000-06:00")
+// instead of converting through a timezone — avoids IANA database version differences.
+function extractLocalTime(iso: string): string {
+  const m = iso.match(/T(\d{2}):(\d{2})/)
+  if (!m) return ""
+  let h = parseInt(m[1], 10)
+  const min = m[2]
+  const ampm = h >= 12 ? "p.m." : "a.m."
+  if (h === 0) h = 12
+  else if (h > 12) h -= 12
+  return `${h}:${min} ${ampm}`
+}
+
 function formatLong(iso: string): string {
-  return new Date(iso).toLocaleString("en-CA", {
+  const datePart = new Date(iso).toLocaleDateString("en-CA", {
     timeZone: "America/Edmonton",
     weekday: "long", year: "numeric", month: "long", day: "numeric",
-    hour: "numeric", minute: "2-digit",
   });
+  return `${datePart} at ${extractLocalTime(iso)}`
 }
 
 function formatShort(iso: string): string {
   const date = new Date(iso).toLocaleDateString("en-CA", {
     timeZone: "America/Edmonton", month: "short", day: "numeric", year: "numeric",
   });
-  const time = new Date(iso).toLocaleTimeString("en-CA", {
-    timeZone: "America/Edmonton", hour: "numeric", minute: "2-digit",
-  }).replace("a.m.", "AM").replace("p.m.", "PM");
+  const time = extractLocalTime(iso).replace("a.m.", "AM").replace("p.m.", "PM");
   return `${date} — ${time}`;
 }
 

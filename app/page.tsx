@@ -3,7 +3,8 @@ import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import NewsletterSignup from "@/components/NewsletterSignup";
-import HeroHeadlineSection from "@/components/HeroHeadlineSection";
+import AnimatedHero from "@/components/home/AnimatedHero";
+import HeroVideo from "@/components/home/HeroVideo";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -47,15 +48,6 @@ const pillars = [
   },
 ];
 
-// ─── Stagger helper ────────────────────────────────────────────────────────────
-
-function heroStyle(delaySeconds: number): React.CSSProperties {
-  return {
-    animation: "slideUpFade 0.65s ease both",
-    animationDelay: `${delaySeconds}s`,
-  };
-}
-
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function Home() {
@@ -92,57 +84,12 @@ export default function Home() {
         />
 
 
-        <div className="relative w-full max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-16 items-center">
-          {/* ── Left: copy ── */}
-          <HeroHeadlineSection />
+        <div className="relative w-full max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
+          {/* ── Left: animated logo + copy ── */}
+          <AnimatedHero />
 
-          {/* ── Right: feature card ── */}
-          <div style={heroStyle(0.48)} className="w-full lg:w-auto">
-            <div
-              className="rounded-2xl p-8 min-w-[260px] lg:min-w-[300px]"
-              style={{
-                backgroundColor: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.1)",
-                backdropFilter: "blur(8px)",
-              }}
-            >
-              <p
-                className="text-[10px] font-bold tracking-[0.22em] uppercase mb-7"
-                style={{ color: "#4A9FD4" }}
-              >
-                What We Offer
-              </p>
-
-              <div className="flex flex-col gap-6">
-                {[
-                  { val: "Events", label: "Workshops & guest speaker sessions" },
-                  { val: "Courses", label: "Online and in person" },
-                ].map(({ val, label }) => (
-                  <div key={val} className="flex items-center gap-4">
-                    <span
-                      className="w-1.5 h-1.5 rounded-full shrink-0"
-                      style={{ backgroundColor: "#4A9FD4" }}
-                    />
-                    <span
-                      className="text-lg font-bold shrink-0 w-32"
-                      style={{
-                        color: "#ffffff",
-                        fontFamily: "var(--font-montserrat), sans-serif",
-                      }}
-                    >
-                      {val}
-                    </span>
-                    <span
-                      className="text-sm leading-snug"
-                      style={{ color: "rgba(255,255,255,0.55)" }}
-                    >
-                      {label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          {/* ── Right: autoplay logo video ── */}
+          <HeroVideo />
         </div>
 
         {/* Diagonal transition into programs */}

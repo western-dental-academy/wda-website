@@ -64,10 +64,10 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     displayTitle: "Renewal Wellness Guest Speaker Event",
     durationOverride: "All Day Event",
     highlights: [
-      "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
-      "Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service",
       "Acupuncture for TMJ — Steve Wong",
+      "Obstructive Sleep Apnea — Samantha Coleman & Emily Griffiths",
       "Beyond the Diagnosis: Purposeful Dementia Engagement — Naomi Klassen",
+      "Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service",
       "Limiting your Liability in Emergency Situations — Tony Korobanik",
     ],
     tags: ["Full Day", "In-Person & Virtual", "CCP Support", "Certificate of Attendance"],
@@ -76,29 +76,26 @@ const OFFERING_STATIC: Record<string, OfferingStaticContent> = {
     cadaNote: "Meets various competencies for the CCP",
     speakers: [
       {
-        name: "Samantha Coleman & Emily Griffiths",
-        affiliation: "Sleep Well Diagnostics Ltd",
-        topic: "Obstructive Sleep Apnea",
-        description: "Both Registered Respiratory Therapists with backgrounds in critical care at the University of Alberta Hospital, Samantha and Emily are passionate about preventative sleep care, patient education, and early detection. They opened Sleep Well Diagnostics in April 2026 to bring high-quality, accessible sleep care to Fort Saskatchewan and surrounding communities.",
-      },
-      {
-        name: "Superintendent Lance Parker",
-        affiliation: "Edmonton Police Service",
-        topic: "Addictions and Oral Health",
-        description: "With over 23 years of service to the Edmonton Police Service, Superintendent Lance Parker brings a wealth of experience in frontline patrol, specialized project teams, and units focused on drug enforcement. Recognized as a subject matter expert in drug enforcement and acknowledged as a drug expert in the Provincial Courts of Alberta, he brings a unique perspective on addiction and its impacts on society and oral health.",
-      },
-      {
         name: "Steve Wong",
         affiliation: "R. Ac.",
         topic: "Acupuncture for TMJ",
         description: "Bio coming soon.",
-      },
-      {
+      },      {
+        name: "Samantha Coleman & Emily Griffiths",
+        affiliation: "Sleep Well Diagnostics Ltd",
+        topic: "Obstructive Sleep Apnea",
+        description: "Both Registered Respiratory Therapists with backgrounds in critical care at the University of Alberta Hospital, Samantha and Emily are passionate about preventative sleep care, patient education, and early detection. They opened Sleep Well Diagnostics in April 2026 to bring high-quality, accessible sleep care to Fort Saskatchewan and surrounding communities.",
+      },      {
         name: "Naomi Klassen",
         affiliation: "CTRS",
         topic: "Beyond the Diagnosis: Purposeful Dementia Engagement",
         description: "Naomi holds a Bachelor's Degree in Therapeutic Recreation from the University of Lethbridge and is a Certified Therapeutic Recreation Specialist (CTRS). She earned her Dementia Engagement Specialist certification in 2025 and brings nearly 15 years of experience supporting older adults across long-term care, supportive living, and adult day programmes. Naomi's work centres on creating meaningful experiences that support cognitive engagement, emotional wellbeing, and social connection.",
         website: "https://www.silverrootsrecreation.com",
+      },      {
+        name: "Superintendent Lance Parker",
+        affiliation: "Edmonton Police Service",
+        topic: "Addictions and Oral Health",
+        description: "With over 23 years of service to the Edmonton Police Service, Superintendent Lance Parker brings a wealth of experience in frontline patrol, specialized project teams, and units focused on drug enforcement. Recognized as a subject matter expert in drug enforcement and acknowledged as a drug expert in the Provincial Courts of Alberta, he brings a unique perspective on addiction and its impacts on society and oral health.",
       },
       {
         name: "Tony Korobanik",

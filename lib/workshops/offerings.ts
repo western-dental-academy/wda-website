@@ -70,7 +70,7 @@ export const OFFERING_METADATA: Record<string, {
     cadaCppNumbers: ['I-2-1', 'D-3-1', 'I-5-4', 'B-5-3', 'F-2-1', 'F-2-2'],
     delivery: 'In Person / Virtual',
     speakerBreakdown: [
-      { speaker: 'Steve Wong', topic: 'Acupuncture for TMJ', hours: 0.75 },
+      { speaker: 'Steve Wong', topic: 'TMD, Stress & Auricular Acupuncture', hours: 0.75 },
       { speaker: 'Samantha Coleman & Emily Griffiths', topic: 'Obstructive Sleep Apnea', hours: 1.0 },
       { speaker: 'Naomi Klassen', topic: 'Beyond the Diagnosis: Purposeful Dementia Engagement', hours: 1.25 },
       { speaker: 'Lance Parker', topic: 'Addictions and Oral Health', hours: 1.25 },
@@ -80,7 +80,7 @@ export const OFFERING_METADATA: Record<string, {
       'Navigate the CADA registration renewal process with confidence',
       'Recognize the signs and risk factors of Obstructive Sleep Apnea in dental patients',
       'Recognize addiction influences on dental health and identify resources to support patients with addictions',
-      'Describe acupuncture as an alternative treatment for TMD and when to refer patients',
+      'Describe how auricular acupuncture may support patients experiencing stress and TMD concerns',
       'Identify roles and responsibilities in emergency situations to reduce liability in practice',
     ],
   },

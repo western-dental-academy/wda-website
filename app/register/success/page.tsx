@@ -106,7 +106,7 @@ function confirmationEmailHtml(
             </tr>
             <tr>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:45 – 9:30 AM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Acupuncture for TMJ — Steve Wong, R. Ac.</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">TMD, Stress &amp; Auricular Acupuncture — Steve Wong, R. Ac.</td>
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">9:30 – 10:30 AM</td>

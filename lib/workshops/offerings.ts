@@ -72,14 +72,14 @@ export const OFFERING_METADATA: Record<string, {
     speakerBreakdown: [
       { speaker: 'Samantha Coleman & Emily Griffiths', topic: 'Obstructive Sleep Apnea', hours: 1.0 },
       { speaker: 'TBD', topic: 'Session 3', hours: 1.25 },
-      { speaker: 'Josie McKenzie', topic: 'Financial Wellness — Drill Down Into Your Finances', hours: 1.25 },
+      { speaker: 'Steve Wong', topic: 'Acupuncture for TMJ', hours: 1.25 },
       { speaker: 'Tony Korobanik', topic: 'Limiting Your Liability in Emergency Situations', hours: 2.0 },
     ],
     learningObjectives: [
       'Navigate the CADA registration renewal process with confidence',
       'Recognize the signs and risk factors of Obstructive Sleep Apnea in dental patients',
       'Recognize addiction influences on dental health and identify resources to support patients with addictions',
-      'Implement personal financial wellness strategies including debt reduction and wealth planning',
+      'Describe acupuncture as an alternative treatment for TMD and when to refer patients',
       'Identify roles and responsibilities in emergency situations to reduce liability in practice',
     ],
   },

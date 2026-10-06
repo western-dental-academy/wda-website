@@ -126,7 +126,7 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:45 – 2:00 PM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Financial Wellness — Drill Down Into Your Finances — Josie McKenzie</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Acupuncture for TMJ — Steve Wong</td>
             </tr>
             <tr>
               <td style="padding:8px 12px;">2:00 – 4:00 PM</td>

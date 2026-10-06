@@ -3,7 +3,7 @@ import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import NewsletterSignup from "@/components/NewsletterSignup";
-import AnimatedHero from "@/components/home/AnimatedHero";
+import HeroHeadlineSection from "@/components/HeroHeadlineSection";
 import HeroVideo from "@/components/home/HeroVideo";
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -85,8 +85,8 @@ export default function Home() {
 
 
         <div className="relative w-full max-w-6xl mx-auto px-6 py-24 grid grid-cols-1 lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-16 items-center">
-          {/* ── Left: animated logo + copy ── */}
-          <AnimatedHero />
+          {/* ── Left: copy ── */}
+          <HeroHeadlineSection />
 
           {/* ── Right: autoplay logo video ── */}
           <HeroVideo />

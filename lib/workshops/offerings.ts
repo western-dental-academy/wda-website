@@ -66,14 +66,15 @@ export const OFFERING_METADATA: Record<string, {
     ],
   },
   'Renewal Wellness': {
-    hours: 5.5,
+    hours: 6,
     cadaCppNumbers: ['I-2-1', 'D-3-1', 'I-5-4', 'B-5-3', 'F-2-1', 'F-2-2'],
     delivery: 'In Person / Virtual',
     speakerBreakdown: [
+      { speaker: 'Steve Wong', topic: 'Acupuncture for TMJ', hours: 0.75 },
       { speaker: 'Samantha Coleman & Emily Griffiths', topic: 'Obstructive Sleep Apnea', hours: 1.0 },
-      { speaker: 'TBD', topic: 'Session 3', hours: 1.25 },
-      { speaker: 'Steve Wong', topic: 'Acupuncture for TMJ', hours: 1.25 },
-      { speaker: 'Tony Korobanik', topic: 'Limiting Your Liability in Emergency Situations', hours: 2.0 },
+      { speaker: 'Naomi Klassen', topic: 'Beyond the Diagnosis: Purposeful Dementia Engagement', hours: 1.25 },
+      { speaker: 'Lance Parker', topic: 'Addictions and Oral Health', hours: 1.25 },
+      { speaker: 'Tony Korobanik', topic: 'Limiting Your Liability in Emergency Situations', hours: 1.75 },
     ],
     learningObjectives: [
       'Navigate the CADA registration renewal process with confidence',

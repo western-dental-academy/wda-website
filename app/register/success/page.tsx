@@ -102,11 +102,11 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:15 – 8:45 AM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Welcome &amp; Introductions (refreshments)</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Welcome &amp; Refreshments</td>
             </tr>
             <tr>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:30 – 8:45 AM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Virtual Welcome</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">8:45 – 9:30 AM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Acupuncture for TMJ — Steve Wong, R. Ac.</td>
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">9:30 – 10:30 AM</td>
@@ -118,7 +118,7 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">10:45 AM – 12:00 PM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Beyond the Diagnosis: Purposeful Dementia Engagement — Naomi Klassen</td>
             </tr>
             <tr>
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:00 – 12:45 PM</td>
@@ -126,10 +126,14 @@ function confirmationEmailHtml(
             </tr>
             <tr style="background-color:#f9fafb;">
               <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">12:45 – 2:00 PM</td>
-              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Acupuncture for TMJ — Steve Wong</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Addictions and Oral Health — Superintendent Lance Parker, Edmonton Police Service</td>
             </tr>
             <tr>
-              <td style="padding:8px 12px;">2:00 – 4:00 PM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">2:00 – 2:15 PM</td>
+              <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;">Afternoon Break</td>
+            </tr>
+            <tr style="background-color:#f9fafb;">
+              <td style="padding:8px 12px;">2:15 – 4:00 PM</td>
               <td style="padding:8px 12px;">Limiting your Liability in Emergency Situations — Tony Korobanik</td>
             </tr>
           </table>

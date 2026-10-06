@@ -27,6 +27,16 @@ export default defineType({
       initialValue: true,
     }),
     defineField({
+      name: 'sessionLengths',
+      title: 'Session Lengths Offered (hours)',
+      type: 'array',
+      of: [defineArrayMember({ type: 'number' })],
+      options: { list: [1, 2, 3, 4], layout: 'grid' },
+      description: 'Which lengths students can choose. Students who ask for extra time always need at least 2 hours.',
+      initialValue: [1, 2, 3],
+      validation: Rule => Rule.required().min(1),
+    }),
+    defineField({
       name: 'sessionPrice',
       title: 'Session Price (CAD)',
       type: 'number',
@@ -108,21 +118,38 @@ export default defineType({
     }),
     defineField({
       name: 'closedDates',
-      title: 'Closed Dates',
+      title: 'Closed Dates & Times',
       type: 'array',
-      description: 'Holidays and other days with no invigilation.',
+      description: 'Vacations, stat holidays, meetings, etc. Leave the times empty to close the whole day, or fill them in to close only part of it. Existing bookings are not cancelled automatically.',
       of: [
         defineArrayMember({
           type: 'object',
           name: 'closedDate',
           fields: [
             defineField({ name: 'date', title: 'Date', type: 'date', validation: Rule => Rule.required() }),
-            defineField({ name: 'reason', title: 'Reason', type: 'string' }),
+            defineField({
+              name: 'from',
+              title: 'Closed From (optional)',
+              type: 'string',
+              placeholder: '12:00',
+              description: 'Leave empty to close from opening time.',
+              validation: Rule => Rule.regex(TIME_PATTERN, { name: 'HH:00' }),
+            }),
+            defineField({
+              name: 'until',
+              title: 'Closed Until (optional)',
+              type: 'string',
+              placeholder: '14:00',
+              description: 'Leave empty to close until closing time.',
+              validation: Rule => Rule.regex(TIME_PATTERN, { name: 'HH:00' }),
+            }),
+            defineField({ name: 'reason', title: 'Reason (staff only)', type: 'string', placeholder: 'e.g. Stat holiday, staff meeting' }),
           ],
           preview: {
-            select: { date: 'date', reason: 'reason' },
-            prepare({ date, reason }) {
-              return { title: date, subtitle: reason }
+            select: { date: 'date', from: 'from', until: 'until', reason: 'reason' },
+            prepare({ date, from, until, reason }) {
+              const when = from || until ? `${from ?? 'open'} – ${until ?? 'close'}` : 'All day'
+              return { title: `${date ?? '?'} · ${when}`, subtitle: reason }
             },
           },
         }),

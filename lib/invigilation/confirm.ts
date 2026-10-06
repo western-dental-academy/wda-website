@@ -3,8 +3,6 @@ import { stripe } from '@/lib/stripe/client'
 import { invigilationClient } from './server'
 import {
   adminInvigilationHtml,
-  instructorRequestHtml,
-  materialsDeadline,
   studentConfirmationHtml,
   type InvigilationBookingRecord,
 } from './emails'
@@ -54,17 +52,6 @@ export async function confirmInvigilationBooking(sessionId: string, id: string):
       html: adminInvigilationHtml(booking),
     }),
   ]
-  if (booking.instructorEmail) {
-    sends.push(
-      resend.emails.send({
-        from: FROM,
-        to: booking.instructorEmail,
-        replyTo: 'info@westerndentalacademy.com',
-        subject: `Exam invigilation for ${booking.firstName} ${booking.lastName} — materials needed by ${materialsDeadline(booking)}`,
-        html: instructorRequestHtml(booking),
-      }),
-    )
-  }
   const results = await Promise.allSettled(sends)
   results.forEach(r => {
     if (r.status === 'rejected') console.error('Invigilation email error:', r.reason)

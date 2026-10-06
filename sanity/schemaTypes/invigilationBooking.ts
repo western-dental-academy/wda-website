@@ -26,7 +26,7 @@ export default defineType({
       name: 'durationHours',
       title: 'Length (hours)',
       type: 'number',
-      options: { list: [1, 2], layout: 'radio' },
+      options: { list: [1, 2, 3, 4], layout: 'radio' },
       validation: Rule => Rule.required(),
     }),
     defineField({ name: 'institution', title: 'Institution / Exam Provider', type: 'string' }),

@@ -82,7 +82,7 @@ export default async function InvigilationSuccessPage({
               >
                 <strong>Next step:</strong> your instructor or exam centre needs to send us the exam password (or a paper
                 copy), the list of allowed items, and a contact for exam day by{" "}
-                <strong>{materialsDeadline(booking)}</strong>. We&apos;ve emailed them the details too.
+                <strong>{materialsDeadline(booking)}</strong>. Please remind them to send everything to info@westerndentalacademy.com.
               </div>
             </>
           ) : (

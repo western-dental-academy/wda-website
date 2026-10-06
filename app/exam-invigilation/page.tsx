@@ -3,12 +3,14 @@ import Link from "next/link";
 import InvigilationBookingForm from "@/components/invigilation/InvigilationBookingForm";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import { getInvigilationSettings } from "@/lib/invigilation/server";
-import { DAY_KEYS, formatHour, hourOf, type InvigilationSettings } from "@/lib/invigilation/settings";
+import { DAY_KEYS, formatHour, hourOf, lengthsFor, type InvigilationSettings } from "@/lib/invigilation/settings";
 
 export const metadata: Metadata = {
   title: "Exam Invigilation",
   description:
-    "Book a supervised exam invigilation session at Western Dental Academy in the Edmonton Area. 1–2 hour sessions, online booking, accommodations available.",
+    "Book a supervised exam invigilation session at Western Dental Academy in the Edmonton Area. Online booking, flexible session lengths, accommodations available.",
+  // Not launched yet: keep out of search results until it's linked on the site
+  robots: { index: false },
 };
 
 export const dynamic = "force-dynamic";
@@ -36,6 +38,11 @@ function hoursRows(settings: InvigilationSettings) {
   return rows;
 }
 
+function lengthsLabel(settings: InvigilationSettings) {
+  const l = lengthsFor(settings, []);
+  return l.length > 1 ? `${l[0]}–${l[l.length - 1]}` : String(l[0] ?? "");
+}
+
 const policies = (settings: InvigilationSettings) => [
   {
     title: "Booking",
@@ -44,6 +51,7 @@ const policies = (settings: InvigilationSettings) => [
       "Book online, email info@westerndentalacademy.com, or call 780-499-9153.",
       "Accommodations (quiet room, noise-cancelling headphones, extra time, etc.) must be indicated when you book.",
       "A verbal exam reader is an extra charge equal to the invigilation fee.",
+      "Western Dental Academy reserves the right to reschedule or cancel an appointment if needed. If this happens, we'll contact you as soon as possible to arrange a new time.",
     ],
   },
   {
@@ -58,7 +66,7 @@ const policies = (settings: InvigilationSettings) => [
     title: "What to bring",
     items: [
       "Photo ID and your confirmation email.",
-      "Your own device for computer-based exams (backup devices are available).",
+      "Your own laptop for computer-based exams, fully charged.",
       "Any other items required for your exam.",
     ],
   },
@@ -66,6 +74,7 @@ const policies = (settings: InvigilationSettings) => [
     title: "In the exam room",
     items: [
       "Exams are written in our classroom, supervised by instructional staff.",
+      "Our classroom is on the second floor and there is no elevator. If stairs are a concern, please call us before booking.",
       `No more than ${settings.maxStudentsPerHour} students write at once. Students with accommodations write one at a time.`,
       "Phones and smartwatches off and stored in your bag. Bags, coats and hats stay at the front; no hats.",
       "Only clear water bottles are permitted.",
@@ -130,13 +139,13 @@ export default async function ExamInvigilationPage({
 
           <p className="text-lg leading-relaxed max-w-xl mb-8" style={{ color: "rgba(255,255,255,0.65)" }}>
             Book a supervised seat in our Edmonton Area classroom for your online or paper exam. Pick a date and
-            time below, pay securely, and we&apos;ll handle the rest with your instructor.
+            time below, pay securely, and we&apos;ll have your seat ready.
           </p>
 
           <div className="flex flex-wrap gap-6">
             {[
               { value: `$${settings.sessionPrice}`, label: "Per session" },
-              { value: "1–2 hr", label: "Sessions" },
+              { value: `${lengthsLabel(settings)} hr`, label: "Sessions" },
               { value: `${settings.minDaysNotice} days`, label: "Notice required" },
             ].map(({ value, label }) => (
               <div key={label} className="flex items-center gap-2.5">
@@ -172,7 +181,8 @@ export default async function ExamInvigilationPage({
               ))}
             </dl>
             <p className="text-xs text-[#2B303A]/50 mt-5 leading-relaxed">
-              Sessions start on the hour and must finish by closing time. Questions? Call{" "}
+              Sessions start on the hour and must finish by closing time. Our classroom is on the second floor with no
+              elevator. Questions? Call{" "}
               <a href="tel:7804999153" className="font-semibold text-[#4A9FD4]">780-499-9153</a>.
             </p>
           </div>

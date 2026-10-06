@@ -17,14 +17,15 @@ export const invigilationClient = createClient({
 export async function getInvigilationSettings(): Promise<InvigilationSettings> {
   const doc = await invigilationClient.fetch<Partial<InvigilationSettings> | null>(
     `*[_type == "invigilationSettings" && _id == "invigilationSettings" && !(_id in path("drafts.**"))][0]{
-      bookingsOpen, sessionPrice, verbalReaderPrice, maxStudentsPerHour, minDaysNotice, maxDaysAhead,
+      bookingsOpen, sessionLengths, sessionPrice, verbalReaderPrice, maxStudentsPerHour, minDaysNotice, maxDaysAhead,
       "weeklyHours": weeklyHours[]{ day, open, close },
-      "closedDates": closedDates[]{ date, reason }
+      "closedDates": closedDates[]{ date, from, until, reason }
     }`,
   )
   const d = DEFAULT_INVIGILATION_SETTINGS
   return {
     bookingsOpen: doc?.bookingsOpen ?? d.bookingsOpen,
+    sessionLengths: doc?.sessionLengths?.length ? doc.sessionLengths : d.sessionLengths,
     sessionPrice: doc?.sessionPrice ?? d.sessionPrice,
     verbalReaderPrice: doc?.verbalReaderPrice ?? d.verbalReaderPrice,
     maxStudentsPerHour: doc?.maxStudentsPerHour ?? d.maxStudentsPerHour,

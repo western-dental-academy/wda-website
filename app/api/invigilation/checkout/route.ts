@@ -8,6 +8,7 @@ import {
   formatDateLong,
   formatTimeRange,
   isDateBookable,
+  lengthsFor,
 } from '@/lib/invigilation/settings'
 import { getBookingsForDate, getInvigilationSettings, invigilationClient } from '@/lib/invigilation/server'
 
@@ -60,7 +61,6 @@ export async function POST(req: NextRequest) {
     if (!b.instructorName?.trim()) return bad('Instructor or exam centre contact is required.')
     if (!EMAIL_RE.test(b.instructorEmail?.trim() ?? '')) return bad('A valid instructor email is required.')
     if (!b.policyAgreed) return bad('Please confirm you have read the invigilation policies.')
-    if (b.durationHours !== 1 && b.durationHours !== 2) return bad('Please choose a 1 or 2 hour session.')
     if (!/^\d{4}-\d{2}-\d{2}$/.test(b.date ?? '')) return bad('Please choose a date.')
     if (!/^\d{2}:00$/.test(b.startTime ?? '')) return bad('Please choose a start time.')
 
@@ -73,6 +73,11 @@ export async function POST(req: NextRequest) {
     const exclusive = accommodations.length > 0
 
     const settings = await getInvigilationSettings()
+    if (!lengthsFor(settings, accommodations).includes(b.durationHours)) {
+      return bad(accommodations.includes('extra-time')
+        ? 'Students with extra time need a session of at least 2 hours.'
+        : 'Please choose a session length.')
+    }
     if (!isDateBookable(settings, b.date)) {
       return bad(`That date isn't available. Exams must be booked at least ${settings.minDaysNotice} days ahead.`)
     }
@@ -80,7 +85,7 @@ export async function POST(req: NextRequest) {
     // Re-check the slot against live bookings
     const slots = computeSlots(settings, b.date, await getBookingsForDate(b.date))
     const slot = slots.find(s => s.start === b.startTime)
-    const duration = b.durationHours as 1 | 2
+    const duration = b.durationHours
     const ok = slot && (exclusive ? slot.exclusive[duration] : slot.shared[duration])
     if (!ok) {
       return bad('Sorry, that time was just booked. Please pick another time.', 409)

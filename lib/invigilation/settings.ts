@@ -12,19 +12,28 @@ export interface DayHours {
   close: string // "16:00"
 }
 
+export interface ClosedDate {
+  date: string
+  from?: string // "12:00" — leave from/until empty to close the whole day
+  until?: string // "14:00"
+  reason?: string
+}
+
 export interface InvigilationSettings {
   bookingsOpen: boolean
+  sessionLengths: number[]
   sessionPrice: number
   verbalReaderPrice: number
   maxStudentsPerHour: number
   minDaysNotice: number
   maxDaysAhead: number
   weeklyHours: DayHours[]
-  closedDates: { date: string; reason?: string }[]
+  closedDates: ClosedDate[]
 }
 
 export const DEFAULT_INVIGILATION_SETTINGS: InvigilationSettings = {
   bookingsOpen: true,
+  sessionLengths: [1, 2, 3],
   sessionPrice: 40,
   verbalReaderPrice: 40,
   maxStudentsPerHour: 4,
@@ -110,8 +119,19 @@ export function bookingWindow(settings: InvigilationSettings, today = edmontonTo
   }
 }
 
+// Students who need extra time can't book the shortest session
+export const EXTRA_TIME_MIN_HOURS = 2
+
+export function lengthsFor(settings: InvigilationSettings, accommodations: string[]): number[] {
+  const lengths = [...new Set(settings.sessionLengths)].filter(h => h >= 1).sort((a, b) => a - b)
+  if (!accommodations.includes('extra-time')) return lengths
+  return lengths.filter(h => h >= EXTRA_TIME_MIN_HOURS)
+}
+
+const isWholeDay = (c: ClosedDate) => !c.from && !c.until
+
 export function hoursFor(settings: InvigilationSettings, ymd: string): { open: number; close: number } | null {
-  if (settings.closedDates.some(c => c.date === ymd)) return null
+  if (settings.closedDates.some(c => c.date === ymd && isWholeDay(c))) return null
   const day = settings.weeklyHours.find(h => h.day === dayKeyOf(ymd))
   if (!day) return null
   const open = hourOf(day.open)
@@ -136,17 +156,26 @@ export interface ExistingBooking {
 export interface Slot {
   start: string
   seatsLeft: number
-  // Whether a booking of each length can start here
-  shared: { 1: boolean; 2: boolean }
-  exclusive: { 1: boolean; 2: boolean }
+  // Whether a booking of each length (in hours) can start here
+  shared: Record<number, boolean>
+  exclusive: Record<number, boolean>
 }
 
 export function computeSlots(settings: InvigilationSettings, ymd: string, bookings: ExistingBooking[]): Slot[] {
   const hours = hoursFor(settings, ymd)
   if (!hours) return []
 
+  // Hours blocked off by a partial-day closure in Settings
+  const blocked = new Set<number>()
+  for (const c of settings.closedDates) {
+    if (c.date !== ymd || isWholeDay(c)) continue
+    const from = c.from ? hourOf(c.from) : hours.open
+    const until = c.until ? hourOf(c.until) : hours.close
+    for (let h = from; h < until; h++) blocked.add(h)
+  }
+
   const load = new Map<number, { count: number; exclusive: boolean }>()
-  for (let h = hours.open; h < hours.close; h++) load.set(h, { count: 0, exclusive: false })
+  for (let h = hours.open; h < hours.close; h++) if (!blocked.has(h)) load.set(h, { count: 0, exclusive: false })
   for (const b of bookings) {
     const start = hourOf(b.startTime)
     for (let h = start; h < start + b.durationHours; h++) {
@@ -167,19 +196,21 @@ export function computeSlots(settings: InvigilationSettings, ymd: string, bookin
     }
     return out
   }
-  const canShare = (start: number, duration: 1 | 2) =>
+  const canShare = (start: number, duration: number) =>
     span(start, duration)?.every(l => !l.exclusive && l.count < max) ?? false
-  const canExclusive = (start: number, duration: 1 | 2) =>
+  const canExclusive = (start: number, duration: number) =>
     span(start, duration)?.every(l => l.count === 0) ?? false
+  const lengths = lengthsFor(settings, [])
 
   const slots: Slot[] = []
   for (let h = hours.open; h < hours.close; h++) {
-    const l = load.get(h)!
+    const l = load.get(h)
+    if (!l) continue
     slots.push({
       start: timeOf(h),
       seatsLeft: l.exclusive ? 0 : Math.max(0, max - l.count),
-      shared: { 1: canShare(h, 1), 2: canShare(h, 2) },
-      exclusive: { 1: canExclusive(h, 1), 2: canExclusive(h, 2) },
+      shared: Object.fromEntries(lengths.map(d => [d, canShare(h, d)])),
+      exclusive: Object.fromEntries(lengths.map(d => [d, canExclusive(h, d)])),
     })
   }
   return slots

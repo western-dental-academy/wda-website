@@ -104,19 +104,20 @@ export function studentConfirmationHtml(b: InvigilationBookingRecord): string {
     </p>
     ${bookingTable(b)}
     <p style="color:#374151;font-size:14px;line-height:1.6;margin:16px 0 0;">
-      <strong style="color:#1E3560;">Location:</strong> Western Dental Academy classroom, ${ADDRESS}
+      <strong style="color:#1E3560;">Location:</strong> Western Dental Academy classroom, ${ADDRESS}.
+      Our classroom is on the second floor and there is no elevator.
     </p>
 
     ${box(`Your instructor or exam centre must send us by ${esc(deadline)}`, [
       ...instructorItems,
-      `Please make sure they send these to <a href="mailto:${OFFICE_EMAIL}" style="color:#378ADD;">${OFFICE_EMAIL}</a>. We've also emailed ${b.instructorEmail ? esc(b.instructorEmail) : 'your instructor'} with these details.`,
+      `Please make sure they send these to <a href="mailto:${OFFICE_EMAIL}" style="color:#378ADD;">${OFFICE_EMAIL}</a>.`,
     ], true)}
 
     ${box('What to bring', [
       'Government-issued photo ID',
       'This confirmation email (printed or on your phone)',
       b.examFormat === 'computer'
-        ? 'Your own laptop or device for your computer-based exam (backup devices are available)'
+        ? 'Your own fully charged laptop for your computer-based exam'
         : 'Any items your instructor has approved for the exam',
       'Any other items required for your exam',
     ])}
@@ -129,27 +130,16 @@ export function studentConfirmationHtml(b: InvigilationBookingRecord): string {
     ])}
 
     <p style="color:#374151;font-size:14px;line-height:1.6;margin-top:16px;">
+      Western Dental Academy reserves the right to reschedule or cancel an appointment if needed. If this happens,
+      we'll contact you as soon as possible to arrange a new time.
+    </p>
+
+    <p style="color:#374151;font-size:14px;line-height:1.6;margin-top:16px;">
       Need to change your booking or have a question? Email
       <a href="mailto:${OFFICE_EMAIL}" style="color:#378ADD;">${OFFICE_EMAIL}</a>
       or call ${PHONE}.
     </p>`
   return shell('Exam Invigilation Booked', body)
-}
-
-export function instructorRequestHtml(b: InvigilationBookingRecord): string {
-  const deadline = materialsDeadline(b)
-  const body = `
-    <p style="color:#1E3560;font-size:15px;margin:0 0 16px;">Hello${b.instructorName ? ` ${esc(b.instructorName)}` : ''},</p>
-    <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 20px;">
-      <strong>${esc(b.firstName)} ${esc(b.lastName)}</strong> has booked Western Dental Academy to invigilate their exam.
-      Exams are written in our classroom and supervised by our instructional staff.
-    </p>
-    ${bookingTable({ ...b, price: undefined })}
-    ${box(`Please send the following to ${OFFICE_EMAIL} by ${esc(deadline)}`, instructorItems, true)}
-    <p style="color:#374151;font-size:14px;line-height:1.6;margin-top:16px;">
-      You can reply to this email or call us at ${PHONE} with any questions. Thank you!
-    </p>`
-  return shell('Exam Invigilation Request', body)
 }
 
 export function adminInvigilationHtml(b: InvigilationBookingRecord): string {

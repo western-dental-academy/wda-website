@@ -5,6 +5,8 @@ import {
   ACCOMMODATION_OPTIONS,
   addDays,
   bookingPrice,
+  lengthsFor,
+  EXTRA_TIME_MIN_HOURS,
   bookingWindow,
   edmontonToday,
   formatDateLong,
@@ -13,6 +15,12 @@ import {
   type InvigilationSettings,
   type Slot,
 } from "@/lib/invigilation/settings";
+
+const LENGTH_HINTS: Record<number, string> = {
+  1: "Shorter quizzes and tests",
+  2: "Most midterms and finals",
+  3: "Long finals or extra time",
+};
 
 type FieldKey =
   | "firstName" | "lastName" | "email" | "phone"
@@ -79,7 +87,7 @@ export default function InvigilationBookingForm({
   const today = edmontonToday();
   const { minDate, maxDate } = bookingWindow(settings, today);
 
-  const [duration, setDuration] = useState<1 | 2>(2);
+  const [pickedDuration, setDuration] = useState(2);
   const [needsAccommodation, setNeedsAccommodation] = useState(false);
   const [accommodations, setAccommodations] = useState<string[]>([]);
   const [date, setDate] = useState("");
@@ -103,6 +111,11 @@ export default function InvigilationBookingForm({
 
   const exclusive = needsAccommodation && accommodations.length > 0;
   const price = bookingPrice(settings, needsAccommodation ? accommodations : []);
+  const lengths = lengthsFor(settings, needsAccommodation ? accommodations : []);
+  // Fall back to the next length up if the picked one isn't offered (e.g. extra time was just ticked)
+  const duration = lengths.includes(pickedDuration)
+    ? pickedDuration
+    : lengths.find(h => h > pickedDuration) ?? lengths[lengths.length - 1];
 
   // Load slots whenever the date changes
   useEffect(() => {
@@ -209,7 +222,7 @@ export default function InvigilationBookingForm({
         setSubmitting(false);
         return;
       }
-      window.location.href = data.url;
+      window.location.assign(data.url);
     } catch {
       setSubmitError("Something went wrong. Please try again.");
       setSubmitting(false);
@@ -238,9 +251,14 @@ export default function InvigilationBookingForm({
       <div className="space-y-6 min-w-0">
         {/* 1 — Session */}
         <div className={card} style={cardStyle}>
-          <StepHeading n={1} title="Your session" sub={`$${settings.sessionPrice} per session, whether you book 1 or 2 hours.`} />
-          <div className="grid grid-cols-2 gap-3 mb-6" role="radiogroup" aria-label="Session length">
-            {([1, 2] as const).map(h => (
+          <StepHeading n={1} title="Your session" sub={`${settings.sessionPrice} per session, whatever the length.`} />
+          <div
+            className="grid gap-3 mb-6"
+            style={{ gridTemplateColumns: `repeat(${Math.min(lengths.length, 3)}, minmax(0, 1fr))` }}
+            role="radiogroup"
+            aria-label="Session length"
+          >
+            {lengths.map(h => (
               <button
                 key={h}
                 type="button"
@@ -256,7 +274,7 @@ export default function InvigilationBookingForm({
                 <span className="block text-sm font-bold text-[#1E3560]" style={{ fontFamily: "var(--font-montserrat), sans-serif" }}>
                   {h} hour{h > 1 ? "s" : ""}
                 </span>
-                <span className="block text-xs text-[#2B303A]/55 mt-0.5">{h === 1 ? "Shorter quizzes and tests" : "Most midterms and finals"}</span>
+                <span className="block text-xs text-[#2B303A]/55 mt-0.5">{LENGTH_HINTS[h] ?? "Extended exams"}</span>
               </button>
             ))}
           </div>
@@ -290,6 +308,7 @@ export default function InvigilationBookingForm({
               <div className="rounded-xl p-4 space-y-4" style={{ backgroundColor: "#F4F7F9" }}>
                 <p className="text-xs leading-relaxed text-[#2B303A]/70">
                   Students with accommodations write alone, so you&apos;ll have the room to yourself.
+                  {" "}Extra time needs a session of at least {EXTRA_TIME_MIN_HOURS} hours.
                   {settings.verbalReaderPrice > 0 && <> A verbal exam reader adds <strong>${settings.verbalReaderPrice}</strong>.</>}
                 </p>
                 <div className="grid sm:grid-cols-2 gap-2.5">
@@ -416,7 +435,7 @@ export default function InvigilationBookingForm({
                     if (!open.length) {
                       return (
                         <p className="text-sm text-[#2B303A]/60">
-                          No {duration}-hour {exclusive ? "private " : ""}times left on this day. Try {duration === 2 ? "a 1-hour session or " : ""}another date.
+                          No {duration}-hour {exclusive ? "private " : ""}times left on this day. Try {duration > lengths[0] ? "a shorter session or " : ""}another date.
                         </p>
                       );
                     }
@@ -481,7 +500,7 @@ export default function InvigilationBookingForm({
 
         {/* 4 — Exam & instructor */}
         <div className={card} style={cardStyle}>
-          <StepHeading n={4} title="Exam and instructor" sub="We'll email your instructor or exam centre to request the exam materials." />
+          <StepHeading n={4} title="Exam and instructor" sub="In case we need to email your instructor or exam centre about the exam materials." />
           <div className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <Field htmlFor="inv-institution" label="Institution / Exam Provider" required error={errors.institution}>
@@ -494,7 +513,7 @@ export default function InvigilationBookingForm({
             <Field htmlFor="inv-examFormat" label="Exam Format" required error={errors.examFormat}>
               <select id="inv-examFormat" value={fields.examFormat} onChange={e => set("examFormat", e.target.value)} className={inputCls("examFormat")} {...aria("examFormat")}>
                 <option value="">Select…</option>
-                <option value="computer">Computer-based (bring your own device; backups available)</option>
+                <option value="computer">Computer-based (please bring your own laptop)</option>
                 <option value="paper">Paper</option>
               </select>
             </Field>

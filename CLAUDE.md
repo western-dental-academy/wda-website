@@ -10,6 +10,8 @@
 - All Sanity GROQ queries must include `!(_id in path("drafts.**"))` to exclude drafts
 - Workshop/offering name keys must match Sanity titles exactly across `WORKSHOP_PRICES`, `OFFERING_STATIC`, and `lib/workshops/offerings.ts`
 - When returning PDF buffers in API routes, always wrap in `new Uint8Array(buffer)`
+- **Sanity datetime fields must always store with `-06:00` offset** — Alberta abolished DST so UTC-6 applies year-round. Never store `-07:00` for any future date.
+- **Never use `toLocaleTimeString` with `timeZone: "America/Edmonton"` to display offering times** — IANA databases differ across runtimes and produce wrong results. Use `extractLocalTime(iso)` which regexes the local time digits directly from the stored ISO string.
 
 ---
 
@@ -71,6 +73,16 @@ Admin emails (ADMIN_EMAILS array in code): `aiden@westerndentalacademy.com`, `jo
 
 ---
 
+## Workflow
+
+- Aiden asks for a website change → Claude gives Claude Code prompt → Aiden runs it and reports back what changed → Claude gives the git push command
+- Git push format: `git push origin HEAD:main` (PowerShell — use `;` not `&&` to chain commands)
+- No Co-Authored-By lines in commit messages
+- Vercel deploys automatically on push to `main` — no manual deploy needed for code changes
+- Sanity data changes (document patches) are live immediately — no git push needed
+
+---
+
 ## Environment Variables
 
 ### Vercel (Production)
@@ -108,7 +120,7 @@ MICROSOFT_CLIENT_SECRET=...
 - `siteSettings` — global settings singleton
 
 ### Workshop / Offering Types
-- `workshopOffering` — in-person/hybrid workshops with sessions, pricing, registration
+- `workshopOffering` — in-person/hybrid workshops with sessions, pricing, registration. **Speaker data is hardcoded in `OFFERING_STATIC` in `PDTabs.tsx`** — there is no speakers field on this schema.
 - `professionalDevelopmentOffering` — PD offerings (CE credits, CADA compliance)
 
 ### Online Course Types
@@ -140,6 +152,9 @@ app/
       stripe/route.ts                     — Stripe webhook: payment → enroll student
     courses/
       feedback/route.ts                   — POST: save course feedback to courseEnrollment
+    staff/
+      tasks/route.ts                      — GET: all tasks (Clerk auth); POST: create task + Resend email
+      tasks/[id]/route.ts                 — PATCH: update task fields; DELETE: remove task
   courses/
     [slug]/page.tsx                       — Public online course landing page
     enroll/[slug]/page.tsx               — Enrollment / checkout page
@@ -155,6 +170,7 @@ components/
   admin/
     AdminCourseEnrollments.tsx            — Course enrollments table + CourseOfferingsPanel
   AdminTabs.tsx                           — Tab switcher for WDA Hub (passes courseOfferings prop)
+  AdminTaskManager.tsx                    — Staff task management UI (see Task Manager section)
 ```
 
 ### Libraries
@@ -178,6 +194,7 @@ sanity/
     staffMember.ts
     workshopOffering.ts
     professionalDevelopmentOffering.ts
+    task.ts                               — Task document type
     ...
 proxy.ts                                  — Next.js middleware (NOT middleware.ts)
 ```
@@ -197,11 +214,29 @@ Located at `/admin`. Requires Clerk auth + email in `ADMIN_EMAILS`.
 4. **Professional Development** — PD offering registrations
 5. **Workshops** — workshop session registrations
 6. **Staff** — staff member management
+7. **Tasks** — staff task manager (see Task Manager section)
 
 ### Suspend / Reactivate Flow
 - `POST /api/admin/courses/suspend` — body: `{ enrollmentId }` → calls `suspendUserEnrollment(moodleUserId, moodleCourseId)`, sets Sanity status: `suspended`
 - `POST /api/admin/courses/reactivate` — body: `{ enrollmentId }` → fetches `accessExpiresAt` from enrollment, calls `reactivateUserEnrollment(moodleUserId, moodleCourseId, newAccessExpiresAt)`, sets Sanity status: `active`
   - Falls back to 21 days from now if `accessExpiresAt` is missing
+
+---
+
+## Task Manager
+
+`components/AdminTaskManager.tsx` — staff task management UI inside WDA Hub.
+
+### Sanity Schema (`sanity/schemaTypes/task.ts`)
+Fields: `title` (string, required), `description` (text), `assignedTo` (string/email), `assignedBy` (string/email), `dueDate` (date), `priority` (radio: Low/Medium/High/Urgent), `status` (radio: To Do/In Progress/Complete), `createdAt` (datetime), `completedAt` (datetime). **No `completedBy` field.**
+
+### Behaviour
+- Tasks grouped by `assignedTo` email; groups ordered by STAFF_OPTIONS with current user pinned to top, Unassigned last
+- All groups collapsed by default; current user's group is at the top
+- Each expanded group has **Active** (To Do + In Progress) and **Completed** sub-tabs with count badges
+- Top-level status filter defaults to **All Statuses** — the per-group sub-tabs handle the Active/Completed split
+- Green checkmark (mark complete) only visible to the assigned staff member (`task.assignedTo === currentUserEmail`)
+- On mark-complete: switches that group's sub-tab to Completed so the task is visible instead of disappearing
 
 ---
 
@@ -255,6 +290,11 @@ Workshop name keys in `WORKSHOP_PRICES`, `OFFERING_STATIC`, and `lib/workshops/o
 
 Current offerings include ergonomics workshops (e.g., "Ergonomics in Dentistry: Move Well, Breathe Well, Practice Longer") — developed by a Registered Dental Assistant / Registered Yoga Teacher. Length: 1.5 hrs, $30, CADA Competency Profile compliant.
 
+### Renewal Wellness (November 7, 2026)
+- Speaker data is **hardcoded in `OFFERING_STATIC` in `PDTabs.tsx`** — not in Sanity
+- Speakers: Steve Wong (R. Ac., "Acupuncture for TMJ"), Naomi Klassen (CTRS, "Beyond the Diagnosis: Purposeful Dementia Engagement", silverrootsrecreation.com)
+- Event date stored in Sanity as `2026-11-07T08:15:00.000-06:00` (Alberta UTC-6 year-round)
+
 ---
 
 ## Course Feedback System
@@ -282,6 +322,7 @@ From address: `Western Dental Academy <info@westerndentalacademy.com>`
 - **Withdrawal confirmed** — confirmation of withdrawal, access deactivated
 - **Certificate delivery** — PDF attachment + feedback CTA
 - **Midpoint reminder** — sent at day 10/21 of enrollment window (tracked via `midpointReminderSentAt`)
+- **Task assigned** — Resend email to assignee when a new task is created
 
 ---
 
@@ -309,3 +350,4 @@ From address: `Western Dental Academy <info@westerndentalacademy.com>`
 - [ ] Test course feedback system end-to-end
 - [ ] Ryan Zmurchuk — resend/accept Clerk invite
 - [ ] Verify Moodle course start date is set to a past date for year-round enrollment
+- [ ] Steve Wong bio still to be received — update `OFFERING_STATIC` in `PDTabs.tsx` when provided

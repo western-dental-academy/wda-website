@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { stripe } from '@/lib/stripe/client'
 import { createClient } from '@sanity/client'
+import { confirmInvigilationBooking } from '@/lib/invigilation/confirm'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -31,6 +32,13 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
+
+        const invigilationBookingId = session.metadata?.invigilationBookingId
+        if (invigilationBookingId) {
+          await confirmInvigilationBooking(session.id, invigilationBookingId)
+          break
+        }
+
         const sanityStudentId = session.metadata?.sanityStudentId
 
         if (!sanityStudentId) break

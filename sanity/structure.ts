@@ -107,6 +107,39 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem()
+        .title('Exam Invigilation')
+        .id('examInvigilation')
+        .child(
+          S.list()
+            .title('Exam Invigilation')
+            .items([
+              S.listItem()
+                .title('Settings (hours, capacity, closed days)')
+                .id('invigilationSettings')
+                .child(
+                  S.document()
+                    .schemaType('invigilationSettings')
+                    .documentId('invigilationSettings')
+                    .title('Exam Invigilation Settings')
+                ),
+              S.listItem()
+                .title('Upcoming Bookings')
+                .child(
+                  S.documentTypeList('invigilationBooking')
+                    .title('Upcoming Bookings')
+                    .filter('_type == "invigilationBooking" && stripePaymentStatus == "paid" && dateTime(date + "T23:59:59Z") >= now()')
+                    .defaultOrdering([{ field: 'date', direction: 'asc' }, { field: 'startTime', direction: 'asc' }])
+                ),
+              S.listItem()
+                .title('All Bookings')
+                .schemaType('invigilationBooking')
+                .child(S.documentTypeList('invigilationBooking').title('All Bookings')),
+            ])
+        ),
+
+      S.divider(),
+
+      S.listItem()
         .title('Staff Time Tracking')
         .child(
           S.list()

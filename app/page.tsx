@@ -12,6 +12,7 @@ const programs = [
   {
     num: "01",
     title: "Events",
+    href: "/professional-development",
     description:
       "Hands-on workshops and guest speaker sessions led by practitioners and industry experts, bringing practical knowledge, fresh perspectives, and ongoing learning experiences. Many events are open to the public to enrich community involvement.",
     tags: ["Hands-On", "Expert-Led", "Open Events"],
@@ -24,6 +25,7 @@ const programs = [
   {
     num: "02",
     title: "Courses",
+    href: "/professional-development#courses",
     description:
       "Focused on refreshing theoretical knowledge. We will also offer clinical refresher courses. WDA is consistently developing online courses. We're continually expanding our offerings, so be sure to check back often.",
     tags: ["Online", "In Person"],
@@ -201,7 +203,7 @@ export default function Home() {
                     </div>
 
                     <Link
-                      href="/professional-development"
+                      href={p.href}
                       className="group inline-flex items-center gap-1.5 text-sm font-bold transition-colors duration-200"
                       style={{ color: "#4A9FD4" }}
                     >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import InlineNewsletterForm from "@/components/InlineNewsletterForm";
@@ -836,6 +836,17 @@ const TABS: { id: Tab; label: string }[] = [
 
 export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: WorkshopOffering[]; onlineCourses?: OnlineCourse[] }) {
   const [activeTab, setActiveTab] = useState<Tab>("events");
+
+  // Open a tab from the URL hash, e.g. /professional-development#courses
+  useEffect(() => {
+    const syncFromHash = () => {
+      const hash = window.location.hash.slice(1);
+      if (TABS.some((t) => t.id === hash)) setActiveTab(hash as Tab);
+    };
+    syncFromHash();
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
+  }, []);
 
   const ergonomicsOfferings = offerings.filter((o) =>
     o.title.startsWith("Ergonomics in Healthcare")

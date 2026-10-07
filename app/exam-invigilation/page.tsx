@@ -9,8 +9,6 @@ export const metadata: Metadata = {
   title: "Exam Invigilation",
   description:
     "Book a supervised exam invigilation session at Western Dental Academy in the Edmonton Area. Online booking, flexible session lengths, accommodations available.",
-  // Not launched yet: keep out of search results until it's linked on the site
-  robots: { index: false },
 };
 
 export const dynamic = "force-dynamic";

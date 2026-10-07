@@ -232,6 +232,65 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════════════════════════════════════════════
+          EXAM INVIGILATION
+      ═══════════════════════════════════════════════════════════ */}
+      <section className="py-16 sm:py-24 px-6" style={{ backgroundColor: "#F4F7F9" }}>
+        <AnimateIn>
+          <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-center">
+            <div>
+              <p className="text-xs font-bold tracking-[0.22em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+                Exam Invigilation
+              </p>
+              <h2
+                className="text-2xl sm:text-3xl font-bold mb-4 leading-tight"
+                style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Need a place to write your exam?
+              </h2>
+              <p className="text-base leading-relaxed mb-8 max-w-xl" style={{ color: "rgba(43,48,58,0.75)" }}>
+                Write your online or paper exam in our quiet Edmonton Area classroom, supervised by our instructional
+                staff. Pick a date and time that works for you and book online in minutes.
+              </p>
+              <Link
+                href="/exam-invigilation"
+                className="inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-bold text-white transition-colors duration-200 bg-[#4A9FD4] hover:bg-[#1E3560]"
+                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                Book Your Exam →
+              </Link>
+            </div>
+            <ul
+              className="rounded-2xl bg-white p-6 sm:p-8 space-y-5"
+              style={{ boxShadow: "0 4px 24px rgba(30,53,96,0.06)", border: "1.5px solid rgba(30,53,96,0.07)" }}
+            >
+              {[
+                { title: "Supervised exam writing", text: "For students writing exams through their own school or exam centre." },
+                { title: "Online or paper exams", text: "Bring your own laptop, or we receive the paper copy from your school." },
+                { title: "Accommodations available", text: "Quiet room, extra time, noise-cancelling headphones or a verbal reader." },
+                { title: "Weekday, evening and Saturday times", text: "Book at least 7 days ahead and pay securely online." },
+              ].map(({ title, text }) => (
+                <li key={title} className="flex gap-4">
+                  <span
+                    className="mt-0.5 w-7 h-7 rounded-full flex items-center justify-center shrink-0"
+                    style={{ backgroundColor: "rgba(74,159,212,0.12)" }}
+                    aria-hidden
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={2.5} className="w-3.5 h-3.5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold" style={{ color: "#1E3560" }}>{title}</p>
+                    <p className="text-sm leading-relaxed" style={{ color: "rgba(43,48,58,0.65)" }}>{text}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </AnimateIn>
+      </section>
+
+      {/* ═══════════════════════════════════════════════════════════
           GIFT CERTIFICATES
       ═══════════════════════════════════════════════════════════ */}
       <AnimateIn>

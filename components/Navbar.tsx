@@ -11,6 +11,7 @@ const navLinks = [
   { label: "About", href: "/about" },
   { label: "Professional Development", href: "/professional-development" },
   { label: "Practical Exam Prep", href: "/national-board-guided-practice" },
+  { label: "Exam Invigilation", href: "/exam-invigilation" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];
@@ -53,7 +54,7 @@ export default function Navbar() {
       {/* ── Desktop nav ─────────────────────────────────────────────────── */}
       <nav
         aria-label="Primary navigation"
-        className="max-w-6xl mx-auto px-6 py-1 flex items-center justify-between"
+        className="max-w-7xl mx-auto px-6 py-1 flex items-center justify-between gap-6"
       >
         {/* Logo */}
         <Link
@@ -76,7 +77,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden lg:flex items-center gap-6">
+        <div className="hidden xl:flex items-center gap-6">
           <ul className="flex items-center gap-5" role="list">
             {navLinks.map(({ label, href }) => {
               const active = pathname === href;
@@ -85,7 +86,7 @@ export default function Navbar() {
                   <Link
                     href={href}
                     aria-current={active ? "page" : undefined}
-                    className={`relative text-sm font-semibold tracking-wide transition-colors duration-200 after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-[#4A9FD4] after:transition-transform after:duration-200 hover:text-[#4A9FD4] hover:after:scale-x-100 ${
+                    className={`relative whitespace-nowrap text-sm font-semibold tracking-wide transition-colors duration-200 after:absolute after:-bottom-0.5 after:left-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:rounded-full after:bg-[#4A9FD4] after:transition-transform after:duration-200 hover:text-[#4A9FD4] hover:after:scale-x-100 ${
                       active
                         ? "text-[#4A9FD4] after:scale-x-100"
                         : "text-[#1E3560]"
@@ -126,7 +127,7 @@ export default function Navbar() {
           aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
-          className="lg:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-md transition-colors hover:bg-[#F4F7F9]"
+          className="xl:hidden flex flex-col justify-center items-center w-9 h-9 gap-1.5 rounded-md transition-colors hover:bg-[#F4F7F9]"
         >
           <span
             className={`block h-0.5 w-5 rounded-full bg-[#1E3560] transition-all duration-300 ${
@@ -153,7 +154,7 @@ export default function Navbar() {
       <div
         id="mobile-menu"
         aria-hidden={!menuOpen}
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+        className={`xl:hidden overflow-hidden transition-all duration-300 ease-in-out ${
           menuOpen ? "max-h-[30rem] opacity-100" : "max-h-0 opacity-0"
         }`}
       >

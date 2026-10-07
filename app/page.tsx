@@ -248,7 +248,7 @@ export default function Home() {
                 Need a place to write your exam?
               </h2>
               <p className="text-base leading-relaxed mb-8 max-w-xl" style={{ color: "rgba(43,48,58,0.75)" }}>
-                Write your online or paper exam in our quiet Edmonton Area classroom, supervised by our instructional
+                Write your online or paper exam in our quiet Sherwood Park classroom, supervised by our instructional
                 staff. Pick a date and time that works for you and book online in minutes.
               </p>
               <Link

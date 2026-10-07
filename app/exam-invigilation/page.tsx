@@ -136,7 +136,7 @@ export default async function ExamInvigilationPage({
           </h1>
 
           <p className="text-lg leading-relaxed max-w-xl mb-8" style={{ color: "rgba(255,255,255,0.65)" }}>
-            Book a supervised seat in our Edmonton Area classroom for your online or paper exam. Pick a date and
+            Book a supervised seat in our Sherwood Park classroom for your online or paper exam. Pick a date and
             time below, pay securely, and we&apos;ll have your seat ready.
           </p>
 

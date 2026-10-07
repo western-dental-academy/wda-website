@@ -116,9 +116,12 @@ export function studentConfirmationHtml(b: InvigilationBookingRecord): string {
     ${box('What to bring', [
       'Government-issued photo ID',
       'This confirmation email (printed or on your phone)',
-      b.examFormat === 'computer'
-        ? 'Your own fully charged laptop for your computer-based exam'
-        : 'Any items your instructor has approved for the exam',
+      ...(b.examFormat === 'computer'
+        ? [
+            'A Windows or Mac laptop, fully charged, and its charger. Chromebooks and iPads are not supported.',
+            'If your exam uses Safe Exam Browser (for example, CAEC exams), download and install it from <a href="https://safeexambrowser.org" style="color:#378ADD;">safeexambrowser.org</a> before you arrive and make sure it opens. Installing needs administrator access, so work- or school-managed laptops may not allow it; check ahead of time.',
+          ]
+        : ['Any items your instructor has approved for the exam']),
       'Any other items required for your exam',
     ])}
 

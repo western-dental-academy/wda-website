@@ -64,7 +64,8 @@ const policies = (settings: InvigilationSettings) => [
     title: "What to bring",
     items: [
       "Photo ID and your confirmation email.",
-      "Your own laptop for computer-based exams, fully charged.",
+      "For computer-based exams: a Windows or Mac laptop, fully charged, and its charger. Chromebooks and iPads are not supported.",
+      "If your exam uses Safe Exam Browser (for example, CAEC exams), download and install it from safeexambrowser.org before you arrive and make sure it opens. Installing needs administrator access, so work- or school-managed laptops may not allow it; check ahead of time.",
       "Any other items required for your exam.",
     ],
   },

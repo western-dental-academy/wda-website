@@ -513,16 +513,14 @@ export default function InvigilationBookingForm({
             <Field htmlFor="inv-examFormat" label="Exam Format" required error={errors.examFormat}>
               <select id="inv-examFormat" value={fields.examFormat} onChange={e => set("examFormat", e.target.value)} className={inputCls("examFormat")} {...aria("examFormat")}>
                 <option value="">Select…</option>
-                <option value="computer">Computer-based (bring a Windows or Mac laptop)</option>
+                <option value="computer">Computer-based (bring your own laptop)</option>
                 <option value="paper">Paper</option>
               </select>
               {fields.examFormat === "computer" && (
                 <div className="rounded-lg px-4 py-3 text-sm leading-relaxed text-[#2B303A]/80" style={{ backgroundColor: "#F4F7F9", borderLeft: "3px solid #4A9FD4" }}>
-                  <p>Bring a Windows or Mac laptop and its charger. Chromebooks and iPads are not supported.</p>
+                  <p>Bring a fully charged laptop and its charger. Check with your school which devices are supported; some exams don&apos;t allow Chromebooks or iPads.</p>
                   <p className="mt-2">
-                    If your exam uses Safe Exam Browser (for example, CAEC exams), download and install it from{" "}
-                    <a href="https://safeexambrowser.org" target="_blank" rel="noopener noreferrer" className="font-semibold text-[#4A9FD4] hover:text-[#1E3560]">safeexambrowser.org</a>{" "}
-                    before you arrive and make sure it opens. Installing needs administrator access, so work- or school-managed laptops may not allow it; check ahead of time.
+                    If your school or exam provider requires proctoring or lockdown software (such as Safe Exam Browser or Respondus LockDown Browser), install it and make sure it opens before you arrive. Installing usually needs administrator access, so work-managed laptops may not allow it.
                   </p>
                 </div>
               )}

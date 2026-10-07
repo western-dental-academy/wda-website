@@ -118,8 +118,8 @@ export function studentConfirmationHtml(b: InvigilationBookingRecord): string {
       'This confirmation email (printed or on your phone)',
       ...(b.examFormat === 'computer'
         ? [
-            'A Windows or Mac laptop, fully charged, and its charger. Chromebooks and iPads are not supported.',
-            'If your exam uses Safe Exam Browser (for example, CAEC exams), download and install it from <a href="https://safeexambrowser.org" style="color:#378ADD;">safeexambrowser.org</a> before you arrive and make sure it opens. Installing needs administrator access, so work- or school-managed laptops may not allow it; check ahead of time.',
+            "A fully charged laptop and its charger. Check with your school which devices are supported; some exams don't allow Chromebooks or iPads.",
+            'If your school or exam provider requires proctoring or lockdown software (such as Safe Exam Browser or Respondus LockDown Browser), install it and make sure it opens before you arrive. Installing usually needs administrator access, so work-managed laptops may not allow it.',
           ]
         : ['Any items your instructor has approved for the exam']),
       'Any other items required for your exam',

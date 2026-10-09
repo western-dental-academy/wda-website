@@ -87,11 +87,13 @@ export async function POST(req: NextRequest) {
       const hours = OFFERING_METADATA[doc.offering?.title]?.hours ?? 2
       const startTime = new Date(doc.date)
       const endTime = new Date(startTime.getTime() + hours * 60 * 60 * 1000)
+      // Send as UTC so Outlook's own Alberta DST rules can't shift the time
+      const toUtcWallClock = (d: Date) => d.toISOString().replace('Z', '')
       const calResult = await createCalendarEvent({
-        calendarEmail: 'WDAteamsite@westerndentalacademy.com',
         subject: doc.offering?.title ?? 'WDA Workshop',
-        start: startTime.toISOString(),
-        end: endTime.toISOString(),
+        start: toUtcWallClock(startTime),
+        end: toUtcWallClock(endTime),
+        timeZone: 'UTC',
         isAllDay: false,
         body: 'WDA Workshop/Event — westerndentalacademy.com',
       })

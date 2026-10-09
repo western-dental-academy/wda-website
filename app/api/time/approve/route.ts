@@ -66,9 +66,14 @@ export async function POST(req: NextRequest) {
       let calStart: string
       let calEnd: string
       let isAllDay: boolean
+      let calTimeZone = 'America/Edmonton'
       if (request.halfDay && request.startTime && request.endTime) {
-        calStart = `${request.startDate}T${request.startTime}:00`
-        calEnd = `${request.startDate}T${request.endTime}:00`
+        // Alberta is UTC-6 year-round; send as UTC so Outlook's DST rules can't shift it
+        const toUtc = (t: string) =>
+          new Date(`${request.startDate}T${t}:00-06:00`).toISOString().replace('Z', '')
+        calStart = toUtc(request.startTime)
+        calEnd = toUtc(request.endTime)
+        calTimeZone = 'UTC'
         isAllDay = false
       } else {
         // All-day events: Graph API requires end = day after the last day
@@ -79,10 +84,10 @@ export async function POST(req: NextRequest) {
         isAllDay = true
       }
       const calResult = await createCalendarEvent({
-        calendarEmail: 'WDAteamsite@westerndentalacademy.com',
         subject,
         start: calStart,
         end: calEnd,
+        timeZone: calTimeZone,
         isAllDay,
       })
       if (!calResult.success) {

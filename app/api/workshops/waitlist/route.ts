@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     const dateDisplay = workshopDate?.date
       ? new Date(workshopDate.date).toLocaleDateString('en-CA', {
-          timeZone: 'America/Edmonton',
+          timeZone: 'America/Regina',
           weekday: 'long', month: 'long', day: 'numeric', year: 'numeric',
         })
       : 'TBD'

@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
       const midpoint   = new Date(enrolledAt.getTime() + TEN_DAYS_MS)
       if (now >= midpoint && enrollment.studentEmail) {
         const expiryDisplay = expiresAt.toLocaleDateString('en-CA', {
-          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Edmonton',
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',
         })
         const daysLeft = Math.round((expiresAt.getTime() - now.getTime()) / (24 * 60 * 60 * 1000))
         const extensionPriceLine = enrollment.extensionPrice
@@ -176,7 +176,7 @@ export async function GET(req: NextRequest) {
 
       if (!alreadySent && enrollment.studentEmail) {
         const expiryDisplay = expiresAt.toLocaleDateString('en-CA', {
-          year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Edmonton',
+          year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',
         })
         try {
           await resend.emails.send({

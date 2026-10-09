@@ -50,7 +50,7 @@ const STATUS_STYLE: Record<string, { label: string; bg: string; color: string }>
 function fmt(iso?: string): string {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     year: 'numeric', month: 'short', day: 'numeric',
   })
 }

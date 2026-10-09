@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
                   <p style="color: #1E3560; font-size: 16px; font-weight: 700; margin: 0 0 8px;">${title}</p>
                   ${description?.trim() ? `<p style="color: #4b5563; font-size: 14px; margin: 0 0 12px;">${description.trim()}</p>` : ''}
                   <table style="width: 100%; font-size: 13px;">
-                    ${dueDate ? `<tr><td style="color: #6b7280; padding: 4px 0;">Due Date</td><td style="color: #1E3560; font-weight: 600;">${new Date(dueDate).toLocaleDateString('en-CA', { timeZone: 'America/Edmonton', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>` : ''}
+                    ${dueDate ? `<tr><td style="color: #6b7280; padding: 4px 0;">Due Date</td><td style="color: #1E3560; font-weight: 600;">${new Date(dueDate).toLocaleDateString('en-CA', { timeZone: 'America/Regina', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</td></tr>` : ''}
                     <tr><td style="color: #6b7280; padding: 4px 0;">Priority</td><td style="color: #1E3560; font-weight: 600;">${priority ?? 'Medium'}</td></tr>
                   </table>
                 </div>

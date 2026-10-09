@@ -79,7 +79,7 @@ async function CourseSuccessContent({ sessionId }: { sessionId: string }) {
 
     // Send confirmation email
     const expiryFormatted = new Date(accessExpiresAt).toLocaleDateString('en-CA', {
-      year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Edmonton',
+      year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',
     })
 
     try {
@@ -121,7 +121,7 @@ async function CourseSuccessContent({ sessionId }: { sessionId: string }) {
   }
 
   const expiryDisplay = new Date(accessExpiresAt).toLocaleDateString('en-CA', {
-    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Edmonton',
+    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',
   })
 
   return (

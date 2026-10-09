@@ -27,7 +27,7 @@ const STAFF_NAMES: Record<string, string> = {
 
 function fmtNoteDate(iso: string) {
   return new Date(iso).toLocaleString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     month:    'short',
     day:      'numeric',
     year:     'numeric',

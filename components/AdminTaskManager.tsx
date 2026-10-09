@@ -58,7 +58,7 @@ const BLANK_FORM = { title: '', description: '', assignedTo: '', dueDate: '', pr
 
 function getMountainDateString(dateStr: string) {
   return new Date(dateStr + 'T12:00:00').toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -67,7 +67,7 @@ function getMountainDateString(dateStr: string) {
 
 function todayStr() {
   return new Date().toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -85,7 +85,7 @@ function dueDateStatus(dueDate: string | undefined, status: string) {
 
 function formatDueDate(dueDate: string) {
   return new Date(dueDate + 'T12:00:00').toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     month: 'short', day: 'numeric', year: 'numeric',
   })
 }

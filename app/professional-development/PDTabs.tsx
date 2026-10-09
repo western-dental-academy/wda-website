@@ -223,7 +223,7 @@ function WorkshopOfferingCard({
               </svg>
               <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>
                 {new Date(nextDate.date).toLocaleDateString("en-CA", {
-                  timeZone: "America/Edmonton",
+                  timeZone: "America/Regina",
                   weekday: "long",
                   year: "numeric",
                   month: "long",
@@ -474,7 +474,7 @@ function WorkshopOfferingCard({
                   </svg>
                   <span className="text-sm font-semibold" style={{ color: "#1E3560" }}>
                     {new Date(nextDate.date).toLocaleDateString("en-CA", {
-                      timeZone: "America/Edmonton",
+                      timeZone: "America/Regina",
                       weekday: "long",
                       year: "numeric",
                       month: "long",
@@ -709,7 +709,7 @@ function ErgonomicsGroupCard({
                   <span className="text-xs shrink-0" style={{ color: "rgba(43,48,58,0.45)" }}>
                     {sessionDate
                       ? new Date(sessionDate.date).toLocaleDateString("en-CA", {
-                          timeZone: "America/Edmonton",
+                          timeZone: "America/Regina",
                           month: "short",
                           day: "numeric",
                           year: "numeric",

@@ -117,7 +117,7 @@ function Stars({ rating, size = 14 }: { rating: number; size?: number }) {
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     month: 'short',
     day: 'numeric',
     year: 'numeric',

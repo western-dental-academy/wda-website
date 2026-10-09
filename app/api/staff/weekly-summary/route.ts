@@ -30,7 +30,7 @@ interface DayGroup {
 
 function toEdmontonDateKey(iso: string): string {
   return new Date(iso).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -39,7 +39,7 @@ function toEdmontonDateKey(iso: string): string {
 
 function toEdmontonDayLabel(iso: string): string {
   return new Date(iso).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -54,9 +54,9 @@ function roundHours(ms: number): number {
 // Monday of the current local week (Edmonton)
 function getWeekBounds() {
   const now = new Date()
-  // Edmonton offset: UTC-6 (MST) or UTC-7 (MDT). Use toLocaleDateString to find today's date in Edmonton.
+  // Alberta is UTC-6 year-round (America/Regina has the same fixed offset). Use toLocaleDateString to find today's date in Edmonton.
   const todayEdmonton = new Date(now.toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

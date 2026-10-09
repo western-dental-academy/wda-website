@@ -99,7 +99,7 @@ export async function getStaffHoursSummary(
       .sort((a, b) => new Date(a.clockIn).getTime() - new Date(b.clockIn).getTime())
       .map(l => ({
         date: new Date(l.clockIn).toLocaleDateString('en-CA', {
-          weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Edmonton',
+          weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/Regina',
         }),
         text: l.notes as string,
       }))

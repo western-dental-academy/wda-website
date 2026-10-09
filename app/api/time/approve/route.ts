@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
       let calStart: string
       let calEnd: string
       let isAllDay: boolean
-      let calTimeZone = 'America/Edmonton'
+      let calTimeZone = 'America/Regina'
       if (request.halfDay && request.startTime && request.endTime) {
         // Alberta is UTC-6 year-round; send as UTC so Outlook's DST rules can't shift it
         const toUtc = (t: string) =>

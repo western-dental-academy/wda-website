@@ -155,7 +155,7 @@ function toDateKey(d: Date): string {
 
 function formatWorkshopDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 }
@@ -345,7 +345,7 @@ export default function PortalTabs({
   const workshopMap = new Map<string, SerializedWorkshopDate[]>()
   for (const w of workshopDates) {
     const key = new Date(w.date).toLocaleDateString('en-CA', {
-      timeZone: 'America/Edmonton',
+      timeZone: 'America/Regina',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',
@@ -756,7 +756,7 @@ export default function PortalTabs({
               const wks  = workshopMap.get(selectedDay) ?? []
               // Use noon local time to avoid off-by-one from UTC parsing
               const displayDate = new Date(selectedDay + 'T12:00:00').toLocaleDateString('en-CA', {
-                timeZone: 'America/Edmonton',
+                timeZone: 'America/Regina',
                 weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
               })
               return (

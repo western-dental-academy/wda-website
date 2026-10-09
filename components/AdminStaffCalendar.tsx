@@ -66,9 +66,9 @@ function formatWorkshopTime(dateStr: string): string {
   return new Date(dateStr).toLocaleTimeString('en-CA', {
     hour: 'numeric',
     minute: '2-digit',
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     hour12: true,
-  }).replace('a.m.', 'AM').replace('p.m.', 'PM') + ' MDT'
+  }).replace('a.m.', 'AM').replace('p.m.', 'PM') + ' MT'
 }
 
 interface DayEntry {
@@ -121,7 +121,7 @@ function buildWorkshopDayMap(
   for (const w of workshopDates) {
     if (w.active === false) continue
     const localStr = new Date(w.date).toLocaleDateString('en-CA', {
-      timeZone: 'America/Edmonton',
+      timeZone: 'America/Regina',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',

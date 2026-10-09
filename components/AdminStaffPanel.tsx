@@ -56,7 +56,7 @@ interface Props {
 
 function fmtDt(iso: string): string {
   return new Date(iso).toLocaleString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
@@ -66,7 +66,7 @@ function fmtDt(iso: string): string {
 
 function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     hour: 'numeric',
     minute: '2-digit',
   })
@@ -193,7 +193,7 @@ function MyClock() {
   }
 
   const clockInTime = active
-    ? new Date(active.clockIn).toLocaleTimeString('en-CA', { timeZone: 'America/Edmonton', hour: 'numeric', minute: '2-digit' })
+    ? new Date(active.clockIn).toLocaleTimeString('en-CA', { timeZone: 'America/Regina', hour: 'numeric', minute: '2-digit' })
     : null
 
   const totalWeekHours = active ? weekHours + elapsed / 3600 : weekHours

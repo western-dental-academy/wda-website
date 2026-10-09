@@ -315,7 +315,7 @@ export async function generateWorkshopCertificate(params: {
   const learningObjectives = meta?.learningObjectives ?? null
 
   const formattedDate = new Date(workshopDate).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     weekday: 'long',
     year: 'numeric',
     month: 'long',

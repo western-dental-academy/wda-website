@@ -80,7 +80,7 @@ function extractLocalTime(iso: string): string {
 
 function formatLong(iso: string): string {
   const datePart = new Date(iso).toLocaleDateString("en-CA", {
-    timeZone: "America/Edmonton",
+    timeZone: "America/Regina",
     weekday: "long", year: "numeric", month: "long", day: "numeric",
   });
   return `${datePart} at ${extractLocalTime(iso)}`
@@ -88,7 +88,7 @@ function formatLong(iso: string): string {
 
 function formatShort(iso: string): string {
   const date = new Date(iso).toLocaleDateString("en-CA", {
-    timeZone: "America/Edmonton", month: "short", day: "numeric", year: "numeric",
+    timeZone: "America/Regina", month: "short", day: "numeric", year: "numeric",
   });
   const time = extractLocalTime(iso).replace("a.m.", "AM").replace("p.m.", "PM");
   return `${date} — ${time}`;

@@ -11,7 +11,7 @@
 - Workshop/offering name keys must match Sanity titles exactly across `WORKSHOP_PRICES`, `OFFERING_STATIC`, and `lib/workshops/offerings.ts`
 - When returning PDF buffers in API routes, always wrap in `new Uint8Array(buffer)`
 - **Sanity datetime fields must always store with `-06:00` offset** — Alberta abolished DST so UTC-6 applies year-round. Never store `-07:00` for any future date.
-- **Never use `toLocaleTimeString` with `timeZone: "America/Edmonton"` to display offering times** — IANA databases differ across runtimes and produce wrong results. Use `extractLocalTime(iso)` which regexes the local time digits directly from the stored ISO string.
+- **Never use `timeZone: "America/Edmonton"`** — Node/Vercel tz data still applies the old DST rule (UTC-7 in winter). Use `"America/Regina"` (fixed UTC-6, same as Alberta now) for all date/time formatting. For offering times, `extractLocalTime(iso)` reads the digits straight from the stored ISO string.
 
 ---
 

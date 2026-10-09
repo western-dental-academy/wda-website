@@ -74,7 +74,7 @@ async function ExtendSuccessContent({ sessionId }: { sessionId: string }) {
   }
 
   const expiryDisplay = new Date(newExpiresAt).toLocaleDateString('en-CA', {
-    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Edmonton',
+    year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',
   })
 
   return (

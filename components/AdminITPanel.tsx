@@ -50,7 +50,7 @@ function fmtMs(ms: number): string {
 }
 
 function fmtTime(d: Date): string {
-  return d.toLocaleTimeString('en-CA', { timeZone: 'America/Edmonton', hour: 'numeric', minute: '2-digit', second: '2-digit' })
+  return d.toLocaleTimeString('en-CA', { timeZone: 'America/Regina', hour: 'numeric', minute: '2-digit', second: '2-digit' })
 }
 
 // ── MaintenanceToggle ──────────────────────────────────────────────────────────

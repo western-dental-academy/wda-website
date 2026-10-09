@@ -161,7 +161,7 @@ export async function generateCompletionCertificate(params: {
   const { firstName, lastName, courseName, completedAt, hours } = params
 
   const completedDate = new Date(completedAt).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
 

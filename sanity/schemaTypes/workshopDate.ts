@@ -40,7 +40,7 @@ export default defineType({
     prepare({ title, subtitle }) {
       const formatted = subtitle
         ? new Date(subtitle).toLocaleDateString('en-CA', {
-            timeZone: 'America/Edmonton',
+            timeZone: 'America/Regina',
             weekday: 'short',
             year: 'numeric',
             month: 'long',

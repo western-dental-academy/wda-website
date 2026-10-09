@@ -49,7 +49,7 @@ export interface DateGroup {
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-CA", {
-    timeZone: "America/Edmonton",
+    timeZone: "America/Regina",
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -59,7 +59,7 @@ function fmtDate(iso: string): string {
 
 function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-CA", {
-    timeZone: "America/Edmonton",
+    timeZone: "America/Regina",
     hour: "numeric",
     minute: "2-digit",
   });
@@ -482,13 +482,13 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                         : r.newsletterInviteSentAt;
                       if (sentAt) {
                         const label = new Date(sentAt).toLocaleDateString('en-CA', {
-                          month: 'short', day: 'numeric', timeZone: 'America/Edmonton',
+                          month: 'short', day: 'numeric', timeZone: 'America/Regina',
                         });
                         return (
                           <span
                             className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px] font-semibold"
                             style={{ backgroundColor: 'rgba(107,114,128,0.1)', color: '#6b7280' }}
-                            title={`Invite sent ${new Date(sentAt).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Edmonton' })}`}
+                            title={`Invite sent ${new Date(sentAt).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/Regina' })}`}
                           >
                             Invited {label}
                           </span>

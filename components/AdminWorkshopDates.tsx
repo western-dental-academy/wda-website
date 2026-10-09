@@ -49,14 +49,14 @@ const BLANK_ADD = { offeringId: '', date: '', active: false }
 
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
   })
 }
 
 function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('en-CA', {
-    timeZone: 'America/Edmonton', hour: 'numeric', minute: '2-digit',
+    timeZone: 'America/Regina', hour: 'numeric', minute: '2-digit',
   })
 }
 
@@ -68,7 +68,7 @@ function isPast(iso: string): boolean {
 function utcToMountainLocal(isoUTC: string): string {
   const d = new Date(isoUTC)
   const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Edmonton',
+    timeZone: 'America/Regina',
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit',
     hour12: false,

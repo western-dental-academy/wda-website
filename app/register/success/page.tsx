@@ -137,7 +137,7 @@ function confirmationEmailHtml(
               <td style="padding:8px 12px;">Limiting your Liability in Emergency Situations — Tony Korobanik</td>
             </tr>
           </table>
-          <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">All times are Mountain Daylight Time (MDT).</p>
+          <p style="font-size:12px;color:#6b7280;margin:8px 0 0;">All times are Mountain Time (Alberta, UTC-6).</p>
         </div>` : ''}
         <p style="color:#374151;font-size:14px;line-height:1.6;margin:${workshop.includes('Renewal Wellness') ? '16px' : '0'} 0 16px;">
           Our team will be in touch if there are any changes.
@@ -335,10 +335,10 @@ export default async function SuccessPage({
             );
             for (const d of dateResults) {
               dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
-                timeZone: "America/Edmonton",
+                timeZone: "America/Regina",
                 weekday: "long", year: "numeric", month: "long", day: "numeric",
-                hour: "numeric", minute: "2-digit", timeZoneName: "short",
-              });
+                hour: "numeric", minute: "2-digit",
+              }) + " MT";
               teamsWebinarIdMap[d._id] = d.teamsWebinarId ?? null;
               virtualPriceMap[d._id] = d.virtualPrice ?? null;
             }

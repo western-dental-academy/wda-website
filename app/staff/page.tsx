@@ -204,9 +204,9 @@ export default async function StaffPage() {
                   c.status === 'expired'   ? 'Expired' : 'Suspended'
 
                 const dateLabel = c.status === 'completed' && c.completedAt
-                  ? `Completed ${new Date(c.completedAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/Edmonton' })}`
+                  ? `Completed ${new Date(c.completedAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/Regina' })}`
                   : c.accessExpiresAt
-                  ? `Access until ${new Date(c.accessExpiresAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/Edmonton' })}`
+                  ? `Access until ${new Date(c.accessExpiresAt).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'America/Regina' })}`
                   : null
 
                 return (

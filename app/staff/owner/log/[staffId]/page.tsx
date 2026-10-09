@@ -19,7 +19,7 @@ type LogEntry = {
 }
 
 function fmtTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('en-CA', { timeZone: 'America/Edmonton', hour: 'numeric', minute: '2-digit' })
+  return new Date(iso).toLocaleTimeString('en-CA', { timeZone: 'America/Regina', hour: 'numeric', minute: '2-digit' })
 }
 
 function fmtDuration(clockIn: string, clockOut: string): string {
@@ -74,7 +74,7 @@ export default async function StaffLogPage({
   const grouped: Record<string, LogEntry[]> = {}
   for (const log of logs) {
     const key = new Date(log.clockIn).toLocaleDateString('en-CA', {
-      timeZone: 'America/Edmonton',
+      timeZone: 'America/Regina',
       year: 'numeric',
       month: '2-digit',
       day: '2-digit',

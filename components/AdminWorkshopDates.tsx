@@ -78,13 +78,10 @@ function utcToMountainLocal(isoUTC: string): string {
   return `${get('year')}-${get('month')}-${get('day')}T${h}:${get('minute')}`
 }
 
-// Convert datetime-local Mountain Time value to UTC ISO string for Sanity
+// Convert datetime-local Alberta value to an ISO string for Sanity.
+// Alberta abolished DST, so UTC-6 applies year-round — never -07:00.
 function mountainLocalToUTC(localDT: string): string {
-  const month = parseInt(localDT.slice(5, 7), 10)
-  const day   = parseInt(localDT.slice(8, 10), 10)
-  const isMDT = (month > 3 && month < 11) || (month === 3 && day >= 8)
-  const offset = isMDT ? '-06:00' : '-07:00'
-  return `${localDT}:00.000${offset}`
+  return `${localDT}:00.000-06:00`
 }
 
 function registeredCount(dateId: string, regs: WorkshopRegistration[]): number {

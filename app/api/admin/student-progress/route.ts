@@ -5,6 +5,8 @@ import { getMoodleProgress } from '@/lib/moodle/client'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',

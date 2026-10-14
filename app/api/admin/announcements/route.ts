@@ -7,6 +7,8 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import AnimateIn from "@/components/AnimateIn";
+import Wes from "@/components/Wes";
 import PDTabs from "./PDTabs";
 import { client } from "@/sanity/lib/client";
 
@@ -123,6 +124,12 @@ export default async function ProfessionalDevelopmentPage() {
             courses — all designed to help dental professionals maintain competence and stay
             current in Alberta&apos;s oral health industry.
           </p>
+
+          <Wes
+            pose="wave"
+            size={280}
+            className="hidden lg:block absolute right-6 bottom-0 pointer-events-none"
+          />
         </div>
 
         <div

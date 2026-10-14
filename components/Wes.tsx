@@ -28,10 +28,12 @@ export default function Wes({
   pose,
   size = 120,
   className,
+  decorative = false,
 }: {
   pose: WesPose;
   size?: number;
   className?: string;
+  decorative?: boolean;
 }) {
   const animate = useSyncExternalStore(noopSubscribe, canAnimate, () => false);
 
@@ -40,7 +42,7 @@ export default function Wes({
 
   if (!animate) {
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={`${src}.png`} alt={ALT[pose]} width={size} height={size} className={className} style={style} />;
+    return <img src={`${src}.png`} alt={decorative ? "" : ALT[pose]} width={size} height={size} className={className} style={style} />;
   }
 
   return (
@@ -51,8 +53,7 @@ export default function Wes({
       loop
       muted
       playsInline
-      aria-label={ALT[pose]}
-      role="img"
+      {...(decorative ? { "aria-hidden": true } : { "aria-label": ALT[pose], role: "img" })}
       width={size}
       height={size}
       className={className}

@@ -63,7 +63,7 @@ export default function Navbar() {
           aria-label="Western Dental Academy – Home"
           className="shrink-0 flex items-center gap-1"
         >
-          <Wes pose="wave" size={60} decorative className="shrink-0 -my-1" />
+          <Wes pose="wave" size={84} decorative className="shrink-0 -my-3 -mr-1" />
           <motion.div
             className="inline-flex"
             whileHover={{ scale: 1.04, transition: { duration: 0.2, ease: "easeOut" } }}

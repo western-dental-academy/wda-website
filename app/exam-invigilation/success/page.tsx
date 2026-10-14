@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Wes from "@/components/Wes";
 import { confirmInvigilationBooking } from "@/lib/invigilation/confirm";
 import { materialsDeadline, type InvigilationBookingRecord } from "@/lib/invigilation/emails";
 import { formatDateLong, formatTimeRange } from "@/lib/invigilation/settings";
@@ -37,11 +38,7 @@ export default async function InvigilationSuccessPage({
             boxShadow: "0 4px 24px rgba(30,53,96,0.06)",
           }}
         >
-          <div className="w-16 h-16 rounded-full mx-auto mb-7 flex items-center justify-center" style={{ backgroundColor: "rgba(74,159,212,0.12)" }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="#4A9FD4" strokeWidth={2.25} className="w-8 h-8" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-          </div>
+          <Wes pose="thumbs-up" size={140} className="mx-auto mb-4 -mt-4" />
 
           <h1
             className="text-2xl font-bold text-center mb-3"

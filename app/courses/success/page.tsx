@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import Wes from '@/components/Wes'
 import { createClient } from '@sanity/client'
 import { Resend } from 'resend'
 import { getOrCreateMoodleUser, enrollUserInCourse } from '@/lib/moodle'
@@ -128,14 +129,7 @@ async function CourseSuccessContent({ sessionId }: { sessionId: string }) {
     <main className="min-h-screen flex items-center justify-center px-4 py-16" style={{ backgroundColor: '#F4F7F9' }}>
       <div className="max-w-lg w-full">
         <div className="rounded-2xl bg-white p-8 text-center" style={{ boxShadow: '0 4px 24px rgba(13,59,110,0.08)' }}>
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-            style={{ backgroundColor: 'rgba(22,163,74,0.1)' }}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth={2.5} className="w-8 h-8" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
+          <Wes pose="thumbs-up" size={140} className="mx-auto mb-3 -mt-2" />
 
           <h1
             className="text-2xl font-bold mb-2"

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Home, GraduationCap, MessageCircle } from "lucide-react";
+import Wes from "@/components/Wes";
 
 const cards = [
   {
@@ -38,29 +39,32 @@ export default function NotFound() {
         />
       </Link>
 
-      {/* 404 */}
-      <p
-        className="text-[6rem] sm:text-[8rem] font-bold leading-none select-none mb-2"
-        style={{
-          fontFamily: "var(--font-montserrat), sans-serif",
-          color: "#1E3560",
-          letterSpacing: "-0.04em",
-          opacity: 0.12,
-        }}
-        aria-hidden
-      >
-        404
-      </p>
+      {/* Wes + 404 */}
+      <div className="mb-2 flex items-end justify-center gap-2 sm:gap-4">
+        <p
+          className="text-[6rem] sm:text-[8rem] font-bold leading-none select-none"
+          style={{
+            fontFamily: "var(--font-montserrat), sans-serif",
+            color: "#1E3560",
+            letterSpacing: "-0.04em",
+            opacity: 0.12,
+          }}
+          aria-hidden
+        >
+          404
+        </p>
+        <Wes pose="thinking" size={120} className="-mb-3" />
+      </div>
 
       {/* Headline + subheading */}
       <h1
-        className="text-2xl sm:text-3xl font-bold text-[#1E3560] mb-3 -mt-4"
+        className="text-2xl sm:text-3xl font-bold text-[#1E3560] mb-3 mt-8"
         style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
       >
-        Looks Like This Page Is Missing
+        This Page Must Have Been Extracted.
       </h1>
       <p className="text-sm leading-relaxed text-[#2B303A]/55 max-w-sm mb-14">
-        The page you&apos;re looking for may have moved or doesn&apos;t exist.
+        Wes looked everywhere, but the page you&apos;re after has moved or no longer exists.
         Here are a few places that might help.
       </p>
 

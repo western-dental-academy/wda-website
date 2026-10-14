@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
+import Wes from "@/components/Wes";
 import InlineNewsletterForm from "@/components/InlineNewsletterForm";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -936,19 +937,22 @@ export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: W
         <div className={activeTab === "courses" ? undefined : "hidden"}>
           {onlineCourses.length > 0 || courseOfferings.length > 0 ? (
             <>
-              <div className="mb-12">
-                <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
-                  Available Courses
-                </p>
-                <h2
-                  className="text-3xl font-bold leading-tight"
-                  style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
-                >
-                  Online Refresher Courses
-                </h2>
-                <p className="mt-3 text-base leading-relaxed max-w-xl" style={{ color: "rgba(43,48,58,0.65)" }}>
-                  Self-paced online courses hosted on WDA Moodle. Enrol, study at your own pace, and receive a Certificate of Completion when you finish.
-                </p>
+              <div className="mb-12 flex items-end justify-between gap-6">
+                <div>
+                  <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
+                    Available Courses
+                  </p>
+                  <h2
+                    className="text-3xl font-bold leading-tight"
+                    style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                  >
+                    Online Refresher Courses
+                  </h2>
+                  <p className="mt-3 text-base leading-relaxed max-w-xl" style={{ color: "rgba(43,48,58,0.65)" }}>
+                    Self-paced online courses hosted on WDA Moodle. Enrol, study at your own pace, and receive a Certificate of Completion when you finish.
+                  </p>
+                </div>
+                <Wes pose="wave" size={112} className="hidden sm:block shrink-0 -mb-2" />
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {onlineCourses.map((c, i) => (

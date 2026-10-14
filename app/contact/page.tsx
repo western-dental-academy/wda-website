@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
+import Wes from "@/components/Wes";
 import ContactForm from "@/components/ContactForm";
 import { FloatingPaths } from "@/components/ui/background-paths";
 
@@ -188,6 +189,12 @@ export default function ContactPage() {
             registration, or anything else — our team is here to help.
             Expect a reply within one business day.
           </p>
+
+          <Wes
+            pose="thinking"
+            size={280}
+            className="hidden lg:block absolute right-6 bottom-0 pointer-events-none"
+          />
         </div>
 
         <div

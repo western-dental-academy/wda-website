@@ -175,6 +175,6 @@ export async function POST(req: NextRequest) {
     return Response.json({ url: session.url })
   } catch (error) {
     console.error('Invigilation checkout error:', error)
-    return bad('Something went wrong starting checkout. Please try again or call 780-499-9153.', 500)
+    return bad('Something went wrong starting checkout. Please try again or call 780-307-3275.', 500)
   }
 }

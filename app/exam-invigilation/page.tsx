@@ -46,7 +46,7 @@ const policies = (settings: InvigilationSettings) => [
     title: "Booking",
     items: [
       `Exams must be booked at least ${settings.minDaysNotice} days before your appointment.`,
-      "Book online, email info@westerndentalacademy.com, or call 780-499-9153.",
+      "Book online, email info@westerndentalacademy.com, or call 780-307-3275.",
       "Accommodations (quiet room, noise-cancelling headphones, extra time, etc.) must be indicated when you book.",
       "A verbal exam reader is an extra charge equal to the invigilation fee.",
       "Western Dental Academy reserves the right to reschedule or cancel an appointment if needed. If this happens, we'll contact you as soon as possible to arrange a new time.",
@@ -182,7 +182,7 @@ export default async function ExamInvigilationPage({
             <p className="text-xs text-[#2B303A]/50 mt-5 leading-relaxed">
               Sessions start on the hour and must finish by closing time. Our classroom is on the second floor with no
               elevator. Questions? Call{" "}
-              <a href="tel:7804999153" className="font-semibold text-[#4A9FD4]">780-499-9153</a>.
+              <a href="tel:7803073275" className="font-semibold text-[#4A9FD4]">780-307-3275</a>.
             </p>
           </div>
 

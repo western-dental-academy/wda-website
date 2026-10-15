@@ -234,7 +234,7 @@ export default function InvigilationBookingForm({
       <div className={card} style={cardStyle}>
         <p className="text-[#1E3560] font-semibold mb-2">Online booking is paused right now.</p>
         <p className="text-sm text-[#2B303A]/70">
-          To book an exam, please email <a className="text-[#4A9FD4] font-semibold" href="mailto:info@westerndentalacademy.com">info@westerndentalacademy.com</a> or call 780-499-9153.
+          To book an exam, please email <a className="text-[#4A9FD4] font-semibold" href="mailto:info@westerndentalacademy.com">info@westerndentalacademy.com</a> or call 780-307-3275.
         </p>
       </div>
     );

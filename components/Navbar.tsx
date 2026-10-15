@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
-import Wes from "@/components/Wes";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -61,9 +60,8 @@ export default function Navbar() {
         <Link
           href="/"
           aria-label="Western Dental Academy – Home"
-          className="shrink-0 flex items-center gap-1"
+          className="shrink-0"
         >
-          <Wes pose="wave" size={84} decorative className="shrink-0 -my-3 -mr-1" />
           <motion.div
             className="inline-flex"
             whileHover={{ scale: 1.04, transition: { duration: 0.2, ease: "easeOut" } }}

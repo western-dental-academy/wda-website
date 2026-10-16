@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import ShowPastToggle from './ShowPastToggle'
+import { isPastDay } from '@/lib/admin/pastDates'
 
 export interface CourseOfferingEntry {
   _id: string
@@ -67,6 +69,11 @@ function expiryStyle(iso?: string): React.CSSProperties {
   if (diff < 0) return { color: '#dc2626', fontWeight: 600 }
   if (diff < 3 * 24 * 60 * 60 * 1000) return { color: '#d97706', fontWeight: 600 }
   return {}
+}
+
+// Finished enrollments: completed, expired, or the access window's Alberta day has ended
+function isPastEnrollment(e: CourseEnrollmentEntry, status: string): boolean {
+  return status === 'completed' || status === 'expired' || isPastDay(e.accessExpiresAt)
 }
 
 // ── Course Offerings Panel ─────────────────────────────────────────────────────
@@ -343,10 +350,13 @@ export default function AdminCourseEnrollments({
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [localStatuses, setLocalStatuses] = useState<Record<string, string>>({})
+  const [showPast, setShowPast] = useState(false)
 
   function handleStatusChange(id: string, newStatus: 'active' | 'suspended') {
     setLocalStatuses(s => ({ ...s, [id]: newStatus }))
   }
+
+  const pastCount = entries.filter(e => isPastEnrollment(e, localStatuses[e._id] ?? e.status)).length
 
   const filtered = entries.filter(e => {
     const q = search.toLowerCase()
@@ -356,7 +366,10 @@ export default function AdminCourseEnrollments({
       || e.student.email.toLowerCase().includes(q)
       || e.courseName.toLowerCase().includes(q)
     const matchesStatus = statusFilter === 'all' || effectiveStatus === statusFilter
-    return matchesSearch && matchesStatus
+    // Picking Completed/Expired in the filter shows those even with past hidden
+    const explicitPastFilter = statusFilter === 'completed' || statusFilter === 'expired'
+    const matchesPast = showPast || explicitPastFilter || !isPastEnrollment(e, effectiveStatus)
+    return matchesSearch && matchesStatus && matchesPast
   })
 
   const counts = {
@@ -390,7 +403,8 @@ export default function AdminCourseEnrollments({
         {/* Header */}
         <div className="px-6 py-4 border-b flex flex-col sm:flex-row sm:items-center gap-3" style={{ borderColor: 'rgba(30,53,96,0.08)' }}>
           <h2 className="text-sm font-bold flex-1" style={{ color: '#1E3560' }}>Course Enrollments</h2>
-          <div className="flex gap-2 flex-wrap">
+          <div className="flex gap-2 flex-wrap items-center">
+            <ShowPastToggle showPast={showPast} pastCount={pastCount} onToggle={() => setShowPast(v => !v)} />
             <input
               type="search"
               placeholder="Search name, email, course…"
@@ -418,7 +432,7 @@ export default function AdminCourseEnrollments({
         {/* Table */}
         {filtered.length === 0 ? (
           <p className="px-6 py-10 text-sm text-center" style={{ color: 'rgba(43,48,58,0.4)' }}>
-            No enrollments found.
+            {!showPast && pastCount > 0 ? 'No current enrollments. Use Show past to see finished ones.' : 'No enrollments found.'}
           </p>
         ) : (
           <div className="overflow-x-auto">

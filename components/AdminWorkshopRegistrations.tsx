@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import ShowPastToggle from "./admin/ShowPastToggle";
+import { isPastDay } from "@/lib/admin/pastDates";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -626,7 +628,13 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
 // ─── Main component ────────────────────────────────────────────────────────────
 
 export default function AdminWorkshopRegistrations({ groups, canViewFinancials }: { groups: DateGroup[]; canViewFinancials: boolean }) {
-  const [activeTab, setActiveTab] = useState(0);
+  const [showPast, setShowPast] = useState(false);
+  const pastCount = groups.filter((g) => isPastDay(g.date)).length;
+  // Past dates are hidden by default; when shown, newest past first after upcoming
+  const visibleGroups = showPast
+    ? [...groups.filter((g) => !isPastDay(g.date)), ...groups.filter((g) => isPastDay(g.date)).reverse()]
+    : groups.filter((g) => !isPastDay(g.date));
+  const [activeId, setActiveId] = useState<string | null>(null);
 
   if (groups.length === 0) {
     return (
@@ -646,7 +654,7 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
     );
   }
 
-  const activeGroup = groups[activeTab];
+  const activeGroup = visibleGroups.find((g) => g.dateId === activeId) ?? visibleGroups[0];
 
   return (
     <div
@@ -654,12 +662,19 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
       style={{ border: "1.5px solid rgba(30,53,96,0.09)" }}
     >
       {/* Header */}
-      <div className="px-6 py-4 border-b" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+      <div className="px-6 py-4 border-b flex items-center justify-between gap-4" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
         <h2 className="text-sm font-bold" style={{ color: "#1E3560" }}>
           PD Registrations
         </h2>
+        <ShowPastToggle showPast={showPast} pastCount={pastCount} onToggle={() => setShowPast((v) => !v)} />
       </div>
 
+      {visibleGroups.length === 0 ? (
+        <p className="px-6 py-8 text-sm text-center" style={{ color: "rgba(43,48,58,0.4)" }}>
+          No upcoming event dates. Use Show past to see earlier registrations.
+        </p>
+      ) : (
+      <>
       {/* Date tabs */}
       <div
         className="flex flex-wrap gap-1 px-6 pt-4 pb-2 border-b"
@@ -667,20 +682,23 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
         role="tablist"
         aria-label="Workshop date tabs"
       >
-        {groups.map((g, i) => {
-          const active = activeTab === i;
+        {visibleGroups.map((g) => {
+          const active = activeGroup?.dateId === g.dateId;
+          const past = isPastDay(g.date);
           const paidCount = g.registrations.filter((r) => r.stripePaymentStatus === "paid").length;
           return (
             <button
               key={g.dateId}
               role="tab"
               aria-selected={active}
-              onClick={() => setActiveTab(i)}
+              onClick={() => setActiveId(g.dateId)}
               className="rounded-lg px-4 py-2 text-xs font-bold transition-all duration-150"
               style={{
                 backgroundColor: active ? "#1E3560" : "rgba(30,53,96,0.06)",
                 color: active ? "#ffffff" : "rgba(30,53,96,0.6)",
+                opacity: past && !active ? 0.6 : 1,
               }}
+              title={past ? "Past date" : undefined}
             >
               {fmtDate(g.date)}
               <span
@@ -711,6 +729,8 @@ export default function AdminWorkshopRegistrations({ groups, canViewFinancials }
       <div className="px-6 pb-6" role="tabpanel">
         {activeGroup && <GroupTab key={activeGroup.dateId} group={activeGroup} canViewFinancials={canViewFinancials} />}
       </div>
+      </>
+      )}
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import type { WorkshopRegistration, WorkshopWaitlistEntry } from './AdminWorkshopRegistrations'
+import ShowPastToggle from './admin/ShowPastToggle'
+import { isPastDay } from '@/lib/admin/pastDates'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -60,8 +62,9 @@ function fmtTime(iso: string): string {
   })
 }
 
+// Past once the event's Alberta day is over (it stays listed on the day itself)
 function isPast(iso: string): boolean {
-  return new Date(iso).getTime() < Date.now()
+  return isPastDay(iso)
 }
 
 // Convert UTC ISO from Sanity to datetime-local value displayed in Mountain Time
@@ -117,6 +120,7 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
   const [busyIds,    setBusyIds]    = useState<Set<string>>(new Set())
   const [qrModalId,  setQrModalId]  = useState<string | null>(null)
   const [copied,     setCopied]     = useState(false)
+  const [showPast,   setShowPast]   = useState(false)
 
   const [addForm,    setAddForm]    = useState(BLANK_ADD)
   const [addBusy,    setAddBusy]    = useState(false)
@@ -230,6 +234,12 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
     }
   }
 
+  const pastCount    = dates.filter(d => isPast(d.date)).length
+  // Past dates are hidden by default; when shown, newest past first after upcoming
+  const visibleDates = showPast
+    ? [...dates.filter(d => !isPast(d.date)), ...dates.filter(d => isPast(d.date)).reverse()]
+    : dates.filter(d => !isPast(d.date))
+
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
@@ -240,7 +250,8 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
         className="px-6 py-4 border-b flex items-center justify-between gap-4"
         style={{ borderColor: 'rgba(30,53,96,0.08)' }}
       >
-        <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>PD Schedule</h2>
+        <h2 className="text-sm font-bold flex-1" style={{ color: '#1E3560' }}>PD Schedule</h2>
+        <ShowPastToggle showPast={showPast} pastCount={pastCount} onToggle={() => setShowPast(v => !v)} />
         <button
           onClick={() => { setShowAdd(v => !v); setEditingId(null); setAddError('') }}
           className="flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold text-white transition-colors duration-150 hover:bg-[#2563EB]"
@@ -441,13 +452,13 @@ export default function AdminWorkshopDates({ initialDates, registrations, waitli
 
       {/* ── Date list ── */}
       <div className="p-4 flex flex-col gap-3">
-        {dates.filter(d => !isPast(d.date)).length === 0 && (
+        {visibleDates.length === 0 && (
           <p className="text-center py-10 text-sm" style={{ color: 'rgba(43,48,58,0.38)' }}>
             No upcoming dates — add one above.
           </p>
         )}
 
-        {dates.filter(d => !isPast(d.date)).map(d => {
+        {visibleDates.map(d => {
           const regCount  = registeredCount(d._id, registrations)
           const wlCount   = waitlistCount(d._id, waitlist)
           const cap       = d.offering?.capacity ?? 0

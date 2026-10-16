@@ -75,7 +75,7 @@ const policies = (settings: InvigilationSettings) => [
       "Exams are written in our classroom, supervised by instructional staff.",
       "Our classroom is on the second floor and there is no elevator. If stairs are a concern, please call us before booking.",
       `No more than ${settings.maxStudentsPerHour} students write at once. Students with accommodations write one at a time.`,
-      "Phones and smartwatches off and stored in your bag. Bags, coats and hats stay at the front; no hats.",
+      "Phones and smartwatches off and stored in your bag. Bags, coats and hats stay at the front.",
       "Only clear water bottles are permitted.",
     ],
   },

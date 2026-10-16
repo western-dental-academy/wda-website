@@ -128,7 +128,7 @@ export function studentConfirmationHtml(b: InvigilationBookingRecord): string {
     ${box('Exam room rules', [
       'Exams are written in our classroom and supervised by instructional staff',
       'Phones and smartwatches must be turned off and stored in your bag',
-      'Bags, coats and hats are left at the front of the room — no hats during the exam',
+      'Bags, coats and hats are left at the front of the room',
       'Only clear water bottles are permitted',
     ])}
 

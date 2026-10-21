@@ -24,6 +24,7 @@ export const STAFF_CALENDAR_INVITEES = [
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',
+  'amber@westerndentalacademy.com',
   'tammy@westerndentalacademy.com',
 ]
 

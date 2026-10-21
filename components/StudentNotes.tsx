@@ -22,6 +22,7 @@ const STAFF_NAMES: Record<string, string> = {
   'jolene@westerndentalacademy.com':   'Jolene',
   'alana@westerndentalacademy.com':    'Alana',
   'collette@westerndentalacademy.com': 'Collette',
+  'amber@westerndentalacademy.com':    'Amber',
   'tammy@westerndentalacademy.com':    'Tammy',
 }
 

@@ -13,6 +13,7 @@ const ADMIN_EMAILS = [
   'jolene@westerndentalacademy.com',
   'alana@westerndentalacademy.com',
   'collette@westerndentalacademy.com',
+  'amber@westerndentalacademy.com',
   'tammy@westerndentalacademy.com',
 ]
 

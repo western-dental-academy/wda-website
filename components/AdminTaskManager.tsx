@@ -31,6 +31,7 @@ const STAFF_OPTIONS = [
   { label: 'Jolene',   email: 'jolene@westerndentalacademy.com' },
   { label: 'Alana',    email: 'alana@westerndentalacademy.com' },
   { label: 'Collette', email: 'collette@westerndentalacademy.com' },
+  { label: 'Amber',    email: 'amber@westerndentalacademy.com' },
   { label: 'Tammy',    email: 'tammy@westerndentalacademy.com' },
 ]
 

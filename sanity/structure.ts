@@ -170,6 +170,13 @@ export const structure: StructureResolver = (S) =>
       S.divider(),
 
       S.listItem()
+        .title('Dental Offices (Outreach)')
+        .schemaType('dentalOffice')
+        .child(S.documentTypeList('dentalOffice').title('Dental Offices').defaultOrdering([{ field: 'name', direction: 'asc' }])),
+
+      S.divider(),
+
+      S.listItem()
         .title('Gift Certificates')
         .schemaType('giftCertificate')
         .child(S.documentTypeList('giftCertificate').title('Gift Certificates')),

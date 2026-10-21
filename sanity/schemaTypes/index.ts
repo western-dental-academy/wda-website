@@ -21,7 +21,8 @@ import onlineCourse from './onlineCourse'
 import courseEnrollment from './courseEnrollment'
 import invigilationSettings from './invigilationSettings'
 import invigilationBooking from './invigilationBooking'
+import dentalOffice from './dentalOffice'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopOffering, workshopRegistration, workshopDate, workshopWaitlist, task, workshopFeedback, giftCertificate, onlineCourse, courseEnrollment, invigilationSettings, invigilationBooking],
+  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopOffering, workshopRegistration, workshopDate, workshopWaitlist, task, workshopFeedback, giftCertificate, onlineCourse, courseEnrollment, invigilationSettings, invigilationBooking, dentalOffice],
 }

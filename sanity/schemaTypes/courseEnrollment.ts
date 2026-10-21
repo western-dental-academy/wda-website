@@ -138,6 +138,38 @@ export default defineType({
       title: 'Feedback Submitted At',
       type: 'datetime',
     }),
+    defineField({
+      name: 'office',
+      title: 'Dental Office',
+      type: 'reference',
+      to: [{ type: 'dentalOffice' }],
+      description: 'Office the registrant works at (picked on the form or matched by staff in the WDA Hub)',
+    }),
+    defineField({
+      name: 'officeOther',
+      title: 'Office (typed by registrant)',
+      type: 'string',
+      description: 'What the registrant typed when their office was not in the list',
+    }),
+    defineField({
+      name: 'officeSource',
+      title: 'Office Source',
+      type: 'string',
+      options: {
+        list: [
+          { title: 'Picked by registrant', value: 'self-reported' },
+          { title: 'Suggested match confirmed by staff', value: 'matched' },
+          { title: 'Assigned by staff', value: 'manual' },
+          { title: 'Not from a listed office', value: 'none' },
+        ],
+      },
+    }),
+    defineField({
+      name: 'officeAssignedBy',
+      title: 'Office Assigned By',
+      type: 'string',
+      readOnly: true,
+    }),
   ],
   preview: {
     select: {

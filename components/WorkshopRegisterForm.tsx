@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import OfficePicker, { type OfficeValue } from "@/components/OfficePicker";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -157,6 +158,7 @@ function WorkshopRegisterFormInner() {
   const [datesLoading, setDatesLoading] = useState(true);
   const [datesError, setDatesError] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'in-person' | 'virtual'>('in-person');
+  const [office, setOffice] = useState<OfficeValue>({ officeId: "", officeOther: "" });
   const [onlineCourses, setOnlineCourses] = useState<Array<{ _id: string; title: string; price: number; moodleCourseId: number; accessDurationDays: number; hours: number }>>([]);
 
   useEffect(() => {
@@ -288,6 +290,8 @@ function WorkshopRegisterFormInner() {
             lastName:  form.lastName.trim(),
             email:     form.email.trim(),
             phone:     form.phone.trim() || undefined,
+            officeId:    office.officeId || undefined,
+            officeOther: office.officeOther.trim() || undefined,
           }),
         });
         const result = await res.json();
@@ -354,6 +358,8 @@ function WorkshopRegisterFormInner() {
       mediaConsent: form.mediaConsent,
       feedbackShareConsent: form.feedbackShareConsent,
       newsletterOptIn: form.newsletterOptIn,
+      officeId: office.officeId || undefined,
+      officeOther: office.officeOther.trim() || undefined,
       isPrimary: true,
       deliveryMethod,
       dietaryRestrictions: (deliveryMethod === 'in-person' && selectedDateObj?.includesFood && form.dietaryRestrictions.trim())
@@ -733,6 +739,15 @@ function WorkshopRegisterFormInner() {
                 className={`wda-input resize-none${errors.dentalBackground ? " invalid" : ""}`}
               />
               <FieldError id="err-dentalBackground" msg={errors.dentalBackground} />
+            </div>
+
+            {/* Dental office (outreach tracking) */}
+            <div className="mb-5">
+              <FieldLabel htmlFor="reg-office" optional>Which dental office do you work at?</FieldLabel>
+              <OfficePicker id="reg-office" value={office} onChange={setOffice} />
+              <p className="mt-1.5 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+                Start typing to find your office. If it isn&apos;t listed, just type its name.
+              </p>
             </div>
 
             {/* CADA number */}

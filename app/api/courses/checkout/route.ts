@@ -16,12 +16,14 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { courseId, firstName, lastName, email, phone } = body as {
+  const { courseId, firstName, lastName, email, phone, officeId, officeOther } = body as {
     courseId?: string
     firstName?: string
     lastName?: string
     email?: string
     phone?: string
+    officeId?: string
+    officeOther?: string
   }
 
   if (!courseId || !firstName?.trim() || !lastName?.trim() || !email?.trim()) {
@@ -49,6 +51,14 @@ export async function POST(req: NextRequest) {
 
   const priceCents = Math.round(course.price * 100)
 
+  // Only keep an office id that exists (picked from the outreach office list)
+  const validOfficeId = officeId
+    ? await client.fetch<string | null>(
+        `*[_type == "dentalOffice" && !(_id in path("drafts.**")) && _id == $id][0]._id`,
+        { id: officeId }
+      )
+    : null
+
   // Create a pending enrollment in Sanity (status = 'active' set after payment)
   const enrollment = await client.create({
     _type: 'courseEnrollment',
@@ -60,6 +70,10 @@ export async function POST(req: NextRequest) {
     },
     course:     { _type: 'reference', _ref: course._id },
     courseName: course.title,
+    ...(validOfficeId
+      ? { office: { _type: 'reference', _ref: validOfficeId }, officeSource: 'self-reported' }
+      : {}),
+    officeOther: officeOther?.trim().slice(0, 200) || undefined,
     stripePaymentStatus: 'pending',
     enrolledAt: new Date().toISOString(),
   })

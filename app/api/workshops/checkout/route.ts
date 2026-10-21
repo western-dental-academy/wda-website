@@ -20,6 +20,8 @@ interface CartItemPayload {
   mediaConsent?: boolean
   feedbackShareConsent?: boolean
   newsletterOptIn?: boolean
+  officeId?: string
+  officeOther?: string
   isPrimary: boolean
   deliveryMethod: 'in-person' | 'virtual'
   dietaryRestrictions?: string
@@ -112,6 +114,17 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Only keep office ids that exist (picked from the outreach office list)
+    const requestedOfficeIds = [...new Set(items.map(i => i.officeId).filter((id): id is string => !!id))]
+    const validOfficeIds = new Set<string>(
+      requestedOfficeIds.length
+        ? await client.fetch<string[]>(
+            `*[_type == "dentalOffice" && !(_id in path("drafts.**")) && _id in $ids]._id`,
+            { ids: requestedOfficeIds },
+          )
+        : [],
+    )
+
     // Create Sanity registrations (unpaid)
     const now = new Date().toISOString()
     const registrationIds: string[] = []
@@ -134,6 +147,10 @@ export async function POST(req: NextRequest) {
         newsletterOptIn: item.newsletterOptIn === true,
         deliveryMethod: item.deliveryMethod,
         dietaryRestrictions: item.dietaryRestrictions?.trim() || undefined,
+        ...(item.officeId && validOfficeIds.has(item.officeId)
+          ? { office: { _type: 'reference', _ref: item.officeId }, officeSource: 'self-reported' }
+          : {}),
+        officeOther: item.officeOther?.trim().slice(0, 200) || undefined,
         stripePaymentStatus: 'unpaid',
         registeredAt: now,
       } as { _type: string; [key: string]: unknown })

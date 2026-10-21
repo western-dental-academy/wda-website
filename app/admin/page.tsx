@@ -8,6 +8,7 @@ import { type WorkshopDateItem } from '@/components/AdminWorkshopDates'
 import { type Task } from '@/components/AdminTaskManager'
 import { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminTabs from '@/components/AdminTabs'
+import { type DentalOfficeEntry, type OfficeReferralEntry } from '@/components/admin/AdminOfficeReferrals'
 import { stripe } from '@/lib/stripe/client'
 
 const ADMIN_EMAILS = [
@@ -86,7 +87,7 @@ export default async function AdminPage() {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates, courseEnrollments, courseOfferings] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates, courseEnrollments, courseOfferings, dentalOffices, officeWorkshopRegs, officeCourseEnrollments] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -178,7 +179,29 @@ export default async function AdminPage() {
         _id, title, price, extensionPrice, hours, accessDurationDays, moodleCourseId, active
       }`
     ),
+    client.fetch(
+      `*[_type == "dentalOffice" && !(_id in path("drafts.**"))] | order(name asc){
+        _id, name, city, email, website, visitedBy, visited
+      }`
+    ),
+    client.fetch(
+      `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"] | order(registeredAt desc){
+        _id, "kind": "workshop", firstName, lastName, email, "item": workshop, registeredAt,
+        "officeId": office._ref, officeOther, officeSource, dentalBackground
+      }`
+    ),
+    client.fetch(
+      `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"] | order(enrolledAt desc){
+        _id, "kind": "course", "firstName": student.firstName, "lastName": student.lastName,
+        "email": student.email, "item": courseName, "registeredAt": enrolledAt,
+        "officeId": office._ref, officeOther, officeSource
+      }`
+    ),
   ])
+
+  // Outreach leaderboard data — staff test registrations are left out
+  const officeReferrals = ([...officeWorkshopRegs, ...officeCourseEnrollments] as OfficeReferralEntry[])
+    .filter(r => !(r.email ?? '').toLowerCase().endsWith('@westerndentalacademy.com'))
   const tasks = rawTasks as Task[]
 
   // ── Revenue metrics (financial staff only) ─────────────────────────────────
@@ -316,6 +339,8 @@ export default async function AdminPage() {
         giftCertificates={giftCertificates as any}
         courseEnrollments={courseEnrollments as any}
         courseOfferings={courseOfferings as any}
+        dentalOffices={dentalOffices as DentalOfficeEntry[]}
+        officeReferrals={officeReferrals}
       />
     </main>
   )

@@ -17,6 +17,7 @@ import AdminMarketing from '@/components/admin/AdminMarketing'
 import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/admin/AdminGiftCertificates'
 import AdminCourseEnrollments, { type CourseEnrollmentEntry, type CourseOfferingEntry } from '@/components/admin/AdminCourseEnrollments'
+import AdminOfficeReferrals, { type DentalOfficeEntry, type OfficeReferralEntry } from '@/components/admin/AdminOfficeReferrals'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -54,6 +55,8 @@ interface AdminTabsProps {
   giftCertificates: GiftCertificateEntry[]
   courseEnrollments: CourseEnrollmentEntry[]
   courseOfferings: CourseOfferingEntry[]
+  dentalOffices: DentalOfficeEntry[]
+  officeReferrals: OfficeReferralEntry[]
 }
 
 type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
@@ -92,6 +95,8 @@ export default function AdminTabs({
   giftCertificates,
   courseEnrollments,
   courseOfferings,
+  dentalOffices,
+  officeReferrals,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -248,7 +253,12 @@ export default function AdminTabs({
       )}
 
       {/* ── Marketing ── */}
-      {activeTab === 'Marketing' && <AdminMarketing />}
+      {activeTab === 'Marketing' && (
+        <div className="flex flex-col gap-6">
+          <AdminOfficeReferrals offices={dentalOffices} initialReferrals={officeReferrals} />
+          <AdminMarketing />
+        </div>
+      )}
 
       {/* ── IT ── */}
       {activeTab === 'IT' && isIT && <AdminITPanel />}

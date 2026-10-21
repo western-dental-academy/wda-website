@@ -1,0 +1,1182 @@
+[
+ {
+  "_id": "dentalOffice-emerald-hills-dental-centre-sherwood-park",
+  "_type": "dentalOffice",
+  "name": "Emerald Hills Dental Centre",
+  "city": "Sherwood Park",
+  "address": "170 8005 Emerald Drive",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-parkstone-dental-sherwood-park",
+  "_type": "dentalOffice",
+  "name": "Parkstone Dental",
+  "city": "Sherwood Park",
+  "address": "#915, 920 7000 Emerald Drive",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-aspen-trails-dental-sherwood-park",
+  "_type": "dentalOffice",
+  "name": "Aspen Trails Dental",
+  "city": "Sherwood Park",
+  "address": "#90 -4005 Cloverbar Rd.",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-smile-dental-sherwood-park",
+  "_type": "dentalOffice",
+  "name": "Smile Dental",
+  "city": "Sherwood Park",
+  "address": "#320 590 Baseline Road",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-west-grande-prairie-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "West Grande Prairie Dental",
+  "city": "Grande Prairie",
+  "address": "13209 102 St #103, Grande Prairie, AB T8V0V5",
+  "email": "contact@westgpdental.com",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-grande-prairie-family-dental-clinic-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Grande Prairie Family Dental Clinic",
+  "city": "Grande Prairie",
+  "address": "10126 120 Ave #202, Grande Prairie, AB T8V 8H9",
+  "email": "info@gpfamilydental.ca",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-prairie-mall-dental-clinic-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Prairie Mall Dental Clinic",
+  "city": "Grande Prairie",
+  "address": "11801 100 St Suite 216, Grande Prairie AB T8V 3Y2 CA",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-gateway-dentistry-group-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Gateway Dentistry Group",
+  "city": "Grande Prairie",
+  "address": "11002 104 Ave. Unit 201, Grande Prairie, AB T8V 7W5",
+  "phone": "5878185052",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dr-andre-gaultier-family-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Dr. Andre Gaultier Family Dental",
+  "city": "Grande Prairie",
+  "address": "10309 98 St #201, Grande Prairie, AB T8V 2E7",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-west-grande-prairie-dental-grande-prairie-2",
+  "_type": "dentalOffice",
+  "name": "West Grande Prairie Dental",
+  "city": "Grande Prairie",
+  "address": "11502 Westgate Dr #106, Grande Prairie, AB T8V 4E9, Canada",
+  "email": "contact@westgpdental.com",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-boisson-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Boisson Dental",
+  "city": "Grande Prairie",
+  "address": "11601 101 Ave, Grande Prairie, AB T8V 3X9",
+  "phone": "5877717668",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-northern-dental-centre-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Northern Dental Centre",
+  "city": "Grande Prairie",
+  "address": "10014 102 Ave Unit 201, Grande Prairie, AB T8V 0Z7, Canada",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-bear-creek-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Bear Creek Dental",
+  "city": "Grande Prairie",
+  "address": "10015 102 Ave #201, Grande Prairie, AB T8V 0Z8",
+  "phone": "5878038519",
+  "email": "admin@bearcreekdental.ca",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-smiles-4-u-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Smiles 4 U Dental",
+  "city": "Grande Prairie",
+  "address": "10014 99 St Unit 103, Grande Prairie, AB T8V 3N4",
+  "phone": "17805396769",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-access-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Access Dental",
+  "city": "Grande Prairie",
+  "address": "9803 101 Ave Unit 100, Grande Prairie AB T8V 0X6 CA",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-generations-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Generations Dental",
+  "city": "Grande Prairie",
+  "address": "10309 98 St, Grande Prairie, AB T8V 2E7",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-cygnet-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Cygnet Dental",
+  "city": "Grande Prairie",
+  "address": "9845 99 Ave Unit 35B, Grande Prairie, AB T8V 0R3",
+  "phone": "7805321387",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-swanavon-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Swanavon Dental",
+  "city": "Grande Prairie",
+  "address": "10104 97 Ave #102, Grande Prairie, AB T8V 7X6",
+  "phone": "5878032927",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-care-centre-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Dental Care Centre",
+  "city": "Grande Prairie",
+  "address": "10126 97 Avenue Unit #101 Grande Prairie, Alberta T8V 7X6",
+  "email": "info@dentalcarecentregp.com",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-cobblestone-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Cobblestone Dental",
+  "city": "Grande Prairie",
+  "address": "9910 92 St, Unit 101, Grande Prairie, AB, T8X 0E7",
+  "email": "admin@cobblestonedental.ca",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-today-s-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Today's Dental",
+  "city": "Grande Prairie",
+  "address": "8200 100 St, Grande Prairie, AB T8V 6H7, Canada",
+  "email": "info@todaysdentalgrandeprairie.com",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-south-40-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "South 40 Dental",
+  "city": "Grande Prairie",
+  "address": "10712 80 Ave #103, Grande Prairie, AB T8W 0G9",
+  "phone": "5878030769",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-higson-dental-group-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Higson Dental Group",
+  "city": "Grande Prairie",
+  "address": "10508 67th Ave #301, Grande Prairie, AB T8W 0K8",
+  "phone": "7805324661",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-wapiti-dental-grande-prairie",
+  "_type": "dentalOffice",
+  "name": "Wapiti Dental",
+  "city": "Grande Prairie",
+  "address": "6815 Kateri Dr Unit 104, Grande Prairie, AB T8W 0H1",
+  "phone": "7802964075",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-whitecourt-dental-whitecourt",
+  "_type": "dentalOffice",
+  "name": "Whitecourt Dental",
+  "city": "Whitecourt",
+  "address": "4743 51 Ave, Whitecourt, AB T7S 1S1",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-50th-ave-dental-whitecourt",
+  "_type": "dentalOffice",
+  "name": "50th Ave Dental",
+  "city": "Whitecourt",
+  "address": "4707 50 Ave, Whitecourt, AB T7S 1N9",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-family-dental-health-whitecourt",
+  "_type": "dentalOffice",
+  "name": "Family Dental Health",
+  "city": "Whitecourt",
+  "address": "5023 50 Ave, Whitecourt, AB T7S 1N9",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-valley-centre-dental-whitecourt",
+  "_type": "dentalOffice",
+  "name": "Valley Centre Dental",
+  "city": "Whitecourt",
+  "address": "4802 51 St, Whitecourt, AB T7S 1R9",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-mar-orthodontics-st-albert",
+  "_type": "dentalOffice",
+  "name": "Mar Orthodontics",
+  "city": "St. Albert",
+  "address": "2 Herbert Rd, St. Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dentus-family-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Dentus Family Dental",
+  "city": "St. Albert",
+  "address": "140 St Albert Trail, St. Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-green-grove-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Green Grove Dental",
+  "city": "St. Albert",
+  "address": "60 Green Grove Dr, St Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-wild-rose-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Wild Rose Dental",
+  "city": "St. Albert",
+  "address": "12 Perron Street, St Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-hillside-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Hillside Dental",
+  "city": "St. Albert",
+  "address": "54 St. Michael Str, St Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-st-albert-dental-centre-st-albert",
+  "_type": "dentalOffice",
+  "name": "St. Albert Dental Centre",
+  "city": "St. Albert",
+  "address": "375 St. Albert Trail, St. Albert (Mall)",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-the-smile-garage-st-albert",
+  "_type": "dentalOffice",
+  "name": "The Smile Garage",
+  "city": "St. Albert",
+  "address": "17 St Anne Street, St. Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-epm-dental-care-st-albert",
+  "_type": "dentalOffice",
+  "name": "EPM Dental Care",
+  "city": "St. Albert",
+  "address": "2501 Tudor Glenn, St. Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-tudor-glen-smile-clinic-st-albert",
+  "_type": "dentalOffice",
+  "name": "Tudor Glen Smile Clinic",
+  "city": "St. Albert",
+  "address": "2010 Tudor Glen, St. Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-smiles-dental-group-st-albert",
+  "_type": "dentalOffice",
+  "name": "Smiles Dental Group",
+  "city": "St. Albert",
+  "address": "101 St Albert Trail, St Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-gateway-village-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Gateway Village Dental",
+  "city": "St. Albert",
+  "address": "#234- 2 Herbert Rd, St. Albert",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-family-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Family Dental",
+  "city": "St. Albert",
+  "address": "1 Tache Street, St. Albert",
+  "visitedBy": "Alana",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-st-thomas-street-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "St. Thomas Street Dental",
+  "city": "St. Albert",
+  "address": "27 St Thomas Str, St Albert",
+  "visitedBy": "Alana",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-mckenney-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "McKenney Dental",
+  "city": "St. Albert",
+  "address": "10 McKenney Rd, St. Albert",
+  "visitedBy": "Alana",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-gramercy-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Gramercy Dental",
+  "city": "St. Albert",
+  "address": "235 McKenney Ave, St Albert AB T8N",
+  "visitedBy": "Alana",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-riverside-landing-dental-st-albert",
+  "_type": "dentalOffice",
+  "name": "Riverside Landing Dental",
+  "city": "St. Albert",
+  "address": "10 Rose Gate, St Albert AB T8N 7Y3",
+  "visitedBy": "Alana",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-wellness-st-albert",
+  "_type": "dentalOffice",
+  "name": "Dental Wellness",
+  "city": "St. Albert",
+  "address": "4 Versailles Ave, St Albert AB T8N 7V1",
+  "visitedBy": "Alana",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-apollonia-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Apollonia Dental",
+  "city": "Edmonton",
+  "address": "1936 38 Ave T6T0B9",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-royal-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Royal Dental",
+  "city": "Edmonton",
+  "address": "4422 17 Street NW",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-meadowleaf-edmonton",
+  "_type": "dentalOffice",
+  "name": "Meadowleaf",
+  "city": "Edmonton",
+  "address": "3908 17 St NW",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-choice-edmonton",
+  "_type": "dentalOffice",
+  "name": "Dental Choice",
+  "city": "Edmonton",
+  "address": "4349 50 street",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-burnewood-dental-clinic-edmonton",
+  "_type": "dentalOffice",
+  "name": "Burnewood Dental Clinic",
+  "city": "Edmonton",
+  "address": "3434-43 Avenue",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-maple-dental-clinic-edmonton",
+  "_type": "dentalOffice",
+  "name": "Maple Dental Clinic",
+  "city": "Edmonton",
+  "address": "203-3323 34th St",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-south-east-family-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "South East Family Dental",
+  "city": "Edmonton",
+  "address": "1752 34Ave",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-smile-solutions-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Smile Solutions Dental",
+  "city": "Edmonton",
+  "address": "704 Tamarack Way NW",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-tamarack-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Tamarack Dental",
+  "city": "Edmonton",
+  "address": "3761-17 St NW",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-aster-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Aster Dental",
+  "city": "Edmonton",
+  "address": "1265 Aster Blvd",
+  "visitedBy": "Amber",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-big-lake-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Big Lake Dental",
+  "city": "Edmonton",
+  "address": "Yellowhead and 215 Street",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-henday-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Henday Dental",
+  "city": "Edmonton",
+  "address": "Henday and 66 Street",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-southside-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Southside Dental",
+  "city": "Edmonton",
+  "address": "2330 23 Ave NW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-aurora-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Aurora Dental",
+  "city": "Edmonton",
+  "address": "5241 Ellerslie Road SW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-charlesworth-family-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Charlesworth Family Dental",
+  "city": "Edmonton",
+  "address": "207 - 36 Street SW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-alces-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Alces Dental",
+  "city": "Edmonton",
+  "address": "129 Charlesworth Dr SW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-harvest-pointe-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Harvest Pointe Dental",
+  "city": "Edmonton",
+  "address": "5019 Ellerslie Road SW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-harvest-hills-dental-edmonton",
+  "_type": "dentalOffice",
+  "name": "Harvest Hills Dental",
+  "city": "Edmonton",
+  "address": "5216 Ellerslie Road SW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-ellerslie-66-edmonton",
+  "_type": "dentalOffice",
+  "name": "Ellerslie 66",
+  "city": "Edmonton",
+  "address": "6713 Ellerslie Road SW",
+  "visitedBy": "Jolene",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-sunrise-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Sunrise Dental",
+  "city": "Spruce Grove",
+  "address": "183 Hwy 16A, #301",
+  "phone": "780-960-1010",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-westwind-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Westwind Dental",
+  "city": "Spruce Grove",
+  "address": "#211, 11 Westwind Drive",
+  "phone": "780-962-1011",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-century-crossing-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Century Crossing Dental",
+  "city": "Spruce Grove",
+  "address": "Unit 100, 700 McLeod Ave",
+  "phone": "780-962-5223",
+  "email": "info@centurydental.ca",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-grove-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Grove Dental",
+  "city": "Spruce Grove",
+  "address": "#213, 636 King Street",
+  "phone": "780-962-4226",
+  "email": "grovedentist@gmail.com",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-spruce-ridge-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Spruce Ridge Dental",
+  "city": "Spruce Grove",
+  "address": "#20, 4 Spruce Ridge Dr.",
+  "phone": "780-962-7899",
+  "email": "spruceridgedental@hotmail.com",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-karo-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Karo Dental",
+  "city": "Spruce Grove",
+  "address": "#202, 8 McLeod Ave",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-garden-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Garden Dental",
+  "city": "Spruce Grove",
+  "address": "306 McLeod Ave",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-blossom-family-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Blossom Family Dental",
+  "city": "Spruce Grove",
+  "address": "221C First Ave",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-brightsmile-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "BrightSmile Dental",
+  "city": "Spruce Grove",
+  "address": "#106 Westland Market Mall",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-queen-street-dental-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Queen Street Dental",
+  "city": "Spruce Grove",
+  "address": "#109, 505 Queen Street",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-children-s-dental-centre-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Children's Dental Centre",
+  "city": "Spruce Grove",
+  "address": "#110, 7 Tri Leisure Way",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dr-jarred-soon-spruce-grove",
+  "_type": "dentalOffice",
+  "name": "Dr. Jarred Soon",
+  "city": "Spruce Grove",
+  "visitedBy": "Collette",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-parkland-dental-stony-plain",
+  "_type": "dentalOffice",
+  "name": "Parkland Dental",
+  "city": "Stony Plain",
+  "address": "5301-50th Street",
+  "phone": "780-963-2973",
+  "email": "smile@parkland-dental.com",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-stony-plain-dental-centre-stony-plain",
+  "_type": "dentalOffice",
+  "name": "Stony Plain Dental Centre",
+  "city": "Stony Plain",
+  "address": "#109, 3919-49 Ave",
+  "phone": "780-963-4626",
+  "email": "admin@stonyplaindental.com",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dentistry-on-5th-stony-plain",
+  "_type": "dentalOffice",
+  "name": "Dentistry on 5th",
+  "city": "Stony Plain",
+  "address": "#203, 4620-48 Street",
+  "phone": "780-591-0550",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-true-roots-dental-stony-plain",
+  "_type": "dentalOffice",
+  "name": "True Roots Dental",
+  "city": "Stony Plain",
+  "address": "4305 S Park Dr #400",
+  "phone": "780-963-4885",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-north-stony-dental-stony-plain",
+  "_type": "dentalOffice",
+  "name": "North Stony Dental",
+  "city": "Stony Plain",
+  "address": "4300 S Park Dr #270",
+  "phone": "780-968-4414",
+  "email": "info@northstonydental.com",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-lobay-dental-group-stony-plain",
+  "_type": "dentalOffice",
+  "name": "Lobay Dental Group",
+  "city": "Stony Plain",
+  "phone": "780-963-6000",
+  "email": "lobaydentalgroup@shaw.ca",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-nordstrom-dental-rimbey",
+  "_type": "dentalOffice",
+  "name": "Nordstrom Dental",
+  "city": "Rimbey",
+  "address": "6311-52 Street, Rimbey Alberta, T0C 2J0",
+  "phone": "403-843-6838",
+  "email": "reception@nordstromdenta.com",
+  "visitedBy": "Collette",
+  "visited": true,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-south-pointe-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "South Pointe Dental",
+  "city": "Airdrie",
+  "address": "2926 Main St S #121, Airdrie, AB T4B 3G4",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-sierra-springs-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Sierra Springs Dental",
+  "city": "Airdrie",
+  "address": "2821 Main St S #103, Airdrie, AB T4B 3S6",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-south-airdrie-smiles-airdrie",
+  "_type": "dentalOffice",
+  "name": "South Airdrie Smiles",
+  "city": "Airdrie",
+  "address": "130 Sierra Springs Dr SE #3001, Airdrie, AB T4B 3G6",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-springs-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie Springs Dental",
+  "city": "Airdrie",
+  "address": "2700 Main St SE #280, Airdrie, AB T4B 2Y1",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-bayside-dental-ortho-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie Bayside Dental & Ortho",
+  "city": "Airdrie",
+  "address": "800 Yankee Valley Blvd SW #305, Airdrie, AB T4B 3Y2",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-sierra-dental-airdrie-airdrie",
+  "_type": "dentalOffice",
+  "name": "Sierra Dental Airdrie",
+  "city": "Airdrie",
+  "address": "1300 Market St #113, Airdrie, AB T4A 0K9",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-choice-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie Choice Dental",
+  "city": "Airdrie",
+  "address": "2100 Market St #103, Airdrie, AB T4A 0R8",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-kingsview-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Kingsview Dental",
+  "city": "Airdrie",
+  "address": "1800 Market St, Airdrie, AB T4A 0K9",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-yankee-valley-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Yankee Valley Dental",
+  "city": "Airdrie",
+  "address": "960 Yankee Valley Blvd #108, Airdrie, AB T4A 2E4",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-8th-street-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie 8th Street Dental",
+  "city": "Airdrie",
+  "address": "1 Midtown Blvd SW #201, Airdrie, AB T4B 4E7",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-central-dental-clinic-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie Central Dental Clinic",
+  "city": "Airdrie",
+  "address": "705 Main St S #1100, Airdrie, AB T4B 3M2",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-dental-studio-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie Dental Studio",
+  "city": "Airdrie",
+  "address": "704 Main St S #1, Airdrie, AB T4B 3M1",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-main-street-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Main Street Dental",
+  "city": "Airdrie",
+  "address": "121 Main St S #410, Airdrie, AB T4B 0P8",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-railway-avenue-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Railway Avenue Dental",
+  "city": "Airdrie",
+  "address": "85 Railway Ave SW #114, Airdrie, AB T4B 3W9",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-creekside-dental-care-airdrie",
+  "_type": "dentalOffice",
+  "name": "Creekside Dental Care",
+  "city": "Airdrie",
+  "address": "403 MacKenzie Way SW #6100, Airdrie, AB T4B 3V7",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-airdrie-family-dentists-airdrie",
+  "_type": "dentalOffice",
+  "name": "Airdrie Family Dentists",
+  "city": "Airdrie",
+  "address": "403 MacKenzie Way SW #5121, Airdrie, AB T4B 3V7",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-west-airdrie-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "West Airdrie Dental",
+  "city": "Airdrie",
+  "address": "35 MacKenzie Way SW #5103, Airdrie, AB T4B 0V7",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-nose-creek-dental-centre-airdrie",
+  "_type": "dentalOffice",
+  "name": "Nose Creek Dental Centre",
+  "city": "Airdrie",
+  "address": "409 1 Ave NW, Airdrie, AB T4B 3E2",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-grace-family-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "Grace Family Dental",
+  "city": "Airdrie",
+  "address": "3 Stonegate Dr NW #109, Airdrie, AB T4B 0N2",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-works-airdrie-airdrie",
+  "_type": "dentalOffice",
+  "name": "Dental Works Airdrie",
+  "city": "Airdrie",
+  "address": "28 Gateway Dr NE #101, Airdrie, AB T4B 0J6",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-you-first-dental-airdrie",
+  "_type": "dentalOffice",
+  "name": "You First Dental",
+  "city": "Airdrie",
+  "address": "52 Gateway Dr NE, Airdrie, AB T4B 0J6",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-town-crossfield",
+  "_type": "dentalOffice",
+  "name": "Dental Town",
+  "city": "Crossfield",
+  "address": "1010 Railway St #110, Crossfield, AB T0M 0S0",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-crossfield-dental-hygiene-crossfield",
+  "_type": "dentalOffice",
+  "name": "Crossfield Dental Hygiene",
+  "city": "Crossfield",
+  "address": "1106 Railway St, Crossfield, AB T0M 0S0",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-highland-dental-clinic-crossfield",
+  "_type": "dentalOffice",
+  "name": "Highland Dental Clinic",
+  "city": "Crossfield",
+  "address": "1018 Osler Ave, Crossfield, AB T0M 0S0",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-town-carstairs",
+  "_type": "dentalOffice",
+  "name": "Dental Town",
+  "city": "Carstairs",
+  "address": "419 10th Ave, Carstairs, AB T0M 0N0",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-town-didsbury",
+  "_type": "dentalOffice",
+  "name": "Dental Town",
+  "city": "Didsbury",
+  "address": "2038 19 Ave, Didsbury, AB T0M 0W0",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-didsbury-dental-centre-didsbury",
+  "_type": "dentalOffice",
+  "name": "Didsbury Dental Centre",
+  "city": "Didsbury",
+  "address": "2220 20 St, Didsbury, AB T0M 0A2",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-didsbury-smiles-dental-didsbury",
+  "_type": "dentalOffice",
+  "name": "Didsbury Smiles Dental",
+  "city": "Didsbury",
+  "address": "2409 16 St #4, Didsbury, AB T0M 0W0",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-olds-dental-health-clinic-olds",
+  "_type": "dentalOffice",
+  "name": "Olds Dental Health Clinic",
+  "city": "Olds",
+  "address": "5219 50 Ave, Olds, AB T4H 1P7",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-mountain-view-denture-clinic-olds",
+  "_type": "dentalOffice",
+  "name": "Mountain View Denture Clinic",
+  "city": "Olds",
+  "address": "5118 50 St, Olds, AB T4H 1H6",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-the-dental-clinic-olds",
+  "_type": "dentalOffice",
+  "name": "The Dental Clinic",
+  "city": "Olds",
+  "address": "5120 48 St, Olds, AB T4H 1H3",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-olds-family-dental-clinic-olds",
+  "_type": "dentalOffice",
+  "name": "Olds Family Dental Clinic",
+  "city": "Olds",
+  "address": "5306 46 St, Olds, AB T4H 1P6",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-dental-town-olds",
+  "_type": "dentalOffice",
+  "name": "Dental Town",
+  "city": "Olds",
+  "address": "4513 52 Ave #10, Olds, AB T4H 1M8",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ },
+ {
+  "_id": "dentalOffice-west-olds-dental-olds",
+  "_type": "dentalOffice",
+  "name": "West Olds Dental",
+  "city": "Olds",
+  "address": "6700 46 St #850, Olds, AB T4H 0A2",
+  "visitedBy": "Ryan",
+  "visited": false,
+  "active": true
+ }
+]

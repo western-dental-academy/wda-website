@@ -33,6 +33,15 @@ export interface OfficeReferralEntry {
 
 const CARD = { border: '1.5px solid rgba(30,53,96,0.09)' }
 
+// Contest starts from scratch on Oct 21, 2026 (midnight Alberta time). Anyone who
+// registered for anything before then is a returning registrant and does not count.
+const CONTEST_START_MS = Date.parse('2026-10-21T00:00:00-06:00')
+const CONTEST_START_LABEL = 'Oct 21, 2026'
+
+function registeredMs(r: OfficeReferralEntry): number {
+  return r.registeredAt ? Date.parse(r.registeredAt) : 0
+}
+
 function formatDate(iso?: string): string {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/Regina', month: 'short', day: 'numeric', year: 'numeric' })
@@ -52,17 +61,17 @@ export default function AdminOfficeReferrals({
   initialReferrals: OfficeReferralEntry[]
 }) {
   const [referrals, setReferrals] = useState(initialReferrals)
-  const [since, setSince] = useState('2026-09-01')
   const [saving, setSaving] = useState<string | null>(null)
   const [error, setError] = useState('')
   const [manualPick, setManualPick] = useState<Record<string, string>>({})
 
   const officeById = useMemo(() => new Map(offices.map(o => [o._id, o])), [offices])
 
-  const inRange = useMemo(
-    () => referrals.filter(r => !since || (r.registeredAt ?? '') >= since),
-    [referrals, since],
-  )
+  // Contest registrants: registered on/after the start and never registered for anything before it
+  const inRange = useMemo(() => {
+    const returning = new Set(referrals.filter(r => registeredMs(r) < CONTEST_START_MS).map(personKey))
+    return referrals.filter(r => registeredMs(r) >= CONTEST_START_MS && !returning.has(personKey(r)))
+  }, [referrals])
 
   // Leaderboard: unique registrants (by email) from visited offices, credited to the visitor
   const { staffRows, officeRows } = useMemo(() => {
@@ -132,19 +141,15 @@ export default function AdminOfficeReferrals({
           <div>
             <h2 className="text-sm font-bold" style={{ color: '#1E3560' }}>Office Outreach Leaderboard</h2>
             <p className="text-xs mt-0.5" style={{ color: 'rgba(43,48,58,0.45)' }}>
-              Paid workshop and course registrants from offices staff have visited. Each person counts once.
+              New paid workshop and course registrants from offices staff have visited. Each person counts once; anyone who registered before the contest started is left out.
             </p>
           </div>
-          <label className="flex items-center gap-2 text-xs font-semibold" style={{ color: '#1E3560' }}>
-            Since
-            <input
-              type="date"
-              value={since}
-              onChange={e => setSince(e.target.value)}
-              className="rounded-lg px-3 py-1.5 text-xs"
-              style={{ border: '1.5px solid rgba(30,53,96,0.15)' }}
-            />
-          </label>
+          <span
+            className="shrink-0 rounded-full px-3 py-1 text-xs font-semibold"
+            style={{ backgroundColor: 'rgba(230,126,34,0.1)', color: '#E67E22' }}
+          >
+            Contest started {CONTEST_START_LABEL}
+          </span>
         </div>
 
         <div className="p-6">

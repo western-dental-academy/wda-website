@@ -18,6 +18,7 @@ import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from 
 import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/admin/AdminGiftCertificates'
 import AdminCourseEnrollments, { type CourseEnrollmentEntry, type CourseOfferingEntry } from '@/components/admin/AdminCourseEnrollments'
 import AdminOfficeReferrals, { type DentalOfficeEntry, type OfficeReferralEntry } from '@/components/admin/AdminOfficeReferrals'
+import OutreachLeaderboard, { type OutreachLeaderboardRow } from '@/components/staff/OutreachLeaderboard'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -57,6 +58,7 @@ interface AdminTabsProps {
   courseOfferings: CourseOfferingEntry[]
   dentalOffices: DentalOfficeEntry[]
   officeReferrals: OfficeReferralEntry[]
+  outreachRows: OutreachLeaderboardRow[]
 }
 
 type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
@@ -97,6 +99,7 @@ export default function AdminTabs({
   courseOfferings,
   dentalOffices,
   officeReferrals,
+  outreachRows,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -202,7 +205,10 @@ export default function AdminTabs({
 
       {/* ── Staff ── */}
       {activeTab === 'Staff' && (
-        <AdminStaffPanel clockEntries={clockEntries} pendingTimeOff={pendingTimeOff} currentUserEmail={currentUserEmail} />
+        <div className="flex flex-col gap-6">
+          <OutreachLeaderboard rows={outreachRows} />
+          <AdminStaffPanel clockEntries={clockEntries} pendingTimeOff={pendingTimeOff} currentUserEmail={currentUserEmail} />
+        </div>
       )}
 
       {/* ── Professional Development ── */}

@@ -6,7 +6,14 @@ import ClockWidget from '@/components/staff/ClockWidget'
 import TimeOffForm from '@/components/staff/TimeOffForm'
 import DownloadIdCardButton from '@/components/staff/DownloadIdCardButton'
 import OutreachLeaderboard from '@/components/staff/OutreachLeaderboard'
-import { computeStaffLeaderboard, contestRegistrants, type ContestOffice, type ContestReferral } from '@/lib/offices/leaderboard'
+import {
+  buildOutreachRows,
+  OUTREACH_COURSE_ENROLLMENTS_QUERY,
+  OUTREACH_OFFICES_QUERY,
+  OUTREACH_WORKSHOP_REGS_QUERY,
+  type ContestOffice,
+  type ContestReferral,
+} from '@/lib/offices/leaderboard'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -88,34 +95,16 @@ export default async function StaffPage() {
           { email: userEmail }
         )
       : Promise.resolve([]),
-    client.fetch(
-      `*[_type == "dentalOffice" && !(_id in path("drafts.**"))]{ _id, visitedBy, visited }`
-    ),
-    client.fetch(
-      `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"]{
-        _id, email, registeredAt, "officeId": office._ref
-      }`
-    ),
-    client.fetch(
-      `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"]{
-        _id, "email": student.email, "registeredAt": enrolledAt, "officeId": office._ref
-      }`
-    ),
+    client.fetch(OUTREACH_OFFICES_QUERY),
+    client.fetch(OUTREACH_WORKSHOP_REGS_QUERY),
+    client.fetch(OUTREACH_COURSE_ENROLLMENTS_QUERY),
   ])
 
-  // Outreach leaderboard (read-only) — computed here so no registrant details reach the browser.
-  // Everyone who has visited an office is listed, including people with no registrants yet.
-  const contestReferrals = contestRegistrants(
-    ([...outreachWorkshopRegs, ...outreachCourseEnrollments] as ContestReferral[])
-      .filter(r => !(r.email ?? '').toLowerCase().endsWith('@westerndentalacademy.com'))
+  // Outreach leaderboard (read-only), computed here so no registrant details reach the browser
+  const outreachRows = buildOutreachRows(
+    outreachOffices as ContestOffice[],
+    [...outreachWorkshopRegs, ...outreachCourseEnrollments] as ContestReferral[],
   )
-  const visitedOffices = (outreachOffices as ContestOffice[]).filter(o => o.visited && o.visitedBy)
-  const scores = new Map(computeStaffLeaderboard(visitedOffices, contestReferrals).map(r => [r.name, r.count]))
-  const officesVisited = new Map<string, number>()
-  for (const o of visitedOffices) officesVisited.set(o.visitedBy!, (officesVisited.get(o.visitedBy!) ?? 0) + 1)
-  const outreachRows = Array.from(officesVisited.entries())
-    .map(([name, offices]) => ({ name, count: scores.get(name) ?? 0, offices }))
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
 
   const weekHours = computeHours(weekLogs)
 

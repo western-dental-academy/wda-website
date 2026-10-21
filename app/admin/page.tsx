@@ -10,6 +10,14 @@ import { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/Adm
 import AdminTabs from '@/components/AdminTabs'
 import { type DentalOfficeEntry, type OfficeReferralEntry } from '@/components/admin/AdminOfficeReferrals'
 import { stripe } from '@/lib/stripe/client'
+import {
+  buildOutreachRows,
+  OUTREACH_COURSE_ENROLLMENTS_QUERY,
+  OUTREACH_OFFICES_QUERY,
+  OUTREACH_WORKSHOP_REGS_QUERY,
+  type ContestOffice,
+  type ContestReferral,
+} from '@/lib/offices/leaderboard'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -91,7 +99,7 @@ export default async function AdminPage() {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
 
-  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates, courseEnrollments, courseOfferings, dentalOffices, officeWorkshopRegs, officeCourseEnrollments] = await Promise.all([
+  const [announcements, programmes, workshopDates, workshopRegs, workshopWaitlist, staffTimeOff, rawTasks, clockEntries, pendingTimeOff, workshopFeedback, qrFeedback, giftCertificates, courseEnrollments, courseOfferings, dentalOffices, officeWorkshopRegs, officeCourseEnrollments, outreachOffices, outreachWorkshopRegs, outreachCourseEnrollments] = await Promise.all([
     client.fetch(
       `*[_type == "announcement" && !(_id in path("drafts.**")) && active == true] | order(publishedAt desc){
         _id, title, message, type, publishedAt, expiresAt,
@@ -201,7 +209,16 @@ export default async function AdminPage() {
         "officeId": office._ref, officeOther, officeSource
       }`
     ) : Promise.resolve([]),
+    // Read-only contest standings for every Hub user (Staff tab) — no registrant details
+    client.fetch(OUTREACH_OFFICES_QUERY),
+    client.fetch(OUTREACH_WORKSHOP_REGS_QUERY),
+    client.fetch(OUTREACH_COURSE_ENROLLMENTS_QUERY),
   ])
+
+  const outreachRows = buildOutreachRows(
+    outreachOffices as ContestOffice[],
+    [...outreachWorkshopRegs, ...outreachCourseEnrollments] as ContestReferral[],
+  )
 
   // Outreach leaderboard data — staff test registrations are left out
   const officeReferrals = ([...officeWorkshopRegs, ...officeCourseEnrollments] as OfficeReferralEntry[])
@@ -345,6 +362,7 @@ export default async function AdminPage() {
         courseOfferings={courseOfferings as any}
         dentalOffices={dentalOffices as DentalOfficeEntry[]}
         officeReferrals={officeReferrals}
+        outreachRows={outreachRows}
       />
     </main>
   )

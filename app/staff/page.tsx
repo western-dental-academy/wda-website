@@ -5,6 +5,8 @@ import { createClient } from '@sanity/client'
 import ClockWidget from '@/components/staff/ClockWidget'
 import TimeOffForm from '@/components/staff/TimeOffForm'
 import DownloadIdCardButton from '@/components/staff/DownloadIdCardButton'
+import OutreachLeaderboard from '@/components/staff/OutreachLeaderboard'
+import { computeStaffLeaderboard, contestRegistrants, type ContestOffice, type ContestReferral } from '@/lib/offices/leaderboard'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -56,7 +58,7 @@ export default async function StaffPage() {
   const yearStart = `${new Date().getFullYear()}-01-01`
   const weekStart = getWeekStart()
 
-  const [active, weekLogs, approvedThisYear, requests, myCourses] = await Promise.all([
+  const [active, weekLogs, approvedThisYear, requests, myCourses, outreachOffices, outreachWorkshopRegs, outreachCourseEnrollments] = await Promise.all([
     client.fetch(
       `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
       { id: staff._id }
@@ -86,7 +88,34 @@ export default async function StaffPage() {
           { email: userEmail }
         )
       : Promise.resolve([]),
+    client.fetch(
+      `*[_type == "dentalOffice" && !(_id in path("drafts.**"))]{ _id, visitedBy, visited }`
+    ),
+    client.fetch(
+      `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"]{
+        _id, email, registeredAt, "officeId": office._ref
+      }`
+    ),
+    client.fetch(
+      `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"]{
+        _id, "email": student.email, "registeredAt": enrolledAt, "officeId": office._ref
+      }`
+    ),
   ])
+
+  // Outreach leaderboard (read-only) — computed here so no registrant details reach the browser.
+  // Everyone who has visited an office is listed, including people with no registrants yet.
+  const contestReferrals = contestRegistrants(
+    ([...outreachWorkshopRegs, ...outreachCourseEnrollments] as ContestReferral[])
+      .filter(r => !(r.email ?? '').toLowerCase().endsWith('@westerndentalacademy.com'))
+  )
+  const visitedOffices = (outreachOffices as ContestOffice[]).filter(o => o.visited && o.visitedBy)
+  const scores = new Map(computeStaffLeaderboard(visitedOffices, contestReferrals).map(r => [r.name, r.count]))
+  const officesVisited = new Map<string, number>()
+  for (const o of visitedOffices) officesVisited.set(o.visitedBy!, (officesVisited.get(o.visitedBy!) ?? 0) + 1)
+  const outreachRows = Array.from(officesVisited.entries())
+    .map(([name, offices]) => ({ name, count: scores.get(name) ?? 0, offices }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
 
   const weekHours = computeHours(weekLogs)
 
@@ -171,6 +200,7 @@ export default async function StaffPage() {
           initialBalance={balance}
           initialRequests={requests}
         />
+        <OutreachLeaderboard rows={outreachRows} />
 
         {/* My Courses */}
         {myCourses.length > 0 && (

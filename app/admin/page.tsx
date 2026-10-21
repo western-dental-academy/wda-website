@@ -30,6 +30,9 @@ const FINANCIAL_EMAILS = [
 
 const SANITY_EMAILS = ['aiden@westerndentalacademy.com']
 
+// Office outreach contest management (Marketing tab); other staff see the read-only leaderboard on /staff
+const OUTREACH_MANAGERS = ['aiden@westerndentalacademy.com']
+
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET!,
@@ -51,6 +54,7 @@ export default async function AdminPage() {
 
   const canViewFinancials = FINANCIAL_EMAILS.includes(email)
   const canViewSanity     = SANITY_EMAILS.includes(email)
+  const canManageOutreach = OUTREACH_MANAGERS.includes(email)
 
   const students = await client.fetch(
     `*[_type == "student" && !(_id in path("drafts.**"))] | order(applicationDate desc) {
@@ -179,24 +183,24 @@ export default async function AdminPage() {
         _id, title, price, extensionPrice, hours, accessDurationDays, moodleCourseId, active
       }`
     ),
-    client.fetch(
+    canManageOutreach ? client.fetch(
       `*[_type == "dentalOffice" && !(_id in path("drafts.**"))] | order(name asc){
         _id, name, city, email, website, visitedBy, visited
       }`
-    ),
-    client.fetch(
+    ) : Promise.resolve([]),
+    canManageOutreach ? client.fetch(
       `*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"] | order(registeredAt desc){
         _id, "kind": "workshop", firstName, lastName, email, "item": workshop, registeredAt,
         "officeId": office._ref, officeOther, officeSource, dentalBackground
       }`
-    ),
-    client.fetch(
+    ) : Promise.resolve([]),
+    canManageOutreach ? client.fetch(
       `*[_type == "courseEnrollment" && !(_id in path("drafts.**")) && stripePaymentStatus == "paid"] | order(enrolledAt desc){
         _id, "kind": "course", "firstName": student.firstName, "lastName": student.lastName,
         "email": student.email, "item": courseName, "registeredAt": enrolledAt,
         "officeId": office._ref, officeOther, officeSource
       }`
-    ),
+    ) : Promise.resolve([]),
   ])
 
   // Outreach leaderboard data — staff test registrations are left out

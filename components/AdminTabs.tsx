@@ -255,7 +255,7 @@ export default function AdminTabs({
       {/* ── Marketing ── */}
       {activeTab === 'Marketing' && (
         <div className="flex flex-col gap-6">
-          <AdminOfficeReferrals offices={dentalOffices} initialReferrals={officeReferrals} />
+          {isIT && <AdminOfficeReferrals offices={dentalOffices} initialReferrals={officeReferrals} />}
           <AdminMarketing />
         </div>
       )}

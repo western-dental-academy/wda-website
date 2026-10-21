@@ -2,15 +2,8 @@ import { NextRequest } from 'next/server'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@sanity/client'
 
-const ADMIN_EMAILS = [
-  'aiden@westerndentalacademy.com',
-  'lance@westerndentalacademy.com',
-  'ryan@westerndentalacademy.com',
-  'jolene@westerndentalacademy.com',
-  'alana@westerndentalacademy.com',
-  'collette@westerndentalacademy.com',
-  'tammy@westerndentalacademy.com',
-]
+// Only Aiden manages the office outreach contest; other staff see the read-only leaderboard on /staff
+const OUTREACH_MANAGERS = ['aiden@westerndentalacademy.com']
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -29,7 +22,7 @@ export async function PATCH(req: NextRequest) {
 
   const user = await currentUser()
   const email = user?.emailAddresses[0]?.emailAddress ?? ''
-  if (!ADMIN_EMAILS.includes(email)) {
+  if (!OUTREACH_MANAGERS.includes(email)) {
     return Response.json({ error: 'Forbidden' }, { status: 403 })
   }
 

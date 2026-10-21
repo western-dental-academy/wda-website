@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { suggestOffice } from '@/lib/offices/match'
+import { CONTEST_START_LABEL, computeStaffLeaderboard, contestRegistrants, personKey } from '@/lib/offices/leaderboard'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -33,22 +34,9 @@ export interface OfficeReferralEntry {
 
 const CARD = { border: '1.5px solid rgba(30,53,96,0.09)' }
 
-// Contest starts from scratch on Oct 21, 2026 (midnight Alberta time). Anyone who
-// registered for anything before then is a returning registrant and does not count.
-const CONTEST_START_MS = Date.parse('2026-10-21T00:00:00-06:00')
-const CONTEST_START_LABEL = 'Oct 21, 2026'
-
-function registeredMs(r: OfficeReferralEntry): number {
-  return r.registeredAt ? Date.parse(r.registeredAt) : 0
-}
-
 function formatDate(iso?: string): string {
   if (!iso) return ''
   return new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/Regina', month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function personKey(r: OfficeReferralEntry): string {
-  return (r.email ?? r._id).trim().toLowerCase()
 }
 
 // ── Component ──────────────────────────────────────────────────────────────────
@@ -67,38 +55,22 @@ export default function AdminOfficeReferrals({
 
   const officeById = useMemo(() => new Map(offices.map(o => [o._id, o])), [offices])
 
-  // Contest registrants: registered on/after the start and never registered for anything before it
-  const inRange = useMemo(() => {
-    const returning = new Set(referrals.filter(r => registeredMs(r) < CONTEST_START_MS).map(personKey))
-    return referrals.filter(r => registeredMs(r) >= CONTEST_START_MS && !returning.has(personKey(r)))
-  }, [referrals])
+  const inRange = useMemo(() => contestRegistrants(referrals), [referrals])
 
   // Leaderboard: unique registrants (by email) from visited offices, credited to the visitor
-  const { staffRows, officeRows } = useMemo(() => {
-    const staff = new Map<string, { people: Set<string>; offices: Set<string> }>()
+  const staffRows = useMemo(() => computeStaffLeaderboard(offices, inRange), [offices, inRange])
+
+  const officeRows = useMemo(() => {
     const perOffice = new Map<string, Set<string>>()
     for (const r of inRange) {
-      if (!r.officeId) continue
-      const office = officeById.get(r.officeId)
-      if (!office) continue
-      const people = perOffice.get(office._id) ?? new Set<string>()
+      if (!r.officeId || !officeById.has(r.officeId)) continue
+      const people = perOffice.get(r.officeId) ?? new Set<string>()
       people.add(personKey(r))
-      perOffice.set(office._id, people)
-      if (office.visited && office.visitedBy) {
-        const s = staff.get(office.visitedBy) ?? { people: new Set<string>(), offices: new Set<string>() }
-        s.people.add(personKey(r))
-        s.offices.add(office._id)
-        staff.set(office.visitedBy, s)
-      }
+      perOffice.set(r.officeId, people)
     }
-    return {
-      staffRows: Array.from(staff.entries())
-        .map(([name, s]) => ({ name, count: s.people.size, offices: s.offices.size }))
-        .sort((a, b) => b.count - a.count),
-      officeRows: Array.from(perOffice.entries())
-        .map(([id, people]) => ({ office: officeById.get(id)!, count: people.size }))
-        .sort((a, b) => b.count - a.count),
-    }
+    return Array.from(perOffice.entries())
+      .map(([id, people]) => ({ office: officeById.get(id)!, count: people.size }))
+      .sort((a, b) => b.count - a.count)
   }, [inRange, officeById])
 
   const toReview = useMemo(

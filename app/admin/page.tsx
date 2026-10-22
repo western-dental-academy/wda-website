@@ -114,7 +114,7 @@ export default async function AdminPage() {
       `*[_type == "workshopDate" && !(_id in path("drafts.**"))] | order(date asc){
         _id, date, active,
         offering->{ _id, title, category, capacity, hasVirtualOption, virtualPrice, price },
-        "teamsWebinarId": offering->teamsWebinarId,
+        "teamsWebinarId": coalesce(teamsWebinarId, offering->teamsWebinarId),
         "virtualRegistrantCount": count(*[_type == "workshopRegistration" && !(_id in path("drafts.**")) && workshopDateId == ^._id && deliveryMethod == "virtual"])
       }`
     ),

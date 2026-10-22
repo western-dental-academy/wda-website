@@ -31,6 +31,7 @@ interface RegistrationRecord {
   preferredDate?: string;
   deliveryMethod?: string;
   newsletterOptIn?: boolean;
+  confirmationSentAt?: string;
 }
 
 function workshopInstructions(workshop: string): string {
@@ -264,6 +265,136 @@ function adminEmailHtml(
     </div>`;
 }
 
+// Confirmation emails, Teams webinar sign-up, newsletter, receipt and admin
+// notification. Runs once per checkout, for Stripe and gift-certificate payments.
+async function sendRegistrationFollowUps(
+  registrations: RegistrationRecord[],
+  totalPaidCents: number,
+  sendReceipt: boolean,
+) {
+  const primary = registrations[0];
+
+  // Fetch workshop dates for formatted date strings
+  const dateIds = [...new Set(
+    registrations.map(r => r.workshopDateId).filter(Boolean) as string[]
+  )];
+  const dateMap: Record<string, string> = {};
+  const teamsWebinarIdMap: Record<string, string | null> = {};
+  const virtualPriceMap: Record<string, number | null> = {};
+  if (dateIds.length > 0) {
+    const dateResults = await sanity.fetch<{ _id: string; date: string; teamsWebinarId?: string; virtualPrice?: number }[]>(
+      `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsWebinarId": coalesce(teamsWebinarId, offering->teamsWebinarId), "virtualPrice": offering->virtualPrice }`,
+    );
+    for (const d of dateResults) {
+      dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
+        timeZone: "America/Regina",
+        weekday: "long", year: "numeric", month: "long", day: "numeric",
+        hour: "numeric", minute: "2-digit",
+      }) + " MT";
+      teamsWebinarIdMap[d._id] = d.teamsWebinarId ?? null;
+      virtualPriceMap[d._id] = d.virtualPrice ?? null;
+    }
+  }
+
+  // Send individual confirmation emails
+  await Promise.all(
+    registrations.map(r => {
+      const formattedDate = r.workshopDateId ? dateMap[r.workshopDateId] ?? "" : "";
+      return resend.emails.send({
+        from: "Western Dental Academy <info@westerndentalacademy.com>",
+        to: r.email,
+        subject: `Registration Confirmed — ${r.workshop}`,
+        html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod),
+      });
+    })
+  );
+
+  // Auto-register virtual attendees in Teams webinar
+  const virtualRegistrants = registrations.filter(
+    r => r.deliveryMethod === 'virtual' && r.workshopDateId && teamsWebinarIdMap[r.workshopDateId]
+  );
+  if (virtualRegistrants.length > 0) {
+    await Promise.all(
+      virtualRegistrants.map(async r => {
+        const webinarId = teamsWebinarIdMap[r.workshopDateId!]!;
+        const result = await registerTeamsWebinarAttendee({
+          webinarId,
+          firstName: r.firstName,
+          lastName: r.lastName,
+          email: r.email,
+        });
+        if (result.success && result.registrationId) {
+          await sanity.patch(r._id).set({ teamsRegistrationId: result.registrationId }).commit();
+        }
+      })
+    );
+  }
+
+  // Create subscriber docs for opted-in registrants (idempotent — skip if already subscribed)
+  const optedIn = registrations.filter(r => r.newsletterOptIn === true)
+  if (optedIn.length > 0) {
+    await Promise.all(optedIn.map(async r => {
+      try {
+        const existing = await sanity.fetch<{ _id: string } | null>(
+          `*[_type == "subscriber" && !(_id in path("drafts.**")) && email == $email][0]{ _id }`,
+          { email: r.email }
+        )
+        if (!existing) {
+          await sanity.create({
+            _type: 'subscriber',
+            email: r.email,
+            firstName: r.firstName,
+            lastName: r.lastName,
+            subscribedAt: new Date().toISOString(),
+            source: 'registration',
+            active: true,
+          })
+        }
+      } catch (err) {
+        console.error('Subscriber creation error:', err)
+      }
+    }))
+  }
+
+  // Send receipt to primary registrant (first in list)
+  if (sendReceipt) {
+    const basePrices: Record<string, number> = {
+      "Ergonomics in Healthcare: Hands, Feet, and Spine": 40,
+      "Ergonomics in Healthcare: Hips and Hamstrings": 40,
+      "Ergonomics in Healthcare: Neck and Shoulders": 40,
+      "National Board Guided Practice Workshop": 750,
+      "Renewal Wellness": 129,
+    };
+    const receiptRows = registrations.map(r => {
+      const isVirtual = r.deliveryMethod === 'virtual';
+      const vp = r.workshopDateId ? virtualPriceMap[r.workshopDateId] : null;
+      const price = isVirtual && vp != null ? vp : (basePrices[r.workshop] ?? 0);
+      return {
+        name: `${r.firstName} ${r.lastName}`,
+        workshop: r.workshop,
+        date: r.workshopDateId ? dateMap[r.workshopDateId] ?? "TBD" : "TBD",
+        delivery: r.deliveryMethod,
+        price,
+      };
+    });
+    const totalPaidDollars = totalPaidCents / 100;
+    await resend.emails.send({
+      from: "Western Dental Academy <info@westerndentalacademy.com>",
+      to: primary.email,
+      subject: `Registration Receipt — ${registrations.length} Attendee${registrations.length > 1 ? "s" : ""}`,
+      html: receiptEmailHtml(primary.firstName, receiptRows, totalPaidDollars),
+    });
+  }
+
+  // Admin notification
+  await resend.emails.send({
+    from: "Western Dental Academy <info@westerndentalacademy.com>",
+    to: "info@westerndentalacademy.com",
+    subject: `New Workshop Registration${registrations.length > 1 ? ` (${registrations.length} attendees)` : ""}: ${primary.firstName} ${primary.lastName}`,
+    html: adminEmailHtml(registrations, dateMap),
+  });
+}
+
 export default async function SuccessPage({
   searchParams,
 }: {
@@ -289,9 +420,18 @@ export default async function SuccessPage({
     try {
       const idList = ids.map(id => `"${id}"`).join(",");
       registrations = await sanity.fetch<RegistrationRecord[]>(
-        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod, newsletterOptIn }`,
+        `*[_id in [${idList}]]{ _id, firstName, lastName, email, workshop, workshopDateId, stripePaymentStatus, preferredDate, deliveryMethod, newsletterOptIn, confirmationSentAt }`,
       );
       confirmed = true;
+
+      // Fully gift-covered checkouts skip Stripe, so send the follow-ups here.
+      // confirmationSentAt stops a page refresh from sending them twice.
+      const giftPaid = registrations.length > 0 && registrations.every(r => r.stripePaymentStatus === "paid");
+      if (giftPaid && !registrations.some(r => r.confirmationSentAt)) {
+        const sentAt = new Date().toISOString();
+        await Promise.all(registrations.map(r => sanity.patch(r._id).set({ confirmationSentAt: sentAt }).commit()));
+        await sendRegistrationFollowUps(registrations, 0, true);
+      }
     } catch (err) {
       console.error("Gift-redeemed fetch error:", err);
       confirmed = true;
@@ -322,126 +462,8 @@ export default async function SuccessPage({
           );
           confirmed = true;
 
-          // Fetch workshop dates for formatted date strings
-          const dateIds = [...new Set(
-            registrations.map(r => r.workshopDateId).filter(Boolean) as string[]
-          )];
-          const dateMap: Record<string, string> = {};
-          const teamsWebinarIdMap: Record<string, string | null> = {};
-          const virtualPriceMap: Record<string, number | null> = {};
-          if (dateIds.length > 0) {
-            const dateResults = await sanity.fetch<{ _id: string; date: string; teamsWebinarId?: string; virtualPrice?: number }[]>(
-              `*[_type == "workshopDate" && _id in [${dateIds.map(id => `"${id}"`).join(",")}]]{ _id, date, "teamsWebinarId": offering->teamsWebinarId, "virtualPrice": offering->virtualPrice }`,
-            );
-            for (const d of dateResults) {
-              dateMap[d._id] = new Date(d.date).toLocaleString("en-CA", {
-                timeZone: "America/Regina",
-                weekday: "long", year: "numeric", month: "long", day: "numeric",
-                hour: "numeric", minute: "2-digit",
-              }) + " MT";
-              teamsWebinarIdMap[d._id] = d.teamsWebinarId ?? null;
-              virtualPriceMap[d._id] = d.virtualPrice ?? null;
-            }
-          }
-
-          // Send individual confirmation emails
-          await Promise.all(
-            registrations.map(r => {
-              const formattedDate = r.workshopDateId ? dateMap[r.workshopDateId] ?? "" : "";
-              return resend.emails.send({
-                from: "Western Dental Academy <info@westerndentalacademy.com>",
-                to: r.email,
-                subject: `Registration Confirmed — ${r.workshop}`,
-                html: confirmationEmailHtml(r.firstName, r.workshop, formattedDate, r.deliveryMethod),
-              });
-            })
-          );
-
-          // Auto-register virtual attendees in Teams webinar
-          const virtualRegistrants = registrations.filter(
-            r => r.deliveryMethod === 'virtual' && r.workshopDateId && teamsWebinarIdMap[r.workshopDateId]
-          );
-          if (virtualRegistrants.length > 0) {
-            await Promise.all(
-              virtualRegistrants.map(async r => {
-                const webinarId = teamsWebinarIdMap[r.workshopDateId!]!;
-                const result = await registerTeamsWebinarAttendee({
-                  webinarId,
-                  firstName: r.firstName,
-                  lastName: r.lastName,
-                  email: r.email,
-                });
-                if (result.success && result.registrationId) {
-                  await sanity.patch(r._id).set({ teamsRegistrationId: result.registrationId }).commit();
-                }
-              })
-            );
-          }
-
-          // Create subscriber docs for opted-in registrants (idempotent — skip if already subscribed)
-          const optedIn = registrations.filter(r => r.newsletterOptIn === true)
-          if (optedIn.length > 0) {
-            await Promise.all(optedIn.map(async r => {
-              try {
-                const existing = await sanity.fetch<{ _id: string } | null>(
-                  `*[_type == "subscriber" && !(_id in path("drafts.**")) && email == $email][0]{ _id }`,
-                  { email: r.email }
-                )
-                if (!existing) {
-                  await sanity.create({
-                    _type: 'subscriber',
-                    email: r.email,
-                    firstName: r.firstName,
-                    lastName: r.lastName,
-                    subscribedAt: new Date().toISOString(),
-                    source: 'registration',
-                    active: true,
-                  })
-                }
-              } catch (err) {
-                console.error('Subscriber creation error:', err)
-              }
-            }))
-          }
-
-          // Send receipt to primary registrant (first in list)
+          await sendRegistrationFollowUps(registrations, totalPaidCents, registrations.length > 1 || !isLegacy);
           const primary = registrations[0];
-          if (registrations.length > 1 || !isLegacy) {
-            const basePrices: Record<string, number> = {
-              "Ergonomics in Healthcare: Hands, Feet, and Spine": 40,
-              "Ergonomics in Healthcare: Hips and Hamstrings": 40,
-              "Ergonomics in Healthcare: Neck and Shoulders": 40,
-              "National Board Guided Practice Workshop": 750,
-              "Renewal Wellness": 129,
-            };
-            const receiptRows = registrations.map(r => {
-              const isVirtual = r.deliveryMethod === 'virtual';
-              const vp = r.workshopDateId ? virtualPriceMap[r.workshopDateId] : null;
-              const price = isVirtual && vp != null ? vp : (basePrices[r.workshop] ?? 0);
-              return {
-                name: `${r.firstName} ${r.lastName}`,
-                workshop: r.workshop,
-                date: r.workshopDateId ? dateMap[r.workshopDateId] ?? "TBD" : "TBD",
-                delivery: r.deliveryMethod,
-                price,
-              };
-            });
-            const totalPaidDollars = totalPaidCents / 100;
-            await resend.emails.send({
-              from: "Western Dental Academy <info@westerndentalacademy.com>",
-              to: primary.email,
-              subject: `Registration Receipt — ${registrations.length} Attendee${registrations.length > 1 ? "s" : ""}`,
-              html: receiptEmailHtml(primary.firstName, receiptRows, totalPaidDollars),
-            });
-          }
-
-          // Admin notification
-          await resend.emails.send({
-            from: "Western Dental Academy <info@westerndentalacademy.com>",
-            to: "info@westerndentalacademy.com",
-            subject: `New Workshop Registration${registrations.length > 1 ? ` (${registrations.length} attendees)` : ""}: ${primary.firstName} ${primary.lastName}`,
-            html: adminEmailHtml(registrations, dateMap),
-          });
 
           // Update gift certificate balance for partial redemption
           const giftCodeUsed = session.metadata?.giftCode

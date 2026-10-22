@@ -31,6 +31,12 @@ export default defineType({
       description: 'Enable the feedback QR code for this workshop date',
       initialValue: true,
     }),
+    defineField({
+      name: 'teamsWebinarId',
+      title: 'Teams Webinar ID (this date only)',
+      type: 'string',
+      description: 'Leave blank to use the offering\'s webinar. Set it when this date has its own Teams webinar, e.g. a test run.',
+    }),
   ],
   preview: {
     select: {

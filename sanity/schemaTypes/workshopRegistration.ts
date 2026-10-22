@@ -237,6 +237,13 @@ export default defineType({
       type: 'string',
       readOnly: true,
     }),
+    defineField({
+      name: 'confirmationSentAt',
+      title: 'Confirmation Sent At',
+      type: 'datetime',
+      readOnly: true,
+      description: 'Set when confirmation emails go out for a gift-certificate checkout',
+    }),
   ],
   preview: {
     select: {

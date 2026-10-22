@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import AnimateIn from "@/components/AnimateIn";
 import InlineNewsletterForm from "@/components/InlineNewsletterForm";
 
@@ -882,27 +883,47 @@ export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: W
       <div className="max-w-6xl mx-auto px-6">
         {/* Tab bar */}
         <div
-          className="flex flex-wrap items-center gap-1 mb-14 rounded-xl p-1.5 w-full sm:w-fit"
-          style={{ backgroundColor: "#F4F7F9" }}
+          className="flex flex-wrap items-center gap-1.5 mb-14 rounded-2xl p-2 w-full sm:w-fit"
+          style={{
+            backgroundColor: "#0D3B6E",
+            boxShadow: "0 12px 32px -12px rgba(13,59,110,0.55)",
+          }}
           role="tablist"
           aria-label="Professional development categories"
         >
-          {TABS.map(({ id, label }) => (
-            <button
-              key={id}
-              role="tab"
-              aria-selected={activeTab === id}
-              onClick={() => setActiveTab(id)}
-              className="rounded-lg px-5 py-2.5 text-sm font-bold transition-all duration-200 min-h-[44px]"
-              style={
-                activeTab === id
-                  ? { backgroundColor: "#E67E22", color: "#ffffff" }
-                  : { backgroundColor: "transparent", color: "rgba(230,126,34,0.7)" }
-              }
-            >
-              {label}
-            </button>
-          ))}
+          {TABS.map(({ id, label }) => {
+            const isActive = activeTab === id;
+            return (
+              <button
+                key={id}
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => setActiveTab(id)}
+                className={`group relative rounded-xl px-5 py-3 text-sm font-bold tracking-wide min-h-[44px] transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A9FD4] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D3B6E] ${
+                  isActive
+                    ? "text-[#0D3B6E]"
+                    : "text-white/80 hover:text-white hover:bg-white/10 hover:-translate-y-0.5"
+                }`}
+                style={{ fontFamily: "var(--font-montserrat), sans-serif" }}
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="pd-tab-pill"
+                    className="absolute inset-0 rounded-xl bg-white"
+                    style={{ boxShadow: "0 6px 18px -6px rgba(74,159,212,0.7)" }}
+                    transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                  />
+                )}
+                <span className="relative z-10">{label}</span>
+                <span
+                  aria-hidden="true"
+                  className={`absolute left-1/2 bottom-1.5 z-10 h-[3px] -translate-x-1/2 rounded-full bg-[#4A9FD4] transition-all duration-300 ease-out ${
+                    isActive ? "w-8" : "w-0 group-hover:w-6"
+                  }`}
+                />
+              </button>
+            );
+          })}
         </div>
 
         {/* Events */}

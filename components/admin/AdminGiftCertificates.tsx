@@ -105,7 +105,7 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
           className="rounded-lg px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: '#E67E22' }}
         >
-          Generate Door Prize
+          Generate Gift Certificate
         </button>
       </div>
 
@@ -145,7 +145,7 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
       {/* Door Prize form */}
       {showForm && (
         <form onSubmit={handleGenerate} className="px-6 py-5 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)', backgroundColor: 'rgba(230,126,34,0.04)' }}>
-          <p className="text-xs font-bold mb-4" style={{ color: '#1E3560' }}>Generate Door Prize Certificate</p>
+          <p className="text-xs font-bold mb-4" style={{ color: '#1E3560' }}>Generate Gift Certificate</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-xs font-semibold mb-1.5" style={{ color: '#1E3560' }}>

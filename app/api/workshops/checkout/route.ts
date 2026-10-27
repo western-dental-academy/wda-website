@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { isReferralExcluded } from '@/lib/giftCertificates'
 import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
 
@@ -173,14 +174,15 @@ export async function POST(req: NextRequest) {
     let validatedGiftCode: string | undefined
     let validatedCertId: string | undefined
     let availableBalanceCents = 0
+    let referralPercent = 0
 
     if (giftCode?.trim()) {
       const normalised = giftCode.trim().toUpperCase()
       const cert = await client.fetch<{
-        _id: string; status: string; amount: number; remainingBalance?: number; expiresAt: string; partialRedemptions?: unknown[]
+        _id: string; status: string; amount: number; remainingBalance?: number; expiresAt: string; partialRedemptions?: unknown[]; percentOff?: number
       } | null>(
         `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{
-          _id, status, amount, remainingBalance, expiresAt, partialRedemptions
+          _id, status, amount, remainingBalance, expiresAt, partialRedemptions, percentOff
         }`,
         { code: normalised }
       )
@@ -191,11 +193,21 @@ export async function POST(req: NextRequest) {
       if (cert.status !== 'active' && cert.status !== 'admin') return Response.json({ error: 'This gift certificate is not valid.' }, { status: 400 })
       if (new Date(cert.expiresAt) < new Date()) return Response.json({ error: 'This gift certificate has expired.' }, { status: 400 })
 
-      const availableBalance = cert.remainingBalance ?? cert.amount
-      if (availableBalance <= 0) return Response.json({ error: 'This gift certificate has no remaining balance.' }, { status: 400 })
+      if (cert.percentOff) {
+        // Referral code: single-use % off the whole order, so nothing remains after use
+        if (items.some(i => isReferralExcluded(i.workshopName))) {
+          return Response.json({ error: 'Referral codes can’t be used for the National Board Guided Practice Workshop.' }, { status: 400 })
+        }
+        giftDiscountCents = Math.round(subtotalCents * cert.percentOff / 100)
+        availableBalanceCents = giftDiscountCents
+        referralPercent = cert.percentOff
+      } else {
+        const availableBalance = cert.remainingBalance ?? cert.amount
+        if (availableBalance <= 0) return Response.json({ error: 'This gift certificate has no remaining balance.' }, { status: 400 })
 
-      availableBalanceCents = Math.round(availableBalance * 100)
-      giftDiscountCents = Math.min(availableBalanceCents, subtotalCents)
+        availableBalanceCents = Math.round(availableBalance * 100)
+        giftDiscountCents = Math.min(availableBalanceCents, subtotalCents)
+      }
       validatedGiftCode = normalised
       validatedCertId = cert._id
     }
@@ -259,7 +271,9 @@ export async function POST(req: NextRequest) {
             name: items.length === 1
               ? `${items[0].workshopName} — ${items[0].firstName} ${items[0].lastName}`
               : `Workshop Registration (${items.length} attendees)`,
-            description: `Gift certificate ${validatedGiftCode} applied (-$${giftDiscountCents / 100} CAD)`,
+            description: referralPercent
+              ? `Referral code ${validatedGiftCode} applied (${referralPercent}% off, -$${giftDiscountCents / 100} CAD)`
+              : `Gift certificate ${validatedGiftCode} applied (-$${giftDiscountCents / 100} CAD)`,
           },
           unit_amount: remainingCents,
         },

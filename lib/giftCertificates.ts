@@ -6,10 +6,18 @@ export function generateGiftCode(): string {
   return `WDA-${segment()}-${segment()}`
 }
 
-export function getExpiryDate(): string {
+export function getExpiryDate(months = 12): string {
   const d = new Date()
-  d.setFullYear(d.getFullYear() + 1)
+  d.setMonth(d.getMonth() + months)
   return d.toISOString()
+}
+
+// Refer-a-friend reward: single-use % off, valid 6 months, professional development only
+export const REFERRAL_PERCENT_OFF = 25
+export const REFERRAL_EXPIRY_MONTHS = 6
+
+export function isReferralExcluded(offeringName: string): boolean {
+  return offeringName.includes('National Board')
 }
 
 export function formatExpiryDisplay(iso: string): string {

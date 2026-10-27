@@ -13,10 +13,10 @@ export async function GET(req: NextRequest) {
   if (!code) return Response.json({ error: 'Code is required.' }, { status: 400 })
 
   const cert = await client.fetch<{
-    status: string; amount: number; remainingBalance?: number; expiresAt: string
+    status: string; amount: number; remainingBalance?: number; expiresAt: string; percentOff?: number
   } | null>(
     `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{
-      status, amount, remainingBalance, expiresAt
+      status, amount, remainingBalance, expiresAt, percentOff
     }`,
     { code }
   )
@@ -25,6 +25,8 @@ export async function GET(req: NextRequest) {
   if (cert.status === 'redeemed') return Response.json({ error: 'This gift certificate has already been fully redeemed.' }, { status: 400 })
   if (cert.status === 'expired' || new Date(cert.expiresAt) < new Date()) return Response.json({ error: 'This gift certificate has expired.' }, { status: 400 })
   if (cert.status !== 'active' && cert.status !== 'admin') return Response.json({ error: 'This gift certificate is not valid.' }, { status: 400 })
+
+  if (cert.percentOff) return Response.json({ valid: true, percentOff: cert.percentOff })
 
   const remainingBalance = cert.remainingBalance ?? cert.amount
   if (remainingBalance <= 0) return Response.json({ error: 'This gift certificate has no remaining balance.' }, { status: 400 })

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { courseId, firstName, lastName, email, phone, officeId, officeOther, referredByFirstName, referredByLastName } = body as {
+  const { courseId, firstName, lastName, email, phone, officeId, officeOther, referredByFirstName, referredByLastName, giftCode } = body as {
     courseId?: string
     firstName?: string
     lastName?: string
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
     officeOther?: string
     referredByFirstName?: string
     referredByLastName?: string
+    giftCode?: string
   }
 
   if (!courseId || !firstName?.trim() || !lastName?.trim() || !email?.trim()) {
@@ -52,6 +53,22 @@ export async function POST(req: NextRequest) {
   }
 
   const priceCents = Math.round(course.price * 100)
+
+  // Referral code (% off). Dollar gift certificates are for events only.
+  let referral: { _id: string; code: string; percentOff: number } | null = null
+  if (giftCode?.trim()) {
+    const code = giftCode.trim().toUpperCase()
+    const cert = await client.fetch<{ _id: string; status: string; expiresAt: string; percentOff?: number } | null>(
+      `*[_type == "giftCertificate" && !(_id in path("drafts.**")) && code == $code][0]{ _id, status, expiresAt, percentOff }`,
+      { code }
+    )
+    if (!cert) return Response.json({ error: 'Code not found. Please check the code and try again.' }, { status: 400 })
+    if (!cert.percentOff) return Response.json({ error: 'Gift certificates can be used for events only. Referral codes work for online courses.' }, { status: 400 })
+    if (cert.status !== 'active') return Response.json({ error: 'This referral code has already been used.' }, { status: 400 })
+    if (new Date(cert.expiresAt) < new Date()) return Response.json({ error: 'This referral code has expired.' }, { status: 400 })
+    referral = { _id: cert._id, code, percentOff: cert.percentOff }
+  }
+  const discountCents = referral ? Math.round(priceCents * referral.percentOff / 100) : 0
 
   // Only keep an office id that exists (picked from the outreach office list)
   const validOfficeId = officeId
@@ -93,9 +110,10 @@ export async function POST(req: NextRequest) {
           currency: 'cad',
           product_data: {
             name: course.title,
-            description: `Online refresher course — ${course.accessDurationDays ?? 365} days access`,
+            description: `Online refresher course — ${course.accessDurationDays ?? 365} days access`
+              + (referral ? ` (referral code ${referral.code}: ${referral.percentOff}% off)` : ''),
           },
-          unit_amount: priceCents,
+          unit_amount: priceCents - discountCents,
         },
         quantity: 1,
       },
@@ -111,6 +129,7 @@ export async function POST(req: NextRequest) {
       studentFirstName:   firstName.trim(),
       studentLastName:    lastName.trim(),
       studentPhone:       phone?.trim() || '',
+      ...(referral ? { referralCertId: referral._id, referralDiscountDollars: String(discountCents / 100) } : {}),
     },
     customer_email: email.trim().toLowerCase(),
     success_url: `${origin}/courses/success?session_id={CHECKOUT_SESSION_ID}`,

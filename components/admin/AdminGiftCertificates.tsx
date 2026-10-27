@@ -18,6 +18,8 @@ export interface GiftCertificateEntry {
   isAdminGenerated?: boolean
   generatedBy?: string
   generatedByName?: string
+  percentOff?: number
+  referredName?: string
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; label: string }> = {
@@ -40,6 +42,11 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
   const [generating, setGenerating] = useState(false)
   const [genError, setGenError] = useState<string | null>(null)
   const [showBreakdown, setShowBreakdown] = useState(false)
+  const [showReferralForm, setShowReferralForm] = useState(false)
+  const [refName, setRefName] = useState('')
+  const [refEmail, setRefEmail] = useState('')
+  const [refFriend, setRefFriend] = useState('')
+  const [refResult, setRefResult] = useState<{ code: string; emailed: boolean; email?: string } | null>(null)
 
   // Door prize stats
   const doorPrizes = entries.filter(e => e.isAdminGenerated)
@@ -88,6 +95,36 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
     }
   }
 
+  async function handleReferral(e: React.FormEvent) {
+    e.preventDefault()
+    if (!refName.trim()) { setGenError('Enter the referrer’s name.'); return }
+    setGenerating(true)
+    setGenError(null)
+    setRefResult(null)
+    try {
+      const res = await fetch('/api/admin/gift-certificates/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referral: true,
+          recipientName: refName.trim(),
+          recipientEmail: refEmail.trim() || undefined,
+          referredName: refFriend.trim() || undefined,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error ?? 'Generation failed.')
+      setRefResult({ code: data.code, emailed: data.emailed, email: refEmail.trim() || undefined })
+      setRefName('')
+      setRefEmail('')
+      setRefFriend('')
+    } catch (err) {
+      setGenError(err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setGenerating(false)
+    }
+  }
+
   return (
     <div className="rounded-2xl bg-white overflow-hidden mb-8" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
       {/* Header */}
@@ -100,14 +137,75 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
             {entries.length} certificate{entries.length !== 1 ? 's' : ''} total
           </p>
         </div>
-        <button
-          onClick={() => { setShowForm(v => !v); setGenError(null) }}
-          className="rounded-lg px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
-          style={{ backgroundColor: '#E67E22' }}
-        >
-          Generate Gift Certificate
-        </button>
+        <div className="flex flex-wrap gap-2 justify-end">
+          <button
+            onClick={() => { setShowReferralForm(v => !v); setShowForm(false); setGenError(null); setRefResult(null) }}
+            className="rounded-lg px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#378ADD' }}
+          >
+            Generate Referral Code
+          </button>
+          <button
+            onClick={() => { setShowForm(v => !v); setShowReferralForm(false); setGenError(null) }}
+            className="rounded-lg px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#E67E22' }}
+          >
+            Generate Gift Certificate
+          </button>
+        </div>
       </div>
+
+      {/* Referral code form */}
+      {showReferralForm && (
+        <form onSubmit={handleReferral} className="px-6 py-5 border-b" style={{ borderColor: 'rgba(30,53,96,0.08)', backgroundColor: 'rgba(55,138,221,0.05)' }}>
+          <p className="text-xs font-bold mb-1" style={{ color: '#1E3560' }}>Generate Referral Code (25% off)</p>
+          <p className="text-xs mb-4" style={{ color: 'rgba(43,48,58,0.55)' }}>
+            Single use, valid 6 months, for any event, guest speaker or online course except the National Board workshop.
+            Add the referrer&apos;s email to send it to them automatically.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+            {([
+              ['Referrer Name', refName, setRefName, 'e.g. Jane Smith', true],
+              ['Referrer Email', refEmail, setRefEmail, 'Optional, emails the code', false],
+              ['Friend Who Registered', refFriend, setRefFriend, 'Optional', false],
+            ] as const).map(([label, value, set, ph, req]) => (
+              <div key={label}>
+                <label className="block text-xs font-semibold mb-1.5" style={{ color: '#1E3560' }}>
+                  {label} {req && <span style={{ color: '#378ADD' }}>*</span>}
+                </label>
+                <input
+                  type={label === 'Referrer Email' ? 'email' : 'text'} value={value} onChange={e => set(e.target.value)}
+                  placeholder={ph}
+                  className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none"
+                  style={{ borderColor: 'rgba(30,53,96,0.2)', backgroundColor: '#ffffff', color: '#2B303A' }}
+                />
+              </div>
+            ))}
+          </div>
+          {genError && <p className="mb-3 text-xs" style={{ color: '#dc2626' }}>{genError}</p>}
+          {refResult && (
+            <div className="mb-3 rounded-lg px-3 py-2.5 text-xs" style={{ backgroundColor: 'rgba(22,163,74,0.07)', border: '1px solid rgba(22,163,74,0.25)', color: '#15803d' }}>
+              Code <code className="font-bold" style={{ color: '#1E3560' }}>{refResult.code}</code> created.{' '}
+              {refResult.emailed ? `Emailed to ${refResult.email}.` : refResult.email ? 'The email failed, so send the code yourself.' : 'Send it to the referrer yourself.'}
+              {' '}Refresh to see it in the list, and tick Referral Reward Sent on the friend&apos;s registration.
+            </div>
+          )}
+          <div className="flex gap-3">
+            <button
+              type="submit" disabled={generating}
+              className="rounded-lg px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60"
+              style={{ backgroundColor: '#378ADD' }}
+            >
+              {generating ? 'Generating…' : 'Generate Code'}
+            </button>
+            <button type="button" onClick={() => setShowReferralForm(false)}
+              className="rounded-lg px-4 py-2.5 text-sm font-semibold border"
+              style={{ borderColor: 'rgba(30,53,96,0.2)', color: 'rgba(30,53,96,0.55)' }}>
+              Close
+            </button>
+          </div>
+        </form>
+      )}
 
       {/* Door prize summary */}
       {doorPrizes.length > 0 && (
@@ -215,10 +313,18 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
                       {e.isAdminGenerated && (
                         <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(230,126,34,0.1)', color: '#E67E22' }}>PRIZE</span>
                       )}
+                      {e.percentOff != null && (
+                        <span className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'rgba(55,138,221,0.12)', color: '#378ADD' }}>REFERRAL</span>
+                      )}
                     </td>
-                    <td className="px-4 py-3 font-bold" style={{ color: '#E67E22' }}>${e.amount}</td>
+                    <td className="px-4 py-3 font-bold" style={{ color: '#E67E22' }}>{e.percentOff != null ? `${e.percentOff}% off` : `$${e.amount}`}</td>
                     <td className="px-4 py-3 text-xs" style={{ whiteSpace: 'nowrap' }}>
                       {(() => {
+                        if (e.percentOff != null) {
+                          return e.status === 'redeemed'
+                            ? <span style={{ color: '#6b7280' }}>Used</span>
+                            : <span style={{ color: '#16a34a' }}>Single use (unused)</span>
+                        }
                         const bal = e.remainingBalance ?? e.amount
                         if (bal === 0) return <span style={{ color: '#6b7280' }}>Fully redeemed</span>
                         if (bal < e.amount) return <span className="font-bold" style={{ color: '#E67E22' }}>${bal} remaining</span>
@@ -228,6 +334,7 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
                     <td className="px-4 py-3">
                       <p className="font-medium text-xs" style={{ color: '#1E3560' }}>{e.recipientName ?? '—'}</p>
                       {e.recipientEmail && <p className="text-[11px]" style={{ color: 'rgba(43,48,58,0.5)' }}>{e.recipientEmail}</p>}
+                      {e.referredName && <p className="text-[11px]" style={{ color: 'rgba(43,48,58,0.5)' }}>Referred {e.referredName}</p>}
                     </td>
                     <td className="px-4 py-3">
                       <span className="text-[11px] font-bold px-2.5 py-1 rounded-full"
@@ -236,7 +343,7 @@ export default function AdminGiftCertificates({ initialEntries }: { initialEntri
                       </span>
                     </td>
                     <td className="px-4 py-3 text-xs" style={{ color: 'rgba(43,48,58,0.6)', whiteSpace: 'nowrap' }}>
-                      {e.isAdminGenerated
+                      {e.isAdminGenerated || e.percentOff != null
                         ? (e.generatedByName ?? e.generatedBy ?? '—')
                         : <span style={{ color: 'rgba(43,48,58,0.3)' }}>—</span>
                       }

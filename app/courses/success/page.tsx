@@ -78,6 +78,26 @@ async function CourseSuccessContent({ sessionId }: { sessionId: string }) {
       ...(moodleUserId != null ? { moodleUserId } : {}),
     }).commit()
 
+    // Mark a referral code used at checkout as redeemed
+    if (m.referralCertId) {
+      try {
+        await client.patch(m.referralCertId)
+          .set({ status: 'redeemed', redeemedAt: now.toISOString(), redeemedBy: studentEmail })
+          .setIfMissing({ partialRedemptions: [] })
+          .append('partialRedemptions', [{
+            _key: `course-${Date.now()}`,
+            redeemedAt: now.toISOString(),
+            redeemedBy: studentEmail,
+            amountUsed: Number(m.referralDiscountDollars ?? 0),
+            remainingAfter: 0,
+            workshopName: courseName,
+          }])
+          .commit()
+      } catch (err) {
+        console.error('Referral code redemption error:', err)
+      }
+    }
+
     // Send confirmation email
     const expiryFormatted = new Date(accessExpiresAt).toLocaleDateString('en-CA', {
       year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',

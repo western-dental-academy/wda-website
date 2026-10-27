@@ -152,7 +152,7 @@ function WorkshopRegisterFormInner() {
   const [checkoutError, setCheckoutError] = useState("");
   const [giftCode, setGiftCode] = useState("");
   const [giftCodeError, setGiftCodeError] = useState("");
-  const [giftCertInfo, setGiftCertInfo] = useState<{ amount: number; remainingBalance: number } | null>(null);
+  const [giftCertInfo, setGiftCertInfo] = useState<{ amount: number; remainingBalance: number; percentOff?: number } | null>(null);
   const [giftCodeValidating, setGiftCodeValidating] = useState(false);
   const [workshopDates, setWorkshopDates] = useState<WorkshopDate[]>([]);
   const [datesLoading, setDatesLoading] = useState(true);
@@ -295,6 +295,7 @@ function WorkshopRegisterFormInner() {
             officeOther: office.officeOther.trim() || undefined,
             referredByFirstName: referrer.firstName.trim() || undefined,
             referredByLastName:  referrer.lastName.trim() || undefined,
+            giftCode: giftCode.trim().toUpperCase() || undefined,
           }),
         });
         const result = await res.json();
@@ -881,10 +882,10 @@ function WorkshopRegisterFormInner() {
             </label>
           </div>
 
-          {/* Gift certificate — events only */}
-          {!isOnlineCourse && <div className="pt-5 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
+          {/* Gift certificate (events) or referral code (events + courses) */}
+          {<div className="pt-5 border-t" style={{ borderColor: "rgba(30,53,96,0.08)" }}>
             <label htmlFor="gc-code" className="block text-xs font-semibold mb-1.5" style={{ color: "#1E3560" }}>
-              Gift Certificate Code{" "}
+              {isOnlineCourse ? "Referral Code" : isNationalBoard ? "Gift Certificate Code" : "Gift Certificate or Referral Code"}{" "}
               <span className="ml-1 font-normal" style={{ color: "rgba(43,48,58,0.4)" }}>(optional)</span>
             </label>
             <input
@@ -906,7 +907,8 @@ function WorkshopRegisterFormInner() {
                   const res = await fetch(`/api/gift-certificates/validate?code=${encodeURIComponent(v)}`);
                   const data = await res.json();
                   if (!res.ok) { setGiftCodeError(data.error ?? "Invalid gift certificate."); return; }
-                  setGiftCertInfo({ amount: data.amount, remainingBalance: data.remainingBalance });
+                  if (isOnlineCourse && !data.percentOff) { setGiftCodeError("Gift certificates can be used for events only. Referral codes work for online courses."); return; }
+                  setGiftCertInfo({ amount: data.amount, remainingBalance: data.remainingBalance, percentOff: data.percentOff });
                 } catch {
                   setGiftCodeError("Could not validate gift certificate. Please try again.");
                 } finally {
@@ -920,7 +922,20 @@ function WorkshopRegisterFormInner() {
             />
             {giftCodeValidating && <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>Validating…</p>}
             {giftCodeError && <p className="mt-1 text-xs" style={{ color: "#dc2626" }}>{giftCodeError}</p>}
-            {giftCertInfo && (() => {
+            {giftCertInfo?.percentOff && (() => {
+              const price = isOnlineCourse ? (selectedCourseObj?.price ?? 0)
+                : deliveryMethod === 'virtual' && selectedDateObj?.virtualPrice != null ? selectedDateObj.virtualPrice
+                : WORKSHOP_PRICES[form.workshop] ?? 0;
+              const off = Math.round(price * giftCertInfo.percentOff) / 100;
+              return (
+                <div className="mt-2 rounded-lg px-3 py-2.5 text-xs" style={{ backgroundColor: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.25)" }}>
+                  <p className="font-semibold" style={{ color: "#16a34a" }}>
+                    ✓ Referral code valid — {giftCertInfo.percentOff}% off{price ? ` (−$${off.toFixed(2)})` : ""}
+                  </p>
+                </div>
+              );
+            })()}
+            {giftCertInfo && !giftCertInfo.percentOff && (() => {
               const currentPrice = deliveryMethod === 'virtual' && selectedDateObj?.virtualPrice != null
                 ? selectedDateObj.virtualPrice
                 : WORKSHOP_PRICES[form.workshop] ?? 0;
@@ -940,10 +955,12 @@ function WorkshopRegisterFormInner() {
                 </div>
               );
             })()}
-            <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
-              Don&apos;t have one?{" "}
-              <a href="/gift-certificates" className="underline" style={{ color: "#378ADD" }}>Purchase a gift certificate →</a>
-            </p>
+            {!isOnlineCourse && (
+              <p className="mt-1 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+                Don&apos;t have one?{" "}
+                <a href="/gift-certificates" className="underline" style={{ color: "#378ADD" }}>Purchase a gift certificate →</a>
+              </p>
+            )}
           </div>}
 
           {/* Capacity error */}

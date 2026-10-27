@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { isReferralExcluded } from '@/lib/giftCertificates'
+import { cleanReferrerEmail } from '@/lib/referrals'
 import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
 
@@ -25,6 +26,7 @@ interface CartItemPayload {
   officeOther?: string
   referredByFirstName?: string
   referredByLastName?: string
+  referredByEmail?: string
   isPrimary: boolean
   deliveryMethod: 'in-person' | 'virtual'
   dietaryRestrictions?: string
@@ -156,6 +158,7 @@ export async function POST(req: NextRequest) {
         officeOther: item.officeOther?.trim().slice(0, 200) || undefined,
         referredByFirstName: item.referredByFirstName?.trim().slice(0, 100) || undefined,
         referredByLastName: item.referredByLastName?.trim().slice(0, 100) || undefined,
+        referredByEmail: cleanReferrerEmail(item.referredByEmail),
         stripePaymentStatus: 'unpaid',
         registeredAt: now,
       } as { _type: string; [key: string]: unknown })

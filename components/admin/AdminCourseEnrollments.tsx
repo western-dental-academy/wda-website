@@ -36,6 +36,8 @@ export interface CourseEnrollmentEntry {
   referredByFirstName?: string
   referredByLastName?: string
   referralRewardSent?: boolean
+  referredByEmail?: string
+  referralRewardCode?: string
   feedbackRating?: number
   feedbackEnjoyedMost?: string
   feedbackImprovement?: string
@@ -468,7 +470,8 @@ export default function AdminCourseEnrollments({
                         {(e.referredByFirstName || e.referredByLastName) && (
                           <span className="block text-[11px] font-normal mt-0.5" style={{ color: 'rgba(43,48,58,0.55)' }}>
                             Referred by: {[e.referredByFirstName, e.referredByLastName].filter(Boolean).join(' ')}
-                            {e.referralRewardSent ? ' (reward sent)' : ''}
+                            {e.referredByEmail ? ` · ${e.referredByEmail}` : ''}
+                        {e.referralRewardSent ? (e.referralRewardCode ? ` (code ${e.referralRewardCode} emailed)` : ' (reward sent)') : ''}
                           </span>
                         )}
                       </td>

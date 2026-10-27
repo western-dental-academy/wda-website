@@ -6,6 +6,7 @@ import { createClient } from '@sanity/client'
 import { Resend } from 'resend'
 import { getOrCreateMoodleUser, enrollUserInCourse } from '@/lib/moodle'
 import { stripe } from '@/lib/stripe/client'
+import { rewardReferrer } from '@/lib/referrals'
 import type Stripe from 'stripe'
 
 export const dynamic = 'force-dynamic'
@@ -78,6 +79,8 @@ async function CourseSuccessContent({ sessionId }: { sessionId: string }) {
       ...(moodleUserId != null ? { moodleUserId } : {}),
     }).commit()
 
+    await rewardReferrer(enrollmentId)
+
     // Mark a referral code used at checkout as redeemed
     if (m.referralCertId) {
       try {
@@ -85,7 +88,7 @@ async function CourseSuccessContent({ sessionId }: { sessionId: string }) {
           .set({ status: 'redeemed', redeemedAt: now.toISOString(), redeemedBy: studentEmail })
           .setIfMissing({ partialRedemptions: [] })
           .append('partialRedemptions', [{
-            _key: `course-${Date.now()}`,
+            _key: `course-${now.getTime()}`,
             redeemedAt: now.toISOString(),
             redeemedBy: studentEmail,
             amountUsed: Number(m.referralDiscountDollars ?? 0),

@@ -14,6 +14,7 @@ import AdminWorkshopRegistrations, {
 import AdminStaffPanel, { type ClockEntry, type PendingTimeOff } from '@/components/AdminStaffPanel'
 import AdminITPanel from '@/components/AdminITPanel'
 import AdminMarketing from '@/components/admin/AdminMarketing'
+import AdminGiveawayDraw from '@/components/admin/AdminGiveawayDraw'
 import AdminWorkshopFeedback, { type FeedbackEntry, type QRFeedbackEntry } from '@/components/admin/AdminWorkshopFeedback'
 import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/admin/AdminGiftCertificates'
 import AdminCourseEnrollments, { type CourseEnrollmentEntry, type CourseOfferingEntry } from '@/components/admin/AdminCourseEnrollments'
@@ -263,6 +264,7 @@ export default function AdminTabs({
         <div className="flex flex-col gap-6">
           {isIT && <AdminOfficeReferrals offices={dentalOffices} initialReferrals={officeReferrals} />}
           <AdminMarketing />
+          <AdminGiveawayDraw />
         </div>
       )}
 

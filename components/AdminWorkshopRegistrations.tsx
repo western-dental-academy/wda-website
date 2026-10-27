@@ -27,6 +27,8 @@ export interface WorkshopRegistration {
   referredByFirstName?: string;
   referredByLastName?: string;
   referralRewardSent?: boolean;
+  referredByEmail?: string;
+  referralRewardCode?: string;
 }
 
 export interface WorkshopWaitlistEntry {
@@ -509,7 +511,8 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     {(r.referredByFirstName || r.referredByLastName) && (
                       <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.55)" }}>
                         Referred by: {[r.referredByFirstName, r.referredByLastName].filter(Boolean).join(" ")}
-                        {r.referralRewardSent ? " (reward sent)" : ""}
+                        {r.referredByEmail ? ` · ${r.referredByEmail}` : ""}
+                        {r.referralRewardSent ? (r.referralRewardCode ? ` (code ${r.referralRewardCode} emailed)` : " (reward sent)") : ""}
                       </span>
                     )}
                   </td>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { rewardReferrer } from "@/lib/referrals";
 import Link from "next/link";
 import { stripe } from "@/lib/stripe/client";
 import { createClient } from "@sanity/client";
@@ -431,6 +432,7 @@ export default async function SuccessPage({
         const sentAt = new Date().toISOString();
         await Promise.all(registrations.map(r => sanity.patch(r._id).set({ confirmationSentAt: sentAt }).commit()));
         await sendRegistrationFollowUps(registrations, 0, true);
+        for (const r of registrations) await rewardReferrer(r._id);
       }
     } catch (err) {
       console.error("Gift-redeemed fetch error:", err);
@@ -463,6 +465,7 @@ export default async function SuccessPage({
           confirmed = true;
 
           await sendRegistrationFollowUps(registrations, totalPaidCents, registrations.length > 1 || !isLegacy);
+          for (const id of ids) await rewardReferrer(id);
           const primary = registrations[0];
 
           // Update gift certificate balance for partial redemption

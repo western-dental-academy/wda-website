@@ -249,11 +249,24 @@ export default defineType({
       type: 'string',
     }),
     defineField({
+      name: 'referredByEmail',
+      title: 'Referred By (Email)',
+      type: 'string',
+      description: 'When given, the referrer is emailed a 25% off referral code automatically after payment',
+    }),
+    defineField({
       name: 'referralRewardSent',
       title: 'Referral Reward Sent',
       type: 'boolean',
       initialValue: false,
-      description: 'Tick once the referrer has been sent their 25% off gift certificate',
+      description: 'Set automatically when the referral code is emailed; tick by hand if you sent one from the WDA Hub',
+    }),
+    defineField({
+      name: 'referralRewardCode',
+      title: 'Referral Reward Code',
+      type: 'string',
+      readOnly: true,
+      description: 'The 25% code emailed to the referrer for this registration',
     }),
     defineField({
       name: 'confirmationSentAt',

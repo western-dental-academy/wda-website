@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
+import { cleanReferrerEmail } from '@/lib/referrals'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { courseId, firstName, lastName, email, phone, officeId, officeOther, referredByFirstName, referredByLastName, giftCode } = body as {
+  const { courseId, firstName, lastName, email, phone, officeId, officeOther, referredByFirstName, referredByLastName, referredByEmail, giftCode } = body as {
     courseId?: string
     firstName?: string
     lastName?: string
@@ -26,6 +27,7 @@ export async function POST(req: NextRequest) {
     officeOther?: string
     referredByFirstName?: string
     referredByLastName?: string
+    referredByEmail?: string
     giftCode?: string
   }
 
@@ -95,6 +97,7 @@ export async function POST(req: NextRequest) {
     officeOther: officeOther?.trim().slice(0, 200) || undefined,
     referredByFirstName: referredByFirstName?.trim().slice(0, 100) || undefined,
     referredByLastName: referredByLastName?.trim().slice(0, 100) || undefined,
+    referredByEmail: cleanReferrerEmail(referredByEmail),
     stripePaymentStatus: 'pending',
     enrolledAt: new Date().toISOString(),
   })

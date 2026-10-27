@@ -159,7 +159,7 @@ function WorkshopRegisterFormInner() {
   const [datesError, setDatesError] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'in-person' | 'virtual'>('in-person');
   const [office, setOffice] = useState<OfficeValue>({ officeId: "", officeOther: "" });
-  const [referrer, setReferrer] = useState({ firstName: "", lastName: "" });
+  const [referrer, setReferrer] = useState({ firstName: "", lastName: "", email: "" });
   const [onlineCourses, setOnlineCourses] = useState<Array<{ _id: string; title: string; price: number; moodleCourseId: number; accessDurationDays: number; hours: number }>>([]);
 
   useEffect(() => {
@@ -295,6 +295,7 @@ function WorkshopRegisterFormInner() {
             officeOther: office.officeOther.trim() || undefined,
             referredByFirstName: referrer.firstName.trim() || undefined,
             referredByLastName:  referrer.lastName.trim() || undefined,
+            referredByEmail:     referrer.email.trim() || undefined,
             giftCode: giftCode.trim().toUpperCase() || undefined,
           }),
         });
@@ -367,6 +368,7 @@ function WorkshopRegisterFormInner() {
       // Refer-a-friend is for professional development only, not the National Board workshop
       referredByFirstName: (!isNationalBoard && referrer.firstName.trim()) || undefined,
       referredByLastName: (!isNationalBoard && referrer.lastName.trim()) || undefined,
+      referredByEmail: (!isNationalBoard && referrer.email.trim()) || undefined,
       isPrimary: true,
       deliveryMethod,
       dietaryRestrictions: (deliveryMethod === 'in-person' && selectedDateObj?.includesFood && form.dietaryRestrictions.trim())
@@ -774,9 +776,15 @@ function WorkshopRegisterFormInner() {
                     value={referrer.lastName} onChange={e => setReferrer(r => ({ ...r, lastName: e.target.value }))}
                     className="wda-input"
                   />
+                  <input
+                    id="reg-referrerEmail" type="email" autoComplete="off" maxLength={200}
+                    placeholder="Their email (optional)" aria-label="Referrer email"
+                    value={referrer.email} onChange={e => setReferrer(r => ({ ...r, email: e.target.value }))}
+                    className="wda-input sm:col-span-2"
+                  />
                 </div>
                 <p className="mt-1.5 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
-                  If a friend sent you our way, add their name and we&apos;ll thank them with 25% off their next event or course.
+                  If a friend sent you our way, add their name. Add their email too and we&apos;ll email them 25% off their next event or course as a thank you.
                 </p>
               </div>
             )}

@@ -24,6 +24,9 @@ export interface WorkshopRegistration {
   certificateSent?: boolean;
   deliveryMethod?: string;
   dietaryRestrictions?: string;
+  referredByFirstName?: string;
+  referredByLastName?: string;
+  referralRewardSent?: boolean;
 }
 
 export interface WorkshopWaitlistEntry {
@@ -501,6 +504,12 @@ function GroupTab({ group, canViewFinancials }: { group: DateGroup; canViewFinan
                     {r.dietaryRestrictions && (
                       <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.55)" }}>
                         Dietary: {r.dietaryRestrictions}
+                      </span>
+                    )}
+                    {(r.referredByFirstName || r.referredByLastName) && (
+                      <span className="block text-[11px] font-normal mt-0.5" style={{ color: "rgba(43,48,58,0.55)" }}>
+                        Referred by: {[r.referredByFirstName, r.referredByLastName].filter(Boolean).join(" ")}
+                        {r.referralRewardSent ? " (reward sent)" : ""}
                       </span>
                     )}
                   </td>

@@ -159,6 +159,7 @@ function WorkshopRegisterFormInner() {
   const [datesError, setDatesError] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<'in-person' | 'virtual'>('in-person');
   const [office, setOffice] = useState<OfficeValue>({ officeId: "", officeOther: "" });
+  const [referrer, setReferrer] = useState({ firstName: "", lastName: "" });
   const [onlineCourses, setOnlineCourses] = useState<Array<{ _id: string; title: string; price: number; moodleCourseId: number; accessDurationDays: number; hours: number }>>([]);
 
   useEffect(() => {
@@ -292,6 +293,8 @@ function WorkshopRegisterFormInner() {
             phone:     form.phone.trim() || undefined,
             officeId:    office.officeId || undefined,
             officeOther: office.officeOther.trim() || undefined,
+            referredByFirstName: referrer.firstName.trim() || undefined,
+            referredByLastName:  referrer.lastName.trim() || undefined,
           }),
         });
         const result = await res.json();
@@ -360,6 +363,9 @@ function WorkshopRegisterFormInner() {
       newsletterOptIn: form.newsletterOptIn,
       officeId: office.officeId || undefined,
       officeOther: office.officeOther.trim() || undefined,
+      // Refer-a-friend is for professional development only, not the National Board workshop
+      referredByFirstName: (!isNationalBoard && referrer.firstName.trim()) || undefined,
+      referredByLastName: (!isNationalBoard && referrer.lastName.trim()) || undefined,
       isPrimary: true,
       deliveryMethod,
       dietaryRestrictions: (deliveryMethod === 'in-person' && selectedDateObj?.includesFood && form.dietaryRestrictions.trim())
@@ -749,6 +755,30 @@ function WorkshopRegisterFormInner() {
                 Start typing to find your office. If it isn&apos;t listed, just type its name.
               </p>
             </div>
+
+            {/* Refer-a-friend (professional development only) */}
+            {!isNationalBoard && (
+              <div className="mb-5">
+                <FieldLabel htmlFor="reg-referrerFirstName" optional>Who referred you?</FieldLabel>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <input
+                    id="reg-referrerFirstName" type="text" autoComplete="off" maxLength={100}
+                    placeholder="Their first name" aria-label="Referrer first name"
+                    value={referrer.firstName} onChange={e => setReferrer(r => ({ ...r, firstName: e.target.value }))}
+                    className="wda-input"
+                  />
+                  <input
+                    id="reg-referrerLastName" type="text" autoComplete="off" maxLength={100}
+                    placeholder="Their last name" aria-label="Referrer last name"
+                    value={referrer.lastName} onChange={e => setReferrer(r => ({ ...r, lastName: e.target.value }))}
+                    className="wda-input"
+                  />
+                </div>
+                <p className="mt-1.5 text-xs" style={{ color: "rgba(43,48,58,0.45)" }}>
+                  If a friend sent you our way, add their name and we&apos;ll thank them with 25% off their next event or course.
+                </p>
+              </div>
+            )}
 
             {/* CADA number */}
             <div className="mb-5">

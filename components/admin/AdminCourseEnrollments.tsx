@@ -33,6 +33,9 @@ export interface CourseEnrollmentEntry {
   moodleUserId?: number
   stripePaymentStatus?: string
   midpointReminderSentAt?: string
+  referredByFirstName?: string
+  referredByLastName?: string
+  referralRewardSent?: boolean
   feedbackRating?: number
   feedbackEnjoyedMost?: string
   feedbackImprovement?: string
@@ -462,6 +465,12 @@ export default function AdminCourseEnrollments({
                     >
                       <td className="px-4 py-3 font-semibold whitespace-nowrap" style={{ color: '#1E3560' }}>
                         {e.student.firstName} {e.student.lastName}
+                        {(e.referredByFirstName || e.referredByLastName) && (
+                          <span className="block text-[11px] font-normal mt-0.5" style={{ color: 'rgba(43,48,58,0.55)' }}>
+                            Referred by: {[e.referredByFirstName, e.referredByLastName].filter(Boolean).join(' ')}
+                            {e.referralRewardSent ? ' (reward sent)' : ''}
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3" style={{ color: 'rgba(43,48,58,0.7)' }}>
                         <a href={`mailto:${e.student.email}`} style={{ color: '#378ADD' }}>

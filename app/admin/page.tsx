@@ -122,7 +122,7 @@ export default async function AdminPage() {
       `*[_type == "workshopRegistration" && !(_id in path("drafts.**"))] | order(registeredAt desc){
         _id, firstName, lastName, pronouns, mediaConsent, newsletterOptIn, newsletterInviteSentAt, email, workshop, registeredAt,
         stripePaymentStatus, checkedIn, checkedInAt, workshopDateId, certificateSent,
-        deliveryMethod, dietaryRestrictions, feedbackToken, feedbackRating, feedbackEnjoyedMost,
+        deliveryMethod, dietaryRestrictions, referredByFirstName, referredByLastName, referralRewardSent, feedbackToken, feedbackRating, feedbackEnjoyedMost,
         feedbackImprovement, feedbackWouldRecommend, feedbackSubmittedAt, feedbackShareConsent
       }`
     ),
@@ -184,6 +184,7 @@ export default async function AdminPage() {
         midpointReminderSentAt,
         feedbackRating, feedbackEnjoyedMost, feedbackImprovement,
         feedbackWouldRecommend, feedbackShareConsent, feedbackSubmittedAt,
+        referredByFirstName, referredByLastName, referralRewardSent,
         student{ firstName, lastName, email, phone }
       }`
     ),

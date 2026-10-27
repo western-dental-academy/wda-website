@@ -22,6 +22,8 @@ interface CartItemPayload {
   newsletterOptIn?: boolean
   officeId?: string
   officeOther?: string
+  referredByFirstName?: string
+  referredByLastName?: string
   isPrimary: boolean
   deliveryMethod: 'in-person' | 'virtual'
   dietaryRestrictions?: string
@@ -151,6 +153,8 @@ export async function POST(req: NextRequest) {
           ? { office: { _type: 'reference', _ref: item.officeId }, officeSource: 'self-reported' }
           : {}),
         officeOther: item.officeOther?.trim().slice(0, 200) || undefined,
+        referredByFirstName: item.referredByFirstName?.trim().slice(0, 100) || undefined,
+        referredByLastName: item.referredByLastName?.trim().slice(0, 100) || undefined,
         stripePaymentStatus: 'unpaid',
         registeredAt: now,
       } as { _type: string; [key: string]: unknown })

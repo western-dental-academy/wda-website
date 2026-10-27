@@ -1,0 +1,18 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "wda-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 3000,
+      "env": {
+        "MAINTENANCE_MODE": "false"
+      },
+      "autoPort": true
+    }
+  ]
+}

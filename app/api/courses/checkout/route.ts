@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { courseId, firstName, lastName, email, phone, officeId, officeOther } = body as {
+  const { courseId, firstName, lastName, email, phone, officeId, officeOther, referredByFirstName, referredByLastName } = body as {
     courseId?: string
     firstName?: string
     lastName?: string
@@ -24,6 +24,8 @@ export async function POST(req: NextRequest) {
     phone?: string
     officeId?: string
     officeOther?: string
+    referredByFirstName?: string
+    referredByLastName?: string
   }
 
   if (!courseId || !firstName?.trim() || !lastName?.trim() || !email?.trim()) {
@@ -74,6 +76,8 @@ export async function POST(req: NextRequest) {
       ? { office: { _type: 'reference', _ref: validOfficeId }, officeSource: 'self-reported' }
       : {}),
     officeOther: officeOther?.trim().slice(0, 200) || undefined,
+    referredByFirstName: referredByFirstName?.trim().slice(0, 100) || undefined,
+    referredByLastName: referredByLastName?.trim().slice(0, 100) || undefined,
     stripePaymentStatus: 'pending',
     enrolledAt: new Date().toISOString(),
   })

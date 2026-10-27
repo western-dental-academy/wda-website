@@ -170,6 +170,24 @@ export default defineType({
       type: 'string',
       readOnly: true,
     }),
+    defineField({
+      name: 'referredByFirstName',
+      title: 'Referred By (First Name)',
+      type: 'string',
+      description: 'First name of the person who referred this registrant (refer-a-friend reward)',
+    }),
+    defineField({
+      name: 'referredByLastName',
+      title: 'Referred By (Last Name)',
+      type: 'string',
+    }),
+    defineField({
+      name: 'referralRewardSent',
+      title: 'Referral Reward Sent',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Tick once the referrer has been sent their 25% off gift certificate',
+    }),
   ],
   preview: {
     select: {

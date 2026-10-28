@@ -24,7 +24,29 @@ interface DrawRecord {
   name: string
   ball: number
   of: number
+  drawnBy?: string
 }
+
+interface DrawSummary {
+  _id: string
+  title: string
+  platform: 'ig' | 'fb'
+  _createdAt: string
+  winners: number | null
+}
+
+interface SavedDraw {
+  _id: string
+  title: string
+  platform?: 'ig' | 'fb'
+  entriesText?: string
+  maxEntries?: number
+  exclude?: string
+  removed?: string[]
+  draws?: DrawRecord[]
+}
+
+type SaveState = 'idle' | 'saving' | 'saved' | 'error'
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 
@@ -33,6 +55,7 @@ kayla_dental, Entering! @jen.rda @dentalbff @amy.ca
 mo.hygiene, @jen.rda @kayla_dental @tooth_fairy_yeg
 jen.rda, again! @lisa.d @tooth_fairy_yeg @dentalbff
 sarahsmiles, So fun @mo.hygiene @amy.ca
+sarahsmiles, @lisa.d
 dentalbff, @jen.rda @kayla_dental @sarahsmiles @amy.ca
 tooth_fairy_yeg, Love WDA @mo.hygiene @lisa.d @jen.rda
 amy.ca, @kayla_dental @dentalbff @sarahsmiles
@@ -41,14 +64,21 @@ westerndentalacademy, Thanks everyone for entering!`
 const W = 840, H = 940, CX = 420, CY = 460, RAD = 330, BR = 34
 const BALL_COLOURS = ['#E67E22', '#4A9FD4', '#F4F7FB']
 const inputStyle = { borderColor: 'rgba(30,53,96,0.2)', backgroundColor: '#ffffff', color: '#2B303A' }
+const API = '/api/admin/giveaway-draws'
+
+function saveDraw(body: Record<string, unknown>) {
+  return fetch(API, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(r => { if (!r.ok) throw new Error('Save failed') })
+}
 
 // ── Entry rules ────────────────────────────────────────────────────────────────
 
 // One comment per line: "username, comment" (also accepts "username: comment" or tab-separated exports).
-// Instagram: a comment counts only if it tags 3+ other people. Facebook: every comment counts.
+// Instagram: tags add up across all of a person's comments; every 3 different friends tagged = 1 entry.
+// Facebook: every comment counts.
 function parseEntries(raw: string, platform: 'ig' | 'fb', maxEntries: number, excludeRaw: string) {
   const exclude = new Set(excludeRaw.split(/[\s,]+/).map(s => s.replace(/^@/, '').toLowerCase()).filter(Boolean))
-  const map = new Map<string, { name: string; comments: number }>()
+  const map = new Map<string, { name: string; comments: number; tags: Set<string> }>()
   let skipped = 0
   for (const line of raw.split(/\r?\n/)) {
     const t = line.trim()
@@ -58,14 +88,19 @@ function parseEntries(raw: string, platform: 'ig' | 'fb', maxEntries: number, ex
     const name = m[1].trim()
     const key = name.toLowerCase()
     if (/^(username|user|name|author)$/i.test(name) || exclude.has(key)) continue
-    const tags = new Set((m[2].match(/@[\w.]+/g) ?? []).map(s => s.toLowerCase()).filter(s => s.slice(1) !== key))
-    if (!map.has(key)) map.set(key, { name, comments: 0 })
-    if (platform === 'fb' || tags.size >= 3) map.get(key)!.comments++
+    if (!map.has(key)) map.set(key, { name, comments: 0, tags: new Set() })
+    const e = map.get(key)!
+    e.comments++
+    for (const tag of m[2].match(/@[\w.]+/g) ?? []) if (tag.slice(1).toLowerCase() !== key) e.tags.add(tag.toLowerCase())
+  }
+  const entrants: Entrant[] = []
+  for (const e of map.values()) {
+    const earned = platform === 'fb' ? e.comments : Math.floor(e.tags.size / 3)
+    const counted = platform === 'fb' ? e.comments : e.tags.size
+    if (earned > 0) entrants.push({ name: e.name, comments: counted, balls: Math.min(earned, Math.max(1, maxEntries)) })
     else skipped++
   }
-  const entrants: Entrant[] = [...map.values()]
-    .map(e => ({ ...e, balls: Math.min(e.comments, Math.max(1, maxEntries)) }))
-    .filter(e => e.balls > 0)
+  entrants
     .sort((a, b) => b.balls - a.balls || a.name.localeCompare(b.name))
   return { entrants, skipped }
 }
@@ -108,25 +143,112 @@ export default function AdminGiveawayDraw() {
   const [drawing, setDrawing] = useState(false)
   const [winner, setWinner] = useState<Ball | null>(null)
   const [history, setHistory] = useState<DrawRecord[]>([])
+  const [drawList, setDrawList] = useState<DrawSummary[]>([])
+  const [drawId, setDrawId] = useState('')
+  const [newTitle, setNewTitle] = useState('')
+  const [saveState, setSaveState] = useState<SaveState>('idle')
+  const [busy, setBusy] = useState(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const balls = useRef<Ball[]>([])
   const anim = useRef({ mixUntil: 0, pending: null as Ball | null, winner: null as Ball | null, rise: 0 })
+  // The open draw and edits waiting to autosave (refs so the animation and timers never go stale)
+  const drawIdRef = useRef('')
+  const pending = useRef<Record<string, unknown>>({})
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const active = entrants.filter(e => !removed.has(e.name.toLowerCase()))
   const totalBalls = active.reduce((s, e) => s + e.balls, 0)
 
-  const load = useCallback((text: string, sample: boolean) => {
-    const { entrants: list, skipped: sk } = parseEntries(text, platform, maxEntries, exclude)
+  const apply = useCallback((text: string, sample: boolean, rules: { platform: 'ig' | 'fb'; maxEntries: number; exclude: string }, out: Set<string>) => {
+    const { entrants: list, skipped: sk } = parseEntries(text, rules.platform, rules.maxEntries, rules.exclude)
     setEntrants(list)
     setSkipped(sk)
     setIsSample(sample)
-    setRemoved(new Set())
-    balls.current = makeBalls(list)
+    setRemoved(out)
+    balls.current = makeBalls(list.filter(e => !out.has(e.name.toLowerCase())))
     setBallCount(balls.current.length)
     anim.current = { mixUntil: 0, pending: null, winner: null, rise: 0 }
     setWinner(null)
-  }, [platform, maxEntries, exclude])
+  }, [])
+
+  function load(text: string, sample: boolean) {
+    apply(text, sample, { platform, maxEntries, exclude }, new Set())
+    if (drawIdRef.current) queueSave({ removed: [] }, true)
+  }
+
+  // ── Saving ──
+  function flush() {
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = null
+    const id = drawIdRef.current, body = pending.current
+    pending.current = {}
+    if (!id || !Object.keys(body).length) return
+    setSaveState('saving')
+    saveDraw({ id, ...body })
+      .then(() => setSaveState(drawIdRef.current === id ? 'saved' : 'idle'))
+      .catch(() => setSaveState('error'))
+  }
+
+  function queueSave(fields: Record<string, unknown>, now = false) {
+    if (!drawIdRef.current) return
+    pending.current = { ...pending.current, ...fields }
+    setSaveState('saving')
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    if (now) flush()
+    else saveTimer.current = setTimeout(flush, 1200)
+  }
+
+  function refreshList() {
+    return fetch(API).then(r => r.ok ? r.json() : { draws: [] }).then(d => setDrawList(d.draws ?? []))
+  }
+
+  function openDraw(id: string) {
+    flush()
+    drawIdRef.current = id
+    setDrawId(id)
+    setSaveState('idle')
+    setHistory([])
+    if (!id) {
+      setRaw(SAMPLE); setPlatform('ig'); setMaxEntries(5); setExclude('westerndentalacademy')
+      apply(SAMPLE, true, { platform: 'ig', maxEntries: 5, exclude: 'westerndentalacademy' }, new Set())
+      return
+    }
+    setBusy(true)
+    fetch(`${API}?id=${encodeURIComponent(id)}`)
+      .then(r => { if (!r.ok) throw new Error('Load failed'); return r.json() })
+      .then(({ draw: d }: { draw: SavedDraw }) => {
+        if (drawIdRef.current !== id) return
+        const rules = { platform: d.platform === 'fb' ? 'fb' as const : 'ig' as const, maxEntries: d.maxEntries ?? 5, exclude: d.exclude ?? '' }
+        setRaw(d.entriesText ?? ''); setPlatform(rules.platform); setMaxEntries(rules.maxEntries); setExclude(rules.exclude)
+        apply(d.entriesText ?? '', false, rules, new Set(d.removed ?? []))
+        setHistory([...(d.draws ?? [])].reverse())
+      })
+      .catch(() => setSaveState('error'))
+      .finally(() => setBusy(false))
+  }
+
+  function createDraw() {
+    const title = newTitle.trim()
+    if (!title) return
+    setBusy(true)
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title, platform }) })
+      .then(r => { if (!r.ok) throw new Error('Create failed'); return r.json() })
+      .then(({ draw: d }: { draw: SavedDraw }) => {
+        setNewTitle('')
+        return refreshList().then(() => openDraw(d._id))
+      })
+      .catch(() => { setSaveState('error'); setBusy(false) })
+  }
+
+  // Load the saved draw list once; send any unsaved edits when leaving the page
+  useEffect(() => {
+    fetch(API).then(r => r.ok ? r.json() : { draws: [] }).then(d => setDrawList(d.draws ?? [])).catch(() => {})
+    return () => {
+      const id = drawIdRef.current, body = pending.current
+      if (id && Object.keys(body).length) saveDraw({ id, ...body }).catch(() => {})
+    }
+  }, [])
 
   function draw() {
     if (!balls.current.length || drawing) return
@@ -144,6 +266,7 @@ export default function AdminGiveawayDraw() {
     const next = new Set(removed)
     next.add(winner.owner.toLowerCase())
     setRemoved(next)
+    queueSave({ removed: [...next] }, true)
     balls.current = makeBalls(entrants.filter(e => !next.has(e.name.toLowerCase())))
     setBallCount(balls.current.length)
     anim.current = { mixUntil: 0, pending: null, winner: null, rise: 0 }
@@ -163,7 +286,14 @@ export default function AdminGiveawayDraw() {
       setDrawing(false)
       setWinner(b)
       const record = { at: new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' }), name: b.owner, ball: b.n, of: balls.current.length }
-      setHistory(h => [record, ...h].slice(0, 30))
+      setHistory(h => [record, ...h])
+      const id = drawIdRef.current
+      if (id) {
+        setSaveState('saving')
+        saveDraw({ id, addDraw: record })
+          .then(() => { setSaveState('saved'); setDrawList(l => l.map(x => x._id === id ? { ...x, winners: (x.winners ?? 0) + 1 } : x)) })
+          .catch(() => setSaveState('error'))
+      }
     }
 
     const drawBall = (b: Ball, scale: number) => {
@@ -245,6 +375,39 @@ export default function AdminGiveawayDraw() {
         </p>
       </div>
 
+      {/* Saved draws */}
+      <div className="px-6 py-4 border-b flex flex-col lg:flex-row lg:items-end gap-4" style={{ borderColor: 'rgba(30,53,96,0.08)', backgroundColor: '#F7F9FC' }}>
+        <label className="flex flex-col gap-1.5 text-xs font-semibold flex-1 min-w-0" style={{ color: '#1E3560' }}>
+          Which draw?
+          <select value={drawId} onChange={e => openDraw(e.target.value)} disabled={drawing || busy}
+            className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle}>
+            <option value="">Practice (example names, not saved)</option>
+            {drawList.map(d => (
+              <option key={d._id} value={d._id}>
+                {d.title} · {d.platform === 'fb' ? 'Facebook' : 'Instagram'}{d.winners ? ` · ${d.winners} drawn` : ''}
+              </option>
+            ))}
+          </select>
+        </label>
+        <form className="flex flex-col gap-1.5 text-xs font-semibold flex-1 min-w-0" style={{ color: '#1E3560' }}
+          onSubmit={e => { e.preventDefault(); createDraw() }}>
+          <label htmlFor="new-draw-title">Start a new draw</label>
+          <div className="flex gap-2">
+            <input id="new-draw-title" type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)} maxLength={120}
+              placeholder="e.g. Instagram tag-3-friends, Nov 2026"
+              className="w-full min-w-0 rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle} />
+            <button type="submit" disabled={busy || drawing || !newTitle.trim()}
+              className="rounded-lg px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50 whitespace-nowrap" style={{ backgroundColor: '#1E3560' }}>
+              Create
+            </button>
+          </div>
+        </form>
+        <p className="text-xs lg:pb-3 whitespace-nowrap" aria-live="polite"
+          style={{ color: saveState === 'error' ? '#C0392B' : 'rgba(43,48,58,0.55)' }}>
+          {!drawId ? 'Not saved' : busy ? 'Loading…' : saveState === 'saving' ? 'Saving…' : saveState === 'error' ? 'Couldn’t save. Check your connection.' : saveState === 'saved' ? 'All changes saved' : 'Saved'}
+        </p>
+      </div>
+
       {/* Stage */}
       <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-center"
         style={{ background: 'radial-gradient(120% 90% at 50% 0%, #1E3A78 0%, #122450 55%, #0E1C40 100%)' }}>
@@ -290,28 +453,33 @@ export default function AdminGiveawayDraw() {
       <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="flex flex-col gap-4 min-w-0">
           <p className="text-xs font-bold" style={{ color: '#1E3560' }}>1. Paste comments</p>
+          {drawId && (
+            <p className="text-xs" style={{ color: 'rgba(43,48,58,0.6)' }}>
+              Saves as you type, so you can add comments a few at a time. Press Load entries to update the machine.
+            </p>
+          )}
           <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
             Platform rules
-            <select value={platform} onChange={e => setPlatform(e.target.value as 'ig' | 'fb')}
+            <select value={platform} onChange={e => { const v = e.target.value as 'ig' | 'fb'; setPlatform(v); queueSave({ platform: v }) }}
               className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle}>
-              <option value="ig">Instagram: comment must tag 3+ people</option>
+              <option value="ig">Instagram: every 3 friends tagged = 1 entry</option>
               <option value="fb">Facebook: any comment counts</option>
             </select>
           </label>
           <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
             Comments, one per line: username, comment
-            <textarea value={raw} onChange={e => setRaw(e.target.value)} rows={8} spellCheck={false}
+            <textarea value={raw} onChange={e => { setRaw(e.target.value); queueSave({ entriesText: e.target.value }) }} rows={8} spellCheck={false}
               className="w-full rounded-lg px-3 py-2.5 text-xs border focus:outline-none font-mono" style={inputStyle} />
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
               Max entries per person
-              <input type="number" min={1} max={50} value={maxEntries} onChange={e => setMaxEntries(parseInt(e.target.value, 10) || 1)}
+              <input type="number" min={1} max={50} value={maxEntries} onChange={e => { const v = parseInt(e.target.value, 10) || 1; setMaxEntries(v); queueSave({ maxEntries: v }) }}
                 className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle} />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
               Exclude (staff, WDA accounts)
-              <input type="text" value={exclude} onChange={e => setExclude(e.target.value)}
+              <input type="text" value={exclude} onChange={e => { setExclude(e.target.value); queueSave({ exclude: e.target.value }) }}
                 className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle} />
             </label>
           </div>
@@ -320,7 +488,10 @@ export default function AdminGiveawayDraw() {
               className="rounded-lg px-5 py-2.5 text-sm font-bold text-white disabled:opacity-60" style={{ backgroundColor: '#378ADD' }}>
               Load entries
             </button>
-            <button onClick={() => { setRaw(''); load('', false) }} disabled={drawing}
+            <button onClick={() => {
+                if (drawId && raw.trim() && !window.confirm('Clear all saved comments for this draw?')) return
+                setRaw(''); queueSave({ entriesText: '' }); load('', false)
+              }} disabled={drawing}
               className="rounded-lg px-4 py-2.5 text-sm font-semibold border" style={{ borderColor: 'rgba(30,53,96,0.2)', color: 'rgba(30,53,96,0.6)' }}>
               Clear
             </button>
@@ -335,14 +506,14 @@ export default function AdminGiveawayDraw() {
           <p className="text-xs" style={{ color: 'rgba(43,48,58,0.6)' }}>
             {isSample && entrants.length > 0 && <span className="font-bold" style={{ color: '#E67E22' }}>Example names, not real entries. </span>}
             {entrants.length
-              ? `${active.length} entrant${active.length === 1 ? '' : 's'}, ${totalBalls} ball${totalBalls === 1 ? '' : 's'}.${skipped ? ` ${skipped} comment${skipped === 1 ? '' : 's'} didn't qualify.` : ''}`
+              ? `${active.length} entrant${active.length === 1 ? '' : 's'}, ${totalBalls} ball${totalBalls === 1 ? '' : 's'}.${skipped ? ` ${skipped} ${skipped === 1 ? 'person' : 'people'} didn't qualify (fewer than 3 friends tagged).` : ''}`
               : 'No qualifying entries yet.'}
           </p>
           <div className="overflow-x-auto">
             <table className="w-full text-sm" style={{ fontVariantNumeric: 'tabular-nums' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(30,53,96,0.07)' }}>
-                  {['Entrant', 'Valid comments', 'Balls', 'Odds'].map((h, i) => (
+                  {['Entrant', platform === 'fb' ? 'Comments' : 'Friends tagged', 'Balls', 'Odds'].map((h, i) => (
                     <th key={h} className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${i ? 'text-right' : 'text-left'}`} style={{ color: 'rgba(43,48,58,0.4)', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
@@ -362,12 +533,12 @@ export default function AdminGiveawayDraw() {
               </tbody>
             </table>
           </div>
-          <p className="text-xs font-bold mt-2" style={{ color: '#1E3560' }}>Draw history (until you leave this page)</p>
+          <p className="text-xs font-bold mt-2" style={{ color: '#1E3560' }}>{drawId ? `Winners drawn for ${drawList.find(d => d._id === drawId)?.title ?? 'this draw'}` : 'Practice draws (not saved)'}</p>
           {history.length === 0
             ? <p className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>No draws yet.</p>
             : (
               <ol className="text-xs list-decimal pl-5 flex flex-col gap-1" style={{ color: 'rgba(43,48,58,0.7)' }}>
-                {history.slice(0, 10).map((h, i) => <li key={i}>{h.at}: @{h.name} (ball #{h.ball} of {h.of})</li>)}
+                {history.slice(0, 20).map((h, i) => <li key={i}>{h.at}: @{h.name} (ball #{h.ball} of {h.of}){h.drawnBy ? `, drawn by ${h.drawnBy}` : ''}</li>)}
               </ol>
             )}
         </div>

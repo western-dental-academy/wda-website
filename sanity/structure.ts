@@ -180,4 +180,9 @@ export const structure: StructureResolver = (S) =>
         .title('Gift Certificates')
         .schemaType('giftCertificate')
         .child(S.documentTypeList('giftCertificate').title('Gift Certificates')),
+
+      S.listItem()
+        .title('Giveaway Draws')
+        .schemaType('giveawayDraw')
+        .child(S.documentTypeList('giveawayDraw').title('Giveaway Draws')),
     ]);

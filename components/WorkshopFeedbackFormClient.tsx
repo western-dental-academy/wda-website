@@ -93,7 +93,7 @@ export default function WorkshopFeedbackFormClient({ workshopDateId, eventName }
           type="text"
           value={respondentName}
           onChange={(e) => setRespondentName(e.target.value)}
-          placeholder="e.g. Brandy T."
+          placeholder="First name and last initial"
           className="w-full rounded-lg px-4 py-2.5 text-sm focus:outline-none"
           style={{ border: '1.5px solid rgba(30,53,96,0.15)', color: '#2B303A', backgroundColor: '#F4F7F9' }}
         />

@@ -534,14 +534,13 @@ function WorkshopRegisterFormInner() {
                         : <option disabled value="">No courses available</option>
                       : workshopsForCategory.length > 0
                       ? workshopsForCategory.map(o => {
-                          const displayPrice =
-                            deliveryMethod === 'virtual' &&
-                            o.label === form.workshop &&
-                            selectedDateObj?.virtualPrice != null
-                              ? selectedDateObj.virtualPrice
-                              : o.price;
+                          // Offerings with a virtual option show both prices in the
+                          // Attendance Format step, so leave the price off here.
+                          const hasFormatStep = workshopDates.some(d => d.workshop === o.label && d.hasVirtualOption);
                           return (
-                            <option key={o.label} value={o.label}>{o.label} — ${displayPrice} CAD</option>
+                            <option key={o.label} value={o.label}>
+                              {hasFormatStep ? o.label : `${o.label} — $${o.price} CAD`}
+                            </option>
                           );
                         })
                       : <option disabled value="">No offerings available in this category</option>

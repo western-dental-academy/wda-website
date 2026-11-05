@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import AnimateIn from "@/components/AnimateIn";
 import InlineNewsletterForm from "@/components/InlineNewsletterForm";
@@ -35,6 +36,8 @@ interface OnlineCourse {
   price: number;
   accessDurationDays?: number;
   hours?: number;
+  imageUrl?: string;
+  imageAlt?: string;
 }
 
 // ─── Per-offering static content not stored in Sanity ─────────────────────────
@@ -753,7 +756,19 @@ function OnlineCourseCard({ course, index }: { course: OnlineCourse; index: numb
         className="group flex flex-col flex-1 rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
         style={{ backgroundColor: "#F4F7F9" }}
       >
-        <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+        {course.imageUrl ? (
+          <div className="relative w-full aspect-[16/9] overflow-hidden" style={{ backgroundColor: "#1E3560" }}>
+            <Image
+              src={`${course.imageUrl}?w=1200&auto=format`}
+              alt={course.imageAlt || `${course.title} course image featuring Wes the WDA mascot`}
+              fill
+              sizes="(min-width: 1024px) 560px, 100vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          </div>
+        ) : (
+          <div className="h-1 w-full" style={{ backgroundColor: "#378ADD" }} />
+        )}
         <div className="flex flex-col flex-1 p-6 sm:p-8">
           <div className="flex items-center justify-between mb-5">
             <span

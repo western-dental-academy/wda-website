@@ -24,6 +24,20 @@ export default defineType({
       rows: 4,
     }),
     defineField({
+      name: 'image',
+      title: 'Course Image',
+      type: 'image',
+      description: 'Card image shown on the website Courses tab (16:9, e.g. 1600×900 — same image as the Moodle course card)',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt text',
+          type: 'string',
+        }),
+      ],
+    }),
+    defineField({
       name: 'price',
       title: 'Price (CAD)',
       type: 'number',

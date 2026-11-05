@@ -26,6 +26,7 @@ interface WorkshopOffering {
 interface OnlineCourse {
   _id: string; title: string; description?: string;
   price: number; accessDurationDays?: number; hours?: number;
+  imageUrl?: string; imageAlt?: string;
 }
 
 export default async function ProfessionalDevelopmentPage() {
@@ -46,7 +47,8 @@ export default async function ProfessionalDevelopmentPage() {
       ),
       client.fetch<OnlineCourse[]>(
         `*[_type == "onlineCourse" && !(_id in path("drafts.**")) && active == true] | order(title asc){
-          _id, title, description, price, accessDurationDays, hours
+          _id, title, description, price, accessDurationDays, hours,
+          "imageUrl": image.asset->url, "imageAlt": image.alt
         }`,
         {},
         { cache: 'no-store' }

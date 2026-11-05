@@ -795,7 +795,7 @@ function OnlineCourseCard({ course, index }: { course: OnlineCourse; index: numb
               <>
                 <span className="text-xs" style={{ color: "rgba(30,53,96,0.25)" }}>·</span>
                 <span className="text-xs" style={{ color: "rgba(43,48,58,0.5)" }}>
-                  {course.hours} hrs
+                  {course.hours} {course.hours === 1 ? "hr" : "hrs"}
                 </span>
               </>
             )}

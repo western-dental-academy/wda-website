@@ -99,7 +99,8 @@ export async function registerTeamsWebinarAttendee({
         // Windows time zone name for fixed UTC-6 (Alberta no longer changes clocks)
         preferredTimezone: 'Canada Central Standard Time',
       })
-    return { success: true, registrationId: response.id as string, joinUrl: response.joinWebUrl as string }
+    // Graph can accept the sign-up with an empty body, so a missing id still means success
+    return { success: true, registrationId: (response?.id as string | undefined) ?? 'registered', joinUrl: response?.joinWebUrl as string | undefined }
   } catch (error: unknown) {
     console.error('Teams webinar registration error:', error)
     return { success: false, error: error instanceof Error ? error.message : String(error) }

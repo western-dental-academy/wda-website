@@ -171,6 +171,8 @@ export default function AdminGiveawayDraw() {
   const [busy, setBusy] = useState(false)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [full, setFull] = useState(false)
   const balls = useRef<Ball[]>([])
   const anim = useRef({ mixUntil: 0, pending: null as Ball | null, winner: null as Ball | null, rise: 0 })
   // The open draw and edits waiting to autosave (refs so the animation and timers never go stale)
@@ -293,6 +295,35 @@ export default function AdminGiveawayDraw() {
     anim.current = { mixUntil: 0, pending: null, winner: null, rise: 0 }
     setWinner(null)
   }
+
+  // ── Full screen (browser full screen where supported, otherwise fills the window) ──
+  function toggleFull() {
+    const el = stageRef.current as (HTMLDivElement & { webkitRequestFullscreen?: () => void }) | null
+    const doc = document as Document & { webkitExitFullscreen?: () => void; webkitFullscreenElement?: Element }
+    if (full) {
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+      else if (doc.webkitFullscreenElement) doc.webkitExitFullscreen?.()
+      setFull(false)
+      return
+    }
+    setFull(true)
+    if (el?.requestFullscreen) el.requestFullscreen().catch(() => {})
+    else el?.webkitRequestFullscreen?.()
+  }
+
+  useEffect(() => {
+    const doc = document as Document & { webkitFullscreenElement?: Element }
+    const onChange = () => { if (!document.fullscreenElement && !doc.webkitFullscreenElement) setFull(false) }
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setFull(false) }
+    document.addEventListener('fullscreenchange', onChange)
+    document.addEventListener('webkitfullscreenchange', onChange)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('fullscreenchange', onChange)
+      document.removeEventListener('webkitfullscreenchange', onChange)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [])
 
   // ── Machine animation ──
   useEffect(() => {
@@ -431,24 +462,37 @@ export default function AdminGiveawayDraw() {
       </div>
 
       {/* Stage */}
-      <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-center"
+      <div ref={stageRef}
+        className={full
+          ? 'fixed inset-0 z-[100] overflow-auto p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center content-center'
+          : 'relative p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 items-center'}
         style={{ background: 'radial-gradient(120% 90% at 50% 0%, #1E3A78 0%, #122450 55%, #0E1C40 100%)' }}>
-        <div className="w-full max-w-[420px] mx-auto">
+        <button onClick={toggleFull} aria-label={full ? 'Exit full screen' : 'Full screen'}
+          className="absolute top-3 right-3 z-10 rounded-full px-4 py-2 text-xs font-bold border"
+          style={{ borderColor: '#2A4278', color: '#EEF3FB', backgroundColor: 'rgba(14,28,64,0.7)' }}>
+          {full ? 'Exit full screen' : 'Full screen'}
+        </button>
+        <div className="w-full mx-auto" style={{ maxWidth: full ? 'min(100%, calc(85vh * 0.894))' : 420 }}>
           <canvas ref={canvasRef} width={W} height={H} className="w-full h-auto block" aria-label="Lottery machine with numbered balls" />
         </div>
         <div className="flex flex-col gap-3 min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#A3B4D2' }}>
+          {full && (
+            <p className="text-2xl sm:text-3xl font-black" style={{ color: '#EEF3FB', fontFamily: 'var(--font-montserrat), sans-serif' }}>
+              {drawList.find(d => d._id === drawId)?.title ?? 'Giveaway Draw'}
+            </p>
+          )}
+          <p className={`${full ? 'text-sm' : 'text-[11px]'} font-bold uppercase tracking-widest`} style={{ color: '#A3B4D2' }}>
             {ballCount} ball{ballCount === 1 ? '' : 's'} in the machine
           </p>
-          <div aria-live="polite" className="rounded-2xl p-5 flex flex-col gap-1.5 min-h-[150px] justify-center"
+          <div aria-live="polite" className={`rounded-2xl flex flex-col gap-1.5 justify-center ${full ? 'p-8 min-h-[240px]' : 'p-5 min-h-[150px]'}`}
             style={{ backgroundColor: 'rgba(255,255,255,0.06)', border: `1.5px solid ${winner ? '#E67E22' : '#2A4278'}` }}>
             <p className="text-[11px] font-bold uppercase tracking-widest" style={{ color: '#E67E22' }}>
               {winner ? `Winner · ball #${winner.n}` : drawing ? 'Drawing…' : 'Ready to draw'}
             </p>
-            <p className="text-3xl font-black break-words" style={{ color: '#EEF3FB', fontFamily: 'var(--font-montserrat), sans-serif' }}>
+            <p className={`${full ? 'text-5xl sm:text-6xl' : 'text-3xl'} font-black break-words`} style={{ color: '#EEF3FB', fontFamily: 'var(--font-montserrat), sans-serif' }}>
               {winner ? winner.label : drawing ? '…' : ballCount ? 'Press Draw' : 'Add entries'}
             </p>
-            <p className="text-sm" style={{ color: '#A3B4D2' }}>
+            <p className={full ? 'text-lg' : 'text-sm'} style={{ color: '#A3B4D2' }}>
               {winner && winnerEntrant
                 ? `${winnerEntrant.balls} of ${ballCount} balls. Next: DM them the skill-testing question.`
                 : drawing ? 'Mixing the balls' : `${active.length} people in the draw`}
@@ -456,7 +500,7 @@ export default function AdminGiveawayDraw() {
           </div>
           <div className="flex flex-wrap gap-3">
             <button onClick={draw} disabled={drawing || ballCount === 0}
-              className="rounded-full px-6 py-3 text-sm font-bold text-white disabled:opacity-50"
+              className={`rounded-full font-bold text-white disabled:opacity-50 ${full ? 'px-10 py-5 text-xl' : 'px-6 py-3 text-sm'}`}
               style={{ backgroundColor: '#E67E22' }}>
               {winner ? 'Draw again' : 'Draw a winner'}
             </button>
@@ -467,7 +511,7 @@ export default function AdminGiveawayDraw() {
               </button>
             )}
           </div>
-          <p className="text-xs" style={{ color: '#A3B4D2' }}>Tip: screen-record this panel during the draw for the winner announcement video.</p>
+          {!full && <p className="text-xs" style={{ color: '#A3B4D2' }}>Tip: Full screen is best for showing the draw live. Screen-record this panel during the draw for the winner announcement video.</p>}
         </div>
       </div>
 

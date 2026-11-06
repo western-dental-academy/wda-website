@@ -170,6 +170,13 @@ export default defineType({
       description: 'The registration ID returned by Microsoft Graph after auto-registering the attendee',
     }),
     defineField({
+      name: 'teamsRegistrationError',
+      title: 'Teams Sign-Up Error',
+      type: 'string',
+      readOnly: true,
+      description: 'Why the automatic Teams webinar sign-up failed, if it did. Empty means it worked or was not needed.',
+    }),
+    defineField({
       name: 'feedbackShareConsent',
       title: 'Consents to Share Feedback',
       type: 'boolean',

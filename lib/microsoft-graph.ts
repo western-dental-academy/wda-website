@@ -94,6 +94,10 @@ export async function registerTeamsWebinarAttendee({
         firstName,
         lastName,
         email,
+        // Graph rejects a registration without these ("The Language field is required.")
+        preferredLanguage: 'en-us',
+        // Windows time zone name for fixed UTC-6 (Alberta no longer changes clocks)
+        preferredTimezone: 'Canada Central Standard Time',
       })
     return { success: true, registrationId: response.id as string, joinUrl: response.joinWebUrl as string }
   } catch (error: unknown) {

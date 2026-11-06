@@ -325,7 +325,18 @@ async function sendRegistrationFollowUps(
           email: r.email,
         });
         if (result.success && result.registrationId) {
-          await sanity.patch(r._id).set({ teamsRegistrationId: result.registrationId }).commit();
+          await sanity.patch(r._id).set({ teamsRegistrationId: result.registrationId }).unset(["teamsRegistrationError"]).commit();
+        } else {
+          // Keep the reason on the registration (Vercel logs only last an hour)
+          // and tell staff, so a missing Teams link is caught before the event.
+          const reason = (result.error ?? "Unknown error").slice(0, 1000);
+          await sanity.patch(r._id).set({ teamsRegistrationError: reason }).commit();
+          await resend.emails.send({
+            from: "Western Dental Academy <info@westerndentalacademy.com>",
+            to: "info@westerndentalacademy.com",
+            subject: `Teams sign-up FAILED: ${r.firstName} ${r.lastName} (${r.workshop})`,
+            html: `<p>The website could not register <strong>${r.firstName} ${r.lastName}</strong> (${r.email}) in the Teams webinar for <strong>${r.workshop}</strong>, so Microsoft will not send them a join link.</p><p>Please add them to the webinar by hand or send them the registration link.</p><p>Webinar ID: ${webinarId}<br/>Error: ${reason.replace(/</g, "&lt;")}</p>`,
+          });
         }
       })
     );

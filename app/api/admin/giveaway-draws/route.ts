@@ -21,7 +21,7 @@ const client = createClient({
   useCdn: false,
 })
 
-const FULL = `{ _id, title, platform, entriesText, maxEntries, exclude, removed, draws, _createdAt }`
+const FULL = `{ _id, title, platform, entriesText, fbEntriesText, maxEntries, exclude, removed, draws, _createdAt }`
 
 async function staff() {
   const { userId } = await auth()
@@ -54,16 +54,16 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({}))
   const title = typeof body.title === 'string' ? body.title.trim().slice(0, 120) : ''
   if (!title) return Response.json({ error: 'Give the draw a name' }, { status: 400 })
-  const platform = body.platform === 'fb' ? 'fb' : 'ig'
+  const platform = body.platform === 'fb' || body.platform === 'both' ? body.platform : 'ig'
   const created = await client.create({
-    _type: 'giveawayDraw', title, platform, entriesText: '', maxEntries: 5,
+    _type: 'giveawayDraw', title, platform, entriesText: '', fbEntriesText: '', maxEntries: 5,
     exclude: 'westerndentalacademy', removed: [], draws: [], createdBy: name,
   })
   const draw = await client.fetch(`*[_id == $id][0]${FULL}`, { id: created._id })
   return Response.json({ draw })
 }
 
-// PATCH { id, entriesText?, platform?, maxEntries?, exclude?, removed?, addDraw? }: autosave and winners
+// PATCH { id, entriesText?, fbEntriesText?, platform?, maxEntries?, exclude?, removed?, addDraw? }: autosave and winners
 export async function PATCH(req: NextRequest) {
   const name = await staff()
   if (!name) return Response.json({ error: 'Forbidden' }, { status: 403 })
@@ -77,7 +77,8 @@ export async function PATCH(req: NextRequest) {
   const set: Record<string, unknown> = {}
   if (typeof body.title === 'string' && body.title.trim()) set.title = body.title.trim().slice(0, 120)
   if (typeof body.entriesText === 'string') set.entriesText = body.entriesText.slice(0, 500_000)
-  if (body.platform === 'ig' || body.platform === 'fb') set.platform = body.platform
+  if (typeof body.fbEntriesText === 'string') set.fbEntriesText = body.fbEntriesText.slice(0, 500_000)
+  if (body.platform === 'ig' || body.platform === 'fb' || body.platform === 'both') set.platform = body.platform
   if (Number.isFinite(body.maxEntries)) set.maxEntries = Math.min(50, Math.max(1, Math.round(body.maxEntries)))
   if (typeof body.exclude === 'string') set.exclude = body.exclude.slice(0, 2000)
   if (Array.isArray(body.removed)) set.removed = body.removed.filter((s: unknown) => typeof s === 'string').slice(0, 500)

@@ -4,14 +4,19 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
+type Platform = 'ig' | 'fb' | 'both'
+
 interface Entrant {
+  key: string
   name: string
+  from: 'ig' | 'fb'
   comments: number
   balls: number
 }
 
 interface Ball {
   owner: string
+  label: string
   n: number
   x: number
   y: number
@@ -30,7 +35,7 @@ interface DrawRecord {
 interface DrawSummary {
   _id: string
   title: string
-  platform: 'ig' | 'fb'
+  platform: Platform
   _createdAt: string
   winners: number | null
 }
@@ -38,8 +43,9 @@ interface DrawSummary {
 interface SavedDraw {
   _id: string
   title: string
-  platform?: 'ig' | 'fb'
+  platform?: Platform
   entriesText?: string
+  fbEntriesText?: string
   maxEntries?: number
   exclude?: string
   removed?: string[]
@@ -75,15 +81,16 @@ function saveDraw(body: Record<string, unknown>) {
 
 // One comment per line: "username, comment" (also accepts "username: comment" or tab-separated exports).
 // Instagram: tags add up across all of a person's comments; every 3 different friends tagged = 1 entry.
-// Facebook: every comment counts.
-function parseEntries(raw: string, platform: 'ig' | 'fb', maxEntries: number, excludeRaw: string) {
-  const exclude = new Set(excludeRaw.split(/[\s,]+/).map(s => s.replace(/^@/, '').toLowerCase()).filter(Boolean))
+// Facebook: every comment counts (a line with just a name counts as one comment).
+// Combined: Instagram and Facebook lists are counted with their own rules and put in one machine.
+function parseList(raw: string, from: 'ig' | 'fb', maxEntries: number, exclude: Set<string>, prefixKeys: boolean) {
   const map = new Map<string, { name: string; comments: number; tags: Set<string> }>()
   let skipped = 0
   for (const line of raw.split(/\r?\n/)) {
     const t = line.trim()
     if (!t) continue
-    const m = t.match(/^"?@?([^,:\t"]+?)"?\s*[,:\t]\s*(.*)$/)
+    let m = t.match(/^"?@?([^,:\t"]+?)"?\s*[,:\t]\s*(.*)$/)
+    if (!m && from === 'fb') m = t.match(/^"?@?([^,:\t"]+?)"?()$/)
     if (!m) { skipped++; continue }
     const name = m[1].trim()
     const key = name.toLowerCase()
@@ -94,15 +101,28 @@ function parseEntries(raw: string, platform: 'ig' | 'fb', maxEntries: number, ex
     for (const tag of m[2].match(/@[\w.]+/g) ?? []) if (tag.slice(1).toLowerCase() !== key) e.tags.add(tag.toLowerCase())
   }
   const entrants: Entrant[] = []
-  for (const e of map.values()) {
-    const earned = platform === 'fb' ? e.comments : Math.floor(e.tags.size / 3)
-    const counted = platform === 'fb' ? e.comments : e.tags.size
-    if (earned > 0) entrants.push({ name: e.name, comments: counted, balls: Math.min(earned, Math.max(1, maxEntries)) })
+  for (const [key, e] of map) {
+    const earned = from === 'fb' ? e.comments : Math.floor(e.tags.size / 3)
+    const counted = from === 'fb' ? e.comments : e.tags.size
+    if (earned > 0) entrants.push({ key: prefixKeys ? `${from}:${key}` : key, name: e.name, from, comments: counted, balls: Math.min(earned, Math.max(1, maxEntries)) })
     else skipped++
   }
-  entrants
-    .sort((a, b) => b.balls - a.balls || a.name.localeCompare(b.name))
   return { entrants, skipped }
+}
+
+function parseEntries(raw: string, platform: Platform, maxEntries: number, excludeRaw: string, fbRaw = '') {
+  const exclude = new Set(excludeRaw.split(/[\s,]+/).map(s => s.replace(/^@/, '').toLowerCase()).filter(Boolean))
+  const lists = platform === 'both'
+    ? [parseList(raw, 'ig', maxEntries, exclude, true), parseList(fbRaw, 'fb', maxEntries, exclude, true)]
+    : [parseList(raw, platform, maxEntries, exclude, false)]
+  const entrants = lists.flatMap(l => l.entrants)
+    .sort((a, b) => b.balls - a.balls || a.name.localeCompare(b.name))
+  return { entrants, skipped: lists.reduce((n, l) => n + l.skipped, 0) }
+}
+
+function entrantLabel(e: { name: string; from: 'ig' | 'fb' }, platform: Platform) {
+  const handle = e.from === 'ig' ? `@${e.name}` : e.name
+  return platform === 'both' ? `${handle} (${e.from === 'ig' ? 'Instagram' : 'Facebook'})` : handle
 }
 
 // Unbiased pick using the browser's cryptographic random generator
@@ -113,13 +133,13 @@ function secureIndex(n: number) {
   return a[0] % n
 }
 
-function makeBalls(entrants: Entrant[]): Ball[] {
+function makeBalls(entrants: Entrant[], platform: Platform): Ball[] {
   const balls: Ball[] = []
   let n = 1
   for (const e of entrants) {
     for (let i = 0; i < e.balls; i++) {
       const a = Math.random() * Math.PI * 2, r = Math.random() * (RAD - 60)
-      balls.push({ owner: e.name, n: n++, x: CX + Math.cos(a) * r, y: CY + Math.sin(a) * r, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4 })
+      balls.push({ owner: e.key, label: entrantLabel(e, platform), n: n++, x: CX + Math.cos(a) * r, y: CY + Math.sin(a) * r, vx: (Math.random() - 0.5) * 4, vy: (Math.random() - 0.5) * 4 })
     }
   }
   return balls
@@ -132,7 +152,8 @@ const INITIAL = parseEntries(SAMPLE, 'ig', 5, 'westerndentalacademy')
 
 export default function AdminGiveawayDraw() {
   const [raw, setRaw] = useState(SAMPLE)
-  const [platform, setPlatform] = useState<'ig' | 'fb'>('ig')
+  const [platform, setPlatform] = useState<Platform>('ig')
+  const [fbRaw, setFbRaw] = useState('')
   const [maxEntries, setMaxEntries] = useState(5)
   const [exclude, setExclude] = useState('westerndentalacademy')
   const [entrants, setEntrants] = useState<Entrant[]>(INITIAL.entrants)
@@ -157,23 +178,23 @@ export default function AdminGiveawayDraw() {
   const pending = useRef<Record<string, unknown>>({})
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const active = entrants.filter(e => !removed.has(e.name.toLowerCase()))
+  const active = entrants.filter(e => !removed.has(e.key))
   const totalBalls = active.reduce((s, e) => s + e.balls, 0)
 
-  const apply = useCallback((text: string, sample: boolean, rules: { platform: 'ig' | 'fb'; maxEntries: number; exclude: string }, out: Set<string>) => {
-    const { entrants: list, skipped: sk } = parseEntries(text, rules.platform, rules.maxEntries, rules.exclude)
+  const apply = useCallback((text: string, sample: boolean, rules: { platform: Platform; maxEntries: number; exclude: string }, out: Set<string>, fbText = '') => {
+    const { entrants: list, skipped: sk } = parseEntries(text, rules.platform, rules.maxEntries, rules.exclude, fbText)
     setEntrants(list)
     setSkipped(sk)
     setIsSample(sample)
     setRemoved(out)
-    balls.current = makeBalls(list.filter(e => !out.has(e.name.toLowerCase())))
+    balls.current = makeBalls(list.filter(e => !out.has(e.key)), rules.platform)
     setBallCount(balls.current.length)
     anim.current = { mixUntil: 0, pending: null, winner: null, rise: 0 }
     setWinner(null)
   }, [])
 
-  function load(text: string, sample: boolean) {
-    apply(text, sample, { platform, maxEntries, exclude }, new Set())
+  function load(text: string, sample: boolean, fbText = fbRaw) {
+    apply(text, sample, { platform, maxEntries, exclude }, new Set(), fbText)
     if (drawIdRef.current) queueSave({ removed: [] }, true)
   }
 
@@ -210,7 +231,7 @@ export default function AdminGiveawayDraw() {
     setSaveState('idle')
     setHistory([])
     if (!id) {
-      setRaw(SAMPLE); setPlatform('ig'); setMaxEntries(5); setExclude('westerndentalacademy')
+      setRaw(SAMPLE); setFbRaw(''); setPlatform('ig'); setMaxEntries(5); setExclude('westerndentalacademy')
       apply(SAMPLE, true, { platform: 'ig', maxEntries: 5, exclude: 'westerndentalacademy' }, new Set())
       return
     }
@@ -219,9 +240,9 @@ export default function AdminGiveawayDraw() {
       .then(r => { if (!r.ok) throw new Error('Load failed'); return r.json() })
       .then(({ draw: d }: { draw: SavedDraw }) => {
         if (drawIdRef.current !== id) return
-        const rules = { platform: d.platform === 'fb' ? 'fb' as const : 'ig' as const, maxEntries: d.maxEntries ?? 5, exclude: d.exclude ?? '' }
-        setRaw(d.entriesText ?? ''); setPlatform(rules.platform); setMaxEntries(rules.maxEntries); setExclude(rules.exclude)
-        apply(d.entriesText ?? '', false, rules, new Set(d.removed ?? []))
+        const rules = { platform: (d.platform === 'fb' || d.platform === 'both' ? d.platform : 'ig') as Platform, maxEntries: d.maxEntries ?? 5, exclude: d.exclude ?? '' }
+        setRaw(d.entriesText ?? ''); setFbRaw(d.fbEntriesText ?? ''); setPlatform(rules.platform); setMaxEntries(rules.maxEntries); setExclude(rules.exclude)
+        apply(d.entriesText ?? '', false, rules, new Set(d.removed ?? []), d.fbEntriesText ?? '')
         setHistory([...(d.draws ?? [])].reverse())
       })
       .catch(() => setSaveState('error'))
@@ -264,10 +285,10 @@ export default function AdminGiveawayDraw() {
   function removeAndRedraw() {
     if (!winner) return
     const next = new Set(removed)
-    next.add(winner.owner.toLowerCase())
+    next.add(winner.owner)
     setRemoved(next)
     queueSave({ removed: [...next] }, true)
-    balls.current = makeBalls(entrants.filter(e => !next.has(e.name.toLowerCase())))
+    balls.current = makeBalls(entrants.filter(e => !next.has(e.key)), platform)
     setBallCount(balls.current.length)
     anim.current = { mixUntil: 0, pending: null, winner: null, rise: 0 }
     setWinner(null)
@@ -279,13 +300,13 @@ export default function AdminGiveawayDraw() {
     const ctx = cv?.getContext('2d')
     if (!cv || !ctx) return
     let frame = 0
-    if (!balls.current.length) balls.current = makeBalls(INITIAL.entrants)
+    if (!balls.current.length) balls.current = makeBalls(INITIAL.entrants, 'ig')
 
     // Only state setters and refs are used here, so this never goes stale
     const onWinner = (b: Ball) => {
       setDrawing(false)
       setWinner(b)
-      const record = { at: new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' }), name: b.owner, ball: b.n, of: balls.current.length }
+      const record = { at: new Date().toLocaleString('en-CA', { timeZone: 'America/Regina' }), name: b.label, ball: b.n, of: balls.current.length }
       setHistory(h => [record, ...h])
       const id = drawIdRef.current
       if (id) {
@@ -364,7 +385,8 @@ export default function AdminGiveawayDraw() {
     return () => cancelAnimationFrame(frame)
   }, [])
 
-  const winnerEntrant = winner ? entrants.find(e => e.name === winner.owner) : null
+  const winnerEntrant = winner ? entrants.find(e => e.key === winner.owner) : null
+  const platformName = (p: Platform) => p === 'both' ? 'Instagram + Facebook' : p === 'fb' ? 'Facebook' : 'Instagram'
 
   return (
     <div className="rounded-2xl bg-white overflow-hidden" style={{ border: '1.5px solid rgba(30,53,96,0.09)' }}>
@@ -384,7 +406,7 @@ export default function AdminGiveawayDraw() {
             <option value="">Practice (example names, not saved)</option>
             {drawList.map(d => (
               <option key={d._id} value={d._id}>
-                {d.title} · {d.platform === 'fb' ? 'Facebook' : 'Instagram'}{d.winners ? ` · ${d.winners} drawn` : ''}
+                {d.title} · {platformName(d.platform)}{d.winners ? ` · ${d.winners} drawn` : ''}
               </option>
             ))}
           </select>
@@ -394,7 +416,7 @@ export default function AdminGiveawayDraw() {
           <label htmlFor="new-draw-title">Start a new draw</label>
           <div className="flex gap-2">
             <input id="new-draw-title" type="text" value={newTitle} onChange={e => setNewTitle(e.target.value)} maxLength={120}
-              placeholder="e.g. Instagram tag-3-friends, Nov 2026"
+              placeholder="e.g. November giveaway, IG + FB"
               className="w-full min-w-0 rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle} />
             <button type="submit" disabled={busy || drawing || !newTitle.trim()}
               className="rounded-lg px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50 whitespace-nowrap" style={{ backgroundColor: '#1E3560' }}>
@@ -424,7 +446,7 @@ export default function AdminGiveawayDraw() {
               {winner ? `Winner · ball #${winner.n}` : drawing ? 'Drawing…' : 'Ready to draw'}
             </p>
             <p className="text-3xl font-black break-words" style={{ color: '#EEF3FB', fontFamily: 'var(--font-montserrat), sans-serif' }}>
-              {winner ? `@${winner.owner}` : drawing ? '…' : ballCount ? 'Press Draw' : 'Add entries'}
+              {winner ? winner.label : drawing ? '…' : ballCount ? 'Press Draw' : 'Add entries'}
             </p>
             <p className="text-sm" style={{ color: '#A3B4D2' }}>
               {winner && winnerEntrant
@@ -460,17 +482,25 @@ export default function AdminGiveawayDraw() {
           )}
           <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
             Platform rules
-            <select value={platform} onChange={e => { const v = e.target.value as 'ig' | 'fb'; setPlatform(v); queueSave({ platform: v }) }}
+            <select value={platform} onChange={e => { const v = e.target.value as Platform; setPlatform(v); queueSave({ platform: v }) }}
               className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none" style={inputStyle}>
               <option value="ig">Instagram: every 3 friends tagged = 1 entry</option>
               <option value="fb">Facebook: any comment counts</option>
+              <option value="both">Instagram + Facebook combined (each counted by its own rule)</option>
             </select>
           </label>
           <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
-            Comments, one per line: username, comment
+            {platform === 'both' ? 'Instagram comments, one per line: username, comment' : 'Comments, one per line: username, comment'}
             <textarea value={raw} onChange={e => { setRaw(e.target.value); queueSave({ entriesText: e.target.value }) }} rows={8} spellCheck={false}
               className="w-full rounded-lg px-3 py-2.5 text-xs border focus:outline-none font-mono" style={inputStyle} />
           </label>
+          {platform === 'both' && (
+            <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
+              Facebook comments, one per line: name, comment (or just the name)
+              <textarea value={fbRaw} onChange={e => { setFbRaw(e.target.value); queueSave({ fbEntriesText: e.target.value }) }} rows={8} spellCheck={false}
+                className="w-full rounded-lg px-3 py-2.5 text-xs border focus:outline-none font-mono" style={inputStyle} />
+            </label>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label className="flex flex-col gap-1.5 text-xs font-semibold" style={{ color: '#1E3560' }}>
               Max entries per person
@@ -490,14 +520,14 @@ export default function AdminGiveawayDraw() {
             </button>
             <button onClick={() => {
                 if (drawId && raw.trim() && !window.confirm('Clear all saved comments for this draw?')) return
-                setRaw(''); queueSave({ entriesText: '' }); load('', false)
+                setRaw(''); setFbRaw(''); queueSave({ entriesText: '', fbEntriesText: '' }); load('', false, '')
               }} disabled={drawing}
               className="rounded-lg px-4 py-2.5 text-sm font-semibold border" style={{ borderColor: 'rgba(30,53,96,0.2)', color: 'rgba(30,53,96,0.6)' }}>
               Clear
             </button>
           </div>
           <p className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>
-            Works with most comment exports (CSV or &quot;username: comment&quot;). Run Instagram and Facebook as separate draws, or switch the rule and paste both.
+            Works with most comment exports (CSV or &quot;username: comment&quot;). Choose Instagram + Facebook combined to put both platforms in one machine. The same person on both platforms is counted separately on each.
           </p>
         </div>
 
@@ -513,17 +543,17 @@ export default function AdminGiveawayDraw() {
             <table className="w-full text-sm" style={{ fontVariantNumeric: 'tabular-nums' }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid rgba(30,53,96,0.07)' }}>
-                  {['Entrant', platform === 'fb' ? 'Comments' : 'Friends tagged', 'Balls', 'Odds'].map((h, i) => (
+                  {['Entrant', platform === 'fb' ? 'Comments' : platform === 'both' ? 'Tags / comments' : 'Friends tagged', 'Balls', 'Odds'].map((h, i) => (
                     <th key={h} className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider ${i ? 'text-right' : 'text-left'}`} style={{ color: 'rgba(43,48,58,0.4)', whiteSpace: 'nowrap' }}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {entrants.map(e => {
-                  const out = removed.has(e.name.toLowerCase())
+                  const out = removed.has(e.key)
                   return (
-                    <tr key={e.name} style={{ borderBottom: '1px solid rgba(30,53,96,0.05)', opacity: out ? 0.45 : 1 }}>
-                      <td className="px-3 py-2 font-medium" style={{ color: '#1E3560' }}>@{e.name}</td>
+                    <tr key={e.key} style={{ borderBottom: '1px solid rgba(30,53,96,0.05)', opacity: out ? 0.45 : 1 }}>
+                      <td className="px-3 py-2 font-medium" style={{ color: '#1E3560' }}>{entrantLabel(e, platform)}</td>
                       <td className="px-3 py-2 text-right">{e.comments}</td>
                       <td className="px-3 py-2 text-right">{out ? '—' : e.balls}</td>
                       <td className="px-3 py-2 text-right">{out ? 'removed' : totalBalls ? `${(100 * e.balls / totalBalls).toFixed(1)}%` : ''}</td>
@@ -538,7 +568,7 @@ export default function AdminGiveawayDraw() {
             ? <p className="text-xs" style={{ color: 'rgba(43,48,58,0.5)' }}>No draws yet.</p>
             : (
               <ol className="text-xs list-decimal pl-5 flex flex-col gap-1" style={{ color: 'rgba(43,48,58,0.7)' }}>
-                {history.slice(0, 20).map((h, i) => <li key={i}>{h.at}: @{h.name} (ball #{h.ball} of {h.of}){h.drawnBy ? `, drawn by ${h.drawnBy}` : ''}</li>)}
+                {history.slice(0, 20).map((h, i) => <li key={i}>{h.at}: {h.name} (ball #{h.ball} of {h.of}){h.drawnBy ? `, drawn by ${h.drawnBy}` : ''}</li>)}
               </ol>
             )}
         </div>

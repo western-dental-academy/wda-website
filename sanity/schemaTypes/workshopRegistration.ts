@@ -276,6 +276,27 @@ export default defineType({
       description: 'The 25% code emailed to the referrer for this registration',
     }),
     defineField({
+      name: 'reminderWeekScheduledFor',
+      title: '1-Week Reminder Sent For',
+      type: 'datetime',
+      readOnly: true,
+      description: 'When the 1-week reminder email was scheduled to arrive (in-person only). Set automatically.',
+    }),
+    defineField({
+      name: 'reminderDayScheduledFor',
+      title: '24-Hour Reminder Sent For',
+      type: 'datetime',
+      readOnly: true,
+      description: 'When the 24-hour reminder email was scheduled to arrive. Set automatically.',
+    }),
+    defineField({
+      name: 'reminderHourScheduledFor',
+      title: '1-Hour Reminder Sent For',
+      type: 'datetime',
+      readOnly: true,
+      description: 'When the 1-hour reminder email with Teams joining help was scheduled to arrive (virtual only). Set automatically.',
+    }),
+    defineField({
       name: 'confirmationSentAt',
       title: 'Confirmation Sent At',
       type: 'datetime',

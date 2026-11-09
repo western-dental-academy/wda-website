@@ -5,6 +5,8 @@ import { stripe } from "@/lib/stripe/client";
 import { createClient } from "@sanity/client";
 import { Resend } from "resend";
 import { registerTeamsWebinarAttendee } from "@/lib/microsoft-graph";
+import { workshopInstructions } from "@/lib/workshops/emails";
+import { runWorkshopReminders } from "@/lib/workshops/reminders";
 
 export const metadata: Metadata = {
   title: "Registration Confirmed",
@@ -33,34 +35,6 @@ interface RegistrationRecord {
   deliveryMethod?: string;
   newsletterOptIn?: boolean;
   confirmationSentAt?: string;
-}
-
-function workshopInstructions(workshop: string): string {
-  if (workshop.includes("Ergonomics in Healthcare")) {
-    return `
-      <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin:16px 0;">
-        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 8px;">What to Bring</p>
-        <ul style="color:#4b5563;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
-          <li>Comfortable clothing</li>
-          <li>Water bottle</li>
-          <li>Yoga mat</li>
-        </ul>
-      </div>`;
-  }
-  if (workshop.includes("National Board")) {
-    return `
-      <div style="background-color:#F4F7F9;border-radius:8px;padding:16px;margin:16px 0;">
-        <p style="color:#1E3560;font-size:14px;font-weight:700;margin:0 0 8px;">What to Bring — Clinical Attire Required</p>
-        <ul style="color:#4b5563;font-size:14px;line-height:1.8;margin:0;padding-left:20px;">
-          <li>Scrubs</li>
-          <li>Safety glasses (loupes are an option)</li>
-          <li>Indoor shoes with closed toe and heel</li>
-          <li>Scrub cap or cultural headcover</li>
-          <li>Candidate handbook (can be downloaded from the NDAEB website)</li>
-        </ul>
-      </div>`;
-  }
-  return "";
 }
 
 function confirmationEmailHtml(
@@ -396,6 +370,14 @@ async function sendRegistrationFollowUps(
       subject: `Registration Receipt — ${registrations.length} Attendee${registrations.length > 1 ? "s" : ""}`,
       html: receiptEmailHtml(primary.firstName, receiptRows, totalPaidDollars),
     });
+  }
+
+  // Schedule any reminder that falls due before tomorrow's daily run
+  // (e.g. a virtual sign-up the day of the workshop still gets its 1-hour reminder).
+  try {
+    await runWorkshopReminders({ registrationIds: registrations.map(r => r._id) });
+  } catch (err) {
+    console.error("Workshop reminder scheduling error:", err);
   }
 
   // Admin notification

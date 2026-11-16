@@ -7,6 +7,7 @@ import { Resend } from "resend";
 import { registerTeamsWebinarAttendee } from "@/lib/microsoft-graph";
 import { workshopInstructions } from "@/lib/workshops/emails";
 import { runWorkshopReminders } from "@/lib/workshops/reminders";
+import { sendWelcomeEmail } from '@/lib/newsletter/send';
 
 export const metadata: Metadata = {
   title: "Registration Confirmed",
@@ -335,6 +336,7 @@ async function sendRegistrationFollowUps(
             source: 'registration',
             active: true,
           })
+          await sendWelcomeEmail(r.email)
         }
       } catch (err) {
         console.error('Subscriber creation error:', err)

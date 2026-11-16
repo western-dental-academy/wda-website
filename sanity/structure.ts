@@ -29,6 +29,14 @@ export const structure: StructureResolver = (S) =>
         .schemaType("student")
         .child(S.documentTypeList("student").title("Students")),
       S.listItem()
+        .title('Newsletters')
+        .schemaType('newsletter')
+        .child(
+          S.documentTypeList('newsletter')
+            .title('Newsletters')
+            .defaultOrdering([{ field: 'sendDate', direction: 'desc' }])
+        ),
+      S.listItem()
         .title('Subscribers')
         .schemaType('subscriber')
         .child(S.documentTypeList('subscriber').title('Subscribers')),

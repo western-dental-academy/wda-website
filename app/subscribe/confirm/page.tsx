@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@sanity/client'
+import { sendWelcomeEmail } from '@/lib/newsletter/send'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,6 +58,9 @@ async function ConfirmContent({ token }: { token: string }) {
     subscribedAt: new Date().toISOString(),
     inviteToken:  null,
   }).commit()
+
+  const email = await client.fetch<string | null>(`*[_id == $id][0].email`, { id: subscriber._id })
+  if (email) await sendWelcomeEmail(email)
 
   return (
     <Card>

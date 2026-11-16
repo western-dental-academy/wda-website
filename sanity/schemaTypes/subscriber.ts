@@ -59,6 +59,25 @@ export default defineType({
       title: 'Invite Sent At',
       type: 'datetime',
     }),
+    defineField({
+      name: 'unsubscribeToken',
+      title: 'Unsubscribe Token',
+      type: 'string',
+      readOnly: true,
+      description: 'Used in the unsubscribe link in every newsletter. Created automatically.',
+    }),
+    defineField({
+      name: 'unsubscribedAt',
+      title: 'Unsubscribed At',
+      type: 'datetime',
+      readOnly: true,
+    }),
+    defineField({
+      name: 'welcomeSentAt',
+      title: 'Welcome Email Sent At',
+      type: 'datetime',
+      readOnly: true,
+    }),
   ],
   preview: {
     select: {

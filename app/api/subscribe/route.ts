@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
 import { subscribeRatelimit } from '@/lib/ratelimit'
+import { sendWelcomeEmail } from '@/lib/newsletter/send'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -32,11 +33,15 @@ export async function POST(req: NextRequest) {
 
     // Check if already subscribed
     const existing = await client.fetch(
-      `*[_type == "subscriber" && !(_id in path("drafts.**")) && email == $email][0]{ _id }`,
+      `*[_type == "subscriber" && !(_id in path("drafts.**")) && lower(email) == lower($email)][0]{ _id, active }`,
       { email }
     )
 
     if (existing) {
+      // Someone who unsubscribed and signs up again is opted back in
+      if (existing.active === false) {
+        await client.patch(existing._id).set({ active: true, subscribedAt: new Date().toISOString() }).unset(['unsubscribedAt']).commit()
+      }
       return Response.json({ success: true, message: 'Already subscribed' })
     }
 
@@ -47,6 +52,9 @@ export async function POST(req: NextRequest) {
       source: 'website',
       active: true,
     })
+
+    // Welcome email (never blocks the signup if it fails)
+    await sendWelcomeEmail(email)
 
     return Response.json({ success: true, message: 'Subscribed successfully' })
   } catch (error) {

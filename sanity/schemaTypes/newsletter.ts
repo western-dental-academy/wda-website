@@ -53,10 +53,10 @@ export default defineType({
     }),
     defineField({
       name: 'intro',
-      title: 'Intro message',
+      title: 'Intro message (optional)',
       type: 'array',
       group: 'content',
-      description: 'A short note from the team. This is the only part you need to write every month.',
+      description: 'Leave empty and a note is written for you: a short seasonal hello for the send month, plus a line about what is in this issue (workshops, the featured course, the tip). Write your own here any time to replace it. Use Preview email to see the automatic one.',
       of: [
         defineArrayMember({
           type: 'block',
@@ -81,7 +81,6 @@ export default defineType({
           },
         }),
       ],
-      validation: Rule => Rule.required(),
     }),
     defineField({
       name: 'showWorkshops',

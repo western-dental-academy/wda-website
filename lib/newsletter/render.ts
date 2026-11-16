@@ -1,6 +1,7 @@
 import type { NewsletterContent, NewsletterCourse, PortableBlock, UpcomingWorkshop } from './content'
 import { formatAlberta } from './schedule'
 import { postButtonLabel } from './social'
+import { autoIntroBlocks } from './autoIntro'
 
 // Email HTML for the newsletter and the welcome email. Table layout with inline
 // styles so it holds up in Outlook, Gmail and phone mail apps.
@@ -265,6 +266,8 @@ export function unsubscribeUrl(token: string): string {
 
 export function renderNewsletter(content: NewsletterContent, opts: { unsubscribeToken: string; firstName?: string }): { html: string; text: string } {
   const { issue } = content
+  // No intro written: use the automatic one
+  const intro = issue.intro?.some(b => b.children?.some(c => c.text?.trim())) ? issue.intro : autoIntroBlocks(content)
   const campaign = `newsletter-${issue.sendDate}`
   const greeting = opts.firstName ? `<p style="margin:0 0 16px;font-family:${BODY_FONT};font-size:15px;color:${INK};">Hi ${esc(opts.firstName)},</p>` : ''
 
@@ -273,7 +276,7 @@ export function renderNewsletter(content: NewsletterContent, opts: { unsubscribe
       <p style="margin:0 0 18px;font-family:${HEAD_FONT};font-size:25px;line-height:1.25;font-weight:700;color:${NAVY};">${esc(issue.headline)}</p>
       ${issue.heroImageUrl ? `<img src="${esc(issue.heroImageUrl)}?w=1072&auto=format" width="536" alt="${esc(issue.heroImageAlt || '')}" style="display:block;width:100%;max-width:536px;height:auto;border:0;border-radius:10px;margin:0 0 20px;">` : ''}
       ${greeting}
-      ${renderPortable(issue.intro)}
+      ${renderPortable(intro)}
     </td></tr>`,
     workshopsSection(content.workshops, campaign),
     coursesSection(content.featuredCourse, content.otherCourses, campaign),
@@ -288,7 +291,7 @@ export function renderNewsletter(content: NewsletterContent, opts: { unsubscribe
   // Plain-text part
   const t: string[] = [issue.headline, '']
   if (opts.firstName) t.push(`Hi ${opts.firstName},`, '')
-  t.push(portableToText(issue.intro), '')
+  t.push(portableToText(intro), '')
   if (content.workshops.length) {
     t.push('UPCOMING WORKSHOPS', '')
     for (const w of content.workshops) {

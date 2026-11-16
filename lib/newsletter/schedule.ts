@@ -60,3 +60,23 @@ export function formatAlberta(date: Date, opts: { withTime?: boolean; withWeekda
   const time = date.toLocaleTimeString('en-CA', { timeZone: 'America/Regina', hour: 'numeric', minute: '2-digit' })
   return `${day} at ${time.replace('a.m.', 'AM').replace('p.m.', 'PM')}`
 }
+
+// ── Default wording ──────────────────────────────────────────────────────────
+// New newsletters start with this wording. "{month}" is swapped for the month
+// of the send date when the email is built, so changing the date keeps it right.
+
+export const MONTH_TOKEN = '{month}'
+export const DEFAULT_SUBJECT = 'Your {month} update from Western Dental Academy'
+export const DEFAULT_PREVIEW_TEXT = "What's new at WDA this {month}: upcoming workshops, online courses and a quick tip."
+export const DEFAULT_HEADLINE = 'Your {month} update from WDA'
+
+/** "2026-12-01" → "December" */
+export function monthName(sendDate: string | undefined): string {
+  const d = sendDate ? new Date(`${sendDate}T12:00:00${ALBERTA_OFFSET}`) : new Date()
+  return d.toLocaleDateString('en-CA', { timeZone: 'America/Regina', month: 'long' })
+}
+
+/** Replaces {month} (any capitalisation) with the send date's month. */
+export function fillMonth(text: string | undefined, sendDate: string | undefined): string {
+  return (text ?? '').replace(/\{month\}/gi, monthName(sendDate))
+}

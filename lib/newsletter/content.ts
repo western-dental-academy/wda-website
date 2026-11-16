@@ -1,4 +1,5 @@
 import { createClient } from '@sanity/client'
+import { fillMonth } from './schedule'
 
 // Loads a newsletter issue plus the parts that fill themselves in:
 // upcoming workshop dates and active online courses.
@@ -133,5 +134,15 @@ export async function buildContent(issue: NewsletterIssue, sendAt: Date): Promis
     ? []
     : courses.filter(c => c._id !== featuredCourse?._id)
 
-  return { issue, workshops: workshops.filter(w => w.title), featuredCourse, otherCourses }
+  return { issue: withMonth(issue), workshops: workshops.filter(w => w.title), featuredCourse, otherCourses }
+}
+
+/** The issue with {month} in its subject, preview text and headline filled in. */
+export function withMonth(issue: NewsletterIssue): NewsletterIssue {
+  return {
+    ...issue,
+    subject: fillMonth(issue.subject, issue.sendDate),
+    previewText: issue.previewText ? fillMonth(issue.previewText, issue.sendDate) : issue.previewText,
+    headline: fillMonth(issue.headline, issue.sendDate),
+  }
 }

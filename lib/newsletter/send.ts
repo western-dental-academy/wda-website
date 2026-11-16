@@ -1,8 +1,8 @@
 import { Resend } from 'resend'
-import { buildContent, loadIssue, sanity, ISSUE_PROJECTION, type NewsletterCourse, type NewsletterIssue } from './content'
+import { buildContent, loadIssue, sanity, withMonth, ISSUE_PROJECTION, type NewsletterCourse, type NewsletterIssue } from './content'
 import { NEWSLETTER_FROM, renderNewsletter, renderWelcome, SITE_URL } from './render'
 import { fillSpotlightFromPost } from './social'
-import { albertaSendTime, albertaToday, formatAlberta, nextFirstTuesday } from './schedule'
+import { albertaSendTime, albertaToday, fillMonth, formatAlberta, nextFirstTuesday } from './schedule'
 
 // Sending the monthly newsletter.
 //
@@ -83,7 +83,7 @@ export function needsPostFill(issue: NewsletterIssue): boolean {
 async function processIssue(issue: NewsletterIssue, opts: { dryRun: boolean; startedAt: number }): Promise<IssueResult> {
   const sendAt = albertaSendTime(issue.sendDate, issue.sendTime)
   const now = Date.now()
-  const base = { id: issue._id, subject: issue.subject, sendAt: sendAt.toISOString() }
+  const base = { id: issue._id, subject: withMonth(issue).subject, sendAt: sendAt.toISOString() }
 
   if (sendAt.getTime() - now > HORIZON) return { ...base, action: 'not-due' }
 
@@ -132,7 +132,7 @@ async function processIssue(issue: NewsletterIssue, opts: { dryRun: boolean; sta
         {
           from: NEWSLETTER_FROM,
           to: r.email,
-          subject: issue.subject,
+          subject: content.issue.subject,
           html,
           text,
           headers: listUnsubscribeHeaders(r.unsubscribeToken),
@@ -205,10 +205,11 @@ async function maybeRemindOwner(today: string, dryRun: boolean): Promise<string 
   if (daysLeft !== 7 && daysLeft !== 2) return undefined
 
   // Drafts are included on purpose here, to tell an unpublished draft from no issue at all.
-  const issue = await sanity.fetch<{ _id: string; readyToSend?: boolean; subject?: string } | null>(
-    `*[_type == "newsletter" && sendDate >= $today && sendDate <= $target] | order(_updatedAt desc)[0]{ _id, readyToSend, subject }`,
+  const found = await sanity.fetch<{ _id: string; readyToSend?: boolean; subject?: string; sendDate?: string } | null>(
+    `*[_type == "newsletter" && sendDate >= $today && sendDate <= $target] | order(_updatedAt desc)[0]{ _id, readyToSend, subject, sendDate }`,
     { today, target },
   )
+  const issue = found ? { ...found, subject: found.subject ? fillMonth(found.subject, found.sendDate) : undefined } : null
   const published = issue && !issue._id.startsWith('drafts.')
   if (published && issue.readyToSend) return undefined
 
@@ -246,7 +247,7 @@ export async function renderIssuePreview(id: string, firstName?: string) {
   }
   const sendAt = issue.sendDate ? albertaSendTime(issue.sendDate, issue.sendTime) : new Date()
   const content = await buildContent({ ...issue, headline: issue.headline || 'Untitled', subject: issue.subject || 'Untitled' }, sendAt)
-  return { issue, ...renderNewsletter(content, { unsubscribeToken: 'preview', firstName }) }
+  return { issue: content.issue, ...renderNewsletter(content, { unsubscribeToken: 'preview', firstName }) }
 }
 
 /** Sends one copy of an issue (draft included) to a staff address, marked as a test. */

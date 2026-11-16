@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
-import { nextFirstTuesday, SEND_TIME_OPTIONS } from '../../lib/newsletter/schedule'
+import { fillMonth, DEFAULT_HEADLINE, DEFAULT_PREVIEW_TEXT, DEFAULT_SUBJECT, nextFirstTuesday, SEND_TIME_OPTIONS } from '../../lib/newsletter/schedule'
 
 // One newsletter issue. Write the intro (and optionally a tip and a spotlight),
 // tick "Ready to send" and publish. The daily newsletter job sends it to every
@@ -20,6 +20,8 @@ export default defineType({
       title: 'Email subject',
       type: 'string',
       group: 'content',
+      initialValue: DEFAULT_SUBJECT,
+      description: '{month} turns into the month of the send date, e.g. "December". Change the wording any time.',
       validation: Rule => Rule.required().max(90),
     }),
     defineField({
@@ -27,7 +29,8 @@ export default defineType({
       title: 'Preview text',
       type: 'string',
       group: 'content',
-      description: 'The grey line shown after the subject in most inboxes. Keep it under 100 characters.',
+      initialValue: DEFAULT_PREVIEW_TEXT,
+      description: 'The grey line shown after the subject in most inboxes. Keep it under 100 characters. {month} becomes the send month.',
       validation: Rule => Rule.max(140),
     }),
     defineField({
@@ -35,7 +38,8 @@ export default defineType({
       title: 'Headline',
       type: 'string',
       group: 'content',
-      description: 'Big title at the top of the email, e.g. "Your December update from WDA".',
+      initialValue: DEFAULT_HEADLINE,
+      description: 'Big title at the top of the email. {month} becomes the send month, e.g. "Your December update from WDA".',
       validation: Rule => Rule.required(),
     }),
     defineField({
@@ -213,6 +217,7 @@ export default defineType({
   preview: {
     select: { subject: 'subject', sendDate: 'sendDate', sendTime: 'sendTime', ready: 'readyToSend', status: 'deliveryStatus' },
     prepare({ subject, sendDate, sendTime, ready, status }) {
+      subject = typeof subject === 'string' ? fillMonth(subject, sendDate) : subject
       const state = status === 'sent' ? 'Sent' : status === 'scheduled' ? 'Queued' : status === 'partial' ? 'Partly sent' : ready ? 'Ready' : 'Draft'
       return {
         title: subject ?? 'Untitled newsletter',

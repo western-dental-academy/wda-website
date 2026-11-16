@@ -35,7 +35,7 @@ export interface NewsletterIssue {
   featuredCourseId?: string
   showAllCourses?: boolean
   tip?: { title?: string; body?: string }
-  spotlight?: { title?: string; body?: string; imageUrl?: string; imageAlt?: string; linkUrl?: string; linkLabel?: string }
+  spotlight?: { postUrl?: string; title?: string; body?: string; imageUrl?: string; imageAlt?: string; linkUrl?: string; linkLabel?: string }
   showReferral?: boolean
   sendDate: string
   sendTime: string
@@ -79,7 +79,7 @@ export const ISSUE_PROJECTION = `{
   "heroImageUrl": heroImage.asset->url, "heroImageAlt": heroImage.alt,
   intro, showWorkshops, "featuredCourseId": featuredCourse._ref, showAllCourses,
   tip,
-  spotlight{ title, body, linkUrl, linkLabel, "imageUrl": image.asset->url, "imageAlt": image.alt },
+  spotlight{ postUrl, title, body, linkUrl, linkLabel, "imageUrl": image.asset->url, "imageAlt": image.alt },
   showReferral, sendDate, sendTime, readyToSend, deliveryStatus, sentTo
 }`
 

@@ -1,10 +1,12 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
 import { renderIssuePreview, sendTestIssue } from '@/lib/newsletter/send'
+import { fillSpotlightFromPost } from '@/lib/newsletter/social'
 
 // Staff-only newsletter tools, used by the buttons on a Newsletter in the Studio.
 //   GET  ?id=<newsletter id>         the email as subscribers will see it (drafts included)
 //   POST { id }                      emails a [TEST] copy to the signed-in staff member
+//   POST { id, action: 'fillPost' }  fills behind-the-scenes from its social post link
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -43,8 +45,14 @@ export async function POST(req: NextRequest) {
   const who = await staff()
   if (who instanceof NextResponse) return who
   let id: string | undefined
-  try { ({ id } = await req.json() as { id?: string }) } catch { /* handled below */ }
+  let action: string | undefined
+  try { ({ id, action } = await req.json() as { id?: string; action?: string }) } catch { /* handled below */ }
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+  if (action === 'fillPost') {
+    const result = await fillSpotlightFromPost(id)
+    if (!result) return NextResponse.json({ error: 'Paste a social post link into "Behind the scenes" first (and wait a second for it to save).' }, { status: 400 })
+    return NextResponse.json({ success: true, ...result })
+  }
   try {
     const result = await sendTestIssue(id, who.email, who.firstName)
     return NextResponse.json({ success: true, ...result })

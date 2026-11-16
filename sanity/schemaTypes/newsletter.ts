@@ -119,10 +119,17 @@ export default defineType({
       title: 'Behind the scenes (optional)',
       type: 'object',
       group: 'content',
-      description: 'A team moment, event recap or news item. Leave blank to skip this section.',
+      description: 'A team moment, event recap or news item. Paste a social post link to fill in the photo and caption by itself, or fill the fields in by hand. Leave blank to skip this section.',
       fields: [
+        defineField({
+          name: 'postUrl',
+          title: 'Social post link',
+          type: 'url',
+          description: 'Paste a link to one of our Instagram, Facebook, TikTok or LinkedIn posts (Share > Copy link). Its photo and caption fill the fields below: use "Fill from post link" in the ⋯ menu to see them now and edit the caption, or leave them empty and they fill in by themselves when the newsletter is previewed, tested or sent. Anything you type below wins.',
+          validation: Rule => Rule.uri({ scheme: ['https'] }),
+        }),
         defineField({ name: 'title', title: 'Title', type: 'string' }),
-        defineField({ name: 'body', title: 'Text', type: 'text', rows: 4 }),
+        defineField({ name: 'body', title: 'Text', type: 'text', rows: 4, description: 'Filled from the post caption (without hashtags) when left empty.' }),
         defineField({
           name: 'image',
           title: 'Image',
@@ -130,8 +137,8 @@ export default defineType({
           options: { hotspot: true },
           fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
         }),
-        defineField({ name: 'linkUrl', title: 'Button link', type: 'url' }),
-        defineField({ name: 'linkLabel', title: 'Button text', type: 'string', initialValue: 'Read more' }),
+        defineField({ name: 'linkUrl', title: 'Button link', type: 'url', description: 'Defaults to the social post link.' }),
+        defineField({ name: 'linkLabel', title: 'Button text', type: 'string', description: 'Defaults to e.g. "See the post on Instagram".' }),
       ],
     }),
     defineField({

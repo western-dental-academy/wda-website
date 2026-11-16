@@ -1,6 +1,7 @@
 import { Resend } from 'resend'
 import { buildContent, loadIssue, sanity, ISSUE_PROJECTION, type NewsletterCourse, type NewsletterIssue } from './content'
 import { NEWSLETTER_FROM, renderNewsletter, renderWelcome, SITE_URL } from './render'
+import { fillSpotlightFromPost } from './social'
 import { albertaSendTime, albertaToday, formatAlberta, nextFirstTuesday } from './schedule'
 
 // Sending the monthly newsletter.
@@ -74,6 +75,11 @@ export interface IssueResult {
   errors?: string[]
 }
 
+export function needsPostFill(issue: NewsletterIssue): boolean {
+  const s = issue.spotlight
+  return !!s?.postUrl?.trim() && (!s.imageUrl || !s.body?.trim())
+}
+
 async function processIssue(issue: NewsletterIssue, opts: { dryRun: boolean; startedAt: number }): Promise<IssueResult> {
   const sendAt = albertaSendTime(issue.sendDate, issue.sendTime)
   const now = Date.now()
@@ -91,6 +97,13 @@ async function processIssue(issue: NewsletterIssue, opts: { dryRun: boolean; sta
   }
 
   if (now - sendAt.getTime() > MAX_LATE) return { ...base, action: 'too-late' }
+
+  // A social post link with no photo or caption yet: fill them in now (once,
+  // stored on the issue), so every subscriber gets the same copy.
+  if (!opts.dryRun && needsPostFill(issue)) {
+    await fillSpotlightFromPost(issue._id, { preferDraft: false }).catch(err => console.error('Post fill failed:', err))
+    issue = (await loadIssue(issue._id)) ?? issue
+  }
 
   const content = await buildContent(issue, sendAt)
   const already = new Set((issue.sentTo ?? []).map(e => e.toLowerCase()))
@@ -225,8 +238,12 @@ async function maybeRemindOwner(today: string, dryRun: boolean): Promise<string 
 
 /** Renders an issue (draft included) exactly as a subscriber would get it. */
 export async function renderIssuePreview(id: string, firstName?: string) {
-  const issue = await loadIssue(id, { draft: true })
+  let issue = await loadIssue(id, { draft: true })
   if (!issue) return null
+  if (needsPostFill(issue)) {
+    await fillSpotlightFromPost(id).catch(err => console.error('Post fill failed:', err))
+    issue = (await loadIssue(id, { draft: true })) ?? issue
+  }
   const sendAt = issue.sendDate ? albertaSendTime(issue.sendDate, issue.sendTime) : new Date()
   const content = await buildContent({ ...issue, headline: issue.headline || 'Untitled', subject: issue.subject || 'Untitled' }, sendAt)
   return { issue, ...renderNewsletter(content, { unsubscribeToken: 'preview', firstName }) }

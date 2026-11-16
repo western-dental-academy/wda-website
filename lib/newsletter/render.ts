@@ -1,5 +1,6 @@
 import type { NewsletterContent, NewsletterCourse, PortableBlock, UpcomingWorkshop } from './content'
 import { formatAlberta } from './schedule'
+import { postButtonLabel } from './social'
 
 // Email HTML for the newsletter and the welcome email. Table layout with inline
 // styles so it holds up in Outlook, Gmail and phone mail apps.
@@ -194,12 +195,14 @@ function tipSection(tip: NewsletterContent['issue']['tip']): string {
 }
 
 function spotlightSection(s: NewsletterContent['issue']['spotlight'], campaign: string): string {
-  if (!s?.title?.trim() && !s?.body?.trim()) return ''
+  if (!s?.title?.trim() && !s?.body?.trim() && !s?.imageUrl) return ''
+  const link = s.linkUrl?.trim() || s.postUrl?.trim()
+  const label = s.linkLabel?.trim() || (link ? postButtonLabel(link) : '')
   return section(`${sectionTitle('Behind the scenes')}
-    ${s.imageUrl ? `<img src="${esc(s.imageUrl)}?w=1072&auto=format" width="536" alt="${esc(s.imageAlt || s.title || '')}" style="display:block;width:100%;max-width:536px;height:auto;border:0;border-radius:10px;margin:0 0 16px;">` : ''}
+    ${s.imageUrl ? `${link ? `<a href="${esc(utm(link, campaign))}">` : ''}<img src="${esc(s.imageUrl)}?w=1072&auto=format" width="536" alt="${esc(s.imageAlt || s.title || '')}" style="display:block;width:100%;max-width:536px;height:auto;border:0;border-radius:10px;margin:0 0 16px;">${link ? '</a>' : ''}` : ''}
     ${s.title ? `<p style="margin:0 0 8px;font-family:${HEAD_FONT};font-size:17px;font-weight:700;color:${NAVY};">${esc(s.title)}</p>` : ''}
     ${paragraphs(s.body, `margin:0 0 12px;font-family:${BODY_FONT};font-size:15px;line-height:1.6;color:${INK};`)}
-    ${s.linkUrl ? `<p style="margin:4px 0 0;font-family:${BODY_FONT};font-size:14px;"><a href="${esc(utm(s.linkUrl, campaign))}" style="color:${BLUE};font-weight:700;text-decoration:none;">${esc(s.linkLabel || 'Read more')} →</a></p>` : ''}`)
+    ${link ? `<p style="margin:4px 0 0;font-family:${BODY_FONT};font-size:14px;"><a href="${esc(utm(link, campaign))}" style="color:${BLUE};font-weight:700;text-decoration:none;">${esc(label)} →</a></p>` : ''}`)
 }
 
 function referralSection(campaign: string): string {
@@ -299,7 +302,7 @@ export function renderNewsletter(content: NewsletterContent, opts: { unsubscribe
     if (content.otherCourses.length) t.push('')
   }
   if (issue.tip?.body) t.push('TIP OF THE MONTH', '', issue.tip.title ?? '', issue.tip.body, '')
-  if (issue.spotlight?.body || issue.spotlight?.title) t.push('BEHIND THE SCENES', '', issue.spotlight.title ?? '', issue.spotlight.body ?? '', issue.spotlight.linkUrl ?? '', '')
+  if (issue.spotlight?.body || issue.spotlight?.title) t.push('BEHIND THE SCENES', '', issue.spotlight.title ?? '', issue.spotlight.body ?? '', issue.spotlight.linkUrl || issue.spotlight.postUrl || '', '')
   if (issue.showReferral !== false) t.push("REFER A FRIEND, GET 25% OFF: when a colleague registers and adds your email as the person who referred them, we'll email you a 25% off code.", '')
   t.push('---', 'Western Dental Academy', MAILING_ADDRESS, REASON, `Unsubscribe: ${unsub}`)
 

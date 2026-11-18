@@ -3,6 +3,7 @@ import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import type { Program } from "@/types/program";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -42,6 +43,7 @@ const PLACEHOLDER_PROGRAMS: Program[] = [
     closingStatement:
       "This workshop equips participants with practical clinical skills and professional confidence — no matter where they are located.",
   },
+  ...(SHOW_NDAEB_CONTENT ? [
   {
     _id: "placeholder-2",
     title: "NDAB Skills Refresher Workshop",
@@ -53,6 +55,7 @@ const PLACEHOLDER_PROGRAMS: Program[] = [
     badge: "Coming Soon",
     note: "Workshop schedule and pricing to be confirmed.",
   },
+  ] : []),
   {
     _id: "placeholder-3",
     title: "Introduction to the Dental Office",

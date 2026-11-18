@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import OfficePicker, { type OfficeValue } from "@/components/OfficePicker";
+import { SHOW_NDAEB_CONTENT, NDAEB_WORKSHOP_NAME } from "@/lib/featureFlags";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -46,7 +47,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
   "Renewal Wellness": 129,
 };
 
-const WORKSHOP_OPTIONS = Object.keys(WORKSHOP_PRICES).map(label => ({
+const WORKSHOP_OPTIONS = Object.keys(WORKSHOP_PRICES).filter(label => SHOW_NDAEB_CONTENT || label !== NDAEB_WORKSHOP_NAME).map(label => ({
   label,
   price: WORKSHOP_PRICES[label],
 }));
@@ -792,9 +793,11 @@ function WorkshopRegisterFormInner() {
             <div className="mb-5">
               <FieldLabel htmlFor="reg-cadaNumber" optional>
                 CADA Membership Number{" "}
+                {SHOW_NDAEB_CONTENT && (
                 <span className="font-normal" style={{ color: "rgba(43,48,58,0.38)", fontSize: "0.65rem" }}>
                   (not needed for National Board Guided Practice Workshop)
                 </span>
+                )}
               </FieldLabel>
               <input
                 id="reg-cadaNumber" type="text" placeholder="e.g. RDA12345"

@@ -5,12 +5,13 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Professional Development", href: "/professional-development" },
-  { label: "Practical Exam Prep", href: "/national-board-guided-practice" },
+  ...(SHOW_NDAEB_CONTENT ? [{ label: "Practical Exam Prep", href: "/national-board-guided-practice" }] : []),
   { label: "Exam Invigilation", href: "/exam-invigilation" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },

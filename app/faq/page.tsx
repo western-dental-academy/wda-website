@@ -6,6 +6,7 @@ import type { FaqItem } from "@/types/faqItem";
 import FaqAccordion from "@/components/FaqAccordion";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 // ─── Placeholder data (shown until Sanity content is published) ───────────────
 
@@ -182,7 +183,10 @@ export default async function FaqPage() {
   })) as { data: FaqItem[] };
 
   // Fall back to placeholder content until Sanity items are published
-  const items = sanityItems?.length ? sanityItems : PLACEHOLDER_FAQ_ITEMS;
+  const allItems = sanityItems?.length ? sanityItems : PLACEHOLDER_FAQ_ITEMS;
+  const items = SHOW_NDAEB_CONTENT
+    ? allItems
+    : allItems.filter((item: FaqItem) => item.category !== "National Board Preparation");
 
   const jsonLd = {
     "@context": "https://schema.org",

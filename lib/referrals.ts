@@ -4,6 +4,7 @@ import {
   generateGiftCode, getExpiryDate, formatExpiryDisplay, isReferralExcluded,
   REFERRAL_PERCENT_OFF, REFERRAL_EXPIRY_MONTHS,
 } from '@/lib/giftCertificates'
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -142,7 +143,7 @@ function referralEmailHtml(firstName: string, code: string, expiry: string, frie
     <p style="color:#374151;font-size:14px;line-height:1.6;margin:0 0 16px;">
       Enter it in the <strong>Gift Certificate or Referral Code</strong> box when you register at
       <a href="https://westerndentalacademy.com/register" style="color:#378ADD;">westerndentalacademy.com/register</a>.
-      Good for one registration until <strong>${expiry}</strong>. Not valid for the National Board Guided Practice Workshop.
+      Good for one registration until <strong>${expiry}</strong>.${SHOW_NDAEB_CONTENT ? " Not valid for the National Board Guided Practice Workshop." : ""}
     </p>
     <p style="color:#374151;font-size:13px;line-height:1.6;margin:0;">
       Questions? <a href="mailto:info@westerndentalacademy.com" style="color:#378ADD;">info@westerndentalacademy.com</a>

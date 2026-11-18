@@ -4,6 +4,7 @@ import AnimateIn from "@/components/AnimateIn";
 import Wes from "@/components/Wes";
 import ContactForm from "@/components/ContactForm";
 import { FloatingPaths } from "@/components/ui/background-paths";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -526,6 +527,7 @@ export default function ContactPage() {
                     </svg>
                   ),
                 },
+                ...(SHOW_NDAEB_CONTENT ? [
                 {
                   label: "Practical Exam Prep",
                   description: "Prepare with confidence for your NDAEB Clinical Practice Evaluation with our guided practice workshops.",
@@ -547,6 +549,7 @@ export default function ContactPage() {
                     </svg>
                   ),
                 },
+                ] : []),
               ].map(({ label, description, href, icon }) => (
                 <Link
                   key={label}

@@ -1,12 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Mail } from "lucide-react";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 const navLinks = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Professional Development", href: "/professional-development" },
-  { label: "Practical Exam Prep", href: "/national-board-guided-practice" },
+  ...(SHOW_NDAEB_CONTENT ? [{ label: "Practical Exam Prep", href: "/national-board-guided-practice" }] : []),
   { label: "Exam Invigilation", href: "/exam-invigilation" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },

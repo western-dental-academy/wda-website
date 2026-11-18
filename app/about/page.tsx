@@ -9,6 +9,7 @@ import Image from 'next/image'
 import { urlFor } from '@/lib/sanity/image'
 import TeamCard from '@/components/TeamCard'
 import InlineNewsletterForm from '@/components/InlineNewsletterForm'
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 // ─── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -810,6 +811,7 @@ export default async function AboutPage() {
       </section>
 
 
+      {SHOW_NDAEB_CONTENT && (<>
       {/* ═══════════════════════════════════════════════════════════
           NATIONAL BOARD GUIDED PRACTICE WORKSHOP
       ═══════════════════════════════════════════════════════════ */}
@@ -859,6 +861,7 @@ export default async function AboutPage() {
           </AnimateIn>
         </div>
       </section>
+      </>)}
 
       {/* ═══════════════════════════════════════════════════════════
           SPONSORSHIP BANNER

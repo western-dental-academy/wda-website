@@ -103,7 +103,7 @@ export default function RootLayout({
             "@type": "LocalBusiness",
             "name": "Western Dental Academy",
             "url": "https://westerndentalacademy.com",
-            "description": "Professional development for dental professionals in Edmonton Area, Alberta. Workshops, courses, guest speakers, and practical exam preparation.",
+            "description": "Professional development for dental professionals in Edmonton Area, Alberta. Workshops, courses and guest speakers.",
             "address": {
               "@type": "PostalAddress",
               "streetAddress": "150 Chippewa Road, Suite 258",

@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 const BASE_URL = "https://westerndentalacademy.com";
 
@@ -22,12 +23,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.9,
     },
-    {
-      url: `${BASE_URL}/national-board-guided-practice`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
+    ...(SHOW_NDAEB_CONTENT
+      ? [{
+          url: `${BASE_URL}/national-board-guided-practice`,
+          lastModified: new Date(),
+          changeFrequency: "monthly" as const,
+          priority: 0.8,
+        }]
+      : []),
     {
       url: `${BASE_URL}/professional-development`,
       lastModified: new Date(),

@@ -3,16 +3,21 @@ import Link from "next/link";
 import AnimateIn from "@/components/AnimateIn";
 import { FloatingPaths } from "@/components/ui/background-paths";
 import InlineNewsletterForm from "@/components/InlineNewsletterForm";
+import { notFound } from "next/navigation";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
-export const metadata: Metadata = {
-  title: "National Board Guided Practice",
-  description:
-    "An 8-hour hands-on practical workshop preparing dental professional candidates for the NDAEB Clinical Practice Evaluation. Build confidence across all nine CPE clinical skills.",
-};
+export const metadata: Metadata = SHOW_NDAEB_CONTENT
+  ? {
+      title: "National Board Guided Practice",
+      description:
+        "An 8-hour hands-on practical workshop preparing dental professional candidates for the NDAEB Clinical Practice Evaluation. Build confidence across all nine CPE clinical skills.",
+    }
+  : { robots: { index: false, follow: false } };
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 export default function NPEWorkshopPage() {
+  if (!SHOW_NDAEB_CONTENT) notFound();
   return (
     <>
       {/* ═══════════════════════════════════════════════════════════

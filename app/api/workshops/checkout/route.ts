@@ -3,6 +3,7 @@ import { isReferralExcluded } from '@/lib/giftCertificates'
 import { cleanReferrerEmail } from '@/lib/referrals'
 import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
+import { SHOW_NDAEB_CONTENT, NDAEB_WORKSHOP_NAME } from '@/lib/featureFlags'
 
 interface CartItemPayload {
   id: string
@@ -64,6 +65,7 @@ export async function POST(req: NextRequest) {
       if (!item.lastName?.trim())  return Response.json({ error: 'Last name is required for all registrants' }, { status: 400 })
       if (!item.email?.trim())     return Response.json({ error: 'Email is required for all registrants' }, { status: 400 })
       if (!item.workshopName)      return Response.json({ error: 'Workshop selection is required for all registrants' }, { status: 400 })
+      if (!SHOW_NDAEB_CONTENT && item.workshopName === NDAEB_WORKSHOP_NAME) return Response.json({ error: 'This workshop is not currently open for registration.' }, { status: 400 })
     }
 
     // Duplicate registration check — block same email + same workshopDateId

@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import AnimateIn from "@/components/AnimateIn";
 import InlineNewsletterForm from "@/components/InlineNewsletterForm";
+import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -854,7 +855,7 @@ type Tab = "events" | "courses" | "practical-exam-prep" | "gift-certificates";
 const TABS: { id: Tab; label: string }[] = [
   { id: "courses",            label: "Courses" },
   { id: "events",             label: "Events" },
-  { id: "practical-exam-prep", label: "Practical Exam Prep" },
+  ...(SHOW_NDAEB_CONTENT ? [{ id: "practical-exam-prep" as Tab, label: "Practical Exam Prep" }] : []),
   { id: "gift-certificates",  label: "Gift Certificates" },
 ];
 
@@ -1051,6 +1052,7 @@ export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: W
         </div>
 
         {/* Practical Exam Prep */}
+        {SHOW_NDAEB_CONTENT && (
         <div className={activeTab === "practical-exam-prep" ? undefined : "hidden"}>
           <div className="mb-12">
             <p className="text-xs font-bold tracking-[0.2em] uppercase mb-3" style={{ color: "#4A9FD4" }}>
@@ -1112,6 +1114,7 @@ export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: W
             </div>
           </div>
         </div>
+        )}
 
         {/* Gift Certificates */}
         <div className={activeTab === "gift-certificates" ? undefined : "hidden"}>

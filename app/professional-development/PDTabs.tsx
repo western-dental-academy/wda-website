@@ -872,14 +872,19 @@ export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: W
     return () => window.removeEventListener("hashchange", syncFromHash);
   }, []);
 
-  const ergonomicsOfferings = offerings.filter((o) =>
-    o.title.startsWith("Ergonomics in Healthcare")
+  // Only show events that still have a future, active date. Stored dates carry
+  // their own offset (-06:00), so comparing instants against "now" is exact.
+  const ergonomicsOfferings = offerings.filter(
+    (o) =>
+      o.title.startsWith("Ergonomics in Healthcare") &&
+      getNextUpcomingDate(o.dates) !== null
   );
   const eventOfferings = offerings
     .filter(
       (o) =>
         (o.category === "workshop" || o.category === "guest-speaker") &&
-        !o.title.startsWith("Ergonomics in Healthcare")
+        !o.title.startsWith("Ergonomics in Healthcare") &&
+        getNextUpcomingDate(o.dates) !== null
     )
     .sort((a, b) => {
       const aDate = getNextUpcomingDate(a.dates);
@@ -954,18 +959,42 @@ export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: W
               Professional Development Events
             </h2>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {ergonomicsOfferings.length > 0 && (
-              <ErgonomicsGroupCard offerings={ergonomicsOfferings} index={0} />
-            )}
-            {eventOfferings.map((o, i) => (
-              <WorkshopOfferingCard
-                key={o._id}
-                offering={o}
-                index={ergonomicsOfferings.length > 0 ? i + 1 : i}
-              />
-            ))}
-          </div>
+          {ergonomicsOfferings.length > 0 || eventOfferings.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {ergonomicsOfferings.length > 0 && (
+                <ErgonomicsGroupCard offerings={ergonomicsOfferings} index={0} />
+              )}
+              {eventOfferings.map((o, i) => (
+                <WorkshopOfferingCard
+                  key={o._id}
+                  offering={o}
+                  index={ergonomicsOfferings.length > 0 ? i + 1 : i}
+                />
+              ))}
+            </div>
+          ) : (
+            <AnimateIn>
+              <div
+                className="rounded-2xl overflow-hidden max-w-2xl"
+                style={{ backgroundColor: "#F4F7F9" }}
+              >
+                <div className="h-1 w-full" style={{ backgroundColor: "#4A9FD4" }} />
+                <div className="p-8 sm:p-10">
+                  <h3
+                    className="text-xl font-bold mb-3 leading-snug"
+                    style={{ color: "#1E3560", fontFamily: "var(--font-montserrat), sans-serif" }}
+                  >
+                    Check back soon for future events.
+                  </h3>
+                  <p className="text-sm leading-relaxed mb-6" style={{ color: "#2B303A" }}>
+                    We&apos;re planning our next workshops and guest speaker events now. Sign up
+                    below and we&apos;ll let you know as soon as new dates are announced.
+                  </p>
+                  <InlineNewsletterForm successMessage="You're subscribed! We'll let you know when new events are announced." />
+                </div>
+              </div>
+            </AnimateIn>
+          )}
         </div>
 
         {/* Courses */}

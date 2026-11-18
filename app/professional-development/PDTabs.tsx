@@ -852,14 +852,14 @@ function OnlineCourseCard({ course, index }: { course: OnlineCourse; index: numb
 type Tab = "events" | "courses" | "practical-exam-prep" | "gift-certificates";
 
 const TABS: { id: Tab; label: string }[] = [
-  { id: "events",             label: "Events" },
   { id: "courses",            label: "Courses" },
+  { id: "events",             label: "Events" },
   { id: "practical-exam-prep", label: "Practical Exam Prep" },
   { id: "gift-certificates",  label: "Gift Certificates" },
 ];
 
 export default function PDTabs({ offerings, onlineCourses = [] }: { offerings: WorkshopOffering[]; onlineCourses?: OnlineCourse[] }) {
-  const [activeTab, setActiveTab] = useState<Tab>("events");
+  const [activeTab, setActiveTab] = useState<Tab>("courses");
 
   // Open a tab from the URL hash, e.g. /professional-development#courses
   useEffect(() => {

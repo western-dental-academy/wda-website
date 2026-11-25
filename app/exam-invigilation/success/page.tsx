@@ -4,6 +4,8 @@ import Wes from "@/components/Wes";
 import { confirmInvigilationBooking } from "@/lib/invigilation/confirm";
 import { materialsDeadline, type InvigilationBookingRecord } from "@/lib/invigilation/emails";
 import { formatDateLong, formatTimeRange } from "@/lib/invigilation/settings";
+import { getCheckoutSession } from "@/lib/payments/checkout";
+import PaymentPending from "@/components/PaymentPending";
 
 export const metadata: Metadata = {
   title: "Exam Booking Confirmed",
@@ -22,6 +24,11 @@ export default async function InvigilationSuccessPage({
   if (sessionId && id) {
     try {
       booking = await confirmInvigilationBooking(sessionId, id);
+      if (!booking) {
+        // Clover reports payment by webhook, which can land a few seconds after the redirect
+        const session = await getCheckoutSession(sessionId);
+        if (session?.provider === "clover" && !session.paid) return <PaymentPending />;
+      }
     } catch (err) {
       console.error("Invigilation success page error:", err);
     }

@@ -248,6 +248,20 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     } catch (err) {
       console.error('Stripe revenue fetch error:', err)
     }
+    // Clover payments (recorded by the Clover webhook). Refunds made in the
+    // Clover dashboard are not reflected here.
+    try {
+      const cloverPaid = await client.fetch<{ amountTotalCents: number; paidAt: string }[]>(
+        `*[_type == "paymentCheckout" && !(_id in path("drafts.**")) && status == "paid"]{ amountTotalCents, paidAt }`,
+      )
+      succeededCharges.push(...cloverPaid.map(p => ({
+        amount: p.amountTotalCents ?? 0,
+        amount_refunded: 0,
+        created: Math.floor(new Date(p.paidAt).getTime() / 1000),
+      })))
+    } catch (err) {
+      console.error('Clover revenue fetch error:', err)
+    }
 
     const startOfMonth = new Date(
       new Date().getFullYear(),

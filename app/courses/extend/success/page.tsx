@@ -1,77 +1,30 @@
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@sanity/client'
-import { reactivateUserEnrollment } from '@/lib/moodle'
-import { stripe } from '@/lib/stripe/client'
-import type Stripe from 'stripe'
+import { getCheckoutSession, runFulfilmentOnce, type CheckoutSession } from '@/lib/payments/checkout'
+import { fulfilCourseExtension } from '@/lib/courses/extendFulfil'
+import PaymentPending from '@/components/PaymentPending'
 
 export const dynamic = 'force-dynamic'
 
-const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset:   process.env.NEXT_PUBLIC_SANITY_DATASET!,
-  token:     process.env.SANITY_API_TOKEN!,
-  apiVersion: '2024-01-01',
-  useCdn: false,
-})
-
 async function ExtendSuccessContent({ sessionId }: { sessionId: string }) {
-  let session: Stripe.Checkout.Session
+  let session: CheckoutSession | null = null
   try {
-    session = await stripe.checkout.sessions.retrieve(sessionId)
+    session = await getCheckoutSession(sessionId)
   } catch {
     notFound()
   }
+  if (!session) notFound()
 
-  if (session.payment_status !== 'paid') notFound()
-
-  const m = session.metadata ?? {}
-  const enrollmentId       = m.enrollmentId       ?? ''
-  const accessDurationDays = parseInt(m.accessDurationDays ?? '365', 10)
-  const courseName         = m.courseName         ?? 'your course'
-
-  if (!enrollmentId) notFound()
-
-  // Idempotency: skip if already processed
-  const existing = await client.fetch<{
-    extensionStripeSessionId?: string
-    accessExpiresAt?: string
-    status?: string
-    moodleUserId?: number
-    moodleCourseId?: number
-  } | null>(
-    `*[_id == $id][0]{ extensionStripeSessionId, accessExpiresAt, status, moodleUserId, "moodleCourseId": course->moodleCourseId }`,
-    { id: enrollmentId }
-  )
-
-  let newExpiresAt: string
-
-  if (existing?.extensionStripeSessionId === session.id && existing.accessExpiresAt) {
-    newExpiresAt = existing.accessExpiresAt
-  } else {
-    const base = existing?.accessExpiresAt && new Date(existing.accessExpiresAt) > new Date()
-      ? new Date(existing.accessExpiresAt)
-      : new Date()
-
-    const expiry = new Date(base.getTime() + accessDurationDays * 24 * 60 * 60 * 1000)
-    newExpiresAt = expiry.toISOString()
-
-    // Reactivate in Moodle if needed
-    try {
-      if (existing?.moodleUserId && existing.moodleCourseId) {
-        await reactivateUserEnrollment(existing.moodleUserId, existing.moodleCourseId, expiry)
-      }
-    } catch (err) {
-      console.error('Moodle reactivation error:', err)
-    }
-
-    await client.patch(enrollmentId).set({
-      status:                    'active',
-      accessExpiresAt:           newExpiresAt,
-      extensionStripeSessionId:  session.id,
-    }).commit()
+  if (!session.paid) {
+    if (session.provider === 'clover') return <PaymentPending />
+    notFound()
   }
+
+  const s = session
+  const result = await runFulfilmentOnce(s, () => fulfilCourseExtension(s))
+  if (!result) notFound()
+  const { newExpiresAt, courseName } = result
 
   const expiryDisplay = new Date(newExpiresAt).toLocaleDateString('en-CA', {
     year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Regina',

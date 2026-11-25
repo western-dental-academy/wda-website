@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { stripe } from '@/lib/stripe/client'
+import { createCheckout } from '@/lib/payments/checkout'
 import { generateGiftCode } from '@/lib/giftCertificates'
 
 export async function POST(req: NextRequest) {
@@ -28,25 +28,20 @@ export async function POST(req: NextRequest) {
     const code = generateGiftCode()
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: recipientEmail.trim(),
-      line_items: [
+    // Stripe keeps the old behaviour (recipient email prefilled); on Clover the
+    // buyer types their own email on the payment page.
+    const session = await createCheckout({
+      flow: 'gift-certificate',
+      customerEmail: recipientEmail.trim(),
+      lineItems: [
         {
-          price_data: {
-            currency: 'cad',
-            unit_amount: amount * 100,
-            product_data: {
-              name: `WDA Gift Certificate — $${amount} CAD`,
-              description: `From ${senderName.trim()} to ${recipientName.trim()} · Western Dental Academy Professional Development`,
-            },
-          },
-          quantity: 1,
+          name: `WDA Gift Certificate — $${amount} CAD`,
+          description: `From ${senderName.trim()} to ${recipientName.trim()} · Western Dental Academy Professional Development`,
+          amountCents: Math.round(amount * 100),
         },
       ],
-      mode: 'payment',
-      success_url: `${siteUrl}/gift-certificates/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/gift-certificates`,
+      successUrl: `${siteUrl}/gift-certificates/success?session_id={SESSION}`,
+      cancelUrl: `${siteUrl}/gift-certificates`,
       metadata: {
         recipientName: recipientName.trim(),
         recipientEmail: recipientEmail.trim(),

@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { isReferralExcluded } from '@/lib/giftCertificates'
 import { cleanReferrerEmail } from '@/lib/referrals'
 import { createClient } from '@sanity/client'
-import { stripe } from '@/lib/stripe/client'
+import { createCheckout, type CheckoutLineItem } from '@/lib/payments/checkout'
 import { SHOW_NDAEB_CONTENT, NDAEB_WORKSHOP_NAME } from '@/lib/featureFlags'
 
 interface CartItemPayload {
@@ -40,6 +40,16 @@ const client = createClient({
   apiVersion: '2024-01-01',
   useCdn: false,
 })
+
+// Base prices (must match WORKSHOP_PRICES in components/WorkshopRegisterForm.tsx).
+// The cart sends a price per item, but the server sets the real one.
+const WORKSHOP_PRICES: Record<string, number> = {
+  'Ergonomics in Healthcare: Hands, Feet, and Spine': 40,
+  'Ergonomics in Healthcare: Hips and Hamstrings': 40,
+  'Ergonomics in Healthcare: Neck and Shoulders': 40,
+  'National Board Guided Practice Workshop': 750,
+  'Renewal Wellness': 129,
+}
 
 function calcFee(subtotalCents: number): number {
   return Math.round((subtotalCents + 30) / (1 - 0.033) - subtotalCents)
@@ -168,8 +178,30 @@ export async function POST(req: NextRequest) {
       registrationIds.push(doc._id)
     }
 
+    // Server-side prices: base price by workshop, virtual price from the offering
+    const virtualDateIds = [...new Set(items.filter(i => i.deliveryMethod === 'virtual' && i.workshopDateId).map(i => i.workshopDateId))]
+    const virtualPrices = new Map<string, number | null>(
+      virtualDateIds.length
+        ? (await client.fetch<{ _id: string; virtualPrice: number | null }[]>(
+            `*[_type == "workshopDate" && _id in $ids]{ _id, "virtualPrice": offering->virtualPrice }`,
+            { ids: virtualDateIds },
+          )).map(d => [d._id, d.virtualPrice])
+        : [],
+    )
+    for (const item of items) {
+      const vp = item.deliveryMethod === 'virtual' && item.workshopDateId ? virtualPrices.get(item.workshopDateId) : null
+      const serverPrice = vp != null ? vp : WORKSHOP_PRICES[item.workshopName]
+      if (serverPrice == null) {
+        return Response.json({ error: `Unknown workshop: ${item.workshopName}` }, { status: 400 })
+      }
+      if (item.price !== serverPrice) {
+        console.warn(`Workshop price mismatch for ${item.workshopName}: cart ${item.price}, server ${serverPrice}`)
+      }
+      item.price = serverPrice
+    }
+
     // Pricing
-    const subtotalCents = items.reduce((sum, item) => sum + item.price * 100, 0)
+    const subtotalCents = items.reduce((sum, item) => sum + Math.round(item.price * 100), 0)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
     const idsParam = registrationIds.join(',')
     const primaryItem = items.find(i => i.isPrimary) ?? items[0]
@@ -265,61 +297,42 @@ export async function POST(req: NextRequest) {
     const processingFee = calcFee(remainingCents)
 
     // Build line items
-    const lineItems: any[] = []
+    const lineItems: CheckoutLineItem[] = []
 
     if (giftDiscountCents > 0 && validatedGiftCode) {
       // Single line item for the discounted total
       lineItems.push({
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: items.length === 1
-              ? `${items[0].workshopName} — ${items[0].firstName} ${items[0].lastName}`
-              : `Workshop Registration (${items.length} attendees)`,
-            description: referralPercent
-              ? `Referral code ${validatedGiftCode} applied (${referralPercent}% off, -$${giftDiscountCents / 100} CAD)`
-              : `Gift certificate ${validatedGiftCode} applied (-$${giftDiscountCents / 100} CAD)`,
-          },
-          unit_amount: remainingCents,
-        },
-        quantity: 1,
+        name: items.length === 1
+          ? `${items[0].workshopName} — ${items[0].firstName} ${items[0].lastName}`
+          : `Workshop Registration (${items.length} attendees)`,
+        description: referralPercent
+          ? `Referral code ${validatedGiftCode} applied (${referralPercent}% off, -$${giftDiscountCents / 100} CAD)`
+          : `Gift certificate ${validatedGiftCode} applied (-$${giftDiscountCents / 100} CAD)`,
+        amountCents: remainingCents,
       })
     } else {
       items.forEach(item => {
         lineItems.push({
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: `${item.workshopName} — ${item.firstName} ${item.lastName} (${item.deliveryMethod === 'virtual' ? 'Virtual' : 'In-Person'})`,
-              description: 'Western Dental Academy — Workshop Registration',
-            },
-            unit_amount: item.price * 100,
-          },
-          quantity: 1,
+          name: `${item.workshopName} — ${item.firstName} ${item.lastName} (${item.deliveryMethod === 'virtual' ? 'Virtual' : 'In-Person'})`,
+          description: 'Western Dental Academy — Workshop Registration',
+          amountCents: Math.round(item.price * 100),
         })
       })
     }
 
     lineItems.push({
-      price_data: {
-        currency: 'cad',
-        product_data: {
-          name: 'Payment Processing Fee',
-          description: 'Credit/debit card processing fee (3.3% + $0.30)',
-        },
-        unit_amount: processingFee,
-      },
-      quantity: 1,
+      name: 'Payment Processing Fee',
+      description: 'Credit/debit card processing fee (3.3% + $0.30)',
+      amountCents: processingFee,
     })
 
-    // Create Stripe session
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: primaryItem.email,
-      line_items: lineItems,
-      mode: 'payment',
-      success_url: `${siteUrl}/register/success?session_id={CHECKOUT_SESSION_ID}&ids=${idsParam}`,
-      cancel_url: `${siteUrl}/register?cancelled=1`,
+    const session = await createCheckout({
+      flow: 'workshops',
+      customerEmail: primaryItem.email,
+      customer: { firstName: primaryItem.firstName, lastName: primaryItem.lastName, phone: primaryItem.phone },
+      lineItems,
+      successUrl: `${siteUrl}/register/success?session_id={SESSION}&ids=${idsParam}`,
+      cancelUrl: `${siteUrl}/register?cancelled=1`,
       metadata: {
         registrationIds: idsParam,
         count: String(items.length),
@@ -335,7 +348,7 @@ export async function POST(req: NextRequest) {
     // Store session ID on all registration records
     await Promise.all(
       registrationIds.map(id =>
-        client.patch(id).set({ stripeSessionId: session.id }).commit()
+        client.patch(id).set({ stripeSessionId: session.sessionId, paymentProvider: session.provider }).commit()
       )
     )
 

@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
-import { stripe } from '@/lib/stripe/client'
+import { createCheckout } from '@/lib/payments/checkout'
 
 const WORKSHOP_PRICES: Record<string, number> = {
   'Ergonomics in Healthcare: Hands, Feet, and Spine': 40,
@@ -91,36 +91,16 @@ export async function POST(req: NextRequest) {
     const processingFee = Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
 
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: email.trim(),
-      line_items: [
-        {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: workshop,
-              description: 'Western Dental Academy — Workshop Registration',
-            },
-            unit_amount: amountInCents,
-          },
-          quantity: 1,
-        },
-        {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: 'Payment Processing Fee',
-              description: 'Credit/debit card processing fee (3.3% + $0.30)',
-            },
-            unit_amount: processingFee,
-          },
-          quantity: 1,
-        },
+    const session = await createCheckout({
+      flow: 'workshop-legacy',
+      customerEmail: email.trim(),
+      customer: { firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() },
+      lineItems: [
+        { name: workshop, description: 'Western Dental Academy — Workshop Registration', amountCents: amountInCents },
+        { name: 'Payment Processing Fee', description: 'Credit/debit card processing fee (3.3% + $0.30)', amountCents: processingFee },
       ],
-      mode: 'payment',
-      success_url: `${siteUrl}/register/success?session_id={CHECKOUT_SESSION_ID}&id=${registration._id}`,
-      cancel_url: `${siteUrl}/register?cancelled=1`,
+      successUrl: `${siteUrl}/register/success?session_id={SESSION}&id=${registration._id}`,
+      cancelUrl: `${siteUrl}/register?cancelled=1`,
       metadata: {
         sanityRegistrationId: registration._id,
         workshop,
@@ -128,7 +108,7 @@ export async function POST(req: NextRequest) {
     })
 
     // Store session ID on the registration record
-    await client.patch(registration._id).set({ stripeSessionId: session.id }).commit()
+    await client.patch(registration._id).set({ stripeSessionId: session.sessionId, paymentProvider: session.provider }).commit()
 
     return Response.json({ url: session.url })
   } catch (error) {

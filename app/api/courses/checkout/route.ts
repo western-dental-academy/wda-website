@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
-import { stripe } from '@/lib/stripe/client'
+import { createCheckout } from '@/lib/payments/checkout'
 import { cleanReferrerEmail } from '@/lib/referrals'
 
 const client = createClient({
@@ -104,23 +104,17 @@ export async function POST(req: NextRequest) {
 
   const origin = req.headers.get('origin') ?? 'https://westerndentalacademy.com'
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    payment_method_types: ['card'],
-    line_items: [
+  const session = await createCheckout({
+    flow: 'course',
+    lineItems: [
       {
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: course.title,
-            description: `Online refresher course — ${course.accessDurationDays ?? 365} days access`
-              + (referral ? ` (referral code ${referral.code}: ${referral.percentOff}% off)` : ''),
-          },
-          unit_amount: priceCents - discountCents,
-        },
-        quantity: 1,
+        name: course.title,
+        description: `Online refresher course — ${course.accessDurationDays ?? 365} days access`
+          + (referral ? ` (referral code ${referral.code}: ${referral.percentOff}% off)` : ''),
+        amountCents: priceCents - discountCents,
       },
     ],
+    customer: { firstName: firstName.trim(), lastName: lastName.trim(), phone: phone?.trim() },
     metadata: {
       enrollmentId:       enrollment._id,
       courseId:           course._id,
@@ -134,9 +128,9 @@ export async function POST(req: NextRequest) {
       studentPhone:       phone?.trim() || '',
       ...(referral ? { referralCertId: referral._id, referralDiscountDollars: String(discountCents / 100) } : {}),
     },
-    customer_email: email.trim().toLowerCase(),
-    success_url: `${origin}/courses/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url:  `${origin}/register`,
+    customerEmail: email.trim().toLowerCase(),
+    successUrl: `${origin}/courses/success?session_id={SESSION}`,
+    cancelUrl:  `${origin}/register`,
   })
 
   return Response.json({ url: session.url })

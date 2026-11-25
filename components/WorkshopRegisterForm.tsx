@@ -1058,7 +1058,7 @@ function WorkshopRegisterFormInner() {
                 )}
               </button>
               <p className="mt-3 text-[10px] text-center" style={{ color: "rgba(43,48,58,0.4)" }}>
-                Secure checkout via Stripe. A confirmation email will be sent to you after payment.
+                Secure online card checkout. A confirmation email will be sent to you after payment.
               </p>
             </div>
           )}

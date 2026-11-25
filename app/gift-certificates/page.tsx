@@ -228,7 +228,7 @@ export default function GiftCertificatesPage() {
               </button>
 
               <p className="text-center text-xs" style={{ color: 'rgba(43,48,58,0.4)' }}>
-                Secure checkout via Stripe. The gift certificate is emailed immediately after payment.
+                Secure online card checkout. The gift certificate is emailed immediately after payment.
               </p>
             </form>
           </div>

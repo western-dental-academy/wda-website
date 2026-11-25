@@ -21,6 +21,7 @@ import onlineCourse from './onlineCourse'
 import courseEnrollment from './courseEnrollment'
 import invigilationSettings from './invigilationSettings'
 import invigilationBooking from './invigilationBooking'
+import paymentCheckout from './paymentCheckout'
 import dentalOffice from './dentalOffice'
 import giveawayDraw from './giveawayDraw'
 import newsletter from './newsletter'
@@ -28,5 +29,5 @@ import policy from './policy'
 import policyAcknowledgement from './policyAcknowledgement'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
-  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopOffering, workshopRegistration, workshopDate, workshopWaitlist, task, workshopFeedback, giftCertificate, onlineCourse, courseEnrollment, invigilationSettings, invigilationBooking, dentalOffice, giveawayDraw, newsletter, policy, policyAcknowledgement],
+  types: [programType, teamMemberType, testimonialType, blogPostType, faqItemType, student, subscriber, announcement, staffMember, hoursLog, timeOffRequest, workshopOffering, workshopRegistration, workshopDate, workshopWaitlist, task, workshopFeedback, giftCertificate, onlineCourse, courseEnrollment, invigilationSettings, invigilationBooking, paymentCheckout, dentalOffice, giveawayDraw, newsletter, policy, policyAcknowledgement],
 }

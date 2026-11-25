@@ -6,7 +6,7 @@ import { FloatingPaths } from "@/components/ui/background-paths";
 export const metadata: Metadata = {
   title: "Register for Professional Development",
   description:
-    "Register for a professional development workshop or course at Western Dental Academy. Secure checkout via Stripe.",
+    "Register for a professional development workshop or course at Western Dental Academy. Secure online card checkout.",
 };
 
 export default function RegisterPage() {

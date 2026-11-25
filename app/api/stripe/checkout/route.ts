@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { createClient } from '@sanity/client'
 import { stripe } from '@/lib/stripe/client'
+import { activeProvider, createCheckout } from '@/lib/payments/checkout'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
     // Fetch student record
     const student = await client.fetch(
       `*[_type == "student" && !(_id in path("drafts.**")) && email == $email][0]{
-        _id, firstName, lastName, email, paymentStatus, tuitionAmount,
+        _id, firstName, lastName, email, paymentStatus, tuitionAmount, stripeCustomerId,
         program->{ title }
       }`,
       { email }
@@ -41,9 +42,9 @@ export async function POST(req: NextRequest) {
     const tuitionAmount = student.tuitionAmount ?? 2500
     const amountInCents = Math.round(tuitionAmount * 100)
 
-    // Create or retrieve Stripe customer
+    // Create or retrieve Stripe customer (Stripe only)
     let stripeCustomerId = student.stripeCustomerId
-    if (!stripeCustomerId) {
+    if (!stripeCustomerId && activeProvider() === 'stripe') {
       const customer = await stripe.customers.create({
         email,
         name: `${student.firstName} ${student.lastName}`,
@@ -56,37 +57,26 @@ export async function POST(req: NextRequest) {
     
     const processingFee = Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents)
 
-    // Create Stripe Checkout session
-    const session = await stripe.checkout.sessions.create({
-      customer: stripeCustomerId,
-      payment_method_types: ['card'],
-      line_items: [
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
+    const session = await createCheckout({
+      flow: 'tuition',
+      stripeCustomerId: stripeCustomerId || undefined,
+      customerEmail: email,
+      customer: { firstName: student.firstName, lastName: student.lastName },
+      lineItems: [
         {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: student.program?.title ?? 'Dental Assisting Certificate',
-              description: 'Western Dental Academy — Tuition Payment',
-            },
-            unit_amount: amountInCents,
-          },
-          quantity: 1,
+          name: student.program?.title ?? 'Dental Assisting Certificate',
+          description: 'Western Dental Academy — Tuition Payment',
+          amountCents: amountInCents,
         },
         {
-          price_data: {
-            currency: 'cad',
-            product_data: {
-              name: 'Payment Processing Fee',
-              description: 'Credit/debit card processing fee (3.3% + $0.30)',
-            },
-            unit_amount: processingFee,
-          },
-          quantity: 1,
+          name: 'Payment Processing Fee',
+          description: 'Credit/debit card processing fee (3.3% + $0.30)',
+          amountCents: processingFee,
         },
       ],
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/portal?payment=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/portal?payment=cancelled`,
+      successUrl: `${siteUrl}/portal?payment=success`,
+      cancelUrl: `${siteUrl}/portal?payment=cancelled`,
       metadata: {
         sanityStudentId: student._id,
       },

@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { stripe } from '@/lib/stripe/client'
+import { createCheckout, type CheckoutLineItem } from '@/lib/payments/checkout'
 import {
   ACCOMMODATION_OPTIONS,
   HOLD_MINUTES,
@@ -119,50 +119,31 @@ export async function POST(req: NextRequest) {
     })
 
     const when = `${formatDateLong(b.date)}, ${formatTimeRange(b.startTime, b.durationHours)}`
-    const lineItems = [
+    const lineItems: CheckoutLineItem[] = [
       {
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: `Exam Invigilation — ${b.firstName.trim()} ${b.lastName.trim()}`,
-            description: `${when} (${b.durationHours} hr session)`,
-          },
-          unit_amount: settings.sessionPrice * 100,
-        },
-        quantity: 1,
+        name: `Exam Invigilation — ${b.firstName.trim()} ${b.lastName.trim()}`,
+        description: `${when} (${b.durationHours} hr session)`,
+        amountCents: settings.sessionPrice * 100,
       },
       ...(accommodations.includes('verbal-reader') && settings.verbalReaderPrice > 0
-        ? [{
-            price_data: {
-              currency: 'cad',
-              product_data: { name: 'Verbal Exam Reader', description: 'Accommodation fee' },
-              unit_amount: settings.verbalReaderPrice * 100,
-            },
-            quantity: 1,
-          }]
+        ? [{ name: 'Verbal Exam Reader', description: 'Accommodation fee', amountCents: settings.verbalReaderPrice * 100 }]
         : []),
       {
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: 'Payment Processing Fee',
-            description: 'Credit/debit card processing fee (3.3% + $0.30)',
-          },
-          unit_amount: calcFee(price * 100),
-        },
-        quantity: 1,
+        name: 'Payment Processing Fee',
+        description: 'Credit/debit card processing fee (3.3% + $0.30)',
+        amountCents: calcFee(price * 100),
       },
     ]
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: b.email.trim(),
-      line_items: lineItems,
-      mode: 'payment',
-      expires_at: holdExpiresAt,
-      success_url: `${siteUrl}/exam-invigilation/success?session_id={CHECKOUT_SESSION_ID}&id=${doc._id}`,
-      cancel_url: `${siteUrl}/exam-invigilation?cancelled=1`,
+    const session = await createCheckout({
+      flow: 'invigilation',
+      customerEmail: b.email.trim(),
+      customer: { firstName: b.firstName.trim(), lastName: b.lastName.trim(), phone: b.phone.trim() },
+      lineItems,
+      stripeExpiresAt: holdExpiresAt,
+      successUrl: `${siteUrl}/exam-invigilation/success?session_id={SESSION}&id=${doc._id}`,
+      cancelUrl: `${siteUrl}/exam-invigilation?cancelled=1`,
       metadata: {
         invigilationBookingId: doc._id,
         examDate: b.date,
@@ -170,7 +151,7 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    await invigilationClient.patch(doc._id).set({ stripeSessionId: session.id }).commit()
+    await invigilationClient.patch(doc._id).set({ stripeSessionId: session.sessionId, paymentProvider: session.provider }).commit()
 
     return Response.json({ url: session.url })
   } catch (error) {

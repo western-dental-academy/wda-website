@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { createClient } from '@sanity/client'
-import { stripe } from '@/lib/stripe/client'
+import { createCheckout } from '@/lib/payments/checkout'
 
 const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -52,31 +52,25 @@ export async function POST(req: NextRequest) {
 
   const origin = req.headers.get('origin') ?? 'https://westerndentalacademy.com'
 
-  const session = await stripe.checkout.sessions.create({
-    mode: 'payment',
-    payment_method_types: ['card'],
-    line_items: [
+  const session = await createCheckout({
+    flow: 'course-extension',
+    lineItems: [
       {
-        price_data: {
-          currency: 'cad',
-          product_data: {
-            name: `${enrollment.courseName} — Access Extension`,
-            description: `${course.accessDurationDays ?? 365} additional days of access`,
-          },
-          unit_amount: Math.round(course.price * 100),
-        },
-        quantity: 1,
+        name: `${enrollment.courseName} — Access Extension`,
+        description: `${course.accessDurationDays ?? 365} additional days of access`,
+        amountCents: Math.round(course.price * 100),
       },
     ],
+    customer: { firstName: enrollment.student.firstName },
     metadata: {
       type:                'course_extension',
       enrollmentId:        enrollment._id,
       accessDurationDays:  String(course.accessDurationDays ?? 365),
       courseName:          enrollment.courseName,
     },
-    customer_email: enrollment.student.email,
-    success_url: `${origin}/courses/extend/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url:  `${origin}/staff`,
+    customerEmail: enrollment.student.email,
+    successUrl: `${origin}/courses/extend/success?session_id={SESSION}`,
+    cancelUrl:  `${origin}/staff`,
   })
 
   return Response.json({ url: session.url })

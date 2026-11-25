@@ -1,11 +1,13 @@
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { SignOutButton } from '@clerk/nextjs'
+import Link from 'next/link'
 import { createClient } from '@sanity/client'
 import ClockWidget from '@/components/staff/ClockWidget'
 import TimeOffForm from '@/components/staff/TimeOffForm'
 import DownloadIdCardButton from '@/components/staff/DownloadIdCardButton'
 import OutreachLeaderboard from '@/components/staff/OutreachLeaderboard'
+import { getPoliciesForStaff } from '@/lib/staff/policies'
 import {
   buildOutreachRows,
   OUTREACH_COURSE_ENROLLMENTS_QUERY,
@@ -65,7 +67,7 @@ export default async function StaffPage() {
   const yearStart = `${new Date().getFullYear()}-01-01`
   const weekStart = getWeekStart()
 
-  const [active, weekLogs, approvedThisYear, requests, myCourses, outreachOffices, outreachWorkshopRegs, outreachCourseEnrollments] = await Promise.all([
+  const [active, weekLogs, approvedThisYear, requests, myCourses, outreachOffices, outreachWorkshopRegs, outreachCourseEnrollments, myPolicies] = await Promise.all([
     client.fetch(
       `*[_type == "hoursLog" && !(_id in path("drafts.**")) && staffMember._ref == $id && !defined(clockOut)] | order(clockIn desc)[0]{ _id, clockIn }`,
       { id: staff._id }
@@ -98,7 +100,9 @@ export default async function StaffPage() {
     client.fetch(OUTREACH_OFFICES_QUERY),
     client.fetch(OUTREACH_WORKSHOP_REGS_QUERY),
     client.fetch(OUTREACH_COURSE_ENROLLMENTS_QUERY),
+    getPoliciesForStaff(staff._id),
   ])
+  const policiesToSign = myPolicies.filter(p => p.status !== 'signed')
 
   // Outreach leaderboard (read-only), computed here so no registrant details reach the browser
   const outreachRows = buildOutreachRows(
@@ -165,6 +169,40 @@ export default async function StaffPage() {
 
       {/* Content */}
       <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
+        {/* Policies: highlighted while anything is unsigned */}
+        {myPolicies.length > 0 && (
+          <Link
+            href="/staff/policies"
+            className="rounded-2xl px-5 py-4 flex items-center justify-between gap-4"
+            style={{
+              backgroundColor: policiesToSign.length ? '#FEF3E2' : '#ffffff',
+              boxShadow: '0 1px 4px rgba(13,59,110,0.07)',
+              borderLeft: policiesToSign.length ? '4px solid #E67E22' : '4px solid transparent',
+            }}
+          >
+            <div className="min-w-0">
+              <p
+                className="text-xs font-bold uppercase tracking-widest mb-0.5"
+                style={{ color: 'rgba(13,59,110,0.4)', fontFamily: 'var(--font-montserrat), sans-serif' }}
+              >
+                Policies
+              </p>
+              <p className="text-sm font-semibold" style={{ color: policiesToSign.length ? '#8a4a0b' : '#0D3B6E' }}>
+                {policiesToSign.length === 0
+                  ? 'All policies signed'
+                  : policiesToSign.length === 1
+                    ? `Please read and sign: ${policiesToSign[0].policy.title}`
+                    : `${policiesToSign.length} policies need your signature`}
+              </p>
+            </div>
+            <span
+              className="text-xs font-bold px-3 py-1.5 rounded-lg text-white shrink-0"
+              style={{ backgroundColor: policiesToSign.length ? '#E67E22' : '#0D3B6E' }}
+            >
+              {policiesToSign.length ? 'Review →' : 'View →'}
+            </span>
+          </Link>
+        )}
         {/* Staff ID Card */}
         <div
           className="rounded-2xl px-5 py-4 flex items-center justify-between gap-4"

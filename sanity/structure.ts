@@ -168,6 +168,27 @@ export const structure: StructureResolver = (S) =>
             ])
         ),
 
+      S.listItem()
+        .title('Staff Policies')
+        .child(
+          S.list()
+            .title('Staff Policies')
+            .items([
+              S.listItem()
+                .title('Policies')
+                .schemaType('policy')
+                .child(S.documentTypeList('policy').title('Policies')),
+              S.listItem()
+                .title('Signed Acknowledgements')
+                .schemaType('policyAcknowledgement')
+                .child(
+                  S.documentTypeList('policyAcknowledgement')
+                    .title('Signed Acknowledgements')
+                    .defaultOrdering([{ field: 'acknowledgedAt', direction: 'desc' }])
+                ),
+            ])
+        ),
+
       S.divider(),
 
       S.listItem()

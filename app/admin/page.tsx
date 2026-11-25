@@ -18,6 +18,7 @@ import {
   type ContestOffice,
   type ContestReferral,
 } from '@/lib/offices/leaderboard'
+import { getPolicyReport, isPolicyManager } from '@/lib/staff/policies'
 
 const ADMIN_EMAILS = [
   'aiden@westerndentalacademy.com',
@@ -50,7 +51,8 @@ const client = createClient({
   useCdn: false,
 })
 
-export default async function AdminPage() {
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ tab?: string | string[] }> }) {
+  const { tab } = await searchParams
   const { userId } = await auth()
   if (!userId) redirect('/sign-in')
 
@@ -64,6 +66,7 @@ export default async function AdminPage() {
   const canViewFinancials = FINANCIAL_EMAILS.includes(email)
   const canViewSanity     = SANITY_EMAILS.includes(email)
   const canManageOutreach = OUTREACH_MANAGERS.includes(email)
+  const policyReport = isPolicyManager(email) ? await getPolicyReport() : null
 
   const students = await client.fetch(
     `*[_type == "student" && !(_id in path("drafts.**"))] | order(applicationDate desc) {
@@ -365,6 +368,8 @@ export default async function AdminPage() {
         dentalOffices={dentalOffices as DentalOfficeEntry[]}
         officeReferrals={officeReferrals}
         outreachRows={outreachRows}
+        policyReport={policyReport}
+        initialTab={typeof tab === 'string' ? tab : undefined}
       />
     </main>
   )

@@ -3,12 +3,12 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import PrintButton from '@/components/staff/PrintButton'
-import { fmtDate, getStaffByClerkId, policyClient } from '@/lib/staff/policies'
+import { fmtDate, getStaffByClerkId, isPolicyManager, policyClient } from '@/lib/staff/policies'
 
 export const metadata: Metadata = { title: 'Signed Policy Record', robots: { index: false, follow: false } }
 export const dynamic = 'force-dynamic'
 
-// Printable record of one signed acknowledgement. Visible to the person who signed it and to owners.
+// Printable record of one signed acknowledgement. Visible to the person who signed it and to policy managers.
 export default async function PolicyRecordPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const { userId } = await auth()
@@ -25,7 +25,8 @@ export default async function PolicyRecordPage({ params }: { params: Promise<{ i
     { id },
   )
   if (!ack) notFound()
-  if (ack.staffId !== viewer._id && viewer.role !== 'owner') notFound()
+  const manager = isPolicyManager(viewer.email)
+  if (ack.staffId !== viewer._id && !manager) notFound()
 
   const row = (k: string, v: React.ReactNode) => (
     <div className="grid grid-cols-[150px_1fr] gap-3 py-1.5 text-sm print:text-[12px]" style={{ borderBottom: '1px solid #E6ECF1' }}>
@@ -44,7 +45,7 @@ export default async function PolicyRecordPage({ params }: { params: Promise<{ i
       }`}</style>
       <div className="max-w-3xl mx-auto px-6 py-8 print:py-0">
         <div className="flex items-center justify-between mb-6 print:hidden">
-          <Link href={viewer.role === 'owner' && ack.staffId !== viewer._id ? '/staff/owner/policies' : '/staff/policies'} className="text-sm font-semibold" style={{ color: '#378ADD' }}>
+          <Link href={manager && ack.staffId !== viewer._id ? '/admin?tab=policies' : '/staff/policies'} className="text-sm font-semibold" style={{ color: '#378ADD' }}>
             ← Back
           </Link>
           <PrintButton />

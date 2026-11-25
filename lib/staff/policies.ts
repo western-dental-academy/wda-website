@@ -1,8 +1,9 @@
 import { createClient } from '@sanity/client'
+import { currentUser } from '@clerk/nextjs/server'
 import { Resend } from 'resend'
 
 // Staff policy acknowledgements: shared queries, status logic and emails.
-// Pages: /staff/policies (staff), /staff/owner/policies (owners). Cron: /api/cron/policy-reminders.
+// Pages: /staff/policies (staff sign), WDA Hub /admin → Policies tab (managers). Cron: /api/cron/policy-reminders.
 
 export const policyClient = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
@@ -13,6 +14,31 @@ export const policyClient = createClient({
 })
 
 export const SITE_URL = 'https://westerndentalacademy.com'
+
+// Who sees the Policies tab in the WDA Hub, countersigns, and sends reminders
+export const POLICY_MANAGERS = [
+  'aiden@westerndentalacademy.com',
+  'lance@westerndentalacademy.com',
+  'ryan@westerndentalacademy.com',
+  'jolene@westerndentalacademy.com',
+]
+
+export function isPolicyManager(email: string | null | undefined): boolean {
+  return !!email && POLICY_MANAGERS.includes(email.toLowerCase())
+}
+
+// Signed-in manager's email and display name, or null if they aren't a policy manager
+export async function getPolicyManager(): Promise<{ email: string; name: string } | null> {
+  const user = await currentUser()
+  const email = user?.emailAddresses[0]?.emailAddress?.toLowerCase() ?? ''
+  if (!isPolicyManager(email)) return null
+  const staff = await policyClient.fetch<{ fullName?: string; jobTitle?: string } | null>(
+    `*[_type == "staffMember" && !(_id in path("drafts.**")) && lower(email) == $email][0]{ fullName, jobTitle }`,
+    { email },
+  )
+  const fullName = staff?.fullName || [user?.firstName, user?.lastName].filter(Boolean).join(' ') || email
+  return { email, name: staff?.jobTitle ? `${fullName}, ${staff.jobTitle}` : fullName }
+}
 export const DEFAULT_ATTESTATION = 'I confirm that I have read, understood, and agree to comply with this policy.'
 
 export interface PolicyQuestion {
@@ -144,6 +170,60 @@ export async function getPoliciesForStaff(staffId: string) {
       const ack = latestAck(acks, p._id, staffId)
       return { policy: p, ack, status: statusFor(p, ack) }
     })
+}
+
+// ── WDA Hub report ──────────────────────────────────────────────────────────
+
+export interface PolicyReportRow {
+  staffId: string
+  staffName: string
+  staffEmail: string
+  jobTitle?: string
+  status: PolicyStatus
+  ack?: AckLite
+}
+
+export interface PolicyReport {
+  _id: string
+  title: string
+  slug: string
+  version: string
+  active: boolean
+  emailed: boolean
+  requiresCountersign: boolean
+  rows: PolicyReportRow[]
+}
+
+// Every policy (inactive ones too, so managers can check before switching one on) × assigned active staff
+export async function getPolicyReport(): Promise<{ policies: PolicyReport[]; peopleOutstanding: number }> {
+  const [policies, staff, acks] = await Promise.all([
+    policyClient.fetch<Array<PolicySummary & { active?: boolean }>>(
+      `*[_type == "policy" && !(_id in path("drafts.**"))] | order(active desc, title asc){
+        _id, _rev, title, "slug": slug.current, version, requiresCountersign, notifiedVersion, active,
+        "assignedIds": assignedTo[]._ref
+      }`,
+    ),
+    policyClient.fetch<StaffLite[]>(ACTIVE_STAFF_QUERY),
+    policyClient.fetch<AckLite[]>(ACKS_QUERY),
+  ])
+  const report: PolicyReport[] = policies.map(p => ({
+    _id: p._id,
+    title: p.title,
+    slug: p.slug,
+    version: p.version,
+    active: !!p.active,
+    emailed: p.notifiedVersion === p.version,
+    requiresCountersign: !!p.requiresCountersign,
+    rows: staff
+      .filter(s => appliesTo(p, s._id))
+      .map(s => {
+        const ack = latestAck(acks, p._id, s._id)
+        return { staffId: s._id, staffName: s.fullName, staffEmail: s.email, jobTitle: s.jobTitle, status: statusFor(p, ack), ack }
+      }),
+  }))
+  const outstanding = new Set<string>()
+  for (const p of report) if (p.active) for (const r of p.rows) if (r.status !== 'signed') outstanding.add(r.staffId)
+  return { policies: report, peopleOutstanding: outstanding.size }
 }
 
 // ── Emails ────────────────────────────────────────────────────────────────

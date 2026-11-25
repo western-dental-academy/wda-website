@@ -2,7 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { fmtDate, getPoliciesForStaff, getStaffByClerkId } from '@/lib/staff/policies'
+import { fmtDate, getPoliciesForStaff, getStaffByClerkId, isPolicyManager } from '@/lib/staff/policies'
 
 export const metadata: Metadata = { title: 'Staff Policies', robots: { index: false, follow: false } }
 export const dynamic = 'force-dynamic'
@@ -43,9 +43,9 @@ export default async function StaffPoliciesPage() {
             >
               ← My Clock
             </Link>
-            {staff.role === 'owner' && (
+            {isPolicyManager(staff.email) && (
               <Link
-                href="/staff/owner/policies"
+                href="/admin?tab=policies"
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg"
                 style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.7)' }}
               >

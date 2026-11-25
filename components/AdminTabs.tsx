@@ -20,6 +20,8 @@ import AdminGiftCertificates, { type GiftCertificateEntry } from '@/components/a
 import AdminCourseEnrollments, { type CourseEnrollmentEntry, type CourseOfferingEntry } from '@/components/admin/AdminCourseEnrollments'
 import AdminOfficeReferrals, { type DentalOfficeEntry, type OfficeReferralEntry } from '@/components/admin/AdminOfficeReferrals'
 import OutreachLeaderboard, { type OutreachLeaderboardRow } from '@/components/staff/OutreachLeaderboard'
+import AdminPolicies from '@/components/admin/AdminPolicies'
+import type { PolicyReport } from '@/lib/staff/policies'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 
@@ -60,9 +62,13 @@ interface AdminTabsProps {
   dentalOffices: DentalOfficeEntry[]
   officeReferrals: OfficeReferralEntry[]
   outreachRows: OutreachLeaderboardRow[]
+  // Only passed to policy managers; null hides the Policies tab
+  policyReport: { policies: PolicyReport[]; peopleOutstanding: number } | null
+  // From /admin?tab=… so links can open straight on a tab
+  initialTab?: string
 }
 
-type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'IT'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'Policies' | 'IT'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -101,6 +107,8 @@ export default function AdminTabs({
   dentalOffices,
   officeReferrals,
   outreachRows,
+  policyReport,
+  initialTab,
 }: AdminTabsProps) {
   const isIT = currentUserEmail === 'aiden@westerndentalacademy.com'
 
@@ -113,10 +121,13 @@ export default function AdminTabs({
     'Gift Certificates',
     ...(canViewFinancials ? ['Revenue' as TabId] : []),
     'Marketing',
+    ...(policyReport ? ['Policies' as TabId] : []),
     ...(isIT ? ['IT' as TabId] : []),
   ]
 
-  const [activeTab, setActiveTab] = useState<TabId>('Overview')
+  const [activeTab, setActiveTab] = useState<TabId>(
+    () => tabs.find(t => t.toLowerCase() === initialTab?.toLowerCase()) ?? 'Overview',
+  )
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 overflow-x-hidden">
@@ -269,6 +280,14 @@ export default function AdminTabs({
       )}
 
       {/* ── IT ── */}
+      {activeTab === 'Policies' && policyReport && (
+        <AdminPolicies
+          policies={policyReport.policies}
+          peopleOutstanding={policyReport.peopleOutstanding}
+          currentUserEmail={currentUserEmail}
+        />
+      )}
+
       {activeTab === 'IT' && isIT && <AdminITPanel />}
 
     </div>

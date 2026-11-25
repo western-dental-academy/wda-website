@@ -130,7 +130,7 @@ export default async function OwnerPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link
-              href="/staff/owner/policies"
+              href="/admin?tab=policies"
               className="rounded-lg px-4 py-2 text-sm font-semibold"
               style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.75)' }}
             >

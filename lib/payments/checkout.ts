@@ -72,8 +72,17 @@ export function providerLabel(): string {
   return activeProvider() === 'clover' ? 'Clover' : 'Stripe'
 }
 
+// While Stripe is still the default, checkouts for the emails listed in
+// CLOVER_TEST_EMAILS (comma-separated) go through Clover, so live Clover
+// payments can be tested without switching every customer over.
+function isCloverTester(email?: string): boolean {
+  if (!email) return false
+  const list = (process.env.CLOVER_TEST_EMAILS ?? '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean)
+  return list.includes(email.trim().toLowerCase())
+}
+
 export async function createCheckout(opts: CreateCheckoutOptions): Promise<{ url: string; sessionId: string; provider: PaymentProvider }> {
-  if (activeProvider() === 'clover') return createCloverCheckout(opts)
+  if (activeProvider() === 'clover' || isCloverTester(opts.customerEmail)) return createCloverCheckout(opts)
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',

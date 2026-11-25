@@ -20,6 +20,7 @@ export const POLICY_MANAGERS = [
   'aiden@westerndentalacademy.com',
   'lance@westerndentalacademy.com',
   'ryan@westerndentalacademy.com',
+  'tammy@westerndentalacademy.com',
 ]
 
 export function isPolicyManager(email: string | null | undefined): boolean {

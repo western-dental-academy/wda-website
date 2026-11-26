@@ -65,7 +65,7 @@ export default function PaymentPending() {
           <p className="text-xs mt-6" style={{ color: "rgba(43,48,58,0.5)" }}>
             No email within an hour? Contact{" "}
             <a href="mailto:info@westerndentalacademy.com" style={{ color: "#378ADD" }}>info@westerndentalacademy.com</a>{" "}
-            or call 780-307-3275.
+            or call 587-269-1644.
           </p>
         </div>
       </div>

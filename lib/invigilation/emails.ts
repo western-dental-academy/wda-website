@@ -23,7 +23,7 @@ export interface InvigilationBookingRecord {
 }
 
 const ADDRESS = '150 Chippewa Road, Suite 258, Sherwood Park, AB'
-const PHONE = '780-307-3275'
+const PHONE = '587-269-1644'
 const OFFICE_EMAIL = 'info@westerndentalacademy.com'
 
 function esc(v: unknown): string {

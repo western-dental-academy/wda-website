@@ -92,7 +92,7 @@ export default async function InvigilationSuccessPage({
           ) : (
             <p className="text-center text-sm mb-6" style={{ color: "rgba(43,48,58,0.65)" }}>
               If you completed payment, your confirmation email is on its way. If you don&apos;t receive it, please call
-              780-307-3275 or email info@westerndentalacademy.com.
+              587-269-1644 or email info@westerndentalacademy.com.
             </p>
           )}
 

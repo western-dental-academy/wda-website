@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, Mail } from "lucide-react";
+import { MapPin, Mail, Phone } from "lucide-react";
 import { SHOW_NDAEB_CONTENT } from "@/lib/featureFlags";
 
 const navLinks = [
@@ -51,6 +51,12 @@ const contactItems = [
     label: "Address",
     value: "150 Chippewa Road, Suite 258, Sherwood Park, AB",
     href: undefined,
+  },
+  {
+    icon: Phone,
+    label: "Phone",
+    value: "587-269-1644",
+    href: "tel:+15872691644",
   },
   {
     icon: Mail,

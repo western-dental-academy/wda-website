@@ -142,9 +142,7 @@ const WORKSHOP_PRICES: Record<string, number> = {
 function getWorkshopPricing(workshop: string) {
   const base = WORKSHOP_PRICES[workshop]
   if (!base) return null
-  const baseInCents = base * 100
-  const feeInCents  = Math.round((baseInCents + 30) / (1 - 0.033) - baseInCents)
-  return { base, fee: feeInCents / 100, total: (baseInCents + feeInCents) / 100 }
+  return { base, total: base }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -1176,16 +1174,10 @@ export default function PortalTabs({
                 {/* Pricing */}
                 {pricing ? (
                   <div className="mb-5">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-3">
                       <span className="text-sm" style={{ color: 'rgba(43,48,58,0.6)' }}>Workshop fee</span>
                       <span className="text-sm font-semibold" style={{ color: '#1E3560' }}>
                         ${pricing.base.toFixed(2)} CAD
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-sm" style={{ color: 'rgba(43,48,58,0.6)' }}>Processing fee</span>
-                      <span className="text-sm font-semibold" style={{ color: '#1E3560' }}>
-                        ${pricing.fee.toFixed(2)} CAD
                       </span>
                     </div>
                     <div

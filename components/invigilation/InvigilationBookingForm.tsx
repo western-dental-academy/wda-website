@@ -571,7 +571,6 @@ export default function InvigilationBookingForm({
             <div className="flex justify-between font-bold text-[#1E3560] pt-1">
               <span>Total</span><span>${price.toFixed(2)} CAD</span>
             </div>
-            <p className="text-xs text-[#2B303A]/45">Plus card processing fee (3.3% + $0.30) at checkout.</p>
           </div>
 
           <label className="flex items-start gap-2.5 mt-5 text-xs leading-relaxed text-[#2B303A]/75 cursor-pointer" id="inv-policyAgreed">

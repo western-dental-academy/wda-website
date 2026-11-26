@@ -88,7 +88,6 @@ export async function POST(req: NextRequest) {
     } as { _type: string; [key: string]: unknown })
 
     const amountInCents = price * 100
-    const processingFee = Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents)
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
 
     const session = await createCheckout({
@@ -97,7 +96,6 @@ export async function POST(req: NextRequest) {
       customer: { firstName: firstName.trim(), lastName: lastName.trim(), phone: phone.trim() },
       lineItems: [
         { name: workshop, description: 'Western Dental Academy — Workshop Registration', amountCents: amountInCents },
-        { name: 'Payment Processing Fee', description: 'Credit/debit card processing fee (3.3% + $0.30)', amountCents: processingFee },
       ],
       successUrl: `${siteUrl}/register/success?session_id={SESSION}&id=${registration._id}`,
       cancelUrl: `${siteUrl}/register?cancelled=1`,

@@ -174,10 +174,10 @@ function receiptEmailHtml(
               <td colspan="3" style="padding:10px 12px;font-size:13px;color:#6b7280;border-top:1px solid #f3f4f6;">Subtotal</td>
               <td style="padding:10px 12px;font-size:13px;color:#374151;text-align:right;border-top:1px solid #f3f4f6;">$${subtotal.toFixed(2)}</td>
             </tr>
-            <tr>
-              <td colspan="3" style="padding:10px 12px;font-size:13px;color:#6b7280;">Processing fee</td>
-              <td style="padding:10px 12px;font-size:13px;color:#374151;text-align:right;">$${fee.toFixed(2)}</td>
-            </tr>
+            ${Math.abs(fee) >= 0.01 ? `<tr>
+              <td colspan="3" style="padding:10px 12px;font-size:13px;color:#6b7280;">${fee < 0 ? 'Discount' : 'Processing fee'}</td>
+              <td style="padding:10px 12px;font-size:13px;color:#374151;text-align:right;">${fee < 0 ? '-' : ''}$${Math.abs(fee).toFixed(2)}</td>
+            </tr>` : ''}
             <tr style="background-color:#F4F7F9;">
               <td colspan="3" style="padding:12px 12px;font-size:14px;font-weight:700;color:#1E3560;">Total Paid</td>
               <td style="padding:12px 12px;font-size:14px;font-weight:700;color:#1E3560;text-align:right;">$${totalPaid.toFixed(2)} CAD</td>

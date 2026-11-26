@@ -85,7 +85,7 @@ function bookingTable(b: InvigilationBookingRecord): string {
       ${row('Institution', esc(b.institution))}
       ${row('Format', b.examFormat === 'computer' ? 'Computer-based' : 'Paper')}
       ${row('Accommodations', accommodationsText(b))}
-      ${b.price != null ? row('Fee', `$${b.price.toFixed(2)} CAD + processing fee`) : ''}
+      ${b.price != null ? row('Fee', `$${b.price.toFixed(2)} CAD`) : ''}
     </table>`
 }
 

@@ -35,11 +35,6 @@ interface BookingPayload {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const VALID_ACCOMMODATIONS: string[] = ACCOMMODATION_OPTIONS.map(o => o.value)
 
-// Same card fee as workshop checkout (3.3% + $0.30)
-function calcFee(subtotalCents: number): number {
-  return Math.round((subtotalCents + 30) / (1 - 0.033) - subtotalCents)
-}
-
 const bad = (error: string, status = 400) => Response.json({ error }, { status })
 
 export async function POST(req: NextRequest) {
@@ -128,11 +123,6 @@ export async function POST(req: NextRequest) {
       ...(accommodations.includes('verbal-reader') && settings.verbalReaderPrice > 0
         ? [{ name: 'Verbal Exam Reader', description: 'Accommodation fee', amountCents: settings.verbalReaderPrice * 100 }]
         : []),
-      {
-        name: 'Payment Processing Fee',
-        description: 'Credit/debit card processing fee (3.3% + $0.30)',
-        amountCents: calcFee(price * 100),
-      },
     ]
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'

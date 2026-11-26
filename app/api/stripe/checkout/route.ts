@@ -55,7 +55,6 @@ export async function POST(req: NextRequest) {
     }
 
     
-    const processingFee = Math.round((amountInCents + 30) / (1 - 0.033) - amountInCents)
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://westerndentalacademy.com'
     const session = await createCheckout({
@@ -68,11 +67,6 @@ export async function POST(req: NextRequest) {
           name: student.program?.title ?? 'Dental Assisting Certificate',
           description: 'Western Dental Academy — Tuition Payment',
           amountCents: amountInCents,
-        },
-        {
-          name: 'Payment Processing Fee',
-          description: 'Credit/debit card processing fee (3.3% + $0.30)',
-          amountCents: processingFee,
         },
       ],
       successUrl: `${siteUrl}/portal?payment=success`,

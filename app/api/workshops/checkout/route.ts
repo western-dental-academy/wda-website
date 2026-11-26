@@ -51,10 +51,6 @@ const WORKSHOP_PRICES: Record<string, number> = {
   'Renewal Wellness': 129,
 }
 
-function calcFee(subtotalCents: number): number {
-  return Math.round((subtotalCents + 30) / (1 - 0.033) - subtotalCents)
-}
-
 export async function POST(req: NextRequest) {
   try {
     let body: unknown
@@ -294,7 +290,6 @@ export async function POST(req: NextRequest) {
 
     // Partial or no gift cert — go through Stripe
     const remainingCents = subtotalCents - giftDiscountCents
-    const processingFee = calcFee(remainingCents)
 
     // Build line items
     const lineItems: CheckoutLineItem[] = []
@@ -319,12 +314,6 @@ export async function POST(req: NextRequest) {
         })
       })
     }
-
-    lineItems.push({
-      name: 'Payment Processing Fee',
-      description: 'Credit/debit card processing fee (3.3% + $0.30)',
-      amountCents: processingFee,
-    })
 
     const session = await createCheckout({
       flow: 'workshops',

@@ -3,7 +3,7 @@
 // Set this URL in Clover: Account & Setup → Ecommerce → Hosted Checkout → Webhook URL.
 import { NextRequest } from 'next/server'
 import { Resend } from 'resend'
-import { parseCloverWebhook, verifyCloverSignature } from '@/lib/payments/clover'
+import { allStringValues, parseCloverWebhook, verifyCloverSignature } from '@/lib/payments/clover'
 import { paymentsClient, getPaymentCheckoutDoc, toCheckoutSession } from '@/lib/payments/checkout'
 import { fulfilCheckout } from '@/lib/payments/fulfil'
 
@@ -38,22 +38,24 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 })
   }
   const event = parseCloverWebhook(body)
-  console.log('Clover webhook:', event.type, event.status, event.checkoutSessionId)
+  console.log('Clover webhook:', event.type, event.status, event.checkoutSessionId,
+    'keys:', body && typeof body === 'object' ? Object.keys(body as object).join(',') : typeof body)
 
   if (event.merchantId && process.env.CLOVER_MERCHANT_ID && event.merchantId !== process.env.CLOVER_MERCHANT_ID) {
     console.error('Clover webhook for another merchant:', event.merchantId)
     return Response.json({ received: true })
   }
   if (event.type && event.type !== 'PAYMENT') return Response.json({ received: true })
-  if (!event.checkoutSessionId) return Response.json({ received: true })
+  const candidates = [...new Set([event.checkoutSessionId, ...allStringValues(body)].filter((v): v is string => !!v))]
+  if (candidates.length === 0) return Response.json({ received: true })
 
   const docId = await paymentsClient.fetch<string | null>(
-    `*[_type == "paymentCheckout" && cloverCheckoutSessionId == $sid && !(_id in path("drafts.**"))][0]._id`,
-    { sid: event.checkoutSessionId },
+    `*[_type == "paymentCheckout" && cloverCheckoutSessionId in $sids && !(_id in path("drafts.**"))][0]._id`,
+    { sids: candidates },
   )
   if (!docId) {
     // e.g. a payment link made in the Clover dashboard, not by the website
-    console.log('Clover webhook: no website checkout for session', event.checkoutSessionId)
+    console.log('Clover webhook: no website checkout matched', candidates.join(' '))
     return Response.json({ received: true })
   }
 

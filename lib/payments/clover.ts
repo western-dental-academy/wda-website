@@ -101,6 +101,21 @@ export interface CloverWebhookEvent {
   message?: string
 }
 
+// Every string value anywhere in the body. Clover's field names for the
+// checkout session id aren't consistent in its docs, so the webhook looks the
+// checkout up by any of these.
+export function allStringValues(body: unknown, out: string[] = [], depth = 0): string[] {
+  if (depth > 5 || body == null) return out
+  if (typeof body === 'string') {
+    if (body.length >= 8 && body.length <= 100) out.push(body)
+  } else if (Array.isArray(body)) {
+    for (const v of body) allStringValues(v, out, depth + 1)
+  } else if (typeof body === 'object') {
+    for (const v of Object.values(body as Record<string, unknown>)) allStringValues(v, out, depth + 1)
+  }
+  return out
+}
+
 export function parseCloverWebhook(body: unknown): CloverWebhookEvent {
   const lower: Record<string, unknown> = {}
   if (body && typeof body === 'object') {

@@ -90,8 +90,9 @@ export function verifyCloverSignature(rawBody: string, header: string | null, se
   return a.length === b.length && crypto.timingSafeEqual(a, b)
 }
 
-// Webhook body fields (Clover documents them as Created Time, Message, Status,
-// Type, Id, MerchantId, Data). Read them case-insensitively to be safe.
+// Webhook body (seen live Nov 2026): type, id, merchantId, created, status,
+// message, checkoutSessionId. Clover's docs call some of these Created Time and
+// Data, so read them case-insensitively and accept both.
 export interface CloverWebhookEvent {
   type?: string        // "PAYMENT"
   status?: string      // "APPROVED" | "DECLINED"
@@ -126,7 +127,7 @@ export function parseCloverWebhook(body: unknown): CloverWebhookEvent {
     type: str(lower.type)?.toUpperCase(),
     status: str(lower.status)?.toUpperCase(),
     paymentId: str(lower.id),
-    checkoutSessionId: str(lower.data),
+    checkoutSessionId: str(lower.checkoutsessionid ?? lower.data),
     merchantId: str(lower.merchantid),
     message: str(lower.message),
   }

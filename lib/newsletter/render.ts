@@ -184,6 +184,23 @@ function coursesSection(featured: NewsletterCourse | undefined, others: Newslett
   return section(`${sectionTitle('Online course spotlight')}${featuredHtml}${othersHtml}`, { bg: PALE })
 }
 
+function highlightsSection(items: NewsletterContent['issue']['highlights'], campaign: string): string {
+  const list = (items ?? []).filter(h => h?.title?.trim())
+  if (!list.length) return ''
+  const cards = list.map((h, i) => `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="${i ? 'margin-top:22px;border-top:1px solid #eef0f3;' : ''}"><tr><td style="${i ? 'padding-top:22px;' : ''}">
+      ${h.label ? `<p style="margin:0 0 6px;font-family:${HEAD_FONT};font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${AMBER};">${esc(h.label)}</p>` : ''}
+      <p style="margin:0 0 8px;font-family:${HEAD_FONT};font-size:18px;line-height:1.3;font-weight:700;color:${NAVY};">${esc(h.title)}</p>
+      ${paragraphs(h.body, `margin:0 0 10px;font-family:${BODY_FONT};font-size:15px;line-height:1.6;color:${INK};`)}
+      ${h.details?.length ? `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 12px;">${h.details.filter(d => d?.trim()).map(d => `<tr>
+        <td style="width:16px;vertical-align:top;padding:3px 0;font-family:${BODY_FONT};font-size:14px;color:${BLUE};">•</td>
+        <td style="padding:3px 0;font-family:${BODY_FONT};font-size:14px;line-height:1.5;color:${INK};">${esc(d)}</td>
+      </tr>`).join('')}</table>` : ''}
+      ${h.linkUrl ? `<div style="margin-top:6px;">${button(utm(h.linkUrl, campaign), h.linkLabel?.trim() || 'Learn more', BLUE)}</div>` : ''}
+    </td></tr></table>`).join('')
+  return section(`${sectionTitle("What's new at WDA")}${cards}`)
+}
+
 function tipSection(tip: NewsletterContent['issue']['tip']): string {
   if (!tip?.body?.trim()) return ''
   return section(`${sectionTitle('Tip of the month')}
@@ -278,6 +295,7 @@ export function renderNewsletter(content: NewsletterContent, opts: { unsubscribe
       ${greeting}
       ${renderPortable(intro)}
     </td></tr>`,
+    highlightsSection(issue.highlights, campaign),
     workshopsSection(content.workshops, campaign),
     coursesSection(content.featuredCourse, content.otherCourses, campaign),
     tipSection(issue.tip),
@@ -292,6 +310,17 @@ export function renderNewsletter(content: NewsletterContent, opts: { unsubscribe
   const t: string[] = [issue.headline, '']
   if (opts.firstName) t.push(`Hi ${opts.firstName},`, '')
   t.push(portableToText(intro), '')
+  const highlights = (issue.highlights ?? []).filter(h => h?.title?.trim())
+  if (highlights.length) {
+    t.push("WHAT'S NEW AT WDA", '')
+    for (const h of highlights) {
+      t.push(`${h.label ? `${h.label.toUpperCase()}: ` : ''}${h.title}`)
+      if (h.body) t.push(h.body)
+      for (const d of h.details ?? []) if (d?.trim()) t.push(`- ${d}`)
+      if (h.linkUrl) t.push(h.linkUrl)
+      t.push('')
+    }
+  }
   if (content.workshops.length) {
     t.push('UPCOMING WORKSHOPS', '')
     for (const w of content.workshops) {

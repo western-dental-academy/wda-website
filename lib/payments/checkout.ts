@@ -22,6 +22,7 @@ export type CheckoutFlow =
   | 'gift-certificate'
   | 'invigilation'
   | 'tuition'
+  | 'tutoring'
 
 export interface CheckoutLineItem {
   name: string

@@ -67,6 +67,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
   const canViewSanity     = SANITY_EMAILS.includes(email)
   const canManageOutreach = OUTREACH_MANAGERS.includes(email)
   const policyReport = isPolicyManager(email) ? await getPolicyReport() : null
+  const tutoringInquiries = await client.fetch(
+    `*[_type == "tutoringInquiry" && !(_id in path("drafts.**"))] | order(submittedAt desc)[0...200]{
+      _id, service, firstName, lastName, email, phone, school, stage, areas, details, format, availability,
+      submittedAt, status, assignedTo, staffNotes, hours, amount, sessionDetails, paymentRequestedAt, paidAt
+    }`,
+  )
 
   const students = await client.fetch(
     `*[_type == "student" && !(_id in path("drafts.**"))] | order(applicationDate desc) {
@@ -382,6 +388,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         dentalOffices={dentalOffices as DentalOfficeEntry[]}
         officeReferrals={officeReferrals}
         outreachRows={outreachRows}
+        tutoringInquiries={tutoringInquiries}
         policyReport={policyReport}
         initialTab={typeof tab === 'string' ? tab : undefined}
       />

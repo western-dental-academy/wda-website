@@ -19,3 +19,10 @@ export const subscribeRatelimit = new Ratelimit({
   limiter: Ratelimit.slidingWindow(3, '10 m'),
   prefix: 'wda:subscribe',
 })
+
+// 5 requests per 10 minutes per IP
+export const tutoringRatelimit = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(5, '10 m'),
+  prefix: 'wda:tutoring',
+})

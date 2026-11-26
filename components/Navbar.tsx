@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Professional Development", href: "/professional-development" },
   ...(SHOW_NDAEB_CONTENT ? [{ label: "Practical Exam Prep", href: "/national-board-guided-practice" }] : []),
   { label: "Exam Invigilation", href: "/exam-invigilation" },
+  { label: "Tutoring", href: "/tutoring" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ];

@@ -21,6 +21,7 @@ import AdminCourseEnrollments, { type CourseEnrollmentEntry, type CourseOffering
 import AdminOfficeReferrals, { type DentalOfficeEntry, type OfficeReferralEntry } from '@/components/admin/AdminOfficeReferrals'
 import OutreachLeaderboard, { type OutreachLeaderboardRow } from '@/components/staff/OutreachLeaderboard'
 import AdminPolicies from '@/components/admin/AdminPolicies'
+import AdminTutoring, { type TutoringInquiryEntry } from '@/components/admin/AdminTutoring'
 import type { PolicyReport } from '@/lib/staff/policies'
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -62,13 +63,14 @@ interface AdminTabsProps {
   dentalOffices: DentalOfficeEntry[]
   officeReferrals: OfficeReferralEntry[]
   outreachRows: OutreachLeaderboardRow[]
+  tutoringInquiries: TutoringInquiryEntry[]
   // Only passed to policy managers; null hides the Policies tab
   policyReport: { policies: PolicyReport[]; peopleOutstanding: number } | null
   // From /admin?tab=… so links can open straight on a tab
   initialTab?: string
 }
 
-type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'Policies' | 'IT'
+type TabId = 'Overview' | 'Students' | 'Staff' | 'Professional Development' | 'Courses' | 'Tutoring' | 'Gift Certificates' | 'Revenue' | 'Marketing' | 'Policies' | 'IT'
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -107,6 +109,7 @@ export default function AdminTabs({
   dentalOffices,
   officeReferrals,
   outreachRows,
+  tutoringInquiries,
   policyReport,
   initialTab,
 }: AdminTabsProps) {
@@ -118,6 +121,7 @@ export default function AdminTabs({
     'Staff',
     'Professional Development',
     'Courses',
+    'Tutoring',
     'Gift Certificates',
     ...(canViewFinancials ? ['Revenue' as TabId] : []),
     'Marketing',
@@ -263,6 +267,11 @@ export default function AdminTabs({
       {/* ── Courses ── */}
       {activeTab === 'Courses' && (
         <AdminCourseEnrollments entries={courseEnrollments} offerings={courseOfferings} />
+      )}
+
+      {/* ── Tutoring ── */}
+      {activeTab === 'Tutoring' && (
+        <AdminTutoring initialEntries={tutoringInquiries} />
       )}
 
       {/* ── Gift Certificates ── */}

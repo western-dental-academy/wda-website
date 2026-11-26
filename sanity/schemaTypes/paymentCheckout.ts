@@ -23,6 +23,7 @@ export default defineType({
           { title: 'Gift certificate', value: 'gift-certificate' },
           { title: 'Exam invigilation', value: 'invigilation' },
           { title: 'Tuition', value: 'tuition' },
+          { title: 'Tutoring / coaching', value: 'tutoring' },
         ],
       },
     }),

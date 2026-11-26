@@ -210,6 +210,40 @@ export default async function ExamInvigilationPage({
           </div>
         </div>
       </section>
+
+      {/* ── Tutoring cross-promo ───────────────────── */}
+      <section className="pb-16 sm:pb-24 bg-white">
+        <div className="max-w-6xl mx-auto px-6">
+          <div
+            className="relative overflow-hidden rounded-2xl p-8 sm:p-10 flex flex-col md:flex-row md:items-center gap-6"
+            style={{ backgroundColor: "#1E3560" }}
+          >
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -bottom-24 -right-16 w-80 h-80 rounded-full"
+              style={{ background: "radial-gradient(circle, rgba(74,159,212,0.18) 0%, transparent 70%)" }}
+            />
+            <div className="relative flex-1">
+              <p className="text-[10px] font-bold tracking-[0.2em] uppercase mb-2" style={{ color: "#E67E22" }}>
+                Preparing for an exam?
+              </p>
+              <h2 className="text-2xl font-semibold text-white mb-2" style={{ fontFamily: "var(--font-montserrat), sans-serif" }}>
+                One-on-one tutoring &amp; coaching
+              </h2>
+              <p className="text-sm leading-relaxed max-w-xl" style={{ color: "rgba(255,255,255,0.65)" }}>
+                Build understanding, study strategies and confidence with an experienced instructor. For students in
+                Dental Assisting studies and new graduates. $50/hour, online or in person.
+              </p>
+            </div>
+            <Link
+              href="/tutoring"
+              className="relative shrink-0 self-start md:self-center rounded-lg px-6 py-3 text-sm font-bold text-white bg-[#4A9FD4] hover:bg-white hover:text-[#1E3560] transition-colors duration-200"
+            >
+              Learn more &amp; inquire
+            </Link>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

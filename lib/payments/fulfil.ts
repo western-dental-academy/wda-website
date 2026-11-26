@@ -6,6 +6,7 @@ import { fulfilCourseCheckout } from '@/lib/courses/fulfil'
 import { fulfilCourseExtension } from '@/lib/courses/extendFulfil'
 import { fulfilGiftCertificate } from '@/lib/giftCertificateFulfil'
 import { confirmInvigilationBooking } from '@/lib/invigilation/confirm'
+import { confirmTutoringPayment } from '@/lib/tutoring/server'
 
 async function fulfilTuition(session: CheckoutSession) {
   const studentId = session.metadata.sanityStudentId
@@ -42,6 +43,11 @@ export async function fulfilCheckout(session: CheckoutSession): Promise<void> {
         break
       case 'tuition':
         await fulfilTuition(session)
+        break
+      case 'tutoring':
+        if (session.metadata.tutoringInquiryId) {
+          await confirmTutoringPayment(session.id, session.metadata.tutoringInquiryId)
+        }
         break
       default:
         throw new Error(`Unknown checkout flow: ${session.flow}`)

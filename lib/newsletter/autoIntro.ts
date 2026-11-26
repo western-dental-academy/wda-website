@@ -25,6 +25,8 @@ export function autoIntroText(content: NewsletterContent): string[] {
   const paragraphs = [OPENERS[month] ?? `Here is your ${month} update from Western Dental Academy.`]
 
   const lines: string[] = []
+  const news = (content.issue.highlights ?? []).filter(h => h?.title?.trim())
+  if (news.length) lines.push(news.length === 1 ? `We have some exciting news to share: ${news[0].title}.` : "We have some exciting news to share, so read on to see what's new.")
   const w = content.workshops
   if (w.length === 1) {
     lines.push(`Our next workshop is ${w[0].title} on ${formatAlberta(new Date(w[0].date), { withTime: false })}.`)

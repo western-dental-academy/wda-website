@@ -107,6 +107,28 @@ export default defineType({
       initialValue: true,
     }),
     defineField({
+      name: 'highlights',
+      title: "What's new (optional)",
+      type: 'array',
+      group: 'content',
+      description: 'New offerings or announcements, shown right after the intro. Leave empty to skip this section.',
+      of: [
+        {
+          type: 'object',
+          name: 'highlight',
+          fields: [
+            defineField({ name: 'label', title: 'Small label', type: 'string', description: 'e.g. New, Coming soon, Webinar series' }),
+            defineField({ name: 'title', title: 'Title', type: 'string', validation: Rule => Rule.required() }),
+            defineField({ name: 'body', title: 'Text', type: 'text', rows: 5 }),
+            defineField({ name: 'details', title: 'Detail lines', type: 'array', of: [{ type: 'string' }], description: 'Short lines shown as a list, e.g. dates, price, length.' }),
+            defineField({ name: 'linkUrl', title: 'Button link', type: 'url', validation: Rule => Rule.uri({ scheme: ['http', 'https', 'mailto'] }) }),
+            defineField({ name: 'linkLabel', title: 'Button text', type: 'string' }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'label' } },
+        },
+      ],
+    }),
+    defineField({
       name: 'tip',
       title: 'Tip of the month (optional)',
       type: 'object',

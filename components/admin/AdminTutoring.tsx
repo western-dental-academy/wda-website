@@ -76,7 +76,7 @@ function InquiryCard({ entry, onChange }: { entry: TutoringInquiryEntry; onChang
   const hoursNum = Number(hours)
   const total = Number.isFinite(hoursNum) ? hoursNum * TUTORING_HOURLY_RATE : 0
 
-  async function run(body: Record<string, unknown>, success: (d: any) => string) {
+  async function run(body: Record<string, unknown>, success: (d: { emailed?: boolean; payUrl?: string }) => string) {
     setBusy(true)
     setMsg(null)
     try {

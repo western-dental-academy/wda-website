@@ -19,18 +19,20 @@ export default async function TutoringSuccessPage({
   const { session_id: sessionId, id } = await searchParams;
 
   let inquiry: TutoringInquiryRecord | null = null;
+  let pending = false;
   if (sessionId && id) {
     try {
       inquiry = await confirmTutoringPayment(sessionId, id);
       if (!inquiry) {
         // Clover reports payment by webhook, which can land a few seconds after the redirect
         const session = await getCheckoutSession(sessionId);
-        if (session?.provider === "clover" && !session.paid) return <PaymentPending />;
+        pending = session?.provider === "clover" && !session.paid;
       }
     } catch (err) {
       console.error("Tutoring success page error:", err);
     }
   }
+  if (pending) return <PaymentPending />;
 
   return (
     <section className="py-24" style={{ backgroundColor: "#F4F7F9" }}>
